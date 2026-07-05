@@ -21,9 +21,6 @@ const els = {
   btnPlay: $("btn-play"),
   btnPrev: $("btn-prev"),
   btnNext: $("btn-next"),
-  fsPlay: $("fs-play"),
-  fsPrev: $("fs-prev"),
-  fsNext: $("fs-next"),
   verseProgress: $("verse-progress"),
   chkNotes: $("chk-notes"),
   chkReference: $("chk-reference"),
@@ -262,9 +259,7 @@ function renderVerse(index) {
 }
 
 function updatePlayButtons(state) {
-  const label = state === "playing" ? "⏸ Pause" : "▶ Play";
-  els.btnPlay.textContent = label;
-  els.fsPlay.innerHTML = state === "playing" ? "&#10074;&#10074;" : "&#9658;";
+  els.btnPlay.textContent = state === "playing" ? "⏸ Pause" : "▶ Play";
 }
 
 // ---------------------------------------------------------------------
@@ -291,12 +286,9 @@ function togglePlay() {
 }
 
 els.btnPlay.addEventListener("click", togglePlay);
-els.fsPlay.addEventListener("click", togglePlay);
 
 els.btnPrev.addEventListener("click", () => { player.unlock(); player.prev(); });
 els.btnNext.addEventListener("click", () => { player.unlock(); player.next(); });
-els.fsPrev.addEventListener("click", (e) => { e.stopPropagation(); player.unlock(); player.prev(); });
-els.fsNext.addEventListener("click", (e) => { e.stopPropagation(); player.unlock(); player.next(); });
 
 els.chkNotes.addEventListener("change", () => { if (passage) renderVerse(player.index); });
 els.chkReference.addEventListener("change", () => { if (passage) renderVerse(player.index); });

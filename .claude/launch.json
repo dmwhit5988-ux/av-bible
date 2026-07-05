@@ -4,7 +4,7 @@
     {
       "name": "web-static",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8000"],
+      "runtimeArgs": ["-m", "http.server", "8000", "-d", "deploy_bundle"],
       "port": 8000
     }
   ]

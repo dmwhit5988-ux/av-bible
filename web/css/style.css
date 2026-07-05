@@ -148,26 +148,6 @@ select {
   z-index: 1000;
 }
 
-.fs-controls {
-  position: absolute;
-  bottom: max(10px, env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 8px 10px;
-  border-radius: 999px;
-  z-index: 5;
-}
-
-#stage-wrap.fullscreen .fs-controls { display: flex; }
-
-.fs-controls button {
-  min-width: 44px;
-  min-height: 44px;
-}
-
 #controls {
   display: flex;
   align-items: center;
