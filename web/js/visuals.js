@@ -7,7 +7,10 @@
 
 const ANIM_EXTS = [".gif", ".webp"];
 const PHOTO_EXTS = [".png", ".jpg", ".jpeg"];
-const EXT_PRIORITY = [...ANIM_EXTS, ...PHOTO_EXTS];
+// Text files render as an on-stage text panel (styled like the notes box).
+// Lowest priority: any real image for the same key wins over the text file.
+const TEXT_EXTS = [".txt", ".rtf"];
+const EXT_PRIORITY = [...ANIM_EXTS, ...PHOTO_EXTS, ...TEXT_EXTS];
 
 function extOf(path) {
   const m = /\.[a-z0-9]+$/i.exec(path);
@@ -79,4 +82,56 @@ export class VisualStage {
   isDiagram(path) {
     return ANIM_EXTS.includes(extOf(path));
   }
+
+  isText(path) {
+    return TEXT_EXTS.includes(extOf(path));
+  }
+
+  // Fetch and cache the contents of a .txt/.rtf visual, returning plain
+  // text ready to display. RTF is reduced to its plain text.
+  async loadText(path) {
+    if (!this._textCache) this._textCache = new Map();
+    if (this._textCache.has(path)) return this._textCache.get(path);
+    let text = "";
+    try {
+      const resp = await fetch(path);
+      if (resp.ok) {
+        text = await resp.text();
+        if (extOf(path) === ".rtf") text = rtfToPlainText(text);
+        text = text.trim();
+      }
+    } catch {
+      text = "";
+    }
+    if (this._textCache.size > 32) this._textCache.clear();
+    this._textCache.set(path, text);
+    return text;
+  }
+}
+
+// Minimal RTF -> plain text: drops destination groups (fonttbl, colortbl,
+// stylesheet, info, pict...), maps \par/\line/\tab and escaped characters,
+// strips remaining control words and braces. Good enough for the simple
+// RTF files WordPad/Word produce for plain prose.
+function rtfToPlainText(rtf) {
+  // Remove groups whose first control word marks a non-text destination.
+  const destinations =
+    /\{\\(?:\*|fonttbl|colortbl|stylesheet|info|pict|themedata|listtable|listoverridetable|generator)[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+  let s = rtf.replace(destinations, "");
+  s = s
+    .replace(/\\par[d]?\b\s?/g, "\n")
+    .replace(/\\line\b\s?/g, "\n")
+    .replace(/\\tab\b\s?/g, "\t")
+    .replace(/\\'([0-9a-fA-F]{2})/g, (_, h) =>
+      String.fromCharCode(parseInt(h, 16))
+    )
+    .replace(/\\u(-?\d+)\s?\??/g, (_, n) => {
+      let code = parseInt(n, 10);
+      if (code < 0) code += 65536;
+      return String.fromCharCode(code);
+    })
+    .replace(/\\([{}\\])/g, "$1") // escaped literals
+    .replace(/\\[a-zA-Z]+-?\d*\s?/g, "") // remaining control words
+    .replace(/[{}]/g, "");
+  return s.replace(/\n{3,}/g, "\n\n").trim();
 }

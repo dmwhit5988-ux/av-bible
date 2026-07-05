@@ -19,6 +19,7 @@ Architecture (built for the future custom-graphics work):
 
 import colorsys
 import os
+import re
 import time
 import tkinter as tk
 from dataclasses import dataclass
@@ -30,6 +31,30 @@ try:
     _HAS_PIL = True
 except ImportError:  # app still works, just with rougher image scaling
     _HAS_PIL = False
+
+
+def _rtf_to_text(rtf: str) -> str:
+    """Minimal RTF -> plain text for simple WordPad/Word prose files.
+
+    Drops non-text destination groups, maps \\par/\\line/\\tab and escaped
+    characters, then strips remaining control words and braces.
+    """
+    s = re.sub(
+        r"\{\\(?:\*|fonttbl|colortbl|stylesheet|info|pict|themedata"
+        r"|listtable|listoverridetable|generator)"
+        r"[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
+        "", rtf)
+    s = re.sub(r"\\par[d]?\b\s?", "\n", s)
+    s = re.sub(r"\\line\b\s?", "\n", s)
+    s = re.sub(r"\\tab\b\s?", "\t", s)
+    s = re.sub(r"\\'([0-9a-fA-F]{2})",
+               lambda m: chr(int(m.group(1), 16)), s)
+    s = re.sub(r"\\u(-?\d+)\s?\??",
+               lambda m: chr(int(m.group(1)) % 65536), s)
+    s = re.sub(r"\\([{}\\])", r"\1", s)
+    s = re.sub(r"\\[a-zA-Z]+-?\d*\s?", "", s)
+    s = s.replace("{", "").replace("}", "")
+    return re.sub(r"\n{3,}", "\n\n", s).strip()
 
 
 @dataclass
@@ -135,6 +160,7 @@ class DefaultRenderer(Renderer):
         self._image_cache = {}
         self._anim_cache = {}
         self._animated_flags = {}
+        self._text_cache = {}
         self._last_verse_key = None
 
     # -- image lookup ------------------------------------------------------
@@ -158,8 +184,10 @@ class DefaultRenderer(Renderer):
         # existing .png for the same verse. A translation-suffixed file
         # (e.g. Genesis_5_3.KJV.webp) wins over the generic one, letting
         # visuals that contain text match the translation being read.
-        exts = ((".gif", ".webp", ".png", ".jpg", ".jpeg")
-                if _HAS_PIL else (".png",))
+        # Text files (.txt/.rtf) come last so any real image wins; they
+        # render as a centered text panel styled like the notes overlay.
+        exts = ((".gif", ".webp", ".png", ".jpg", ".jpeg", ".txt", ".rtf")
+                if _HAS_PIL else (".png", ".txt", ".rtf"))
         suffixes = [f".{ctx.translation}", ""] if ctx.translation else [""]
         for directory, base in locations:
             for suffix in suffixes:
@@ -235,6 +263,25 @@ class DefaultRenderer(Renderer):
                     img = img.subsample(factor)
         return img
 
+    # -- text visuals ------------------------------------------------------
+
+    def _load_text(self, path: str) -> str:
+        """Contents of a .txt/.rtf visual as plain text (cached by mtime)."""
+        mtime = os.path.getmtime(path)
+        key = (path, mtime)
+        if key not in self._text_cache:
+            try:
+                with open(path, encoding="utf-8", errors="replace") as f:
+                    text = f.read()
+            except OSError:
+                text = ""
+            if path.lower().endswith(".rtf"):
+                text = _rtf_to_text(text)
+            if len(self._text_cache) > 32:
+                self._text_cache.clear()
+            self._text_cache[key] = text.strip()
+        return self._text_cache[key]
+
     # -- gradient ----------------------------------------------------------
 
     def _book_colors(self, book: str):
@@ -271,6 +318,34 @@ class DefaultRenderer(Renderer):
         image_path = self._find_image(ctx)
         drew_image = False
         next_frame_ms = None
+        # Text visuals (.txt/.rtf): book gradient plus a centered text
+        # panel, styled like the translator-notes overlay.
+        if image_path and image_path.lower().endswith((".txt", ".rtf")):
+            top, bottom = self._book_colors(ctx.book)
+            self._draw_gradient(canvas, width, height, top, bottom)
+            text = self._load_text(image_path)
+            if text:
+                margin_t = max(30, width // 14)
+                size = max(11, min(22, width // 48))
+                text_id = canvas.create_text(
+                    width // 2, height // 2,
+                    text=text,
+                    width=width - 2 * margin_t,
+                    font=("Georgia", size, "italic"),
+                    fill="#e8e0cc",
+                    justify="center",
+                )
+                bbox = canvas.bbox(text_id)
+                if bbox:
+                    pad = 14
+                    rect = canvas.create_rectangle(
+                        bbox[0] - pad, bbox[1] - pad,
+                        bbox[2] + pad, bbox[3] + pad,
+                        fill="#000000", outline="", stipple="gray50",
+                    )
+                    canvas.tag_lower(rect, text_id)
+            drew_image = True
+            image_path = None
         # WebP/GIF are diagram/animation formats: letterboxed, never
         # cropped (even single-frame ones). PNG/JPG are photos: scaled to
         # fill and center-cropped.

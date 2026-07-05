@@ -9,8 +9,9 @@ from collections import defaultdict
 VISUALS_DIR = Path("visuals")
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
-# Image extensions supported
-IMAGE_EXTS = {".webp", ".gif", ".png", ".jpg", ".jpeg"}
+# Extensions supported: images plus text files (.txt/.rtf), which the app
+# renders as an on-stage text panel styled like the translator notes.
+IMAGE_EXTS = {".webp", ".gif", ".png", ".jpg", ".jpeg", ".txt", ".rtf"}
 
 
 def build_manifest():

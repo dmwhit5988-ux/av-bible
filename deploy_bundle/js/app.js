@@ -15,6 +15,7 @@ const els = {
   stage: $("stage"),
   stageBg: $("stage-bg"),
   stageImg: $("stage-img"),
+  stageText: $("stage-text"),
   idleMessage: $("idle-message"),
   notesBox: $("notes-box"),
   referenceBox: $("reference-box"),
@@ -33,6 +34,7 @@ const STORE_KEY = "avbible.web.selection";
 const stage = new VisualStage();
 let passage = null; // current fetched chapter {book,chapter,canonical,translation,verses,notes}
 let lastImagePath = null;
+let stageTextToken = 0; // invalidates in-flight text-visual fetches
 let audioManifest = {}; // "Book_ch_v" -> "Book_ch_v.mp3", pre-generated neural narration
 
 const player = new Player({
@@ -190,6 +192,7 @@ function showIdle(message) {
   if (message) els.idleMessage.textContent = message;
   else els.idleMessage.textContent = "AV Bible\n\nChoose a passage and press Play";
   els.stageImg.classList.remove("visible");
+  els.stageText.classList.remove("visible");
   els.notesBox.textContent = "";
   els.referenceBox.textContent = "";
   els.stageBg.style.background = "#101018";
@@ -219,7 +222,21 @@ function renderVerse(index) {
   els.stageBg.style.background = `linear-gradient(180deg, ${top}, ${bottom})`;
 
   const imgPath = stage.findImage(ctx);
-  if (imgPath) {
+  if (imgPath && stage.isText(imgPath)) {
+    // A .txt/.rtf visual: show its contents as a centered text panel over
+    // the book gradient, styled like the notes box.
+    els.stageImg.classList.remove("visible");
+    els.stageImg.removeAttribute("src");
+    lastImagePath = null;
+    const token = ++stageTextToken;
+    stage.loadText(imgPath).then((text) => {
+      if (token !== stageTextToken) return; // verse changed while loading
+      els.stageText.textContent = text;
+      els.stageText.classList.toggle("visible", Boolean(text));
+    });
+  } else if (imgPath) {
+    stageTextToken++;
+    els.stageText.classList.remove("visible");
     const diagram = stage.isDiagram(imgPath);
     els.stageImg.classList.toggle("diagram", diagram);
     if (imgPath === lastImagePath) {
@@ -234,6 +251,8 @@ function renderVerse(index) {
     els.stageImg.classList.add("visible");
     lastImagePath = imgPath;
   } else {
+    stageTextToken++;
+    els.stageText.classList.remove("visible");
     els.stageImg.classList.remove("visible");
     els.stageImg.removeAttribute("src");
     lastImagePath = null;
