@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Scan visuals/ and generate manifest.json mapping verse keys to image paths."""
+
+import json
+import os
+from pathlib import Path
+from collections import defaultdict
+
+VISUALS_DIR = Path("visuals")
+MANIFEST_PATH = VISUALS_DIR / "manifest.json"
+
+# Image extensions supported
+IMAGE_EXTS = {".webp", ".gif", ".png", ".jpg", ".jpeg"}
+
+
+def build_manifest():
+    """Scan visuals/ and build a manifest of all image files."""
+    manifest = defaultdict(list)
+
+    # Scan nested layout: visuals/<Book>/<chapter>/<Book>_<ch>_<v>[.CODE].ext
+    for book_dir in VISUALS_DIR.glob("*"):
+        if not book_dir.is_dir() or book_dir.name.startswith("."):
+            continue
+
+        for chapter_dir in book_dir.glob("*"):
+            if not chapter_dir.is_dir() or chapter_dir.name.startswith("."):
+                continue
+
+            for img_file in chapter_dir.glob("*"):
+                if img_file.suffix.lower() in IMAGE_EXTS:
+                    # Relative path from visuals/ root
+                    rel_path = img_file.relative_to(VISUALS_DIR).as_posix()
+
+                    # Extract verse key from filename
+                    # Format: <Book>_<ch>_<v>[.CODE].ext
+                    stem = img_file.stem  # e.g. "Genesis_5_3.KJV" or "Genesis_5_3"
+                    parts = stem.split(".")
+                    verse_key = parts[0]  # e.g. "Genesis_5_3"
+
+                    manifest[verse_key].append(rel_path)
+
+                    # Also index translation-suffixed variant if present
+                    if len(parts) > 1:
+                        # e.g. "Genesis_5_3.KJV" -> add as key too
+                        manifest[stem].append(rel_path)
+
+    # Scan flat layout: visuals/<Book>_<ch>[_<v>][.CODE].ext and visuals/default.*
+    for img_file in VISUALS_DIR.glob("*"):
+        if img_file.is_file() and img_file.suffix.lower() in IMAGE_EXTS:
+            rel_path = img_file.name
+
+            stem = img_file.stem
+            parts = stem.split(".")
+            verse_key = parts[0]  # e.g. "Genesis_5_3" or "default"
+
+            # Only add if not already indexed from nested layout
+            if verse_key not in manifest or rel_path not in manifest[verse_key]:
+                manifest[verse_key].append(rel_path)
+
+            if len(parts) > 1:
+                manifest[stem].append(rel_path)
+
+    # Sort file lists for consistency
+    for key in manifest:
+        manifest[key].sort()
+
+    # Write manifest
+    with open(MANIFEST_PATH, "w") as f:
+        json.dump(dict(manifest), f, indent=2)
+
+    return manifest
+
+
+if __name__ == "__main__":
+    manifest = build_manifest()
+    print(f"[OK] Written {len(manifest)} verse keys to {MANIFEST_PATH}")
+    print(f"\nSample entries:")
+
+    # Show a few samples
+    samples = list(manifest.items())[:5]
+    for key, files in samples:
+        print(f"  {key}:")
+        for f in files[:2]:  # Show first 2 files per key
+            print(f"    - {f}")
+        if len(files) > 2:
+            print(f"    ... and {len(files) - 2} more")
