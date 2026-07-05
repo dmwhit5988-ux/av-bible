@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>AV Bible</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="pickers">
+    <label>Translation
+      <select id="sel-translation"></select>
+    </label>
+    <label>Book
+      <select id="sel-book"></select>
+    </label>
+    <label>Chapter
+      <select id="sel-chapter"></select>
+    </label>
+    <label>Start at verse
+      <select id="sel-verse"></select>
+    </label>
+  </div>
+  <div class="attribution" id="attribution"></div>
+</header>
+
+<div id="stage-wrap">
+  <div id="stage">
+    <div id="stage-bg"></div>
+    <img id="stage-img" alt="">
+    <div id="idle-message">AV Bible
+
+Choose a passage and press Play</div>
+    <div id="notes-box"></div>
+    <div id="reference-box"></div>
+  </div>
+  <div class="fs-controls">
+    <button id="fs-prev" aria-label="Previous verse">&#8592;</button>
+    <button id="fs-play" class="primary" aria-label="Play or pause">&#9658;</button>
+    <button id="fs-next" aria-label="Next verse">&#8594;</button>
+  </div>
+</div>
+
+<div id="controls">
+  <button id="btn-prev" aria-label="Previous verse">&#8592; Prev</button>
+  <button id="btn-play" class="primary" aria-label="Play or pause">&#9658; Play</button>
+  <button id="btn-next" aria-label="Next verse">Next &#8594;</button>
+  <div id="verse-progress">&nbsp;</div>
+</div>
+
+<div class="toggles">
+  <label><input type="checkbox" id="chk-notes" checked> Notes</label>
+  <label><input type="checkbox" id="chk-reference" checked> Reference</label>
+  <label for="rate-slider">Speed
+    <input type="range" id="rate-slider" min="0.6" max="1.6" step="0.1" value="1">
+  </label>
+</div>
+
+<div id="verse-panel"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "av-bible",
+  "version": "1.0.0",
+  "description": "A Windows desktop app that reads the Bible aloud (ESV) with a visual stage that displays graphics for the verse currently being spoken.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

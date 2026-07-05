@@ -6,3 +6,8 @@ backups/
 bibles/*.xml
 *.pyc
 .DS_Store
+node_modules/
+deploy_temp/
+deploy.ps1
+deploy-api.ps1
+prepare-deploy.ps1

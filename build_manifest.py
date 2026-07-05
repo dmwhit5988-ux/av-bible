@@ -31,33 +31,23 @@ def build_manifest():
                     # Relative path from visuals/ root
                     rel_path = img_file.relative_to(VISUALS_DIR).as_posix()
 
-                    # Extract verse key from filename
-                    # Format: <Book>_<ch>_<v>[.CODE].ext
+                    # Key by the exact stem: "Genesis_5_3.KJV" for a
+                    # translation-suffixed file, "Genesis_5_3" for a plain
+                    # one. Do NOT also add suffixed files under the plain
+                    # key — that would make the generic (no-translation)
+                    # lookup randomly pick up another translation's file.
                     stem = img_file.stem  # e.g. "Genesis_5_3.KJV" or "Genesis_5_3"
-                    parts = stem.split(".")
-                    verse_key = parts[0]  # e.g. "Genesis_5_3"
-
-                    manifest[verse_key].append(rel_path)
-
-                    # Also index translation-suffixed variant if present
-                    if len(parts) > 1:
-                        # e.g. "Genesis_5_3.KJV" -> add as key too
-                        manifest[stem].append(rel_path)
+                    manifest[stem].append(rel_path)
 
     # Scan flat layout: visuals/<Book>_<ch>[_<v>][.CODE].ext and visuals/default.*
     for img_file in VISUALS_DIR.glob("*"):
         if img_file.is_file() and img_file.suffix.lower() in IMAGE_EXTS:
             rel_path = img_file.name
 
-            stem = img_file.stem
-            parts = stem.split(".")
-            verse_key = parts[0]  # e.g. "Genesis_5_3" or "default"
+            stem = img_file.stem  # e.g. "Genesis_5_3.KJV", "Genesis_5_3", "default"
 
-            # Only add if not already indexed from nested layout
-            if verse_key not in manifest or rel_path not in manifest[verse_key]:
-                manifest[verse_key].append(rel_path)
-
-            if len(parts) > 1:
+            # Only add if not already indexed from the nested layout
+            if stem not in manifest or rel_path not in manifest[stem]:
                 manifest[stem].append(rel_path)
 
     # Sort file lists for consistency

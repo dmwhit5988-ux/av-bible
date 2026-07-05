@@ -1,0 +1,23 @@
+# AV Bible - Cloudflare deployment config
+name = "av-bible"
+type = "javascript"
+compatibility_date = "2024-01-01"
+
+# YOUR ACCOUNT ID HERE (from https://dash.cloudflare.com/account)
+account_id = ""
+
+# Deployment will serve:
+# - web/* at /
+# - bibles/<CODE>/* at /bibles/<CODE>/
+# - visuals/* at /visuals/
+
+[build]
+command = ""
+watch_paths = []
+
+# Serve files from deploy_bundle directory
+[site]
+bucket = "./deploy_bundle"
+
+[env.production]
+name = "av-bible-production"
