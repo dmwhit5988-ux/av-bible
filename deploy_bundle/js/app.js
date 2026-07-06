@@ -20,6 +20,7 @@ const els = {
   notesBox: $("notes-box"),
   referenceBox: $("reference-box"),
   btnPlay: $("btn-play"),
+  btnStagePlay: $("btn-stage-play"),
   btnPrev: $("btn-prev"),
   btnNext: $("btn-next"),
   verseProgress: $("verse-progress"),
@@ -278,7 +279,10 @@ function renderVerse(index) {
 }
 
 function updatePlayButtons(state) {
-  els.btnPlay.textContent = state === "playing" ? "⏸ Pause" : "▶ Play";
+  const playing = state === "playing";
+  els.btnPlay.textContent = playing ? "⏸ Pause" : "▶ Play";
+  els.btnStagePlay.textContent = playing ? "⏸" : "▶";
+  els.btnStagePlay.setAttribute("aria-label", playing ? "Pause" : "Play");
 }
 
 // ---------------------------------------------------------------------
@@ -333,13 +337,16 @@ els.verse.addEventListener("change", () => {
 // fixed-position CSS overlay stands in. (For no-browser-chrome on iPhone,
 // the app must be installed to the home screen — see manifest.webmanifest.)
 //
-// Gestures, video-player style: a single tap reveals the fullscreen
-// toggle button in the top-right corner (it fades out on its own);
-// a double tap on the left half goes back a verse, right half forward.
+// Gestures, video-player style: a single tap reveals the on-stage
+// controls (a center Play/Pause button, plus the fullscreen toggle);
+// they fade out on their own. A double tap on the left half goes back a
+// verse, right half forward. The fullscreen ENTER button is a special
+// case: while not in fullscreen it stays permanently visible, to nudge
+// mobile users toward a fullscreen view.
 // ---------------------------------------------------------------------
 
 const fsBtn = $("btn-fullscreen");
-let fsHideTimer = null;
+let controlsHideTimer = null;
 
 function isFullscreen() {
   return els.stageWrap.classList.contains("fullscreen");
@@ -349,12 +356,21 @@ function updateFsButton() {
   const on = isFullscreen();
   fsBtn.textContent = on ? "✕" : "⛶";
   fsBtn.setAttribute("aria-label", on ? "Exit full screen" : "Enter full screen");
+  // Persistent when not fullscreen; transient (tap-to-reveal) in fullscreen.
+  if (!on) fsBtn.classList.add("show");
 }
 
-function showFsButton() {
+// Reveal the transient on-stage controls, then fade them out. The center
+// Play/Pause always fades; the fullscreen toggle only fades in fullscreen
+// (outside fullscreen it must stay put — see updateFsButton).
+function revealControls() {
+  els.btnStagePlay.classList.add("show");
   fsBtn.classList.add("show");
-  clearTimeout(fsHideTimer);
-  fsHideTimer = setTimeout(() => fsBtn.classList.remove("show"), 3000);
+  clearTimeout(controlsHideTimer);
+  controlsHideTimer = setTimeout(() => {
+    els.btnStagePlay.classList.remove("show");
+    if (isFullscreen()) fsBtn.classList.remove("show");
+  }, 3000);
 }
 
 function setFullscreen(on) {
@@ -365,7 +381,7 @@ function setFullscreen(on) {
     document.exitFullscreen().catch(() => {});
   }
   updateFsButton();
-  showFsButton();
+  revealControls();
 }
 
 // Exiting API fullscreen via a system gesture (Back, swipe) must also
@@ -378,6 +394,14 @@ document.addEventListener("fullscreenchange", () => {
 fsBtn.addEventListener("click", (e) => {
   e.stopPropagation(); // not a stage tap
   setFullscreen(!isFullscreen());
+});
+
+// Center Play/Pause: toggles playback, then re-reveals so the freshly
+// updated icon lingers briefly before fading.
+els.btnStagePlay.addEventListener("click", (e) => {
+  e.stopPropagation(); // not a stage tap
+  togglePlay();
+  revealControls();
 });
 
 const DOUBLE_TAP_MS = 350;
@@ -402,7 +426,7 @@ els.stage.addEventListener("click", (e) => {
     clearTimeout(tapTimer);
     tapTimer = setTimeout(() => {
       tapTimer = null;
-      showFsButton();
+      revealControls();
     }, DOUBLE_TAP_MS);
   }
 });

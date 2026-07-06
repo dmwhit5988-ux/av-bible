@@ -177,8 +177,40 @@ select {
   z-index: 1000;
 }
 
-/* Fullscreen toggle, video-player style: hidden until a tap on the
-   stage summons it, then fades back out (see app.js). */
+/* Center Play/Pause, video-player style: summoned by a single tap on
+   the stage, fades back out after a few seconds (see app.js). */
+#btn-stage-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 2px 4px; /* optically center the ▶ glyph */
+  font-size: 34px;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(216, 198, 143, 0.45);
+  border-radius: 50%;
+  color: var(--sand);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  touch-action: manipulation;
+}
+
+#btn-stage-play.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Fullscreen toggle, video-player style: while not in fullscreen it stays
+   visible to encourage a fullscreen view; in fullscreen it fades out after
+   a tap like the center control (see app.js). */
 #btn-fullscreen {
   position: absolute;
   top: calc(10px + env(safe-area-inset-top));
