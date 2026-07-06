@@ -149,7 +149,7 @@ TRIBES = {
                (31.75, 35.08), (31.72, 35.20), (31.78, 35.38), (31.76, 35.46),
                (31.55, 35.40), (31.30, 35.41), (31.03, 35.45), (30.90, 35.15),
                (30.78, 34.90), (30.63, 34.42), (30.85, 34.20), (30.95, 34.00)],
-              (31.35, 34.85)),
+              (31.58, 34.95)),   # up in Judah's hill country, clear of Simeon
     "SIMEON": ("Simeon",
                [(31.45, 34.40), (31.42, 34.95), (31.28, 35.05), (31.05, 34.90),
                 (31.00, 34.50), (31.20, 34.30)],
@@ -593,9 +593,8 @@ def draw_34_zoom(img, verse, grow):
     flat, fd = flatten(m, mo)
     for xy, label, fnt, fill in labels:
         fd.text(xy, label, font=fnt, fill=fill, anchor="mm")
-    if focus:
-        for name, la, lo, place in focus[3]:
-            label_dot(fd, fr.pt(la, lo), name, place, HL, F_MAP, HL, r=2)
+    # (no city dots here: on the allotment map they read as stray, unlabeled
+    #  points inside neighbouring tribes — the verses name only the princes)
     fd.text(fr.pt(32.08, 34.60), "The Great Sea", font=F_WATER,
             fill=WATER_TXT, anchor="mm")
     fd.text(fr.pt(30.95, 35.62), "Salt Sea", font=F_WATER,
@@ -866,7 +865,8 @@ def canvas(title, verse, caption):
     d = ImageDraw.Draw(img)
     d.text((28, 18), title, font=F_TITLE, fill=TEXT)
     d.text((28, 52), f"verse {verse} — {caption}", font=F_VERSE, fill=HL)
-    d.text((28, H - 24), FOOTER, font=F_SMALL, fill=TEXT_DIM)
+    # footer lives in the empty right column, clear of the map's bottom edge
+    d.text((PANEL_X, H - 40), FOOTER, font=F_SMALL, fill=TEXT_DIM)
     return img, d
 
 
