@@ -1,0 +1,16 @@
+{
+  "name": "AV Bible",
+  "short_name": "AV Bible",
+  "description": "Audio-visual Bible reader with verse narration and generated visuals.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101018",
+  "theme_color": "#101018",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

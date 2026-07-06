@@ -325,10 +325,86 @@ els.verse.addEventListener("change", () => {
   player.jumpTo(startVerseIndex());
 });
 
-// Tap-to-toggle fullscreen: a CSS overlay (not the Fullscreen API) so it
-// works on iOS Safari, which refuses requestFullscreen on plain <div>s.
-els.stage.addEventListener("click", () => {
-  els.stageWrap.classList.toggle("fullscreen");
+// ---------------------------------------------------------------------
+// Fullscreen + stage gestures
+//
+// Where the Fullscreen API exists (desktop, Android) we use it for true
+// fullscreen; iOS Safari refuses requestFullscreen on plain <div>s, so a
+// fixed-position CSS overlay stands in. (For no-browser-chrome on iPhone,
+// the app must be installed to the home screen — see manifest.webmanifest.)
+//
+// Gestures, video-player style: a single tap reveals the fullscreen
+// toggle button in the top-right corner (it fades out on its own);
+// a double tap on the left half goes back a verse, right half forward.
+// ---------------------------------------------------------------------
+
+const fsBtn = $("btn-fullscreen");
+let fsHideTimer = null;
+
+function isFullscreen() {
+  return els.stageWrap.classList.contains("fullscreen");
+}
+
+function updateFsButton() {
+  const on = isFullscreen();
+  fsBtn.textContent = on ? "✕" : "⛶";
+  fsBtn.setAttribute("aria-label", on ? "Exit full screen" : "Enter full screen");
+}
+
+function showFsButton() {
+  fsBtn.classList.add("show");
+  clearTimeout(fsHideTimer);
+  fsHideTimer = setTimeout(() => fsBtn.classList.remove("show"), 3000);
+}
+
+function setFullscreen(on) {
+  els.stageWrap.classList.toggle("fullscreen", on);
+  if (on && els.stageWrap.requestFullscreen) {
+    els.stageWrap.requestFullscreen().catch(() => {});
+  } else if (!on && document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+  updateFsButton();
+  showFsButton();
+}
+
+// Exiting API fullscreen via a system gesture (Back, swipe) must also
+// clear the CSS overlay so both mechanisms stay in sync.
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) els.stageWrap.classList.remove("fullscreen");
+  updateFsButton();
+});
+
+fsBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // not a stage tap
+  setFullscreen(!isFullscreen());
+});
+
+const DOUBLE_TAP_MS = 350;
+let tapTimer = null;
+let lastTapTime = 0;
+
+els.stage.addEventListener("click", (e) => {
+  const now = Date.now();
+  if (now - lastTapTime < DOUBLE_TAP_MS) {
+    // Double tap: left half = previous verse, right half = next.
+    lastTapTime = 0;
+    clearTimeout(tapTimer);
+    tapTimer = null;
+    if (!passage) return;
+    const rect = els.stage.getBoundingClientRect();
+    player.unlock(); // synchronous, inside the gesture handler
+    if (e.clientX - rect.left < rect.width / 2) player.prev();
+    else player.next();
+  } else {
+    // Wait out the double-tap window before treating it as a single tap.
+    lastTapTime = now;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => {
+      tapTimer = null;
+      showFsButton();
+    }, DOUBLE_TAP_MS);
+  }
 });
 
 document.addEventListener("keydown", (e) => {
@@ -336,8 +412,10 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space") { e.preventDefault(); togglePlay(); }
   else if (e.code === "ArrowRight") player.next();
   else if (e.code === "ArrowLeft") player.prev();
-  else if (e.code === "Escape") els.stageWrap.classList.remove("fullscreen");
+  else if (e.code === "Escape") setFullscreen(false);
 });
+
+updateFsButton();
 
 // ---------------------------------------------------------------------
 // Boot

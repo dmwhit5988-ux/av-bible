@@ -26,7 +26,9 @@ body {
 }
 
 header {
-  padding: 10px 12px 6px;
+  /* safe-area padding keeps content clear of the iPhone notch / home
+     indicator when installed to the home screen (black-translucent). */
+  padding: calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 6px calc(12px + env(safe-area-inset-left));
   border-bottom: 1px solid var(--border);
   background: var(--panel);
 }
@@ -78,6 +80,8 @@ select {
   position: absolute;
   inset: 0;
   cursor: pointer;
+  /* No double-tap-to-zoom: double tap is verse prev/next. */
+  touch-action: manipulation;
 }
 
 #stage-bg {
@@ -163,13 +167,41 @@ select {
 
 #notes-box:empty, #reference-box:empty { display: none; }
 
-/* Fullscreen (CSS-based so it works on iOS Safari, which does not support
-   requestFullscreen on arbitrary elements). */
+/* Fullscreen: the Fullscreen API is used where available; this fixed
+   overlay is both the iOS Safari fallback (no requestFullscreen on
+   arbitrary elements) and the shared styling for either mode. */
 #stage-wrap.fullscreen {
   position: fixed;
   inset: 0;
   height: 100dvh;
   z-index: 1000;
+}
+
+/* Fullscreen toggle, video-player style: hidden until a tap on the
+   stage summons it, then fades back out (see app.js). */
+#btn-fullscreen {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  right: calc(10px + env(safe-area-inset-right));
+  z-index: 10;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 10px;
+  font-size: 22px;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(216, 198, 143, 0.4);
+  border-radius: 8px;
+  color: var(--sand);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  touch-action: manipulation;
+}
+
+#btn-fullscreen.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #controls {
@@ -224,7 +256,7 @@ button.primary {
 #verse-panel {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 10px 14px 40px;
+  padding: 10px 14px calc(40px + env(safe-area-inset-bottom));
   max-height: 30vh;
 }
 

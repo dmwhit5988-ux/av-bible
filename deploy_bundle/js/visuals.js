@@ -28,6 +28,18 @@ function pickBestFile(paths) {
 // Simple deterministic string hash (Python's hash() is randomized per
 // process, so there is nothing meaningful to port exactly — this just needs
 // to be stable so the same book always gets the same hue).
+// Phone-sized screens can opt into ".mobile" visual variants (see
+// findImage). "pointer: coarse" catches phones and tablets in either
+// orientation; the width clause catches small desktop windows too.
+const MOBILE_QUERY =
+  typeof window !== "undefined" && window.matchMedia
+    ? window.matchMedia("(pointer: coarse), (max-width: 700px)")
+    : null;
+
+function isMobileScreen() {
+  return Boolean(MOBILE_QUERY && MOBILE_QUERY.matches);
+}
+
 function hashBook(book) {
   let h = 0;
   for (let i = 0; i < book.length; i++) {
@@ -68,7 +80,14 @@ export class VisualStage {
       book,
       "default",
     ];
-    const suffixes = ctx.translation ? [`.${ctx.translation}`, ""] : [""];
+    // Filename suffix priority. On phone-sized screens a ".mobile"
+    // variant (e.g. Genesis_5_3.mobile.webp, or Genesis_5_3.KJV.mobile.webp
+    // for a translation-specific one) wins over the standard file, so
+    // graphics can be re-cut with bigger text just where it matters.
+    let suffixes = ctx.translation ? [`.${ctx.translation}`, ""] : [""];
+    if (isMobileScreen()) {
+      suffixes = [...suffixes.map((s) => `${s}.mobile`), ...suffixes];
+    }
     for (const key of keys) {
       for (const suffix of suffixes) {
         const entry = this.manifest[key + suffix];
