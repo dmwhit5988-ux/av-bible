@@ -278,10 +278,25 @@ function renderVerse(index) {
   }
 }
 
+// Monochrome inline-SVG icons. Using glyphs (▶ ⏸ ⛶) instead makes iOS
+// Safari render color emoji ("emoji in a circle"); SVG paths inherit the
+// button's text color and stay crisp at any size.
+const ICON = {
+  play: '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  pause:
+    '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.1"/></svg>',
+  enterFs:
+    '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+  exitFs:
+    '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>',
+};
+
 function updatePlayButtons(state) {
   const playing = state === "playing";
-  els.btnPlay.textContent = playing ? "⏸ Pause" : "▶ Play";
-  els.btnStagePlay.textContent = playing ? "⏸" : "▶";
+  els.btnPlay.innerHTML =
+    (playing ? ICON.pause : ICON.play) +
+    `<span class="btn-label">${playing ? "Pause" : "Play"}</span>`;
+  els.btnStagePlay.innerHTML = playing ? ICON.pause : ICON.play;
   els.btnStagePlay.setAttribute("aria-label", playing ? "Pause" : "Play");
 }
 
@@ -354,7 +369,7 @@ function isFullscreen() {
 
 function updateFsButton() {
   const on = isFullscreen();
-  fsBtn.textContent = on ? "✕" : "⛶";
+  fsBtn.innerHTML = on ? ICON.exitFs : ICON.enterFs;
   fsBtn.setAttribute("aria-label", on ? "Exit full screen" : "Enter full screen");
   // Persistent when not fullscreen; transient (tap-to-reveal) in fullscreen.
   if (!on) fsBtn.classList.add("show");
@@ -373,6 +388,31 @@ function revealControls() {
   }, 3000);
 }
 
+// Landscape lock for mobile fullscreen. Two mechanisms, because no single
+// one works everywhere:
+//  - Screen Orientation API (Android Chrome, some desktops): a real lock.
+//  - CSS rotate fallback (iOS Safari, which supports neither element
+//    requestFullscreen on a <div> nor orientation.lock): when the device is
+//    held in portrait we rotate the stage 90° so it presents as landscape.
+// Re-evaluated on every orientation/resize change while fullscreen.
+function applyFullscreenOrientation() {
+  if (!isFullscreen()) {
+    els.stageWrap.classList.remove("rotate-cw");
+    try { screen.orientation?.unlock?.(); } catch {}
+    return;
+  }
+  try { screen.orientation?.lock?.("landscape").catch(() => {}); } catch {}
+  // If a real lock (or the physical device) already has us in landscape,
+  // don't also rotate. Only rotate coarse-pointer devices still in portrait.
+  const portrait = window.matchMedia("(orientation: portrait)").matches;
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  els.stageWrap.classList.toggle("rotate-cw", portrait && coarse);
+}
+
+function stageRotated() {
+  return els.stageWrap.classList.contains("rotate-cw");
+}
+
 function setFullscreen(on) {
   els.stageWrap.classList.toggle("fullscreen", on);
   if (on && els.stageWrap.requestFullscreen) {
@@ -380,6 +420,7 @@ function setFullscreen(on) {
   } else if (!on && document.fullscreenElement) {
     document.exitFullscreen().catch(() => {});
   }
+  applyFullscreenOrientation();
   updateFsButton();
   revealControls();
 }
@@ -388,7 +429,14 @@ function setFullscreen(on) {
 // clear the CSS overlay so both mechanisms stay in sync.
 document.addEventListener("fullscreenchange", () => {
   if (!document.fullscreenElement) els.stageWrap.classList.remove("fullscreen");
+  applyFullscreenOrientation();
   updateFsButton();
+});
+
+// A phone rotated to true landscape (or back) while fullscreen: drop or
+// re-apply the CSS rotation to match.
+window.addEventListener("resize", () => {
+  if (isFullscreen()) applyFullscreenOrientation();
 });
 
 fsBtn.addEventListener("click", (e) => {
@@ -418,7 +466,13 @@ els.stage.addEventListener("click", (e) => {
     if (!passage) return;
     const rect = els.stage.getBoundingClientRect();
     player.unlock(); // synchronous, inside the gesture handler
-    if (e.clientX - rect.left < rect.width / 2) player.prev();
+    // When the stage is rotated 90° CW for landscape (see
+    // applyFullscreenOrientation), the visual left/right axis is the
+    // screen's vertical axis: content-left (prev) sits at the top.
+    const firstHalf = stageRotated()
+      ? e.clientY - rect.top < rect.height / 2
+      : e.clientX - rect.left < rect.width / 2;
+    if (firstHalf) player.prev();
     else player.next();
   } else {
     // Wait out the double-tap window before treating it as a single tap.

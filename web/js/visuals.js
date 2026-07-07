@@ -5,12 +5,17 @@
 // wins over the generic one. Animated formats (webp/gif) are letterboxed
 // like diagrams; static photos (png/jpg) are cover-cropped.
 
+// Vector diagrams. Browsers render SVG natively via <img>; they scale to
+// any size without pixelation and are letterboxed like the animated
+// diagrams. Highest priority: where an SVG exists for a key it is the
+// preferred, hand-editable source (see backups/ for the WebP originals).
+const VECTOR_EXTS = [".svg"];
 const ANIM_EXTS = [".gif", ".webp"];
 const PHOTO_EXTS = [".png", ".jpg", ".jpeg"];
 // Text files render as an on-stage text panel (styled like the notes box).
 // Lowest priority: any real image for the same key wins over the text file.
 const TEXT_EXTS = [".txt", ".rtf"];
-const EXT_PRIORITY = [...ANIM_EXTS, ...PHOTO_EXTS, ...TEXT_EXTS];
+const EXT_PRIORITY = [...VECTOR_EXTS, ...ANIM_EXTS, ...PHOTO_EXTS, ...TEXT_EXTS];
 
 function extOf(path) {
   const m = /\.[a-z0-9]+$/i.exec(path);
@@ -63,7 +68,11 @@ export class VisualStage {
 
   async loadManifest() {
     try {
-      const resp = await fetch("/visuals/manifest.json");
+      // "no-cache" = always revalidate with the server (cheap 304 when
+      // unchanged). Without it, browsers heuristically cache the manifest
+      // and returning visitors keep pointing at old files after a visuals
+      // deploy — e.g. a chapter's .webp that has since been replaced by .svg.
+      const resp = await fetch("/visuals/manifest.json", { cache: "no-cache" });
       this.manifest = resp.ok ? await resp.json() : {};
     } catch {
       this.manifest = {};
@@ -99,7 +108,8 @@ export class VisualStage {
   }
 
   isDiagram(path) {
-    return ANIM_EXTS.includes(extOf(path));
+    const ext = extOf(path);
+    return ANIM_EXTS.includes(ext) || VECTOR_EXTS.includes(ext);
   }
 
   isText(path) {

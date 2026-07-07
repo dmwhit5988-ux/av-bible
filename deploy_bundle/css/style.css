@@ -102,6 +102,27 @@ select {
 #stage-img.diagram { object-fit: contain; }
 #stage-img.visible { display: block; }
 
+/* Inline icons (play/pause/fullscreen). Monochrome SVG rather than Unicode
+   glyphs so iOS Safari doesn't substitute a color emoji (▶/⏸ render as
+   emoji-in-a-circle on iPhone). Inherits the button's text color. */
+.ic {
+  width: 1.05em;
+  height: 1.05em;
+  fill: currentColor;
+  vertical-align: -0.18em;
+  flex: none;
+}
+
+#btn-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+#btn-play .ic { width: 18px; height: 18px; vertical-align: 0; }
+#btn-stage-play .ic { width: 40px; height: 40px; }
+#btn-fullscreen .ic { width: 22px; height: 22px; vertical-align: 0; }
+
 /* Text visuals (.txt/.rtf files in visuals/) — rendered like the notes
    box, but centered on the stage over the book gradient. */
 #stage-text {
@@ -177,6 +198,21 @@ select {
   z-index: 1000;
 }
 
+/* Landscape lock fallback for phones that can't use the Orientation API
+   (iOS Safari). When fullscreen is entered while the device is held in
+   portrait, rotate the whole stage 90° clockwise so the diagram fills the
+   screen in landscape. app.js toggles .rotate-cw and remaps the left/right
+   double-tap to the screen's vertical axis to match the rotation. */
+#stage-wrap.fullscreen.rotate-cw {
+  inset: auto;
+  top: 0;
+  left: 100vw;
+  width: 100dvh;
+  height: 100vw;
+  transform-origin: 0 0;
+  transform: rotate(90deg);
+}
+
 /* Center Play/Pause, video-player style: summoned by a single tap on
    the stage, fades back out after a few seconds (see app.js). */
 #btn-stage-play {
@@ -190,7 +226,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 2px 4px; /* optically center the ▶ glyph */
+  padding: 0;
   font-size: 34px;
   line-height: 1;
   background: rgba(0, 0, 0, 0.5);
