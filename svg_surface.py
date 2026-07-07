@@ -47,6 +47,16 @@ def _pts(points):
     return " ".join(f"{_fmt(x)},{_fmt(y)}" for x, y in points)
 
 
+# Shared easing + polyline length, used by the "draw once, then hold" reveals
+# (SvgCanvas.traced/grown and SvgAnimLayer below).
+_EASE = "0.42 0 0.58 1"
+
+
+def _poly_length(points):
+    return sum(math.hypot(b[0] - a[0], b[1] - a[1])
+              for a, b in zip(points, points[1:]))
+
+
 def _fill_stroke(fill, stroke, width):
     """Shared fill/stroke attribute list for (r,g,b[,a]) tuples."""
     a = []
@@ -386,3 +396,66 @@ class SvgLayer:
         if italic:
             a.append('font-style="italic"')
         self._els.append(f"<text {' '.join(a)}>{escape(s)}</text>")
+
+    def textlength(self, s, font=None):
+        """Pixel advance width, so the reused raster code that positions one
+        element after a name (the Genesis 5:32 trio connector) lands the same.
+        The real PIL font is passed straight through, so this matches exactly.
+        """
+        if font is not None:
+            try:
+                return font.getlength(s)
+            except Exception:
+                pass
+        size, _, _ = _font_meta(font)
+        return len(s) * size * 0.5
+
+
+class SvgAnimLayer(SvgLayer):
+    """An overlay SvgLayer for the genealogy-family SVGs whose growing pieces
+    animate themselves in once and then hold — reproducing the raster loop's
+    "play once, then freeze" reveal with no re-derived geometry.
+
+    In those generators the overlay (``od``) carries exactly the elements that
+    grow: every ``line`` is a stroke that extends (a chain edge, a connector),
+    and every ``rectangle`` is a lifespan bar that fills rightward. So here a
+    line becomes a self-drawing stroke (dash-offset) and a rectangle a
+    left-to-right wipe (width 0 -> full); ellipses/text (the steady focus
+    ring, the year labels) stay static via the inherited SvgLayer methods.
+    """
+
+    def __init__(self, dur="2.4s"):
+        super().__init__()
+        self.dur = dur
+
+    def line(self, xy, fill=None, width=1, joint=None):
+        length = _poly_length(xy)
+        if length <= 0 or fill is None:
+            return super().line(xy, fill=fill, width=width, joint=joint)
+        a = [f'points="{_pts(xy)}"', 'fill="none"',
+             'stroke-linejoin="round"', 'stroke-linecap="round"',
+             f'stroke="{_rgb(fill)}"', f'stroke-width="{_fmt(width)}"',
+             f'stroke-dasharray="{_fmt(length)}"',
+             f'stroke-dashoffset="{_fmt(length)}"']
+        op = _opacity(fill)
+        if op < 1:
+            a.append(f'stroke-opacity="{op:.3f}"')
+        anim = (f'<animate attributeName="stroke-dashoffset" '
+                f'values="{_fmt(length)};0" dur="{self.dur}" begin="0s" '
+                f'fill="freeze" calcMode="spline" keyTimes="0;1" '
+                f'keySplines="{_EASE}"/>')
+        self._els.append(f"<polyline {' '.join(a)}>{anim}</polyline>")
+
+    def rectangle(self, box, fill=None, outline=None, width=1):
+        x0, y0, x1, y1 = _box(box)
+        full = x1 - x0
+        if full <= 0:
+            return super().rectangle(box, fill=fill, outline=outline,
+                                     width=width)
+        a = [f'x="{_fmt(x0)}"', f'y="{_fmt(y0)}"',
+             f'width="{_fmt(full)}"', f'height="{_fmt(y1 - y0)}"']
+        a += _fill_stroke(fill, outline, width)
+        anim = (f'<animate attributeName="width" values="0;{_fmt(full)}" '
+                f'dur="{self.dur}" begin="0s" fill="freeze" '
+                f'calcMode="spline" keyTimes="0;1" keySplines="{_EASE}"/>')
+        self._els.append(f"<rect {' '.join(a)}>{anim}</rect>")

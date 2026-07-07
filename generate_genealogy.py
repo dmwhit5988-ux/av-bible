@@ -326,13 +326,25 @@ def node_y(i):
 
 
 def draw_frame(cd, verse, spec, names, t):
-    ring_alpha = 1.0                       # static — nothing flashes
-    grow = ease(min(1.0, t / 0.92))
-
+    """Raster frame: composite an animated overlay over the static base."""
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od = ImageDraw.Draw(overlay)
+    draw_frame_on(d, od, cd, verse, spec, names, t)
+    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+
+
+def draw_frame_on(d, od, cd, verse, spec, names, t):
+    """Draw one genealogy frame onto base `d` and overlay `od` at phase `t`.
+
+    Surface-agnostic so the same hand-tuned drawing serves both backends: PIL
+    ImageDraw for the raster loop, and SvgLayer + SvgAnimLayer for the vector
+    build (generate_genealogy_svg.py), where the overlay's growing bars and
+    edges self-animate once and hold.
+    """
+    ring_alpha = 1.0                       # static — nothing flashes
+    grow = ease(min(1.0, t / 0.92))
 
     d.text((28, 20), cd.title, font=F_TITLE, fill=TEXT)
     d.text((28, 52), f"verse {verse} — {spec['caption']}", font=F_VERSE,
@@ -505,7 +517,6 @@ def draw_frame(cd, verse, spec, names, t):
 
     d.text((28, H - 26), "years as given in the text", font=F_SMALL,
            fill=TEXT_DIM)
-    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
 
 
 def render_chapter(chapter, names, suffix):

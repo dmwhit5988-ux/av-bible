@@ -166,14 +166,22 @@ def row_y(r):
 
 
 def draw_frame(verse, spec, specs, names, first_read, t):
-    ring_alpha = 1.0                       # static — nothing flashes
-    grow = ease(min(1.0, t / 0.92))
-    caption, cells, _ = spec
-
+    """Raster frame: composite an animated overlay over the static base."""
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od = ImageDraw.Draw(overlay)
+    draw_frame_on(d, od, verse, spec, specs, names, first_read, t)
+    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+
+
+def draw_frame_on(d, od, verse, spec, specs, names, first_read, t):
+    """Draw one Matthew 1 frame onto base `d` and overlay `od` at phase `t`.
+    Surface-agnostic (PIL for the WebP loop, SvgLayer + SvgAnimLayer for the
+    vector build), so the growing per-verse connector self-animates in SVG."""
+    ring_alpha = 1.0                       # static — nothing flashes
+    grow = ease(min(1.0, t / 0.92))
+    caption, cells, _ = spec
 
     d.text((28, 20), "The Genealogy of Jesus — Matthew 1", font=F_TITLE,
            fill=TEXT)
@@ -252,7 +260,6 @@ def draw_frame(verse, spec, specs, names, first_read, t):
 
     d.text((28, H - 26), "Matthew counts three sets of fourteen (v. 17)",
            font=F_SMALL, fill=TEXT_DIM)
-    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
 
 
 def render_chapter(names, suffix):
