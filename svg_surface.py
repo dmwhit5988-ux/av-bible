@@ -418,10 +418,11 @@ class SvgAnimLayer(SvgLayer):
 
     In those generators the overlay (``od``) carries exactly the elements that
     grow: every ``line`` is a stroke that extends (a chain edge, a connector),
-    and every ``rectangle`` is a lifespan bar that fills rightward. So here a
-    line becomes a self-drawing stroke (dash-offset) and a rectangle a
-    left-to-right wipe (width 0 -> full); ellipses/text (the steady focus
-    ring, the year labels) stay static via the inherited SvgLayer methods.
+    so here a line becomes a self-drawing stroke (dash-offset). Lifespan bars
+    go through ``grow_rect``, which holds the already-built left part and wipes
+    only the remainder in — so a bar that continues from the son never
+    restarts at birth. Ellipses/text (the steady focus ring, the year labels)
+    stay static via the inherited SvgLayer methods.
     """
 
     def __init__(self, dur="2.4s"):
@@ -446,16 +447,24 @@ class SvgAnimLayer(SvgLayer):
                 f'keySplines="{_EASE}"/>')
         self._els.append(f"<polyline {' '.join(a)}>{anim}</polyline>")
 
-    def rectangle(self, box, fill=None, outline=None, width=1):
+    def grow_rect(self, box, x_from, fill=None, outline=None, width=1):
+        """A lifespan bar spanning box=[x0,y0,x1,y1] that holds its built left
+        part (x0..x_from) and wipes only x_from..x1 in once, then freezes. With
+        x_from<=x0 the whole bar builds from the left (a 'fathered' verse); with
+        x_from>=x1 it is static (a completed-life verse); in between it
+        continues from the son (an 'after' verse) without restarting at birth.
+        """
         x0, y0, x1, y1 = _box(box)
         full = x1 - x0
-        if full <= 0:
-            return super().rectangle(box, fill=fill, outline=outline,
-                                     width=width)
+        start = max(0.0, min(full, x_from - x0))
         a = [f'x="{_fmt(x0)}"', f'y="{_fmt(y0)}"',
              f'width="{_fmt(full)}"', f'height="{_fmt(y1 - y0)}"']
         a += _fill_stroke(fill, outline, width)
-        anim = (f'<animate attributeName="width" values="0;{_fmt(full)}" '
-                f'dur="{self.dur}" begin="0s" fill="freeze" '
-                f'calcMode="spline" keyTimes="0;1" keySplines="{_EASE}"/>')
+        if full - start < 0.5:                 # nothing to grow -> static bar
+            self._els.append(f"<rect {' '.join(a)}/>")
+            return
+        anim = (f'<animate attributeName="width" '
+                f'values="{_fmt(start)};{_fmt(full)}" dur="{self.dur}" '
+                f'begin="0s" fill="freeze" calcMode="spline" keyTimes="0;1" '
+                f'keySplines="{_EASE}"/>')
         self._els.append(f"<rect {' '.join(a)}>{anim}</rect>")

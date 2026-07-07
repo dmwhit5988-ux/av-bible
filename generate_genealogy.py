@@ -325,6 +325,25 @@ def node_y(i):
     return CHAIN_TOP + i * CHAIN_STEP
 
 
+def focus_bar(od, xb, y, x_start, x_final, grow, fill, outline):
+    """The current person's lifespan bar, drawn onto overlay `od`.
+
+    The bar always spans xb..x_final; `x_start` is where this verse's growth
+    begins (xb for a bar built from birth, the son's x for an 'after' verse
+    that continues from the son, x_final for a completed-life verse). On the
+    vector overlay the xb..x_start part is held and only x_start..x_final wipes
+    in, so an 'after' verse never backtracks to birth; on raster the bar is
+    drawn at the current grow (x_start..x_final interpolate, as before).
+    """
+    if hasattr(od, "grow_rect"):
+        od.grow_rect([xb, y - BAR_H, x_final, y + BAR_H], x_start,
+                     fill=fill, outline=outline, width=2)
+    else:
+        x_end = x_start + (x_final - x_start) * grow
+        od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
+                     fill=fill, outline=outline, width=2)
+
+
 def draw_frame(cd, verse, spec, names, t):
     """Raster frame: composite an animated overlay over the static base."""
     img = Image.new("RGB", (W, H), BG)
@@ -455,9 +474,9 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
         if current and stage != "intro":
             xb = tx(b)
             if stage == "fathered":
-                x_end = tx(b + cd.ages[i] * grow)
-                od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                # build from birth up to the son
+                focus_bar(od, xb, y, xb, tx(b + cd.ages[i]), grow,
+                          HL + (110,), g(0.95))
                 if grow > 0.92 and i + 1 < len(keys):
                     cy = node_y(i + 1)
                     d.ellipse([tx(b + cd.ages[i]) - 3, cy - 3,
@@ -465,39 +484,39 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
                               outline=HL, width=2)
             elif stage == "named" or (stage == "narr" and dth is None
                                       and cd.ages[i]):
-                x_end = tx(b + cd.ages[i])
-                od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                # birth-to-son bar, shown complete (no growth)
+                xson = tx(b + cd.ages[i])
+                focus_bar(od, xb, y, xson, xson, grow, HL + (110,), g(0.95))
             elif stage == "narr" and cd.ages[i] is None:
                 od.ellipse([xb - 4, y - 4, xb + 4, y + 4],
                            outline=g(0.95), width=2)
             elif stage == "narr" and done:
-                od.rectangle([xb, y - BAR_H, tx(dth), y + BAR_H],
-                             fill=HL + (90,), outline=g(0.9), width=2)
+                focus_bar(od, xb, y, tx(dth), tx(dth), grow,
+                          HL + (90,), g(0.9))
                 bar_label(i, tx(dth), True)
             elif stage == "narr":
-                x_end = tx(b + (cd.ages[i] or 0))
-                od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                xson = tx(b + (cd.ages[i] or 0))
+                focus_bar(od, xb, y, xson, xson, grow, HL + (110,), g(0.95))
             elif stage == "after":
+                # continue from the son onward — do NOT restart at birth
                 mid = b + cd.ages[i]
                 end = dth if dth is not None else mid
-                x_end = tx(mid + (end - mid) * grow)
-                od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                focus_bar(od, xb, y, tx(mid), tx(end), grow,
+                          HL + (110,), g(0.95))
                 bar_label(i, tx(end), True)
             elif stage in ("total", "taken"):
-                od.rectangle([xb, y - BAR_H, tx(dth), y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                # the completed life, shown whole (no growth)
+                focus_bar(od, xb, y, tx(dth), tx(dth), grow,
+                          HL + (110,), g(0.95))
                 bar_label(i, tx(dth), True, beside=(stage == "taken"))
                 if stage == "taken":
                     taken_mark(i, tx(dth))
                 else:
                     death_cap(i, tx(dth), HL)
             elif stage == "trio":
-                x_end = tx(b + cd.ages[i] * grow)
-                od.rectangle([xb, y - BAR_H, x_end, y + BAR_H],
-                             fill=HL + (110,), outline=g(0.95), width=2)
+                # build from birth up to the son (Noah's line branches on)
+                focus_bar(od, xb, y, xb, tx(b + cd.ages[i]), grow,
+                          HL + (110,), g(0.95))
                 dashed_line(d, (tx(b + cd.ages[i]) + 4, y),
                             (TL_X1, y), SAND_DIM, 1)
             continue
