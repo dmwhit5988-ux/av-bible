@@ -18,6 +18,7 @@ import subprocess
 import tempfile
 import time
 
+import pronunciation
 from config import AUDIO_CACHE_DIR
 
 # Curated Edge neural voices that read scripture well.
@@ -108,8 +109,14 @@ def synthesize(text: str, voice: str, rate: int) -> str:
     offline) are only *fallbacks*: once edge-tts works again the verse is
     re-synthesized with the neural voice and the wav is deleted, so the
     lower-quality audio never becomes permanent.
+
+    Proper nouns the voice mispronounces are phonetically respelled first (see
+    pronunciation.py); this only changes what is *spoken*, and because the cache
+    is keyed on the spoken text, updating the pronunciation list yields fresh
+    audio automatically.
     """
     global _edge_down_until
+    text = pronunciation.respell(text)
     mp3_path = _cache_file(voice, rate, text, "mp3")
     if os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 500:
         return mp3_path
