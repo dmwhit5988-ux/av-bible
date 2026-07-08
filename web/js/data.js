@@ -25,6 +25,15 @@ export function chaptersIn(book) {
   return CHAPTER_COUNTS[book] || 1;
 }
 
+// The chapter that canonically follows book/chapter — rolls over into the
+// next book at a book's last chapter. Returns null at the end of Revelation.
+export function nextChapter(book, chapter) {
+  if (chapter < chaptersIn(book)) return { book, chapter: chapter + 1 };
+  const i = BOOKS.findIndex(([name]) => name === book);
+  if (i < 0 || i === BOOKS.length - 1) return null;
+  return { book: BOOKS[i + 1][0], chapter: 1 };
+}
+
 // code, dropdown label, attribution — ported from passages.py TRANSLATIONS.
 // All 9 ship as local per-chapter JSON under bibles/<CODE>/, so the web app
 // (unlike the desktop app) never needs an api_id or a live-fetch source.
@@ -46,6 +55,6 @@ export const TRANSLATION_ATTRIBUTION =
 
 export const DEFAULTS = {
   translation: "WEB",
-  book: "John",
-  chapter: 3,
+  book: "Genesis",
+  chapter: 5,
 };

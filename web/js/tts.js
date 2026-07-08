@@ -14,7 +14,7 @@ const SILENT_WAV =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
 export class Player {
-  constructor({ onVerseChange, onStateChange }) {
+  constructor({ onVerseChange, onStateChange, onEnd }) {
     this.synth = window.speechSynthesis;
     this.audioEl = new Audio();
     this.queue = []; // [[num, text], ...]
@@ -26,6 +26,10 @@ export class Player {
     this.resolveAudio = null; // (index) => url string | null
     this.onVerseChange = onVerseChange || (() => {});
     this.onStateChange = onStateChange || (() => {});
+    // Fired when playback runs off the end of the queue (auto-advance) or the
+    // user hits Next on the last verse. The host uses it to roll into the next
+    // chapter. Passed whether playback was running so it can keep playing.
+    this.onEnd = onEnd || (() => {});
     this._keepAlive = null;
     this._unlocked = false;
     this.audioEl.addEventListener("ended", () => this._onClipEnded());
@@ -92,7 +96,10 @@ export class Player {
   }
 
   next() {
-    if (this.index >= this.queue.length - 1) return;
+    if (this.index >= this.queue.length - 1) {
+      this.onEnd(this.state === "playing");
+      return;
+    }
     this.index++;
     this._afterManualNav();
   }
@@ -162,9 +169,12 @@ export class Player {
       this.index++;
       this._playCurrent();
     } else {
-      this.state = "stopped";
+      // End of chapter reached mid-playback. Pause the audio machinery but
+      // stay in "playing" so the host can roll straight into the next chapter;
+      // if there is no next chapter it will stop us.
+      this._haltPlayback();
       this._stopKeepAlive();
-      this.onStateChange(this.state);
+      this.onEnd(true);
     }
   }
 

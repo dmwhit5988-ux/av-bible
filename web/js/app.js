@@ -1,4 +1,4 @@
-import { BOOKS, TRANSLATIONS, TRANSLATION_ATTRIBUTION, DEFAULTS, chaptersIn } from "./data.js";
+import { BOOKS, TRANSLATIONS, TRANSLATION_ATTRIBUTION, DEFAULTS, chaptersIn, nextChapter } from "./data.js";
 import { fetchChapter, PassageError } from "./bible.js";
 import { VisualStage, bookGradient } from "./visuals.js";
 import { Player } from "./tts.js";
@@ -41,6 +41,7 @@ let audioManifest = {}; // "Book_ch_v" -> "Book_ch_v.mp3", pre-generated neural 
 const player = new Player({
   onVerseChange: (index) => renderVerse(index),
   onStateChange: (state) => updatePlayButtons(state),
+  onEnd: (wasPlaying) => advanceToNextChapter(wasPlaying),
 });
 player.resolveAudio = resolveAudio;
 
@@ -142,6 +143,25 @@ async function loadChapter({ resetStage = true } = {}) {
   player.voice = pickVoice();
   saveSelection();
   if (resetStage) showIdle();
+}
+
+// Roll from the last verse of the current chapter into the first verse of the
+// next — triggered by playback reaching the end, or Next on the last verse.
+// Keeps playing across the boundary if we were playing; otherwise just shows
+// the new chapter's first verse. Stops at the end of Revelation.
+async function advanceToNextChapter(wasPlaying) {
+  const next = passage && nextChapter(passage.book, passage.chapter);
+  if (!next) {
+    player.stop();
+    return;
+  }
+  els.book.value = next.book;
+  populateChapters(next.book);
+  els.chapter.value = String(next.chapter);
+  await loadChapter({ resetStage: false });
+  if (!passage) return; // load failed (e.g. book missing in this translation)
+  if (wasPlaying) player.play();
+  else renderVerse(0);
 }
 
 function pickVoice() {
