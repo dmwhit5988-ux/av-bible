@@ -45,6 +45,7 @@ SHOWCASE_CHAPTERS = [
     ("Numbers", 32), ("Numbers", 34),
     ("Matthew", 1),
     ("Luke", 3),
+    ("Acts", 13), ("Acts", 14),
 ]
 
 WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
