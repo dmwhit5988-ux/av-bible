@@ -483,14 +483,17 @@ class App:
         self.fullscreen_stage = FullscreenStage(self.root, self.stage)
 
     def open_pronunciation_tool(self):
-        """Launch the Pronunciation Studio in a separate process."""
+        """Launch the Pronunciation Studio in a separate process, opened on
+        whatever book/chapter is currently selected here."""
         try:
             script_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "pronunciation_tool.py"
             )
-            subprocess.Popen([sys.executable, script_path])
-            self.set_status("Pronunciation Studio launched.")
+            book = self.book_var.get()
+            chapter = self._chapter()
+            subprocess.Popen([sys.executable, script_path, book, str(chapter)])
+            self.set_status(f"Pronunciation Studio launched on {book} {chapter}.")
         except Exception as e:
             self.set_status(f"Error launching Pronunciation Studio: {e}")
 

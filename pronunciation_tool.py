@@ -17,6 +17,7 @@ what you hear is what will be rendered.
 """
 
 import copy
+import sys
 import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -44,7 +45,7 @@ class Row:
 
 
 class App:
-    def __init__(self, root):
+    def __init__(self, root, start_book="Genesis", start_chapter=5):
         self.root = root
         self.player = AudioPlayer()
         self.names = copy.deepcopy(pronunciation.load(force=True))
@@ -64,10 +65,15 @@ class App:
         self._build_list()
         self._build_bottom()
 
-        # Default to a genealogy chapter so there's plenty to see.
-        self.book_var.set("Genesis")
+        # Open on the caller's current chapter (falls back to Genesis 5, which
+        # has plenty of names, if none was given or the book is unrecognized).
+        if start_book not in books.BOOK_NAMES:
+            start_book, start_chapter = "Genesis", 5
+        self.book_var.set(start_book)
         self._on_book_change()
-        self.ch_var.set("5")
+        n = books.chapters_in(start_book)
+        start_chapter = max(1, min(int(start_chapter or 1), n))
+        self.ch_var.set(str(start_chapter))
         self.load_chapter()
 
     # ----- top controls -------------------------------------------------
@@ -289,8 +295,22 @@ class App:
 
 
 def main():
+    # Optional argv: <book> <chapter> -- lets the desktop app open the tool on
+    # whatever passage is currently loaded there. Multi-word book names (e.g.
+    # "1 Samuel") arrive as separate argv entries when launched via
+    # subprocess.Popen([..., book, chapter]), so join everything but the last
+    # (numeric) argument back into the book name.
+    start_book, start_chapter = "Genesis", 5
+    argv = sys.argv[1:]
+    if argv:
+        try:
+            start_chapter = int(argv[-1])
+            start_book = " ".join(argv[:-1]) or start_book
+        except ValueError:
+            pass  # malformed args -- fall back to the Genesis 5 default
+
     root = tk.Tk()
-    App(root)
+    App(root, start_book, start_chapter)
     root.mainloop()
 
 
