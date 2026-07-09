@@ -52,13 +52,30 @@ README = (
 _names = None          # dict: name -> {say, ipa?, ref, override}
 _pattern = None        # compiled regex over the override names, or None
 _table = None          # dict: matched name -> lowercased spoken form
+_mtime = None          # last-seen mtime of JSON_PATH, for auto-reload
+
+
+def _current_mtime():
+    try:
+        return os.path.getmtime(JSON_PATH)
+    except OSError:
+        return None
 
 
 def load(force: bool = False) -> dict:
-    """Load and cache the master list. Missing/broken file -> empty (no-op)."""
-    global _names, _pattern, _table
-    if _names is not None and not force:
+    """Load and cache the master list. Missing/broken file -> empty (no-op).
+
+    Auto-reloads when pronunciations.json changes on disk (its mtime moves), so
+    a long-running process -- e.g. the desktop app playing audio -- picks up
+    edits made by the separate Pronunciation Studio without a restart. This is
+    what lets a changed pronunciation actually re-render: respell() then yields
+    new text, whose hash misses the audio cache.
+    """
+    global _names, _pattern, _table, _mtime
+    mtime = _current_mtime()
+    if _names is not None and not force and mtime == _mtime:
         return _names
+    _mtime = mtime
     try:
         with open(JSON_PATH, encoding="utf-8") as f:
             _names = json.load(f).get("names", {})
@@ -86,9 +103,12 @@ def respell(text: str) -> str:
     A trailing possessive like "Methuselah's" still matches the bare name.
     """
     load()
-    if not _pattern:
+    pattern, table = _pattern, _table  # snapshot: load() may reload on a thread
+    if not pattern:
         return text
-    return _pattern.sub(lambda m: _table[m.group(0)], text)
+    # .get fallback: if a mid-reload leaves pattern/table momentarily out of
+    # step, leave the word unchanged rather than raising (self-corrects next call).
+    return pattern.sub(lambda m: table.get(m.group(0), m.group(0)), text)
 
 
 # --------------------------------------------------------------------------
