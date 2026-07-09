@@ -17,12 +17,15 @@ what you hear is what will be rendered.
 """
 
 import copy
+import glob
+import os
 import sys
 import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 import books
+import generate_showcase_audio as showcase
 import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
@@ -33,7 +36,8 @@ TRANSLATION = "WEB"  # the text the pre-rendered showcase audio narrates
 
 
 class Row:
-    __slots__ = ("name", "occ", "default_ref", "say_var", "override_var", "status")
+    __slots__ = ("name", "occ", "default_ref", "say_var", "override_var", "status",
+                 "orig_say", "orig_override")
 
     def __init__(self, name, occ, default_ref, say, override):
         self.name = name
@@ -42,6 +46,10 @@ class Row:
         self.say_var = tk.StringVar(value=say)
         self.override_var = tk.BooleanVar(value=override)
         self.status = None  # the status label widget, set when built
+        # Baseline at load time, so _commit_rows can tell whether this row's
+        # spoken form actually changed (vs. just being redisplayed unedited).
+        self.orig_say = say
+        self.orig_override = override
 
 
 class App:
@@ -55,6 +63,10 @@ class App:
         self.cur_verses = []
         self.dirty = False
         self.busy = False
+        # (book, chapter) pairs whose displayed names actually changed since
+        # they were loaded -- cleared audio cache is scoped to these, not just
+        # whatever chapter happens to be on screen when Save is clicked.
+        self.dirty_chapters = set()
 
         root.title("Pronunciation Studio")
         root.geometry("980x680")
@@ -154,7 +166,7 @@ class App:
         self.cur_book, self.cur_ch, self.cur_verses = book, ch, passage.verses
         self._build_rows()
 
-    def _build_rows(self):
+    def _build_rows(self, keep_status=False):
         for w in self.inner.winfo_children():
             w.destroy()
         self.rows = []
@@ -207,10 +219,11 @@ class App:
                 row=r, column=7, padx=(2, 6))
             r += 1
 
-        shown = len(self.rows)
-        self.status_var.set(
-            f"{self.cur_book} {self.cur_ch}: {shown} name(s) shown"
-            + ("  (filtered to new)" if self.filter_var.get() else ""))
+        if not keep_status:
+            shown = len(self.rows)
+            self.status_var.set(
+                f"{self.cur_book} {self.cur_ch}: {shown} name(s) shown"
+                + ("  (filtered to new)" if self.filter_var.get() else ""))
         self.canvas.yview_moveto(0)
 
     def _paint_status(self, row):
@@ -228,7 +241,14 @@ class App:
             self.root.title("Pronunciation Studio  *unsaved*")
 
     def _commit_rows(self):
-        """Fold the on-screen rows back into self.names (session-wide memory)."""
+        """Fold the on-screen rows back into self.names (session-wide memory).
+
+        Also detects whether any row's *spoken* form actually changed (turned
+        override on/off, or edited the say text while override is on -- editing
+        say text while override is off doesn't affect audio yet) and, if so,
+        marks the chapter these rows belong to for a cache clear on Save.
+        """
+        changed = False
         for row in self.rows:
             name = row.name
             say = row.say_var.get().strip()
@@ -244,6 +264,40 @@ class App:
                 existing["say"] = say or existing.get("say", name)
                 existing["override"] = False
 
+            if row.override_var.get() != row.orig_override or (
+                    row.override_var.get() and say != row.orig_say):
+                changed = True
+
+        if changed and self.cur_book and self.cur_ch:
+            self.dirty_chapters.add((self.cur_book, self.cur_ch))
+
+    def _clear_chapter_audio(self, book: str, ch: int) -> int:
+        """Delete pre-rendered web/audio/<book>_<ch>_*.mp3 (and their manifest
+        entries) so generate_showcase_audio.py -- which skips verses whose mp3
+        already exists -- is forced to re-synthesize them with the new
+        pronunciation. No-op for chapters that were never pre-rendered.
+
+        (The live desktop cache, cache/audio/tts/, needs no such clearing: it's
+        keyed by a hash of the spoken text, so an edited pronunciation already
+        produces a fresh cache entry automatically.)
+        """
+        safe_book = book.replace(" ", "_")
+        paths = glob.glob(os.path.join(showcase.AUDIO_DIR, f"{safe_book}_{ch}_*.mp3"))
+        if not paths:
+            return 0
+        manifest = showcase._load_manifest()
+        removed = 0
+        for path in paths:
+            try:
+                os.remove(path)
+            except OSError:
+                continue
+            removed += 1
+            manifest.pop(os.path.splitext(os.path.basename(path))[0], None)
+        if removed:
+            showcase._save_manifest(manifest)
+        return removed
+
     def save(self):
         self._commit_rows()
         try:
@@ -253,10 +307,20 @@ class App:
             return
         self.dirty = False
         self.root.title("Pronunciation Studio")
+
+        cleared_chapters = sorted(self.dirty_chapters)
+        cleared_files = sum(self._clear_chapter_audio(b, c) for b, c in cleared_chapters)
+        self.dirty_chapters = set()
+
         n_over = sum(1 for v in self.names.values() if v.get("override"))
-        self.status_var.set(f"Saved {len(self.names)} names "
-                            f"({n_over} custom) to pronunciations.json + PRONUNCIATIONS.md")
-        self._build_rows()  # refresh status dots
+        msg = (f"Saved {len(self.names)} names ({n_over} custom) to "
+              f"pronunciations.json + PRONUNCIATIONS.md.")
+        if cleared_files:
+            where = ", ".join(f"{b} {c}" for b, c in cleared_chapters)
+            msg += (f"  Cleared {cleared_files} cached mp3(s) for {where} "
+                   f"-- run generate_showcase_audio.py to re-render.")
+        self.status_var.set(msg)
+        self._build_rows(keep_status=True)  # refresh status dots, keep save message
 
     # ----- playback -----------------------------------------------------
     def _play(self, spoken, label):
