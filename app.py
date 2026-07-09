@@ -3,7 +3,10 @@
 Run with:  python app.py   (or double-click run.bat)
 """
 
+import os
 import queue
+import subprocess
+import sys
 import threading
 import time
 import webbrowser
@@ -366,6 +369,8 @@ class App:
                         command=self._on_display_toggle).pack(side="left",
                                                               padx=(8, 0))
 
+        ttk.Button(bar, text="🎙 Pronunciation Studio",
+                   command=self.open_pronunciation_tool).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🖥 Display window",
                    command=self.open_fullscreen).pack(side="right", padx=(0, 6))
 
@@ -476,6 +481,18 @@ class App:
         if self.fullscreen_stage and self.fullscreen_stage.top.winfo_exists():
             self.fullscreen_stage.close()
         self.fullscreen_stage = FullscreenStage(self.root, self.stage)
+
+    def open_pronunciation_tool(self):
+        """Launch the Pronunciation Studio in a separate process."""
+        try:
+            script_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "pronunciation_tool.py"
+            )
+            subprocess.Popen([sys.executable, script_path])
+            self.set_status("Pronunciation Studio launched.")
+        except Exception as e:
+            self.set_status(f"Error launching Pronunciation Studio: {e}")
 
     # -- transport controls --------------------------------------------------
 
