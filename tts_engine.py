@@ -102,7 +102,7 @@ _EDGE_RETRY_SECONDS = 120
 _edge_down_until = 0.0
 
 
-def synthesize(text: str, voice: str, rate: int) -> str:
+def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True) -> str:
     """Return path to an audio file speaking `text`. Cached across runs.
 
     Cached neural mp3s are served forever. Cached SAPI wavs (made while
@@ -113,10 +113,12 @@ def synthesize(text: str, voice: str, rate: int) -> str:
     Proper nouns the voice mispronounces are phonetically respelled first (see
     pronunciation.py); this only changes what is *spoken*, and because the cache
     is keyed on the spoken text, updating the pronunciation list yields fresh
-    audio automatically.
+    audio automatically. `apply_respell=False` speaks `text` verbatim -- used by
+    the pronunciation editor to preview an exact string.
     """
     global _edge_down_until
-    text = pronunciation.respell(text)
+    if apply_respell:
+        text = pronunciation.respell(text)
     mp3_path = _cache_file(voice, rate, text, "mp3")
     if os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 500:
         return mp3_path
