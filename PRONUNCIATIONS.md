@@ -25,6 +25,8 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ham | HAM | /hæm/ | Genesis 5:32 |  |
 | Japheth | JAY-feth | /ˈdʒeɪ.fɛθ/ | Genesis 5:32 | ✅ |
 | Shem | SHEM | /ʃɛm/ | Genesis 5:32 |  |
+| Nephilim | NEFelim |  | Genesis 6:4 | ✅ |
+| Ir | ear |  | Genesis 10:11 | ✅ |
 | Shinar | SHY-narr | /ˈʃaɪ.nɑːr/ | Genesis 11:2 | ✅ |
 | Babel | BAY-buhl | /ˈbeɪ.bəl/ | Genesis 11:9 |  |
 | Arpachshad | arpackshad | /ɑːrˈpæk.ʃæd/ | Genesis 11:10 | ✅ |
@@ -44,7 +46,9 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Milcah | milkah | /ˈmɪl.kə/ | Genesis 11:29 | ✅ |
 | Sarai | SAIR-eye | /ˈsɛər.aɪ/ | Genesis 11:29 | ✅ |
 | Canaan | Canaan | /ˈkeɪ.nən/ | Genesis 11:31 |  |
+| Samaria | Samairia |  | Acts 1:8 | ✅ |
+| Barsabbas | Bar-sabbas |  | Acts 1:23 | ✅ |
 | Cyrene | siereen |  | Acts 13:1 | ✅ |
 | Salamis | Salam-isss |  | Acts 13:5 | ✅ |
 
-_35 names — 22 respelled for the voice, 13 reference-only._
+_39 names — 26 respelled for the voice, 13 reference-only._

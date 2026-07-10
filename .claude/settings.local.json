@@ -31,7 +31,13 @@
       "PowerShell(Remove-Item -Recurse -Force 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible\\\\node_modules' -ErrorAction SilentlyContinue; cd 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible'; $env:PATH = \"C:\\\\Program Files\\\\nodejs;$env:PATH\"; & npm install wrangler --save-dev --ignore-scripts)",
       "PowerShell(cd 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible'; $env:PATH = \"C:\\\\Program Files\\\\nodejs;$env:PATH\"; & npx wrangler --version)",
       "PowerShell(Remove-Item -Recurse -Force 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible\\\\node_modules\\\\workerd'; cd 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible'; $env:PATH = \"C:\\\\Program Files\\\\nodejs;$env:PATH\"; & npx wrangler --version 2>&1 | head -5)",
-      "PowerShell(Remove-Item -Recurse -Force 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible\\\\node_modules'; cd 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible'; $env:PATH = \"C:\\\\Program Files\\\\nodejs;$env:PATH\"; & npm install wrangler@3.0.0 --save-dev --ignore-scripts)"
+      "PowerShell(Remove-Item -Recurse -Force 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible\\\\node_modules'; cd 'C:\\\\Users\\\\dmwhi\\\\OneDrive\\\\Documents\\\\Claude Code\\\\AV Bible'; $env:PATH = \"C:\\\\Program Files\\\\nodejs;$env:PATH\"; & npm install wrangler@3.0.0 --save-dev --ignore-scripts)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import openpyxl; print\\(openpyxl.__version__\\)\")",
+      "Bash(pip install *)",
+      "Bash(python \"C:/Users/dmwhi/AppData/Local/Temp/claude/C--Dev-AV-Bible/66af51a2-fb35-4c65-a0fc-26fc793ce35a/scratchpad/parse_md.py\")",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget"
     ]
   }
 }

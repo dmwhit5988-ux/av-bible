@@ -15,6 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 import tkinter as tk
 from tkinter import ttk
 
+import audio_studio
 import config
 from books import BOOK_NAMES, chapters_in
 from passages import (Passage, PassageError, fetch_passage, fetch_esv_audio,
@@ -270,6 +271,7 @@ class App:
         self.current_sid = 0
         self.passage: Passage | None = None
         self.fullscreen_stage: FullscreenStage | None = None
+        self.audio_studio_win: tk.Toplevel | None = None
         self.stage = StageController()
 
         self._build_ui()
@@ -371,6 +373,8 @@ class App:
 
         ttk.Button(bar, text="🎙 Pronunciation Studio",
                    command=self.open_pronunciation_tool).pack(side="right", padx=(0, 6))
+        ttk.Button(bar, text="🎚 Audio Renderer",
+                   command=self.open_audio_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🖥 Display window",
                    command=self.open_fullscreen).pack(side="right", padx=(0, 6))
 
@@ -496,6 +500,21 @@ class App:
             self.set_status(f"Pronunciation Studio launched on {book} {chapter}.")
         except Exception as e:
             self.set_status(f"Error launching Pronunciation Studio: {e}")
+
+    def open_audio_studio(self):
+        """Open the Audio Renderer as a Toplevel, pre-loaded on whatever
+        book/chapter is currently selected here."""
+        if self.audio_studio_win is not None and self.audio_studio_win.winfo_exists():
+            self.audio_studio_win.deiconify()
+            self.audio_studio_win.lift()
+            self.audio_studio_win.focus_force()
+            return
+        book = self.book_var.get()
+        chapter = self._chapter()
+        top = tk.Toplevel(self.root)
+        audio_studio.App(top, book, chapter)
+        self.audio_studio_win = top
+        self.set_status(f"Audio Renderer opened on {book} {chapter}.")
 
     # -- transport controls --------------------------------------------------
 

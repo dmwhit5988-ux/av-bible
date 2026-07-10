@@ -85,6 +85,18 @@
       "ref": "Genesis 5:32",
       "override": false
     },
+    "Nephilim": {
+      "say": "NEFelim",
+      "ipa": "",
+      "ref": "Genesis 6:4",
+      "override": true
+    },
+    "Ir": {
+      "say": "ear",
+      "ipa": "",
+      "ref": "Genesis 10:11",
+      "override": true
+    },
     "Shinar": {
       "say": "SHY-narr",
       "ipa": "/ˈʃaɪ.nɑːr/",
@@ -198,6 +210,18 @@
       "ipa": "/ˈkeɪ.nən/",
       "ref": "Genesis 11:31",
       "override": false
+    },
+    "Samaria": {
+      "say": "Samairia",
+      "ipa": "",
+      "ref": "Acts 1:8",
+      "override": true
+    },
+    "Barsabbas": {
+      "say": "Bar-sabbas",
+      "ipa": "",
+      "ref": "Acts 1:23",
+      "override": true
     },
     "Cyrene": {
       "say": "siereen",
