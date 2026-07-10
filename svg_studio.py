@@ -12,9 +12,12 @@ audio_studio.App):
     python svg_studio.py [Book] [chapter]
 """
 
+import datetime
 import os
+import queue
 import subprocess
 import sys
+import threading
 import tkinter as tk
 import webbrowser
 import xml.etree.ElementTree as ET
@@ -29,6 +32,11 @@ from passages import TRANSLATIONS
 # How soon a preview-subprocess exit counts as "pywebview is broken" rather
 # than "the user closed the window" (SVG_STUDIO_DESIGN.md section 2.5).
 EMBEDDED_FAIL_WINDOW_MS = 10_000
+
+# One-off hand edits to generator-owned files get flagged with this so the
+# pre-regeneration scan can warn before clobbering them. Informational —
+# nothing blocks (detect and route, never block).
+HAND_EDIT_MARK = "<!-- hand-edited"
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 VISUALS_DIR = os.path.join(REPO_ROOT, "visuals")
@@ -103,6 +111,9 @@ class App:
         self.cfg = config.load()
         self._preview_proc: subprocess.Popen | None = None
         self._embedded_deaths = 0   # early exits this session (2 = give up)
+        self._hand_edit_mode = False  # unlocked a generator-owned file
+        self.busy = False             # a generator re-run is in flight
+        self.events: queue.Queue = queue.Queue()
 
         root.title("SVG Studio")
         root.geometry("980x640")
@@ -117,6 +128,7 @@ class App:
         self._on_book_change(keep_chapter=start_chapter)
         self.verse_var.set(str(max(1, int(start_verse or 1))))
         self._on_selection_change()
+        self._poll_events()
 
     # ----- UI construction --------------------------------------------------
 
@@ -169,14 +181,14 @@ class App:
         self.banner_btns.pack(side="right")
         self.edit_spec_btn = ttk.Button(self.banner_btns,
                                         text="Edit spec (durable)",
-                                        state="disabled")
+                                        command=self.edit_spec)
         self.edit_spec_btn.pack(side="left", padx=(6, 0))
         self.rerun_btn = ttk.Button(self.banner_btns, text="Re-run generator",
-                                    state="disabled")
+                                    command=self.rerun_generator)
         self.rerun_btn.pack(side="left", padx=(6, 0))
         self.hand_edit_btn = ttk.Button(self.banner_btns,
                                         text="Hand-edit anyway (one-off)",
-                                        state="disabled")
+                                        command=self.hand_edit_anyway)
         self.hand_edit_btn.pack(side="left", padx=(6, 0))
 
         # Main split: XML pane left, actions right.
@@ -337,18 +349,22 @@ class App:
         variant = self.variant_var.get()
         path = variant_path(book, chapter, verse, variant)
         self.current_path = path
+        self._hand_edit_mode = False
         base = os.path.basename(path)
         if os.path.exists(path):
             with open(path, encoding="utf-8") as f:
                 content = f.read()
+            marked = HAND_EDIT_MARK in content
             if self.family is not None:
-                # Generator-owned: read-only until "Hand-edit anyway" (a
-                # later build step wires the unlock); routing beats blocking,
-                # but accidental edits shouldn't be the default.
+                # Generator-owned: read-only until "Hand-edit anyway" —
+                # routing beats blocking, but accidental edits shouldn't be
+                # the default.
                 self._set_pane(content, editable=False)
+                note = (" ⚠ has one-off hand edits — a re-run discards them."
+                        if marked else "")
                 self.status_var.set(
                     f"{base} — generator-owned ({self.family.label}); "
-                    f"pane is read-only.")
+                    f"pane is read-only.{note}")
             else:
                 self._set_pane(content, editable=True)
                 self.status_var.set(f"{base} — loaded.")
@@ -396,6 +412,18 @@ class App:
                     icon="warning", parent=self.root):
                 self.status_var.set(f"Not saved — XML error: {e}")
                 return
+        if self._hand_edit_mode and HAND_EDIT_MARK not in content:
+            # Flag the one-off so the pre-regeneration scan can warn before
+            # the generator clobbers it. Insert right after the <svg …> tag.
+            gt = content.find(">", content.find("<svg"))
+            if gt != -1:
+                today = datetime.date.today().isoformat()
+                marker = (f"{HAND_EDIT_MARK} {today}; regenerating via "
+                          f"{self.family.generator if self.family else '?'} "
+                          f"will discard this -->")
+                content = content[:gt + 1] + marker + content[gt + 1:]
+                self._set_pane(content, editable=True)
+                self.dirty = False
         os.makedirs(os.path.dirname(self.current_path), exist_ok=True)
         with open(self.current_path, "w", encoding="utf-8", newline="\n") as f:
             f.write(content)
@@ -406,6 +434,139 @@ class App:
         self._update_resolution_readout(
             existing_variants(book, chapter, verse))
         self.status_var.set(f"Saved {os.path.basename(self.current_path)}.")
+
+    # ----- generator routing -------------------------------------------------
+
+    def edit_spec(self):
+        """Open the family's spec file(s) in the user's editor — the durable
+        way to change a generated visual. Honors an optional "editor"
+        command template in config.json (e.g. "code -g {file}"); falls back
+        to the OS file association."""
+        if self.family is None:
+            return
+        editor = self.cfg.get("editor")
+        opened = []
+        for pointer in self.family.spec:
+            path = os.path.join(REPO_ROOT, pointer.file)
+            try:
+                if editor:
+                    subprocess.Popen(editor.format(file=path), shell=True)
+                else:
+                    os.startfile(path)
+                opened.append(f"{pointer.file} — {pointer.edit}")
+            except OSError as e:
+                self.status_var.set(f"Could not open {pointer.file}: {e}")
+                return
+        self.status_var.set(
+            "Editing spec: " + " | ".join(opened) +
+            " — Re-run generator when done.")
+
+    def _marked_files_in_family(self) -> list:
+        """One-off hand-edited files a re-run would clobber."""
+        if self.family is None:
+            return []
+        marked = []
+        for chapter in self.family.chapters:
+            d = chapter_dir(self.family.book, chapter)
+            if not os.path.isdir(d):
+                continue
+            for name in sorted(os.listdir(d)):
+                if not name.endswith(".svg"):
+                    continue
+                path = os.path.join(d, name)
+                try:
+                    with open(path, encoding="utf-8") as f:
+                        head = f.read(4096)
+                except OSError:
+                    continue
+                if HAND_EDIT_MARK in head:
+                    marked.append(name)
+        return marked
+
+    def rerun_generator(self):
+        if self.family is None or self.busy:
+            return
+        if not self._confirm_discard():
+            return
+        marked = self._marked_files_in_family()
+        note = ""
+        if marked:
+            shown = ", ".join(marked[:6]) + ("…" if len(marked) > 6 else "")
+            note = (f"\n\n⚠ {len(marked)} file(s) carry one-off hand edits "
+                    f"that will be DISCARDED:\n{shown}\n")
+        extra = ("\n(This family renders per-translation files; the "
+                 "generator fetches passages for name resolution.)"
+                 if self.family.translation_suffixed else "")
+        if not messagebox.askyesno(
+                "Re-run generator",
+                f"Run {self.family.generator}? It rewrites every "
+                f"{self.family.label} SVG from the Python spec.{extra}{note}"
+                f"\nContinue?",
+                icon="warning" if marked else "question", parent=self.root):
+            return
+        self.busy = True
+        self.rerun_btn.configure(state="disabled")
+        self.status_var.set(f"Running {self.family.generator}…")
+        threading.Thread(target=self._rerun_worker,
+                         args=(self.family.generator,), daemon=True).start()
+
+    def _rerun_worker(self, generator):
+        try:
+            proc = subprocess.Popen(
+                [sys.executable, os.path.join(REPO_ROOT, generator)],
+                cwd=REPO_ROOT, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, text=True,
+                encoding="utf-8", errors="replace")
+            for line in proc.stdout:
+                line = line.strip()
+                if line:
+                    self.events.put(("rerun_line", line))
+            code = proc.wait()
+        except OSError as e:
+            self.events.put(("rerun_done", 1, str(e)))
+            return
+        self.events.put(("rerun_done", code, ""))
+
+    # ----- event pump (worker thread -> UI thread) ---------------------------
+
+    def _poll_events(self):
+        try:
+            while True:
+                self._handle_event(self.events.get_nowait())
+        except queue.Empty:
+            pass
+        if self.root.winfo_exists():
+            self.root.after(100, self._poll_events)
+
+    def _handle_event(self, event):
+        kind = event[0]
+        if kind == "rerun_line":
+            self.status_var.set(event[1])
+        elif kind == "rerun_done":
+            _, code, err = event
+            self.busy = False
+            self.rerun_btn.configure(state="normal")
+            if code == 0:
+                self._load_selected_file()
+                self._push_preview("nav")
+                self.status_var.set(
+                    "Generator finished — file reloaded from disk.")
+            else:
+                self.status_var.set(
+                    f"Generator failed (exit {code}) {err} — see console.")
+
+    def hand_edit_anyway(self):
+        """Unlock the pane on a generator-owned file. The save path stamps a
+        hand-edited marker so a later re-run warns before discarding it."""
+        if self.family is None or self.editable:
+            return
+        self.text.configure(state="normal")
+        self.editable = True
+        self._hand_edit_mode = True
+        self.status_var.set(
+            f"Hand-edit mode: your changes are a one-off — re-running "
+            f"{self.family.generator} will discard them. Save stamps the "
+            f"file so the re-run confirm warns first.")
 
     # ----- preview -----------------------------------------------------------
 
