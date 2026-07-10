@@ -1,5 +1,10 @@
 # Studio build-out — session prompts
 
+> **Status 2026-07-09: ALL STEPS DONE.** Feature A (commits
+> e8b6a47…e537f37), steps 2–3 (519f5d0), step 4a design (91a19f5,
+> `SVG_STUDIO_DESIGN.md`), step 4b tasks T1–T6 (9a89129…2376560).
+> This file is kept as a record of the prompts used.
+
 Copy-paste prompts for driving each remaining step of `STUDIO_PLAN.md`.
 Feature A (Pronunciation Studio) is **done** (commits e8b6a47…e537f37).
 

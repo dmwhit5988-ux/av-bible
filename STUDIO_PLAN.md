@@ -3,8 +3,9 @@
 Turning the Windows desktop app into the content **studio** for the project,
 while the web app stays the lean, static **distribution** target.
 
-> Status: planning only. No code changes yet. This document is the agreed
-> shape; build order and open decisions are at the bottom.
+> Status 2026-07-09: **built.** All three features + the SVG Studio
+> (design: `SVG_STUDIO_DESIGN.md`; build: commits 9a89129…2376560) are
+> implemented. This document remains as the original plan of record.
 
 ## The core idea
 
