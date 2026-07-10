@@ -1,0 +1,95 @@
+{
+  "_comment": "Registry of generator-owned SVG families (SVG_STUDIO_DESIGN.md #4). Matched by (book, chapter). The 'edit' strings are documentation for the human, not parsed.",
+  "families": [
+    {
+      "label": "Genealogies (Genesis)",
+      "book": "Genesis",
+      "chapters": [5, 11],
+      "generator": "generate_genealogy_svg.py",
+      "spec": [
+        { "file": "generate_genealogy.py",
+          "edit": "CHAPTER5/CHAPTER11 verse specs, name-variant tables used by resolve_names()" }
+      ],
+      "translation_suffixed": true
+    },
+    {
+      "label": "Tabernacle furniture (Exodus 25, 27)",
+      "book": "Exodus",
+      "chapters": [25, 27],
+      "generator": "generate_exodus2527_svg.py",
+      "spec": [
+        { "file": "generate_tabernacle.py",
+          "edit": "CHAPTERS spec + draw/hl functions" }
+      ],
+      "translation_suffixed": false
+    },
+    {
+      "label": "Curtains of the tabernacle (Exodus 26)",
+      "book": "Exodus",
+      "chapters": [26],
+      "generator": "generate_exodus26_svg.py",
+      "spec": [
+        { "file": "generate_exodus26_svg.py",
+          "edit": "per-verse spec in this file" }
+      ],
+      "translation_suffixed": false
+    },
+    {
+      "label": "East-of-Jordan settlement (Numbers 32)",
+      "book": "Numbers",
+      "chapters": [32],
+      "generator": "generate_numbers32_svg.py",
+      "spec": [
+        { "file": "generate_tribal_maps.py",
+          "edit": "geometry, LANDMARKS, captions shared with Numbers 34" },
+        { "file": "generate_numbers32_svg.py",
+          "edit": "chapter-32 verse assembly" }
+      ],
+      "translation_suffixed": false
+    },
+    {
+      "label": "Borders & allotment (Numbers 34)",
+      "book": "Numbers",
+      "chapters": [34],
+      "generator": "generate_numbers34_svg.py",
+      "spec": [
+        { "file": "generate_tribal_maps.py",
+          "edit": "BORDER_SEGS, LANDMARKS34, CAPTIONS_34A/B, PANEL_34A, TRIBES, PRINCES" }
+      ],
+      "translation_suffixed": false
+    },
+    {
+      "label": "Genealogy of Jesus (Matthew 1)",
+      "book": "Matthew",
+      "chapters": [1],
+      "generator": "generate_matthew1_svg.py",
+      "spec": [
+        { "file": "generate_matthew1.py",
+          "edit": "build_specs() verse table, MT_KEYS, MT_VARIANTS" }
+      ],
+      "translation_suffixed": true
+    },
+    {
+      "label": "Genealogy of Jesus (Luke 3)",
+      "book": "Luke",
+      "chapters": [3],
+      "generator": "generate_luke3_svg.py",
+      "spec": [
+        { "file": "generate_luke3.py",
+          "edit": "chapter spec + name variants" }
+      ],
+      "translation_suffixed": true
+    },
+    {
+      "label": "First Missionary Journey (Acts 13-14)",
+      "book": "Acts",
+      "chapters": [13, 14],
+      "generator": "generate_acts1314_svg.py",
+      "spec": [
+        { "file": "generate_acts1314_svg.py",
+          "edit": "CITIES, ROUTE, LEGS, SCENES - all in this one file" }
+      ],
+      "translation_suffixed": false
+    }
+  ]
+}

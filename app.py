@@ -17,6 +17,7 @@ from tkinter import ttk
 
 import audio_studio
 import config
+import svg_studio
 from books import BOOK_NAMES, chapters_in
 from passages import (Passage, PassageError, fetch_passage, fetch_esv_audio,
                       TRANSLATIONS, TRANSLATION_LABELS,
@@ -272,6 +273,7 @@ class App:
         self.passage: Passage | None = None
         self.fullscreen_stage: FullscreenStage | None = None
         self.audio_studio_win: tk.Toplevel | None = None
+        self.svg_studio_win: tk.Toplevel | None = None
         self.stage = StageController()
 
         self._build_ui()
@@ -371,6 +373,8 @@ class App:
                         command=self._on_display_toggle).pack(side="left",
                                                               padx=(8, 0))
 
+        ttk.Button(bar, text="🎨 SVG Studio",
+                   command=self.open_svg_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎙 Pronunciation Studio",
                    command=self.open_pronunciation_tool).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎚 Audio Renderer",
@@ -515,6 +519,21 @@ class App:
         audio_studio.App(top, book, chapter)
         self.audio_studio_win = top
         self.set_status(f"Audio Renderer opened on {book} {chapter}.")
+
+    def open_svg_studio(self):
+        """Open the SVG Studio as a Toplevel, pre-loaded on whatever
+        book/chapter is currently selected here."""
+        if self.svg_studio_win is not None and self.svg_studio_win.winfo_exists():
+            self.svg_studio_win.deiconify()
+            self.svg_studio_win.lift()
+            self.svg_studio_win.focus_force()
+            return
+        book = self.book_var.get()
+        chapter = self._chapter()
+        top = tk.Toplevel(self.root)
+        svg_studio.App(top, book, chapter)
+        self.svg_studio_win = top
+        self.set_status(f"SVG Studio opened on {book} {chapter}.")
 
     # -- transport controls --------------------------------------------------
 
