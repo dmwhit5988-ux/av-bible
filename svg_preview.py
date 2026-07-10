@@ -17,7 +17,10 @@ snapshot is the entire cross-thread surface.
 import http.server
 import json
 import os
+import sys
 import threading
+import time
+import urllib.request
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 AUDIO_DIR = os.path.join(REPO_ROOT, "web", "audio")
@@ -221,3 +224,73 @@ class PreviewServer:
             self._httpd.server_close()
             self._httpd = None
             self._thread = None
+
+
+# ---------------------------------------------------------------------------
+# Embedded-window host. Run as a subprocess by the studio:
+#
+#     python svg_preview.py --url http://127.0.0.1:PORT/preview.html
+#
+# pywebview's webview.start() blocks and owns its own (WinForms) message
+# pump, which is exactly why this never runs inside the studio's tkinter
+# process (SVG_STUDIO_DESIGN.md section 2.3 / 7.2). All state flows over
+# HTTP; the only IPC is the URL argument. Exit codes: 0 = window closed
+# normally, 3 = pywebview missing/broken (studio falls back to the system
+# browser and persists that choice).
+# ---------------------------------------------------------------------------
+
+def _orphan_watchdog(url: str, destroy):
+    """Close the window if the studio's server stops answering — covers a
+    hard-killed studio that could not terminate its child."""
+    base = url.rsplit("/", 1)[0]
+    misses = 0
+    while True:
+        time.sleep(3)
+        try:
+            urllib.request.urlopen(base + "/state", timeout=2).read()
+            misses = 0
+        except Exception:
+            misses += 1
+            if misses >= 4:  # ~12s unreachable
+                try:
+                    destroy()
+                finally:
+                    os._exit(0)
+
+
+def run_embedded(url: str) -> int:
+    # WebView2 honors this Chromium switch, letting the narration MP3
+    # autoplay on reload without a click (the system browser does not,
+    # which is why the page also has a Replay button).
+    os.environ.setdefault(
+        "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+        "--autoplay-policy=no-user-gesture-required")
+    try:
+        import webview
+    except Exception as e:  # ImportError, or pythonnet/clr-loader blowups
+        print(f"pywebview unavailable: {e}", file=sys.stderr)
+        return 3
+    try:
+        window = webview.create_window("SVG Studio preview", url,
+                                       width=1104, height=736,
+                                       background_color="#101018")
+        threading.Thread(target=_orphan_watchdog,
+                         args=(url, window.destroy), daemon=True).start()
+        webview.start()
+    except Exception as e:
+        print(f"pywebview failed to start: {e}", file=sys.stderr)
+        return 3
+    return 0
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    if len(args) >= 2 and args[0] == "--url":
+        return run_embedded(args[1])
+    print("usage: svg_preview.py --url http://127.0.0.1:PORT/preview.html",
+          file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -13,6 +13,7 @@ audio_studio.App):
 """
 
 import os
+import subprocess
 import sys
 import tkinter as tk
 import webbrowser
@@ -20,9 +21,14 @@ import xml.etree.ElementTree as ET
 from tkinter import ttk, messagebox
 
 import books
+import config
 import svg_preview
 import svg_registry
 from passages import TRANSLATIONS
+
+# How soon a preview-subprocess exit counts as "pywebview is broken" rather
+# than "the user closed the window" (SVG_STUDIO_DESIGN.md section 2.5).
+EMBEDDED_FAIL_WINDOW_MS = 10_000
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 VISUALS_DIR = os.path.join(REPO_ROOT, "visuals")
@@ -94,6 +100,9 @@ class App:
         self._loading = False   # suppress dirty-marking while loading the pane
         self.preview_server: svg_preview.PreviewServer | None = None
         self._edit_debounce = None  # after() id for debounced preview pushes
+        self.cfg = config.load()
+        self._preview_proc: subprocess.Popen | None = None
+        self._embedded_deaths = 0   # early exits this session (2 = give up)
 
         root.title("SVG Studio")
         root.geometry("980x640")
@@ -202,6 +211,15 @@ class App:
         self.replay_btn.pack(fill="x", pady=(0, 6))
         self.save_btn = ttk.Button(actions, text="Save", command=self.save)
         self.save_btn.pack(fill="x", pady=(0, 6))
+        # "Try embedded preview again" escape hatch: once pywebview fails,
+        # the studio persists browser mode and skips re-probing; unticking
+        # and re-ticking this clears that record.
+        self.embedded_var = tk.BooleanVar(
+            value=self.cfg.get("svg_preview_host", "embedded") == "embedded")
+        ttk.Checkbutton(actions, text="Embedded preview",
+                        variable=self.embedded_var,
+                        command=self._on_embedded_toggle).pack(
+            fill="x", pady=(12, 0))
 
         # Status line.
         self.status_var = tk.StringVar(value="Ready.")
@@ -418,13 +436,69 @@ class App:
             self.preview_server.start()
         return self.preview_server
 
+    def _on_embedded_toggle(self):
+        host = "embedded" if self.embedded_var.get() else "browser"
+        self.cfg["svg_preview_host"] = host
+        config.save(self.cfg)
+        if host == "embedded":
+            self._embedded_deaths = 0
+            self.status_var.set(
+                "Embedded preview re-enabled — next Open preview re-probes "
+                "pywebview.")
+
+    def _persist_browser_fallback(self, why: str):
+        self.cfg["svg_preview_host"] = "browser"
+        config.save(self.cfg)
+        self.embedded_var.set(False)
+        server = self._ensure_server()
+        webbrowser.open(server.url)
+        self.status_var.set(
+            f"Embedded preview unavailable ({why}) — using the system "
+            f"browser instead. Tick 'Embedded preview' to try again after "
+            f"fixing pywebview.")
+
+    def _open_embedded(self):
+        server = self._ensure_server()
+        if self._preview_proc is not None and self._preview_proc.poll() is None:
+            return  # window already open and polling; nothing to do
+        script = os.path.join(REPO_ROOT, "svg_preview.py")
+        try:
+            self._preview_proc = subprocess.Popen(
+                [sys.executable, script, "--url", server.url],
+                cwd=REPO_ROOT, stderr=subprocess.PIPE)
+        except OSError as e:
+            self._persist_browser_fallback(str(e))
+            return
+        self.status_var.set("Opening embedded preview…")
+        proc = self._preview_proc
+        self.root.after(EMBEDDED_FAIL_WINDOW_MS,
+                        lambda: self._check_embedded_alive(proc))
+
+    def _check_embedded_alive(self, proc):
+        """An exit within the fail window means pywebview is broken (import
+        error, missing WebView2, ARM64 wheel gaps) — not a closed window."""
+        if proc.poll() is None:
+            self.status_var.set("Embedded preview running.")
+            return
+        try:
+            err = (proc.stderr.read() or b"").decode(errors="replace").strip()
+        except Exception:
+            err = ""
+        self._embedded_deaths += 1
+        why = err.splitlines()[-1] if err else f"exit code {proc.returncode}"
+        self._persist_browser_fallback(why)
+
     def open_preview(self):
         server = self._ensure_server()
         self._push_preview("nav")
-        webbrowser.open(server.url)
-        self.status_var.set(
-            f"Preview at {server.url} — edits live-reload; Replay restarts "
-            f"animation + narration.")
+        if self.cfg.get("svg_preview_host", "embedded") == "embedded" \
+                and self._embedded_deaths < 2:
+            self._open_embedded()
+        else:
+            webbrowser.open(server.url)
+            self.status_var.set(
+                f"Preview at {server.url} — edits live-reload; Replay "
+                f"restarts animation + narration.")
 
     def replay(self):
         if self.preview_server is None:
@@ -435,6 +509,8 @@ class App:
     def _on_close(self):
         if not self._confirm_discard():
             return
+        if self._preview_proc is not None and self._preview_proc.poll() is None:
+            self._preview_proc.terminate()
         if self.preview_server is not None:
             self.preview_server.stop()
         self.root.destroy()

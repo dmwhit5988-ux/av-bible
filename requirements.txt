@@ -1,3 +1,6 @@
 edge-tts>=6.1
 requests>=2.31
 Pillow>=11.0
+# Optional: embedded SVG Studio preview window (WebView2). The studio
+# degrades to the system browser if this is missing or broken.
+pywebview>=6.0
