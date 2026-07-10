@@ -722,10 +722,16 @@ class App:
                         lambda: self._check_embedded_alive(proc))
 
     def _check_embedded_alive(self, proc):
-        """An exit within the fail window means pywebview is broken (import
-        error, missing WebView2, ARM64 wheel gaps) — not a closed window."""
+        """A *nonzero* exit within the fail window means pywebview is broken
+        (import error, missing WebView2). Exit code 0 is the user closing
+        the window — a normal exit that must NOT trip the browser fallback,
+        or a quick glance-and-close would silently lock the studio out of
+        embedded mode."""
         if proc.poll() is None:
             self.status_var.set("Embedded preview running.")
+            return
+        if proc.returncode == 0:
+            self.status_var.set("Embedded preview closed.")
             return
         try:
             err = (proc.stderr.read() or b"").decode(errors="replace").strip()
