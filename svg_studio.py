@@ -13,8 +13,10 @@ audio_studio.App):
 """
 
 import datetime
+import json
 import os
 import queue
+import shutil
 import subprocess
 import sys
 import threading
@@ -226,8 +228,19 @@ class App:
                                        text="Start from prev. frame",
                                        command=self.start_from_previous)
         self.continue_btn.pack(fill="x", pady=(0, 6))
-        self.save_btn = ttk.Button(actions, text="Save", command=self.save)
+        ttk.Button(actions, text="Open in Inkscape",
+                   command=self.open_in_inkscape).pack(fill="x", pady=(0, 6))
+        ttk.Button(actions, text="Reload from disk",
+                   command=self.reload_from_disk).pack(fill="x", pady=(0, 6))
+        ttk.Separator(actions).pack(fill="x", pady=6)
+        self.save_btn = ttk.Button(actions, text="Save + manifest",
+                                   command=self.save_and_manifest)
         self.save_btn.pack(fill="x", pady=(0, 6))
+        ttk.Button(actions, text="Save only", command=self.save).pack(
+            fill="x", pady=(0, 6))
+        self.stage_btn = ttk.Button(actions, text="Stage for deploy",
+                                    command=self.stage_for_deploy)
+        self.stage_btn.pack(fill="x", pady=(0, 6))
         # "Try embedded preview again" escape hatch: once pywebview fails,
         # the studio persists browser mode and skips re-probing; unticking
         # and re-ticking this clears that record.
@@ -378,9 +391,21 @@ class App:
                 self._set_pane(content, editable=True)
                 self.status_var.set(f"{base} — loaded.")
         else:
-            self._set_pane(SKELETON, editable=True)
-            self.status_var.set(
-                f"{base} — no file yet; skeleton loaded, Save creates it.")
+            generic = variant_path(book, chapter, verse, GENERIC)
+            if variant != GENERIC and os.path.exists(generic):
+                # New translation variant: start from the generic file — the
+                # usual reason a variant exists is a respelled name, so most
+                # of the drawing carries over.
+                with open(generic, encoding="utf-8") as f:
+                    self._set_pane(f.read(), editable=True)
+                self.status_var.set(
+                    f"{base} — no file yet; copied from the generic SVG, "
+                    f"Save creates the {variant} variant.")
+            else:
+                self._set_pane(SKELETON, editable=True)
+                self.status_var.set(
+                    f"{base} — no file yet; skeleton loaded, Save creates "
+                    f"it. (Or: Start from prev. frame.)")
 
     def _on_text_modified(self, _event):
         if self._loading:
@@ -563,6 +588,12 @@ class App:
             else:
                 self.status_var.set(
                     f"Generator failed (exit {code}) {err} — see console.")
+        elif kind == "manifest_done":
+            self.status_var.set(event[1])
+        elif kind == "stage_done":
+            self.busy = False
+            self.stage_btn.configure(state="normal")
+            self.status_var.set(f"Deploy bundle: {event[1]}")
 
     def hand_edit_anyway(self):
         """Unlock the pane on a generator-owned file. The save path stamps a
@@ -720,6 +751,110 @@ class App:
         if self.preview_server is None:
             self.open_preview()
             return
+        self._push_preview("nav")
+
+    # ----- publish glue + Inkscape --------------------------------------------
+
+    def save_and_manifest(self):
+        """Save, then rebuild visuals/manifest.json so the web app can see
+        the file. The manifest only feeds the web app, so plain Save skips
+        this while iterating."""
+        before_dirty = self.dirty
+        self.save()
+        if before_dirty and self.dirty:
+            return  # save was aborted (XML error dialog)
+        threading.Thread(target=self._manifest_worker, daemon=True).start()
+
+    def _manifest_worker(self):
+        try:
+            proc = subprocess.run(
+                [sys.executable, os.path.join(REPO_ROOT, "build_manifest.py")],
+                cwd=REPO_ROOT, capture_output=True, text=True, timeout=120)
+            if proc.returncode != 0:
+                self.events.put(("manifest_done",
+                                 f"manifest rebuild failed: "
+                                 f"{proc.stderr.strip()[:200]}"))
+                return
+            with open(os.path.join(REPO_ROOT, "visuals", "manifest.json"),
+                      encoding="utf-8") as f:
+                keys = len(json.load(f))
+            self.events.put(("manifest_done",
+                             f"visuals/manifest.json rebuilt — {keys} verse "
+                             f"keys."))
+        except Exception as e:
+            self.events.put(("manifest_done", f"manifest rebuild failed: {e}"))
+
+    def stage_for_deploy(self):
+        """Mirror web/, bibles/ and visuals/ into deploy_bundle/ via
+        prepare-deploy.ps1 (deploys themselves go through GitHub)."""
+        if self.busy:
+            return
+        try:
+            import audio_studio
+            n = audio_studio.count_deploy_files()
+            limit = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
+            msg = (f"Rebuild deploy_bundle/ with {n:,} files "
+                   f"(~{limit:,} Cloudflare Pages limit)?")
+        except Exception:
+            msg = "Rebuild deploy_bundle/?"
+        if not messagebox.askyesno("Stage for deploy", msg, parent=self.root):
+            return
+        self.busy = True
+        self.stage_btn.configure(state="disabled")
+        self.status_var.set("Staging deploy bundle…")
+        threading.Thread(target=self._stage_worker, daemon=True).start()
+
+    def _stage_worker(self):
+        try:
+            proc = subprocess.run(
+                ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
+                 "-File", os.path.join(REPO_ROOT, "prepare-deploy.ps1")],
+                cwd=REPO_ROOT, capture_output=True, text=True, timeout=600)
+            tail = (proc.stdout or "").strip().splitlines()
+            summary = tail[-2] if len(tail) >= 2 else "done"
+            if proc.returncode != 0:
+                summary = f"failed: {(proc.stderr or '').strip()[:200]}"
+            self.events.put(("stage_done", summary))
+        except Exception as e:
+            self.events.put(("stage_done", f"failed: {e}"))
+
+    def _find_inkscape(self) -> str | None:
+        exe = shutil.which("inkscape")
+        if exe:
+            return exe
+        for base in (os.environ.get("ProgramFiles", r"C:\Program Files"),
+                     os.environ.get("ProgramFiles(x86)",
+                                    r"C:\Program Files (x86)")):
+            candidate = os.path.join(base, "Inkscape", "bin", "inkscape.exe")
+            if os.path.exists(candidate):
+                return candidate
+        return None
+
+    def open_in_inkscape(self):
+        """Optional convenience — the XML pane is always the fallback."""
+        if not self.current_path or not os.path.exists(self.current_path):
+            self.status_var.set("Save the file first, then open it in "
+                                "Inkscape.")
+            return
+        exe = self._find_inkscape()
+        if exe is None:
+            if messagebox.askyesno(
+                    "Inkscape not found",
+                    "Inkscape is a free vector editor — handy for visual "
+                    "editing, never required (the XML pane always works).\n\n"
+                    "Open the download page (inkscape.org)?",
+                    parent=self.root):
+                webbrowser.open("https://inkscape.org/release/")
+            return
+        subprocess.Popen([exe, self.current_path])
+        self.status_var.set(
+            f"Opened in Inkscape — click 'Reload from disk' after saving "
+            f"there.")
+
+    def reload_from_disk(self):
+        if not self._confirm_discard():
+            return
+        self._load_selected_file()
         self._push_preview("nav")
 
     def _on_close(self):
