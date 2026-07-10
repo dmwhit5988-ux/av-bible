@@ -15,10 +15,12 @@ audio_studio.App):
 import os
 import sys
 import tkinter as tk
+import webbrowser
 import xml.etree.ElementTree as ET
 from tkinter import ttk, messagebox
 
 import books
+import svg_preview
 import svg_registry
 from passages import TRANSLATIONS
 
@@ -90,6 +92,8 @@ class App:
         self.dirty = False
         self.editable = False
         self._loading = False   # suppress dirty-marking while loading the pane
+        self.preview_server: svg_preview.PreviewServer | None = None
+        self._edit_debounce = None  # after() id for debounced preview pushes
 
         root.title("SVG Studio")
         root.geometry("980x640")
@@ -190,6 +194,12 @@ class App:
 
         actions = ttk.Frame(body, padding=(10, 0, 0, 0))
         actions.pack(side="right", fill="y")
+        self.preview_btn = ttk.Button(actions, text="Open preview",
+                                      command=self.open_preview)
+        self.preview_btn.pack(fill="x", pady=(0, 6))
+        self.replay_btn = ttk.Button(actions, text="Replay ▶",
+                                     command=self.replay)
+        self.replay_btn.pack(fill="x", pady=(0, 6))
         self.save_btn = ttk.Button(actions, text="Save", command=self.save)
         self.save_btn.pack(fill="x", pady=(0, 6))
 
@@ -246,6 +256,7 @@ class App:
         self._update_resolution_readout(found)
         self._update_banner()
         self._load_selected_file()
+        self._push_preview("nav")
 
     def _rebuild_variant_chips(self, found):
         for child in self.variant_frame.winfo_children():
@@ -262,6 +273,7 @@ class App:
         if not self._confirm_discard():
             return
         self._load_selected_file()
+        self._push_preview("nav")
 
     def _update_resolution_readout(self, found):
         parts = []
@@ -335,6 +347,12 @@ class App:
             self.dirty = True
             self._update_title()
             self.text.edit_modified(False)
+            # Debounced live-reload push: silent re-inject (no narration
+            # restart) so the preview follows keystrokes without stutter.
+            if self._edit_debounce is not None:
+                self.root.after_cancel(self._edit_debounce)
+            self._edit_debounce = self.root.after(
+                400, lambda: self._push_preview("edit"))
 
     def _update_title(self):
         base = os.path.basename(self.current_path or "")
@@ -371,9 +389,54 @@ class App:
             existing_variants(book, chapter, verse))
         self.status_var.set(f"Saved {os.path.basename(self.current_path)}.")
 
+    # ----- preview -----------------------------------------------------------
+
+    def _push_preview(self, cause: str):
+        """Publish the pane's current text to the preview server. cause is
+        'nav' (restart narration too) or 'edit' (silent re-inject)."""
+        if self.preview_server is None:
+            return
+        book, chapter, verse = self._selection()
+        variant = self.variant_var.get()
+        audio = svg_preview.resolve_audio(book, chapter, verse, variant)
+        label = "" if variant == GENERIC else f" · {variant}"
+        # XML validity feedback without blocking the live preview — the
+        # browser shows whatever it gets, which is honest live feedback.
+        parse_note = ""
+        try:
+            ET.fromstring(self.pane_text())
+        except ET.ParseError as e:
+            parse_note = f" — XML error: {e}"
+        self.preview_server.set_content(
+            self.pane_text(), audio, f"{book} {chapter}:{verse}{label}", cause)
+        if parse_note:
+            self.status_var.set(f"Preview updated{parse_note}")
+
+    def _ensure_server(self) -> svg_preview.PreviewServer:
+        if self.preview_server is None:
+            self.preview_server = svg_preview.PreviewServer()
+            self.preview_server.start()
+        return self.preview_server
+
+    def open_preview(self):
+        server = self._ensure_server()
+        self._push_preview("nav")
+        webbrowser.open(server.url)
+        self.status_var.set(
+            f"Preview at {server.url} — edits live-reload; Replay restarts "
+            f"animation + narration.")
+
+    def replay(self):
+        if self.preview_server is None:
+            self.open_preview()
+            return
+        self._push_preview("nav")
+
     def _on_close(self):
         if not self._confirm_discard():
             return
+        if self.preview_server is not None:
+            self.preview_server.stop()
         self.root.destroy()
 
 
