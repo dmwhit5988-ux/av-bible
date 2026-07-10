@@ -167,7 +167,7 @@ class PreviewServer:
         host, port = self._httpd.server_address[:2]
         return f"http://127.0.0.1:{port}/preview.html"
 
-    def start(self):
+    def start(self, port=0):
         if self._httpd is not None:
             return
         server = self
@@ -212,7 +212,7 @@ class PreviewServer:
                 except (ConnectionAbortedError, BrokenPipeError):
                     pass  # page navigated away mid-response; harmless
 
-        self._httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0),
+        self._httpd = http.server.ThreadingHTTPServer(("127.0.0.1", port),
                                                       Handler)
         self._thread = threading.Thread(target=self._httpd.serve_forever,
                                         daemon=True)

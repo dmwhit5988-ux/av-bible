@@ -36,7 +36,7 @@ const stage = new VisualStage();
 let passage = null; // current fetched chapter {book,chapter,canonical,translation,verses,notes}
 let lastImagePath = null;
 let stageTextToken = 0; // invalidates in-flight text-visual fetches
-let audioManifest = {}; // "Book_ch_v" -> "Book_ch_v.mp3", pre-generated neural narration
+let audioManifest = {}; // "Book_ch_v.CODE" -> "filename.mp3", pre-generated neural narration
 
 const player = new Player({
   onVerseChange: (index) => renderVerse(index),
@@ -45,10 +45,12 @@ const player = new Player({
 });
 player.resolveAudio = resolveAudio;
 
-// Pre-generated neural mp3s (generate_showcase_audio.py) narrate the fixed
-// WEB text for a handful of showcase chapters — much better quality than
-// the browser's Web Speech voice. Only usable when WEB is selected; every
-// other translation, and every verse without a clip, falls back to speech.
+// Pre-generated neural mp3s (generate_showcase_audio.py / the desktop Audio
+// Renderer studio) narrate a handful of showcase chapters — much better
+// quality than the browser's Web Speech voice. Keyed by translation (e.g.
+// "Genesis_1_1.KJV"), same suffix convention as visuals/manifest.json, so a
+// clip only stands in for the translation it actually narrates; every verse
+// without one, in any translation, falls back to speech.
 async function loadAudioManifest() {
   try {
     const resp = await fetch("audio/manifest.json");
@@ -59,10 +61,10 @@ async function loadAudioManifest() {
 }
 
 function resolveAudio(index) {
-  if (!passage || passage.translation !== "WEB" || !passage.verses[index]) return null;
+  if (!passage || !passage.verses[index]) return null;
   const [num] = passage.verses[index];
   const key = `${passage.book.replace(/ /g, "_")}_${passage.chapter}_${num}`;
-  const filename = audioManifest[key];
+  const filename = audioManifest[`${key}.${passage.translation}`];
   return filename ? `audio/${filename}` : null;
 }
 

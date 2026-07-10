@@ -64,6 +64,21 @@ TRANSLATION_CODES = [code for code, *_ in TRANSLATIONS]
 GENERIC = "generic"
 
 
+def pretty_svg(text: str) -> str:
+    """Indent single-line generator output for the editor pane. Preserves
+    comments (the hand-edited marker!) and element text; returns the input
+    unchanged when it doesn't parse. Whitespace between SVG elements is
+    insignificant, so the rendered result is identical."""
+    try:
+        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+        root = ET.fromstring(text, parser=parser)
+    except ET.ParseError:
+        return text
+    ET.indent(root)
+    out = ET.tostring(root, encoding="unicode")
+    return out if out.endswith("\n") else out + "\n"
+
+
 def verse_base(book: str, chapter: int, verse: int) -> str:
     return f"{book.replace(' ', '_')}_{chapter}_{verse}"
 
@@ -200,6 +215,10 @@ class App:
 
         pane_frame = ttk.Frame(body)
         pane_frame.pack(side="left", fill="both", expand=True)
+        ttk.Label(pane_frame, foreground="#888888",
+                  text="SVG source (XML). The graphic itself renders in the "
+                       "preview window — tkinter cannot display SVG/SMIL."
+                  ).grid(row=0, column=0, sticky="w", pady=(0, 3))
         self.text = tk.Text(pane_frame, wrap="none", undo=True,
                             font=("Consolas", 10), background="#101018",
                             foreground="#e8e0cc", insertbackground="#e8e0cc")
@@ -208,10 +227,10 @@ class App:
         xs = ttk.Scrollbar(pane_frame, orient="horizontal",
                            command=self.text.xview)
         self.text.configure(yscrollcommand=ys.set, xscrollcommand=xs.set)
-        self.text.grid(row=0, column=0, sticky="nsew")
-        ys.grid(row=0, column=1, sticky="ns")
-        xs.grid(row=1, column=0, sticky="ew")
-        pane_frame.rowconfigure(0, weight=1)
+        self.text.grid(row=1, column=0, sticky="nsew")
+        ys.grid(row=1, column=1, sticky="ns")
+        xs.grid(row=2, column=0, sticky="ew")
+        pane_frame.rowconfigure(1, weight=1)
         pane_frame.columnconfigure(0, weight=1)
         self.text.bind("<<Modified>>", self._on_text_modified)
         self.text.bind("<Control-s>", lambda e: (self.save(), "break")[1])
@@ -246,10 +265,14 @@ class App:
         # and re-ticking this clears that record.
         self.embedded_var = tk.BooleanVar(
             value=self.cfg.get("svg_preview_host", "embedded") == "embedded")
-        ttk.Checkbutton(actions, text="Embedded preview",
+        ttk.Checkbutton(actions, text="Preview in own window",
                         variable=self.embedded_var,
                         command=self._on_embedded_toggle).pack(
             fill="x", pady=(12, 0))
+        ttk.Label(actions, foreground="#888888", wraplength=160,
+                  justify="left",
+                  text="Unticked: preview opens in your web browser "
+                       "instead.").pack(fill="x", pady=(2, 0))
 
         # Status line.
         self.status_var = tk.StringVar(value="Ready.")
@@ -356,7 +379,7 @@ class App:
         self._loading = True
         self.text.configure(state="normal")
         self.text.delete("1.0", "end")
-        self.text.insert("1.0", content)
+        self.text.insert("1.0", pretty_svg(content))
         self.text.edit_reset()
         self.text.edit_modified(False)
         if not editable:
