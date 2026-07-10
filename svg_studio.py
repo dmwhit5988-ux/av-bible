@@ -25,6 +25,7 @@ from tkinter import ttk, messagebox
 
 import books
 import config
+import svg_freeze
 import svg_preview
 import svg_registry
 from passages import TRANSLATIONS
@@ -221,6 +222,10 @@ class App:
         self.replay_btn = ttk.Button(actions, text="Replay ▶",
                                      command=self.replay)
         self.replay_btn.pack(fill="x", pady=(0, 6))
+        self.continue_btn = ttk.Button(actions,
+                                       text="Start from prev. frame",
+                                       command=self.start_from_previous)
+        self.continue_btn.pack(fill="x", pady=(0, 6))
         self.save_btn = ttk.Button(actions, text="Save", command=self.save)
         self.save_btn.pack(fill="x", pady=(0, 6))
         # "Try embedded preview again" escape hatch: once pywebview fails,
@@ -285,6 +290,10 @@ class App:
         self._rebuild_variant_chips(found)
         self._update_resolution_readout(found)
         self._update_banner()
+        # Generator families build cumulatively from their spec already —
+        # freeze-and-continue is a hand-authoring affordance only.
+        self.continue_btn.configure(
+            state="disabled" if self.family is not None else "normal")
         self._load_selected_file()
         self._push_preview("nav")
 
@@ -567,6 +576,52 @@ class App:
             f"Hand-edit mode: your changes are a one-off — re-running "
             f"{self.family.generator} will discard them. Save stamps the "
             f"file so the re-run confirm warns first.")
+
+    # ----- freeze and continue ------------------------------------------------
+
+    def start_from_previous(self):
+        """Load verse N-1's file (same variant chain), freeze its play-once
+        animations to their end state, demote to a static base group, and
+        put the result in the pane as verse N's unsaved starting point."""
+        if self.family is not None:
+            self.status_var.set(
+                "This family is generated; the generator already carries "
+                "state between verses. Edit the spec instead.")
+            return
+        book, chapter, verse = self._selection()
+        if verse < 2:
+            self.status_var.set("Verse 1 has no previous verse to "
+                                "continue from.")
+            return
+        if not self._confirm_discard():
+            return
+        variant = self.variant_var.get()
+        prev_found = existing_variants(book, chapter, verse - 1)
+        prev_variant = (variant if variant in prev_found
+                        else resolve_for_translation(
+                            variant if variant != GENERIC else "WEB",
+                            prev_found))
+        if prev_variant is None:
+            self.status_var.set(
+                f"No SVG exists for {book} {chapter}:{verse - 1} to "
+                f"continue from.")
+            return
+        prev_path = variant_path(book, chapter, verse - 1, prev_variant)
+        with open(prev_path, encoding="utf-8") as f:
+            prev_text = f.read()
+        from_key = verse_base(book, chapter, verse - 1)
+        result = svg_freeze.freeze_to_base(prev_text, from_key,
+                                           new_verse=verse)
+        self._set_pane(result.svg_text, editable=True)
+        self.dirty = True
+        self._update_title()
+        self._push_preview("nav")
+        note = (f" — {len(result.warnings)} warning(s): "
+                + " | ".join(result.warnings) if result.warnings else "")
+        self.status_var.set(
+            f"Started from {os.path.basename(prev_path)}'s final frame — "
+            f"unsaved; add verse {verse}'s elements in the overlay "
+            f"group{note}")
 
     # ----- preview -----------------------------------------------------------
 
