@@ -161,7 +161,7 @@ select {
   font-size: clamp(14px, 4vw, 22px);
 }
 
-#notes-box, #reference-box {
+#notes-box {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -172,21 +172,12 @@ select {
   border-radius: 6px;
   font-style: italic;
   pointer-events: none;
-}
-
-#notes-box {
   bottom: 20%;
   color: var(--sand);
   font-size: clamp(11px, 2.4vw, 16px);
 }
 
-#reference-box {
-  bottom: 4%;
-  color: var(--gold);
-  font-size: clamp(12px, 3vw, 20px);
-}
-
-#notes-box:empty, #reference-box:empty { display: none; }
+#notes-box:empty { display: none; }
 
 /* Fullscreen: the Fullscreen API is used where available; this fixed
    overlay is both the iOS Safari fallback (no requestFullscreen on
