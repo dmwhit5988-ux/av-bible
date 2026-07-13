@@ -22,12 +22,33 @@ function extOf(path) {
   return m ? m[0].toLowerCase() : "";
 }
 
-function pickBestFile(paths) {
-  if (!paths || paths.length === 0) return null;
-  const sorted = [...paths].sort(
-    (a, b) => EXT_PRIORITY.indexOf(extOf(a)) - EXT_PRIORITY.indexOf(extOf(b))
+function pickBestRecord(records) {
+  if (!records || records.length === 0) return null;
+  const sorted = [...records].sort(
+    (a, b) =>
+      EXT_PRIORITY.indexOf(extOf(a.file)) - EXT_PRIORITY.indexOf(extOf(b.file))
   );
   return sorted[0];
+}
+
+// Normalize a manifest entry to v2's per-file record shape. v1 entries are
+// bare path strings; give them the metadata a v2 record would carry so the
+// rest of the app never branches on schema version (matters right after a
+// deploy, when a returning visitor may still hold the old manifest).
+function normalizeRecord(entry) {
+  if (typeof entry === "string") {
+    const ext = extOf(entry);
+    return {
+      file: entry,
+      kind: PHOTO_EXTS.includes(ext)
+        ? "photo"
+        : TEXT_EXTS.includes(ext)
+          ? "note"
+          : "infographic",
+      animated: ANIM_EXTS.includes(ext),
+    };
+  }
+  return entry;
 }
 
 // Simple deterministic string hash (Python's hash() is randomized per
@@ -73,14 +94,24 @@ export class VisualStage {
       // and returning visitors keep pointing at old files after a visuals
       // deploy — e.g. a chapter's .webp that has since been replaced by .svg.
       const resp = await fetch("/visuals/manifest.json", { cache: "no-cache" });
-      this.manifest = resp.ok ? await resp.json() : {};
+      const raw = resp.ok ? await resp.json() : {};
+      // Schema v2 wraps the key map in {version, entries}; v1 IS the key
+      // map. Normalize every entry to a list of v2 records up front.
+      const entries = raw && raw.version >= 2 ? raw.entries || {} : raw;
+      this.manifest = {};
+      for (const [key, list] of Object.entries(entries)) {
+        this.manifest[key] = (list || []).map(normalizeRecord);
+      }
     } catch {
       this.manifest = {};
     }
   }
 
   // ctx: {book, chapter, verse, translation}
-  findImage(ctx) {
+  // Returns the best visual's full record, with resolved URLs:
+  //   {url, stillUrl|null, kind, animated, file}
+  // stillUrl is the reduced-motion twin (build_stills.py) when one exists.
+  findVisual(ctx) {
     if (!this.manifest) return null;
     const book = ctx.book.replace(/ /g, "_");
     const keys = [
@@ -99,12 +130,25 @@ export class VisualStage {
     }
     for (const key of keys) {
       for (const suffix of suffixes) {
-        const entry = this.manifest[key + suffix];
-        const path = pickBestFile(entry);
-        if (path) return `/visuals/${path}`;
+        const record = pickBestRecord(this.manifest[key + suffix]);
+        if (record) {
+          return {
+            url: `/visuals/${record.file}`,
+            stillUrl: record.still ? `/visuals/${record.still}` : null,
+            kind: record.kind || null,
+            animated: Boolean(record.animated),
+            file: record.file,
+          };
+        }
       }
     }
     return null;
+  }
+
+  // Back-compat convenience: just the best file's URL.
+  findImage(ctx) {
+    const visual = this.findVisual(ctx);
+    return visual ? visual.url : null;
   }
 
   isDiagram(path) {
