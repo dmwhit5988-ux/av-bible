@@ -1,6 +1,12 @@
 Genesis 1 verse backgrounds — sources and licenses
 =======================================================
 
+RETIRED 2026-07-29: these photographic stills were replaced by the
+Genesis 1 "Forming and Filling" day-structure SVGs
+(generate_genesis1_svg.py). The image files themselves moved to
+backups/png_replaced_by_svg/Genesis/1/ — this attribution is kept here
+for them. Nothing currently in visuals/ uses them.
+
 Genesis 1:1-2 — "Hubble Goes to the eXtreme to Assemble Farthest-Ever View of the Universe"
     NASA (public domain) | https://images.nasa.gov/details/GSFC_20171208_Archive_e001651
 
