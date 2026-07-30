@@ -4623,32 +4623,28 @@
       {
         "file": "Genesis/1/Genesis_1_10.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_10.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_11": [
       {
         "file": "Genesis/1/Genesis_1_11.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_11.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_12": [
       {
         "file": "Genesis/1/Genesis_1_12.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_12.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_13": [
       {
         "file": "Genesis/1/Genesis_1_13.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_13.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_14": [
@@ -4663,40 +4659,35 @@
       {
         "file": "Genesis/1/Genesis_1_15.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_15.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_16": [
       {
         "file": "Genesis/1/Genesis_1_16.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_16.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_17": [
       {
         "file": "Genesis/1/Genesis_1_17.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_17.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_18": [
       {
         "file": "Genesis/1/Genesis_1_18.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_18.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_19": [
       {
         "file": "Genesis/1/Genesis_1_19.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_19.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_2": [
@@ -4719,24 +4710,21 @@
       {
         "file": "Genesis/1/Genesis_1_21.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_21.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_22": [
       {
         "file": "Genesis/1/Genesis_1_22.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_22.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_23": [
       {
         "file": "Genesis/1/Genesis_1_23.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_23.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_24": [
@@ -4751,40 +4739,35 @@
       {
         "file": "Genesis/1/Genesis_1_25.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_25.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_26": [
       {
         "file": "Genesis/1/Genesis_1_26.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_26.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_27": [
       {
         "file": "Genesis/1/Genesis_1_27.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_27.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_28": [
       {
         "file": "Genesis/1/Genesis_1_28.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_28.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_29": [
       {
         "file": "Genesis/1/Genesis_1_29.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_29.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_3": [
@@ -4799,32 +4782,28 @@
       {
         "file": "Genesis/1/Genesis_1_30.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_30.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_31": [
       {
         "file": "Genesis/1/Genesis_1_31.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_31.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_4": [
       {
         "file": "Genesis/1/Genesis_1_4.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_4.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_5": [
       {
         "file": "Genesis/1/Genesis_1_5.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_5.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_6": [
@@ -4839,16 +4818,14 @@
       {
         "file": "Genesis/1/Genesis_1_7.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_7.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_8": [
       {
         "file": "Genesis/1/Genesis_1_8.svg",
         "kind": "chart",
-        "animated": true,
-        "still": "Genesis/1/Genesis_1_8.still.svg"
+        "animated": false
       }
     ],
     "Genesis_1_9": [
@@ -4870,8 +4847,7 @@
       {
         "file": "Genesis/10/Genesis_10_10.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_10.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_11": [
@@ -4886,8 +4862,7 @@
       {
         "file": "Genesis/10/Genesis_10_12.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_12.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_13": [
@@ -4902,8 +4877,7 @@
       {
         "file": "Genesis/10/Genesis_10_14.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_14.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_15": [
@@ -4918,24 +4892,21 @@
       {
         "file": "Genesis/10/Genesis_10_16.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_16.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_17": [
       {
         "file": "Genesis/10/Genesis_10_17.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_17.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_18": [
       {
         "file": "Genesis/10/Genesis_10_18.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_18.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_19": [
@@ -5008,24 +4979,21 @@
       {
         "file": "Genesis/10/Genesis_10_27.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_27.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_28": [
       {
         "file": "Genesis/10/Genesis_10_28.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_28.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_29": [
       {
         "file": "Genesis/10/Genesis_10_29.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_29.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_3": [
@@ -5040,8 +5008,7 @@
       {
         "file": "Genesis/10/Genesis_10_30.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_30.still.svg"
+        "animated": false
       }
     ],
     "Genesis_10_31": [
@@ -5101,8 +5068,7 @@
       {
         "file": "Genesis/10/Genesis_10_9.svg",
         "kind": "map",
-        "animated": true,
-        "still": "Genesis/10/Genesis_10_9.still.svg"
+        "animated": false
       }
     ],
     "Genesis_11_1": [
@@ -6270,8 +6236,7 @@
       {
         "file": "Genesis/2/Genesis_2_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/2/Genesis_2_12.still.svg"
+        "animated": false
       }
     ],
     "Genesis_2_13": [
@@ -6329,8 +6294,7 @@
       {
         "file": "Genesis/2/Genesis_2_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/2/Genesis_2_2.still.svg"
+        "animated": false
       }
     ],
     "Genesis_2_20": [
@@ -6379,8 +6343,7 @@
       {
         "file": "Genesis/2/Genesis_2_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/2/Genesis_2_3.still.svg"
+        "animated": false
       }
     ],
     "Genesis_2_4": [
@@ -6478,24 +6441,21 @@
       {
         "file": "Genesis/3/Genesis_3_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_15.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_16": [
       {
         "file": "Genesis/3/Genesis_3_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_16.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_17": [
       {
         "file": "Genesis/3/Genesis_3_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_17.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_18": [
@@ -6510,8 +6470,7 @@
       {
         "file": "Genesis/3/Genesis_3_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_19.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_2": [
@@ -6542,16 +6501,14 @@
       {
         "file": "Genesis/3/Genesis_3_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_22.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_23": [
       {
         "file": "Genesis/3/Genesis_3_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_23.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_24": [
@@ -6566,8 +6523,7 @@
       {
         "file": "Genesis/3/Genesis_3_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_3.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_4": [
@@ -6582,8 +6538,7 @@
       {
         "file": "Genesis/3/Genesis_3_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/3/Genesis_3_5.still.svg"
+        "animated": false
       }
     ],
     "Genesis_3_6": [
@@ -6627,8 +6582,7 @@
       {
         "file": "Genesis/4/Genesis_4_10.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_10.still.svg"
+        "animated": false
       }
     ],
     "Genesis_4_11": [
@@ -6651,16 +6605,14 @@
       {
         "file": "Genesis/4/Genesis_4_13.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_13.still.svg"
+        "animated": false
       }
     ],
     "Genesis_4_14": [
       {
         "file": "Genesis/4/Genesis_4_14.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_14.still.svg"
+        "animated": false
       }
     ],
     "Genesis_4_15": [
@@ -6795,16 +6747,14 @@
       {
         "file": "Genesis/4/Genesis_4_6.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_6.still.svg"
+        "animated": false
       }
     ],
     "Genesis_4_7": [
       {
         "file": "Genesis/4/Genesis_4_7.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_7.still.svg"
+        "animated": false
       }
     ],
     "Genesis_4_8": [
@@ -6819,8 +6769,7 @@
       {
         "file": "Genesis/4/Genesis_4_9.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Genesis/4/Genesis_4_9.still.svg"
+        "animated": false
       }
     ],
     "Genesis_5_1.DARBY": [
@@ -8606,8 +8555,7 @@
       {
         "file": "Genesis/9/Genesis_9_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/9/Genesis_9_19.still.svg"
+        "animated": false
       }
     ],
     "Genesis_9_2": [
