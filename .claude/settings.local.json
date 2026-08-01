@@ -37,7 +37,8 @@
       "Bash(pip install *)",
       "Bash(python \"C:/Users/dmwhi/AppData/Local/Temp/claude/C--Dev-AV-Bible/66af51a2-fb35-4c65-a0fc-26fc793ce35a/scratchpad/parse_md.py\")",
       "mcp__visualize__read_me",
-      "mcp__visualize__show_widget"
+      "mcp__visualize__show_widget",
+      "Bash(python -c \"import json; m=json.load\\(open\\(r'C:\\\\Dev\\\\AV Bible\\\\visuals\\\\manifest.json'\\)\\); print\\(type\\(m\\)\\); import itertools; print\\(list\\(itertools.islice\\(m.items\\(\\) if isinstance\\(m,dict\\) else enumerate\\(m\\),3\\)\\)\\)\")"
     ]
   }
 }

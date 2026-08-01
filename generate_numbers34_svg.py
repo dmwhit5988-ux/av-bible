@@ -17,7 +17,7 @@ from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, SAND, SAND_DIM, TEXT, TEXT_DIM, HL,
                                  out_path)
 from generate_tribal_maps import (
-    MapFrame, ANCHORS, PANEL_X, FOOTER,
+    MapFrame, ANCHORS, PANEL_X,
     LAND_POLY, COAST, LAKES, JORDAN_UP, JORDAN_LOW, ARNON, JABBOK, YARMOUK,
     BORDER_SEGS, CANAAN_POLY, LANDMARKS34,
     TRIBES, WEST_TRIBES, EAST_TRIBES, TRIBE_COL, PRINCES,
@@ -94,10 +94,10 @@ def panel_lines(c, x, y, lines, gap=22):
 
 
 def canvas(title, verse, caption):
+    # (no caption line or footer: the verse is narrated aloud — the map and
+    # its place names carry the graphic; specs still hold `caption` data)
     c = SvgCanvas(W, H, bg=BG)
     c.text((28, 18), title, 24, TEXT, "la", bold=True)
-    c.text((28, 52), f"verse {verse} — {caption}", 18, HL, "la", italic=True)
-    c.text((PANEL_X, H - 40), FOOTER, 14, TEXT_DIM, "la", italic=True)
     return c
 
 
@@ -235,21 +235,6 @@ def render_34(verse):
     if focus:
         c.text((PANEL_X, 130), TRIBES[focus[0]][0], 30, HL, "la", bold=True)
         c.text((PANEL_X, 176), f"prince: {focus[1]}", 15, TEXT, "la")
-        panel_lines(c, PANEL_X, 212, focus[2])
-        c.text((PANEL_X, 330), "territory as described in Joshua 13-19", 14,
-               TEXT_DIM, "la", italic=True)
-        c.text((PANEL_X, 352), "Reuben, Gad, half-Manasseh: already", 14,
-               TEXT_DIM, "la", italic=True)
-        c.text((PANEL_X, 372), "settled east of the Jordan (Num 32)", 14,
-               TEXT_DIM, "la", italic=True)
-    elif verse == 17:
-        panel_lines(c, PANEL_X, 130,
-                    ["Eleazar casts the lots;", "Joshua leads the conquest",
-                     "", " the division itself is told", " in Joshua 13-19"])
-    elif verse == 18:
-        panel_lines(c, PANEL_X, 130,
-                    ["ten princes for ten tribes —", "Levi receives cities,",
-                     "not territory (Num 35)"])
     return c
 
 

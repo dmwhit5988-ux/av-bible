@@ -1,95 +1,349 @@
 {
-  "_comment": "Registry of generator-owned SVG families (SVG_STUDIO_DESIGN.md #4). Matched by (book, chapter). The 'edit' strings are documentation for the human, not parsed.",
+  "_comment": "Registry of generator-owned SVG families (SVG_STUDIO_DESIGN.md #4). Matched by (book, chapter). The 'edit' strings are documentation for the human, not parsed. 'kind' feeds the visuals manifest's per-file metadata (build_manifest.py).",
   "families": [
     {
-      "label": "Genealogies (Genesis)",
+      "label": "The six days: forming and filling (Genesis 1)",
       "book": "Genesis",
-      "chapters": [5, 11],
+      "chapters": [
+        1
+      ],
+      "generator": "generate_genesis1_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis1_svg.py",
+          "edit": "DAYS cards, ROW_PAIRS, CAPTIONS, NOTES - all in this one file"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "chart"
+    },
+    {
+      "label": "The garden eastward in Eden (Genesis 2)",
+      "book": "Genesis",
+      "chapters": [
+        2
+      ],
+      "generator": "generate_genesis2_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis2_svg.py",
+          "edit": "HEADS (the four rivers), BEATS, CAPTIONS, garden geometry - all here"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "The garden undone (Genesis 3)",
+      "book": "Genesis",
+      "chapters": [
+        3
+      ],
+      "generator": "generate_genesis3_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis3_svg.py",
+          "edit": "EXCHANGE (who speaks to whom), COLUMNS (the three sentences), LEDGER, CAPTIONS - all here"
+        },
+        {
+          "file": "generate_genesis2_svg.py",
+          "edit": "GREEN/GREEN_DIM/EARTH/RED - the garden palette shared with chapter 2"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "Cain's line (Genesis 4)",
+      "book": "Genesis",
+      "chapters": [
+        4
+      ],
+      "generator": "generate_genesis4_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis4_svg.py",
+          "edit": "NODES/CHILDREN/EDGES, CHIPS, LIT, BEATS, CAPTIONS - all here"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "genealogy"
+    },
+    {
+      "label": "Adam to Noah (Genesis 5)",
+      "book": "Genesis",
+      "chapters": [
+        5
+      ],
       "generator": "generate_genealogy_svg.py",
       "spec": [
-        { "file": "generate_genealogy.py",
-          "edit": "CHAPTER5/CHAPTER11 verse specs, name-variant tables used by resolve_names()" }
+        {
+          "file": "generate_genealogy.py",
+          "edit": "CHAPTER5 verse specs, name-variant tables used by resolve_names()"
+        }
       ],
-      "translation_suffixed": true
+      "translation_suffixed": true,
+      "kind": "genealogy"
+    },
+    {
+      "label": "The ark and the flood (Genesis 6-9)",
+      "book": "Genesis",
+      "chapters": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "generator": "generate_genesis69_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis69_svg.py",
+          "edit": "WATER level table, STOPS (the dated timeline), STATES, LOADING, CAPTIONS - all here"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "Table of Nations (Genesis 10)",
+      "book": "Genesis",
+      "chapters": [
+        10
+      ],
+      "generator": "generate_genesis10_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis10_svg.py",
+          "edit": "ANCHORS/CITIES placements, REGIONS, BANDS, VERSES, CAPTIONS - all here"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "map"
+    },
+    {
+      "_comment": "Genesis 11 is split: Babel owns 1-9, the genealogy owns 10-32. Both carry a 'verses' range, so owner_of() needs the verse to resolve them.",
+      "label": "Babel (Genesis 11:1-9)",
+      "book": "Genesis",
+      "chapters": [
+        11
+      ],
+      "verses": [
+        1,
+        9
+      ],
+      "generator": "generate_genesis11_svg.py",
+      "spec": [
+        {
+          "file": "generate_genesis11_svg.py",
+          "edit": "COURSES/COURSES_AT (the ziggurat), SUMMONS, THREADS, QUARTERS, CAPTIONS - all here"
+        },
+        {
+          "file": "generate_genesis10_svg.py",
+          "edit": "the coastlines, bands and line colours the map inset reuses"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "Shem to Abram (Genesis 11:10-32)",
+      "book": "Genesis",
+      "chapters": [
+        11
+      ],
+      "verses": [
+        10,
+        32
+      ],
+      "generator": "generate_genealogy_svg.py",
+      "spec": [
+        {
+          "file": "generate_genealogy.py",
+          "edit": "CHAPTER11 verse specs, name-variant tables used by resolve_names()"
+        }
+      ],
+      "translation_suffixed": true,
+      "kind": "genealogy"
     },
     {
       "label": "Tabernacle furniture (Exodus 25, 27)",
       "book": "Exodus",
-      "chapters": [25, 27],
+      "chapters": [
+        25,
+        27
+      ],
       "generator": "generate_exodus2527_svg.py",
       "spec": [
-        { "file": "generate_tabernacle.py",
-          "edit": "CHAPTERS spec + draw/hl functions" }
+        {
+          "file": "generate_tabernacle.py",
+          "edit": "CHAPTERS spec + draw/hl functions"
+        }
       ],
-      "translation_suffixed": false
+      "translation_suffixed": false,
+      "kind": "diagram"
     },
     {
       "label": "Curtains of the tabernacle (Exodus 26)",
       "book": "Exodus",
-      "chapters": [26],
+      "chapters": [
+        26
+      ],
       "generator": "generate_exodus26_svg.py",
       "spec": [
-        { "file": "generate_exodus26_svg.py",
-          "edit": "per-verse spec in this file" }
+        {
+          "file": "generate_exodus26_svg.py",
+          "edit": "per-verse spec in this file"
+        }
       ],
-      "translation_suffixed": false
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "The census and the camp (Numbers 1-2)",
+      "book": "Numbers",
+      "chapters": [
+        1,
+        2
+      ],
+      "generator": "generate_numbers1_2_svg.py",
+      "spec": [
+        {
+          "file": "generate_numbers1_2_svg.py",
+          "edit": "TRIBES (counts, princes, camp side), CAMPS, CENSUS_PAIRS, CAPTIONS, NOTES, the plan layout constants - all in this one file"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "label": "The Levites: clans, duties and burdens (Numbers 3-4)",
+      "book": "Numbers",
+      "chapters": [
+        3,
+        4
+      ],
+      "generator": "generate_numbers3_4_svg.py",
+      "spec": [
+        {
+          "file": "generate_numbers3_4_svg.py",
+          "edit": "CLANS (families, princes, duties, burdens, counts and the verse each is revealed on), SONS, HOLY (the six covered things), LEDGER, FOCUS, CAPTIONS - all in this one file"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "chart"
     },
     {
       "label": "East-of-Jordan settlement (Numbers 32)",
       "book": "Numbers",
-      "chapters": [32],
+      "chapters": [
+        32
+      ],
       "generator": "generate_numbers32_svg.py",
       "spec": [
-        { "file": "generate_tribal_maps.py",
-          "edit": "geometry, LANDMARKS, captions shared with Numbers 34" },
-        { "file": "generate_numbers32_svg.py",
-          "edit": "chapter-32 verse assembly" }
+        {
+          "file": "generate_tribal_maps.py",
+          "edit": "geometry, LANDMARKS, captions shared with Numbers 34"
+        },
+        {
+          "file": "generate_numbers32_svg.py",
+          "edit": "chapter-32 verse assembly"
+        }
       ],
-      "translation_suffixed": false
+      "translation_suffixed": false,
+      "kind": "map"
     },
     {
       "label": "Borders & allotment (Numbers 34)",
       "book": "Numbers",
-      "chapters": [34],
+      "chapters": [
+        34
+      ],
       "generator": "generate_numbers34_svg.py",
       "spec": [
-        { "file": "generate_tribal_maps.py",
-          "edit": "BORDER_SEGS, LANDMARKS34, CAPTIONS_34A/B, PANEL_34A, TRIBES, PRINCES" }
+        {
+          "file": "generate_tribal_maps.py",
+          "edit": "BORDER_SEGS, LANDMARKS34, CAPTIONS_34A/B, PANEL_34A, TRIBES, PRINCES"
+        }
       ],
-      "translation_suffixed": false
+      "translation_suffixed": false,
+      "kind": "map"
     },
     {
       "label": "Genealogy of Jesus (Matthew 1)",
       "book": "Matthew",
-      "chapters": [1],
+      "chapters": [
+        1
+      ],
       "generator": "generate_matthew1_svg.py",
       "spec": [
-        { "file": "generate_matthew1.py",
-          "edit": "build_specs() verse table, MT_KEYS, MT_VARIANTS" }
+        {
+          "file": "generate_matthew1.py",
+          "edit": "build_specs() verse table, MT_KEYS, MT_VARIANTS"
+        }
       ],
-      "translation_suffixed": true
+      "translation_suffixed": true,
+      "kind": "genealogy"
     },
     {
       "label": "Genealogy of Jesus (Luke 3)",
       "book": "Luke",
-      "chapters": [3],
+      "chapters": [
+        3
+      ],
       "generator": "generate_luke3_svg.py",
       "spec": [
-        { "file": "generate_luke3.py",
-          "edit": "chapter spec + name variants" }
+        {
+          "file": "generate_luke3.py",
+          "edit": "chapter spec + name variants"
+        }
       ],
-      "translation_suffixed": true
+      "translation_suffixed": true,
+      "kind": "genealogy"
+    },
+    {
+      "label": "Genealogies of Israel (1 Chronicles 1-9)",
+      "book": "1 Chronicles",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "generator": "generate_1chronicles_svg.py",
+      "spec": [
+        {
+          "file": "generate_1chronicles.py",
+          "edit": "CH1-CH9 scene tables (T/C blocks, explicit verse pins)"
+        },
+        {
+          "file": "svg_1chronicles_render.py",
+          "edit": "layout metrics, colors, sweep/ring drawing"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "genealogy"
     },
     {
       "label": "First Missionary Journey (Acts 13-14)",
       "book": "Acts",
-      "chapters": [13, 14],
+      "chapters": [
+        13,
+        14
+      ],
       "generator": "generate_acts1314_svg.py",
       "spec": [
-        { "file": "generate_acts1314_svg.py",
-          "edit": "CITIES, ROUTE, LEGS, SCENES - all in this one file" }
+        {
+          "file": "generate_acts1314_svg.py",
+          "edit": "CITIES, ROUTE, LEGS, SCENES - all in this one file"
+        }
       ],
-      "translation_suffixed": false
+      "translation_suffixed": false,
+      "kind": "map"
     }
   ]
 }

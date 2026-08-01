@@ -34,6 +34,7 @@ Pure functions, no tkinter, no I/O: independently testable
 (test_svg_freeze.py).
 """
 
+import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 
@@ -41,6 +42,16 @@ SVGNS = "http://www.w3.org/2000/svg"
 ET.register_namespace("", SVGNS)
 
 _ANIM_TAGS = {"animate", "set", "animateTransform", "animateMotion"}
+
+_SMIL_RE = re.compile(r"<(?:\w+:)?(?:animate|set|animateTransform|"
+                      r"animateMotion)\b")
+
+
+def svg_is_animated(svg_text: str) -> bool:
+    """Whether the document contains any SMIL animation element. Cheap text
+    sniff shared by build_manifest.py (the `animated` manifest flag) and
+    build_stills.py (which SVGs need a .still variant)."""
+    return bool(_SMIL_RE.search(svg_text))
 
 
 @dataclass
@@ -115,6 +126,52 @@ def freeze_animations(root, warnings):
         else:
             parent.set(attr, value)
         parent.remove(node)
+
+
+def strip_remaining_animations(root, warnings):
+    """Remove every animation node freeze_animations chose to keep — the
+    reduced-motion complement to the case table.
+
+    A play-once animateTransform (fill="freeze", non-additive) is properly
+    frozen first: SMIL replace mode overrides the base transform, so the
+    final value becomes the parent's transform attribute (the genealogy
+    slide-ins end at "translate(0 0)"). Everything else — perpetual
+    ambience (repeatCount="indefinite"), motion paths, additive animations
+    — is motion by definition; a still drops it and the target element
+    falls back to its static base attributes."""
+    for parent in root.iter():
+        for node in list(parent):
+            if _local(node.tag) not in _ANIM_TAGS:
+                continue
+            value = _final_value(node)
+            if (_local(node.tag) == "animateTransform"
+                    and node.get("fill") == "freeze"
+                    and node.get("additive") != "sum"
+                    and node.get("type") and value is not None
+                    and node.get("repeatCount") != "indefinite"):
+                parent.set("transform", f"{node.get('type')}({value})")
+            else:
+                warnings.append(f"{_describe(node, parent)} removed for "
+                                f"the still variant — element shows its "
+                                f"base value")
+            parent.remove(node)
+
+
+def freeze_still(svg_text: str) -> FreezeResult:
+    """Produce the reduced-motion twin of an animated verse SVG: play-once
+    animations frozen at their final values (same case table as
+    freeze_to_base), then everything still animated stripped outright. The
+    result contains no SMIL at all — the finished frame as a plain static
+    document, with no structural rewrite (no frozen-base <g>, no overlay)."""
+    warnings = []
+    root = ET.fromstring(svg_text)
+    freeze_animations(root, warnings)
+    # freeze_animations warns about the nodes it keeps; those same nodes are
+    # about to be removed, so its warnings would mislead here — the strip
+    # pass emits the authoritative ones.
+    warnings.clear()
+    strip_remaining_animations(root, warnings)
+    return FreezeResult(ET.tostring(root, encoding="unicode"), warnings)
 
 
 def freeze_to_base(svg_text: str, from_key: str,

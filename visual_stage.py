@@ -15,6 +15,9 @@ Architecture (built for the future custom-graphics work):
       visuals/John_3.png      (whole chapter)
       visuals/John.png        (whole book)
       visuals/default.png     (everything else)
+- SVG visuals (the vector masters the web app uses, SMIL animation and
+  all) render in an embedded WebView2 panel via svg_stage.py; if that
+  web view is unavailable the stage falls back to the raster files.
 """
 
 import colorsys
@@ -25,6 +28,8 @@ import tkinter as tk
 from dataclasses import dataclass
 
 from config import VISUALS_DIR
+
+import svg_stage
 
 try:
     from PIL import Image, ImageSequence, ImageTk
@@ -84,6 +89,12 @@ class Renderer:
     def render(self, canvas: tk.Canvas, ctx: VerseContext,
                width: int, height: int):
         raise NotImplementedError
+
+    def find_svg(self, ctx: VerseContext) -> str | None:
+        """Path of an SVG visual for this verse, or None. When a path is
+        returned the view shows it in the embedded web view instead of
+        calling render()."""
+        return None
 
 
 class _Animation:
@@ -180,7 +191,9 @@ class DefaultRenderer(Renderer):
             (VISUALS_DIR, book),
             (VISUALS_DIR, "default"),
         ]
-        # Animated formats first, so an added .gif/.webp wins over an
+        # SVG first (the vector master, shown via the embedded web view —
+        # dropped from the list if that view is broken on this machine),
+        # then animated formats, so an added .gif/.webp wins over an
         # existing .png for the same verse. A translation-suffixed file
         # (e.g. Genesis_5_3.KJV.webp) wins over the generic one, letting
         # visuals that contain text match the translation being read.
@@ -188,6 +201,8 @@ class DefaultRenderer(Renderer):
         # render as a centered text panel styled like the notes overlay.
         exts = ((".gif", ".webp", ".png", ".jpg", ".jpeg", ".txt", ".rtf")
                 if _HAS_PIL else (".png", ".txt", ".rtf"))
+        if svg_stage.available():
+            exts = (".svg",) + exts
         suffixes = [f".{ctx.translation}", ""] if ctx.translation else [""]
         for directory, base in locations:
             for suffix in suffixes:
@@ -195,6 +210,12 @@ class DefaultRenderer(Renderer):
                     path = os.path.join(directory, base + suffix + ext)
                     if os.path.exists(path):
                         return path
+        return None
+
+    def find_svg(self, ctx: VerseContext) -> str | None:
+        path = self._find_image(ctx)
+        if path and path.lower().endswith(".svg"):
+            return path
         return None
 
     def _is_animated(self, path: str) -> bool:
@@ -433,8 +454,34 @@ class StageView:
         self.canvas = tk.Canvas(parent, **canvas_kwargs)
         self.controller = controller
         self._anim_id = None
+        self._web_panel = None  # embedded web view for .svg visuals
         self.canvas.bind("<Configure>", lambda e: self.redraw())
         controller.register(self)
+
+    # -- embedded SVG panel --------------------------------------------------
+
+    def _show_svg(self, svg_path: str, ctx: VerseContext):
+        server = self.controller.svg_server()
+        key = (svg_path, os.path.getmtime(svg_path),
+               ctx.book, ctx.chapter, ctx.verse, ctx.translation)
+        ref = ctx.reference if ctx.show_reference else ""
+        server.set_verse(key, svg_path, ref, ctx.notes)
+        if self._web_panel is None:
+            self._web_panel = svg_stage.WebPanel(
+                self.canvas, server.url, on_fail=self._on_svg_fail)
+        self._web_panel.show()
+
+    def _hide_svg(self):
+        if self._web_panel is not None:
+            self._web_panel.hide()
+        # Forget the published verse so returning to it later re-pushes
+        # and restarts its SMIL animations (matching canvas behavior).
+        self.controller.clear_svg()
+
+    def _on_svg_fail(self, why: str):
+        # svg_stage has already marked itself unavailable; every view
+        # re-renders so the raster fallbacks take over.
+        self.controller.rebroadcast()
 
     def _cancel_tick(self):
         if self._anim_id is not None:
@@ -456,11 +503,22 @@ class StageView:
         canvas.delete("all")
         ctx = self.controller.current
         if ctx is not None:
+            svg_path = None
+            if svg_stage.available():
+                svg_path = self.controller.renderer.find_svg(ctx)
+            if svg_path:
+                try:
+                    self._show_svg(svg_path, ctx)
+                    return
+                except OSError:
+                    pass  # unreadable .svg — fall through to the canvas
+            self._hide_svg()
             delay = self.controller.renderer.render(canvas, ctx,
                                                     width, height)
             if isinstance(delay, int) and delay > 0:
                 self._anim_id = canvas.after(max(20, delay), self.redraw)
         else:
+            self._hide_svg()
             canvas.create_rectangle(0, 0, width, height,
                                     fill="#101018", outline="")
             canvas.create_text(
@@ -474,6 +532,9 @@ class StageView:
 
     def destroy(self):
         self._cancel_tick()
+        if self._web_panel is not None:
+            self._web_panel.destroy()
+            self._web_panel = None
         self.controller.unregister(self)
         if self.canvas.winfo_exists():
             self.canvas.destroy()
@@ -487,6 +548,22 @@ class StageController:
         self.current: VerseContext | None = None
         self.idle_message = "AV Bible\n\nChoose a passage and press Play"
         self._views: list[StageView] = []
+        self._svg_server = None
+
+    def svg_server(self):
+        """The shared server feeding every embedded SVG panel (started
+        lazily the first time a verse resolves to an .svg visual)."""
+        if self._svg_server is None:
+            self._svg_server = svg_stage.StageServer()
+            self._svg_server.start()
+        return self._svg_server
+
+    def clear_svg(self):
+        if self._svg_server is not None:
+            self._svg_server.clear()
+
+    def rebroadcast(self):
+        self._broadcast()
 
     def register(self, view: StageView):
         if view not in self._views:

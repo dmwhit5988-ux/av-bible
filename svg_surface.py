@@ -224,6 +224,86 @@ class SvgCanvas:
                 f'keySplines="{self._EASE}"/>')
         self._emit(f"<polyline {' '.join(a)}>{anim}</polyline>")
 
+    # -- highlight outlines -------------------------------------------------
+    #
+    # For "this box / this region is the current one" rings, use these rather
+    # than traced(): the outline is fully present from the first frame and
+    # only its brightness pulses, which reads as an accent instead of a
+    # redraw. Pass first=False on every verse after the one where the element
+    # *became* current, so a highlight that holds for several verses animates
+    # once instead of restarting on each of them.
+
+    _PULSE_DUR = "0.8s"
+
+    def _pulse_anim(self, op, dur):
+        return (f'<animate attributeName="stroke-opacity" '
+                f'values="{op * 0.25:.3f};{op:.3f};{op * 0.72:.3f};{op:.3f}" '
+                f'dur="{dur}" begin="0s" fill="freeze" calcMode="spline" '
+                f'keyTimes="0;0.35;0.7;1" '
+                f'keySplines="{self._EASE};{self._EASE};{self._EASE}"/>')
+
+    def _pulse_attrs(self, stroke, width, first):
+        op = _opacity(stroke)
+        a = ['fill="none"', f'stroke="{_rgb(stroke)}"',
+             f'stroke-width="{_fmt(width)}"']
+        if first:
+            a.append(f'stroke-opacity="{op * 0.25:.3f}"')
+        elif op < 1:
+            a.append(f'stroke-opacity="{op:.3f}"')
+        return a, op
+
+    def pulse_outline(self, points, stroke, width=2.5, first=True,
+                      closed=True, dur=None):
+        """A highlight ring around `points`, brightening once if `first`."""
+        pts = points + points[:1] if closed else points
+        a, op = self._pulse_attrs(stroke, width, first)
+        a = [f'points="{_pts(pts)}"', 'stroke-linejoin="round"'] + a
+        body = self._pulse_anim(op, dur or self._PULSE_DUR) if first else ""
+        self._emit(f"<polyline {' '.join(a)}>{body}</polyline>"
+                   if body else f"<polyline {' '.join(a)}/>")
+
+    def pulse_rect(self, x, y, w, h, stroke, width=2.5, first=True, rx=None,
+                   dur=None):
+        """The same highlight around a box — the common case."""
+        a, op = self._pulse_attrs(stroke, width, first)
+        a = [f'x="{_fmt(x)}"', f'y="{_fmt(y)}"', f'width="{_fmt(w)}"',
+             f'height="{_fmt(h)}"'] + ([f'rx="{_fmt(rx)}"'] if rx else []) + a
+        body = self._pulse_anim(op, dur or self._PULSE_DUR) if first else ""
+        self._emit(f"<rect {' '.join(a)}>{body}</rect>"
+                   if body else f"<rect {' '.join(a)}/>")
+
+    def pulse_ellipse(self, cx, cy, rx, ry, stroke, width=2.5, first=True,
+                      dur=None):
+        """The same highlight around a region on a map."""
+        a, op = self._pulse_attrs(stroke, width, first)
+        a = [f'cx="{_fmt(cx)}"', f'cy="{_fmt(cy)}"', f'rx="{_fmt(rx)}"',
+             f'ry="{_fmt(ry)}"'] + a
+        body = self._pulse_anim(op, dur or self._PULSE_DUR) if first else ""
+        self._emit(f"<ellipse {' '.join(a)}>{body}</ellipse>"
+                   if body else f"<ellipse {' '.join(a)}/>")
+
+    def grow_rect(self, x, y, w, h, fill=None, stroke=None, width=1, rx=None,
+                  w_from=0.0, dur="1.6s"):
+        """A bar that wipes in from `w_from` to its full width once, then
+        holds — the census/roster bars. With `w_from` >= `w` it is static, so a
+        bar already drawn on an earlier verse does not replay on every verse
+        after it (the same "hold what is built" rule as SvgAnimLayer.grow_rect,
+        expressed in canvas coordinates rather than PIL's box form)."""
+        a = [f'x="{_fmt(x)}"', f'y="{_fmt(y)}"',
+             f'width="{_fmt(w)}"', f'height="{_fmt(h)}"']
+        if rx is not None:
+            a.append(f'rx="{_fmt(rx)}"')
+        a += self._paint(fill, stroke, width)
+        start = max(0.0, min(w, w_from))
+        if w - start < 0.5:
+            self._emit(f"<rect {' '.join(a)}/>")
+            return
+        anim = (f'<animate attributeName="width" '
+                f'values="{_fmt(start)};{_fmt(w)}" dur="{dur}" begin="0s" '
+                f'fill="freeze" calcMode="spline" keyTimes="0;1" '
+                f'keySplines="{self._EASE}"/>')
+        self._emit(f"<rect {' '.join(a)}>{anim}</rect>")
+
     def grown(self, points, fill, lo, hi, dur="2.4s"):
         """Filled polygon whose opacity grows from lo to hi once, then holds."""
         a = [f'points="{_pts(points)}"', f'fill="{_rgb(fill)}"',

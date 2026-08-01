@@ -8,9 +8,11 @@ silently discarding hand edits. The studio uses this registry to detect
 never block.
 
 Data lives in svg_generators.json so adding a family is a data edit, not a
-code change. Matching is by (book, chapter); no family owns a partial
-chapter today. If that ever changes, add an optional "verses": [lo, hi]
-field to the JSON entry — owner_of already returns the first match.
+code change. Matching is by (book, chapter), optionally narrowed by verse: a
+family may carry a "verses": [lo, hi] range, which is how Genesis 11 is split
+between Babel (1-9) and the Shem-to-Abram genealogy (10-32). Callers that know
+the verse should pass it; ``owner_of`` without one falls back to the first
+family listed for the chapter, which is ambiguous only for a split chapter.
 """
 
 import json
@@ -35,6 +37,19 @@ class FamilyInfo:
     generator: str  # repo-relative path of the generate_*_svg.py module
     spec: tuple     # tuple[SpecPointer]
     translation_suffixed: bool
+    kind: str | None = None  # visual classification for the manifest
+                             # (genealogy / map / diagram / ...)
+    verses: tuple | None = None  # (lo, hi) when the family owns only part of
+                                 # its chapter; None means the whole chapter
+
+    def covers(self, verse: int | None) -> bool:
+        """Whether this family owns `verse` of a chapter it already matches.
+        An unranged family covers everything; a ranged one covers its range,
+        and covers an unknown (None) verse so a verse-less lookup still
+        resolves to something."""
+        if self.verses is None or verse is None:
+            return True
+        return self.verses[0] <= verse <= self.verses[1]
 
 
 def _load_families():
@@ -49,6 +64,8 @@ def _load_families():
             generator=fam["generator"],
             spec=tuple(SpecPointer(p["file"], p["edit"]) for p in fam["spec"]),
             translation_suffixed=bool(fam.get("translation_suffixed")),
+            kind=fam.get("kind"),
+            verses=(tuple(fam["verses"]) if fam.get("verses") else None),
         ))
     return families
 
@@ -63,10 +80,15 @@ def families(force=False):
     return _families_cache
 
 
-def owner_of(book: str, chapter: int) -> FamilyInfo | None:
-    """The family that generates this chapter's SVGs, or None if the
-    chapter is open for direct hand-authoring."""
+def owner_of(book: str, chapter: int,
+             verse: int | None = None) -> FamilyInfo | None:
+    """The family that generates this verse's SVG, or None if it is open for
+    direct hand-authoring.
+
+    Pass `verse` whenever it is known: a chapter can be split between two
+    families (Genesis 11), and without the verse the first one listed wins.
+    """
     for fam in families():
-        if fam.book == book and chapter in fam.chapters:
+        if fam.book == book and chapter in fam.chapters and fam.covers(verse):
             return fam
     return None

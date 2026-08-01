@@ -105,7 +105,8 @@ def _save_manifest(manifest: dict) -> None:
 
 def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE,
                       rate: int = RATE, translation: str = TRANSLATION,
-                      passage=None, on_verse=None, should_stop=None) -> tuple:
+                      passage=None, on_verse=None, should_stop=None,
+                      force: bool = False) -> tuple:
     """Render one chapter's verses into web/audio/ and update `manifest`.
 
     Reused by both this CLI script and the Audio Renderer studio (audio_studio.py)
@@ -116,6 +117,10 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
     after each verse with status in {"written", "skipped", "degraded"} — lets
     a caller drive a progress bar. `should_stop()`, checked before each verse,
     lets a caller cancel between verses. Returns (written, skipped, degraded).
+
+    `force=True` re-renders verses whose MP3 already exists, overwriting the
+    file in place (same filename, new bytes — the publish flow ships it as a
+    modified file). Default False keeps interrupted renders resumable.
     """
     if passage is None:
         try:
@@ -132,7 +137,7 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
         key = _manifest_key(base, translation)
         filename = _audio_filename(base, translation)
         out_path = os.path.join(AUDIO_DIR, filename)
-        if key in manifest and os.path.exists(out_path):
+        if not force and key in manifest and os.path.exists(out_path):
             skipped += 1
             if on_verse:
                 on_verse(num, "skipped")

@@ -185,8 +185,6 @@ def render_32(verse):
     draw_32(c, verse)
 
     y = 120
-    if notes:
-        y = panel_lines(c, PANEL_X, y, notes) + 14
     if verse in BUILD_VERSES:
         c.text((PANEL_X, y), "modern identifications", 14, TEXT_DIM, "la",
                bold=True)

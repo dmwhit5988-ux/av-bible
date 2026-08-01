@@ -1,6 +1,19 @@
 edge-tts>=6.1
 requests>=2.31
 Pillow>=11.0
-# Optional: embedded SVG Studio preview window (WebView2). The studio
-# degrades to the system browser if this is missing or broken.
+# Optional: embedded web views (WebView2) — the SVG Studio preview and
+# the stage's SVG visuals. The studio degrades to the system browser and
+# the stage falls back to raster (.webp/.png) visuals if this is missing
+# or broken.
 pywebview>=6.0
+
+# Optional: the Pronunciation Verifier (pronunciation_check.py / ipa_asr.py),
+# which transcribes rendered audio back into IPA to check it against
+# pronunciations.json. Heavy (~1.5 GB installed, plus a ~1.2 GB model cached on
+# first run) and needed only by that one authoring tool -- nothing else in the
+# app imports them, and both the studio and the stage run fine without them.
+#   pip install torch transformers soundfile scipy
+# torch>=2.5
+# transformers>=4.40
+# soundfile>=0.12
+# scipy>=1.11

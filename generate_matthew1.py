@@ -183,9 +183,9 @@ def draw_frame_on(d, od, verse, spec, specs, names, first_read, t):
     grow = ease(min(1.0, t / 0.92))
     caption, cells, _ = spec
 
+    # (no caption line: the verse is narrated aloud — the lit names carry it)
     d.text((28, 20), "The Genealogy of Jesus — Matthew 1", font=F_TITLE,
            fill=TEXT)
-    d.text((28, 52), f"verse {verse} — {caption}", font=F_VERSE, fill=HL)
 
     highlighted = set(cells)
     is_summary = (verse == 17)

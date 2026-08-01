@@ -313,7 +313,7 @@ class App:
         new_variant_default = self.variant_var.get()
         if not self._confirm_discard():
             return
-        self.family = svg_registry.owner_of(book, chapter)
+        self.family = svg_registry.owner_of(book, chapter, verse)
         found = existing_variants(book, chapter, verse)
         # Keep the chosen variant if it still exists; otherwise prefer the
         # generic file, else the first existing variant, else generic-new.
@@ -796,6 +796,10 @@ class App:
 
     def _manifest_worker(self):
         try:
+            # Refresh reduced-motion stills first (incremental — only the
+            # just-saved file is stale) so the manifest sees them.
+            import build_stills
+            still_stats = build_stills.build_stills()
             proc = subprocess.run(
                 [sys.executable, os.path.join(REPO_ROOT, "build_manifest.py")],
                 cwd=REPO_ROOT, capture_output=True, text=True, timeout=120)
@@ -806,10 +810,14 @@ class App:
                 return
             with open(os.path.join(REPO_ROOT, "visuals", "manifest.json"),
                       encoding="utf-8") as f:
-                keys = len(json.load(f))
+                data = json.load(f)
+            # Schema v2 wraps the key map in {version, entries}.
+            keys = len(data.get("entries", data))
+            still_note = (f", {still_stats.written} still(s) refreshed"
+                          if still_stats.written else "")
             self.events.put(("manifest_done",
                              f"visuals/manifest.json rebuilt — {keys} verse "
-                             f"keys."))
+                             f"keys{still_note}."))
         except Exception as e:
             self.events.put(("manifest_done", f"manifest rebuild failed: {e}"))
 

@@ -182,9 +182,10 @@ def draw_plan(d, dim=False):
 
 
 def draw_chrome(d, chapter, verse, caption):
+    # (no caption line: the verse is narrated aloud — the plan, insets and
+    # measurement labels carry the graphic; specs still hold `caption` data)
     d.text((28, 20), f"The Tabernacle — Exodus {chapter}", font=F_TITLE,
            fill=TEXT)
-    d.text((28, 52), f"verse {verse} — {caption}", font=F_VERSE, fill=GOLD)
     d.text((28, H - 26), "1 cubit ≈ 18 in / 45 cm", font=F_SMALL,
            fill=TEXT_DIM)
 
@@ -336,9 +337,15 @@ def panel(d, title, subtitle=None):
 
 
 def cap(od, alpha, line1, line2=None):
-    od.text((ICX, CAPY1), line1, font=F_DIM, fill=g(alpha), anchor="mm")
-    if line2:
-        od.text((ICX, CAPY2), line2, font=F_SMALL, fill=g(alpha), anchor="mm")
+    """Inset caption. Only measurement lines (anything carrying a digit) are
+    drawn — prose restating the narrated verse is dropped per the house
+    less-is-more rule; the highlighted part itself carries the meaning. The
+    call sites keep their full text as in-code documentation of each verse."""
+    kept = [ln for ln in (line1, line2)
+            if ln and any(ch.isdigit() for ch in ln)]
+    for i, ln in enumerate(kept):
+        od.text((ICX, CAPY1 if i == 0 else CAPY2), ln,
+                font=F_DIM if i == 0 else F_SMALL, fill=g(alpha), anchor="mm")
 
 
 # --- bronze altar (Exodus 27:1-8) ------------------------------------------

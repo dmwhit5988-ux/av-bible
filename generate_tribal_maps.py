@@ -382,7 +382,6 @@ def panel_lines(d, x, y, lines, gap=22):
     return y
 
 
-FOOTER = "borders are approximate scholarly reconstructions"
 
 
 # ---------------------------------------------------------------------------
@@ -861,12 +860,11 @@ PANEL_X = 440
 
 
 def canvas(title, verse, caption):
+    # (no caption line or footer: the verse is narrated aloud — the map and
+    # its place names carry the graphic; specs still hold `caption` data)
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
     d.text((28, 18), title, font=F_TITLE, fill=TEXT)
-    d.text((28, 52), f"verse {verse} — {caption}", font=F_VERSE, fill=HL)
-    # footer lives in the empty right column, clear of the map's bottom edge
-    d.text((PANEL_X, H - 40), FOOTER, font=F_SMALL, fill=TEXT_DIM)
     return img, d
 
 
@@ -895,24 +893,6 @@ def render_34(verse, t):
             d.text((PANEL_X, 130), TRIBES[focus[0]][0], font=F_BIG, fill=HL)
             d.text((PANEL_X, 176), f"prince: {focus[1]}", font=F_LABEL,
                    fill=TEXT)
-            panel_lines(d, PANEL_X, 212, focus[2])
-            d.text((PANEL_X, 330),
-                   "territory as described in Joshua 13-19", font=F_SMALL,
-                   fill=TEXT_DIM)
-            d.text((PANEL_X, 352),
-                   "Reuben, Gad, half-Manasseh: already", font=F_SMALL,
-                   fill=TEXT_DIM)
-            d.text((PANEL_X, 372),
-                   "settled east of the Jordan (Num 32)", font=F_SMALL,
-                   fill=TEXT_DIM)
-        elif verse == 17:
-            panel_lines(d, PANEL_X, 130,
-                        ["Eleazar casts the lots;", "Joshua leads the conquest",
-                         "", " the division itself is told", " in Joshua 13-19"])
-        elif verse == 18:
-            panel_lines(d, PANEL_X, 130,
-                        ["ten princes for ten tribes —", "Levi receives cities,",
-                         "not territory (Num 35)"])
     return img
 
 
@@ -922,8 +902,6 @@ def render_32(verse, t):
     img, d = canvas("East of the Jordan — Numbers 32", verse, caption)
     draw_32(img, verse, grow)
     y = 120
-    if notes:
-        y = panel_lines(d, PANEL_X, y, notes) + 14
     if verse in BUILD_VERSES:
         d.text((PANEL_X, y), "modern identifications", font=F_DIM,
                fill=TEXT_DIM)

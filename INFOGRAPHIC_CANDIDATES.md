@@ -1,6 +1,6 @@
 # Bible Infographic Candidate Catalog
 
-A book-by-book pass over the entire canon (per the 66-book list in `books.py`) identifying which passages best support an infographic — map, timeline, genealogy, architectural diagram, process diagram, comparison chart, or symbolic diagram — and why. The 8 chapters already produced (see `visuals/manifest.json`) are included inline, marked `✅ Built`, so this is a single complete reference rather than just a gap list.
+A book-by-book pass over the entire canon (per the 66-book list in `books.py`) identifying which passages best support an infographic — map, timeline, genealogy, architectural diagram, process diagram, comparison chart, or symbolic diagram — and why. Chapters already produced (see `visuals/manifest.json`) are included inline, marked `✅ Built`, so this is a single complete reference rather than just a gap list.
 
 Not every chapter is a candidate. Long stretches of law, poetry, and personal correspondence resist visual treatment; those books get a one-line note instead of forced entries.
 
@@ -35,30 +35,30 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 
 ### By Type — High-Priority Highlights
 
-- **🗺️ Map:** [Genesis 12–25](#genesis), [Genesis 25–36](#genesis), [Genesis 37–50](#genesis), [Exodus 12–14](#exodus), [Numbers 10–14](#numbers), [Numbers 33](#numbers), [Numbers 35](#numbers), [Joshua 1–5](#joshua), [Joshua 9–12](#joshua), [Joshua 13–19](#joshua), [1 Samuel 18–27](#1-samuel), [2 Samuel 5, 8, 10](#2-samuel), [1 Kings 12](#1-kings), [1 Kings 17–19](#1-kings), [2 Kings 17](#2-kings), [2 Kings 24–25](#2-kings), [Ezra 1–2](#ezra), [Nehemiah 3](#nehemiah), [Isaiah 13–23](#isaiah), [Ezekiel 47–48](#ezekiel), [Amos 1–2](#amos), [Jonah 1–2](#jonah), [Matthew 2](#matthew), [Acts 1–2](#acts), [Acts 13–14](#acts), [Acts 15–18](#acts), [Acts 18–21](#acts), [Acts 27–28](#acts), [Revelation 2–3](#revelation)
-- **⏳ Timeline:** [Genesis 6–9](#genesis), [Leviticus 23](#leviticus), [Leviticus 25](#leviticus), [Numbers 33](#numbers), [Judges — the judges' cycle roster](#judges), [1 Kings 12 – 2 Kings 17](#1-kings), [2 Kings 24–25](#2-kings), [Ecclesiastes 3:1–8](#ecclesiastes), [Daniel 9](#daniel), [Daniel 10–12](#daniel), [Matthew 21–27](#matthew), [Luke 1–2](#luke), [Hebrews 11](#hebrews), [Revelation 6–16](#revelation), [Revelation 19–20](#revelation)
-- **🌳 Genealogy:** [Genesis 10](#genesis), [1 Chronicles 1–9](#1-chronicles) — plus already-built Genesis 5, Genesis 11, Matthew 1, Luke 3
-- **🏛️ Architectural:** [Genesis 6–9](#genesis), [Exodus 28–29](#exodus), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Ephesians 6:10–18](#ephesians), [Hebrews 9](#hebrews), [Revelation 21–22](#revelation) — plus already-built Exodus 25–27
+- **🗺️ Map:** [Genesis 12–25](#genesis), [Genesis 25–36](#genesis), [Genesis 37–50](#genesis), [Exodus 12–14](#exodus), [Numbers 10–14](#numbers), [Numbers 33](#numbers), [Numbers 35](#numbers), [Joshua 1–5](#joshua), [Joshua 9–12](#joshua), [Joshua 13–19](#joshua), [1 Samuel 18–27](#1-samuel), [2 Samuel 5, 8, 10](#2-samuel), [1 Kings 12](#1-kings), [1 Kings 17–19](#1-kings), [2 Kings 17](#2-kings), [2 Kings 24–25](#2-kings), [Ezra 1–2](#ezra), [Nehemiah 3](#nehemiah), [Isaiah 13–23](#isaiah), [Ezekiel 47–48](#ezekiel), [Amos 1–2](#amos), [Jonah 1–2](#jonah), [Matthew 2](#matthew), [Acts 1–2](#acts), [Acts 15–18](#acts), [Acts 18–21](#acts), [Acts 27–28](#acts), [Revelation 2–3](#revelation)
+- **⏳ Timeline:** [Leviticus 23](#leviticus), [Leviticus 25](#leviticus), [Numbers 33](#numbers), [Judges — the judges' cycle roster](#judges), [1 Kings 12 – 2 Kings 17](#1-kings), [2 Kings 24–25](#2-kings), [Ecclesiastes 3:1–8](#ecclesiastes), [Daniel 9](#daniel), [Daniel 10–12](#daniel), [Matthew 21–27](#matthew), [Luke 1–2](#luke), [Hebrews 11](#hebrews), [Revelation 6–16](#revelation), [Revelation 19–20](#revelation) — plus already-built Genesis 6–9
+- **🌳 Genealogy:** already-built — Genesis 4, Genesis 5, Genesis 10, Genesis 11:10–32, 1 Chronicles 1–9, Matthew 1, Luke 3
+- **🏛️ Architectural:** [Exodus 28–29](#exodus), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Ephesians 6:10–18](#ephesians), [Hebrews 9](#hebrews), [Revelation 21–22](#revelation) — plus already-built Genesis 6–9, Exodus 25–27
 - **🔄 Process/Cycle:** [Exodus 12](#exodus), [Leviticus 16](#leviticus), [Joshua 6](#joshua), [Judges — the judges' cycle](#judges), [Ezekiel 4](#ezekiel), [Revelation 6–16](#revelation)
-- **📊 Comparison Chart:** [Genesis 1 (Day Structure)](#genesis), [Leviticus 1–7](#leviticus), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John — seven signs](#john), [John — seven "I am" statements](#john), [Romans](#romans), [Galatians 5](#galatians), [Hebrews — "better than" argument](#hebrews), [Hebrews 11](#hebrews), [Revelation 2–3](#revelation)
-- **🔢 Numeric/Statistical:** [Numbers 1–2](#numbers), [Ezra 1–2](#ezra)
-- **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Zechariah 1–6](#zechariah), [1 Samuel 17](#1-samuel), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [Revelation 4–5](#revelation)
+- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John — seven signs](#john), [John — seven "I am" statements](#john), [Romans](#romans), [Galatians 5](#galatians), [Hebrews — "better than" argument](#hebrews), [Hebrews 11](#hebrews), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4
+- **🔢 Numeric/Statistical:** [Ezra 1–2](#ezra) — plus already-built Numbers 1–2
+- **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Zechariah 1–6](#zechariah), [1 Samuel 17](#1-samuel), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [Revelation 4–5](#revelation) — plus already-built Genesis 3, Genesis 11:1–9
 
 ---
 
 ## Old Testament
 
 ### Genesis
-*50 chapters. Extremely rich — origins narrative, three generations of patriarchal travel, and two genealogies already built.*
+*50 chapters. Extremely rich — origins narrative, three generations of patriarchal travel. **Chapters 1–11 are complete — every verse has a visual.** The patriarchal journey maps are the big gap.*
 
-- **Genesis 1** — ✅ Built · 📷 Photo stills. The six creation days, each paired with a natural-world photograph. *(`visuals/Genesis/1/`)*
-- **Genesis 1 (Day Structure)** — 🆕 High · 📊 Comparison chart / ⏳ Sequence diagram. The six days follow a forming-then-filling parallel: Day 1 (light/dark) pairs with Day 4 (sun, moon, stars); Day 2 (sky/sea separated) pairs with Day 5 (birds, fish); Day 3 (land/plants) pairs with Day 6 (land animals, humans); Day 7 is rest. A two-column diagram lining up days 1–3 against days 4–6 makes this literary structure visible — a strong candidate independent of and complementary to the existing photo-stills treatment.
-- **Genesis 2** — 🆕 Med · 🗺️ Map/Diagram. Eden is described with four named rivers (Pishon, Gihon, Hiddekel, Euphrates) branching from one source. A simple garden-layout map fits the geographic detail given.
-- **Genesis 4:17–22** — 🆕 Low · 🌳 Genealogy. Cain's line down to Lamech and his three sons (the first musician, metalworker, and herdsman). Small but a clean family-tree fragment.
+- **Genesis 1 (Day Structure)** — ✅ Built · 📊 Comparison chart. The six days as a forming-then-filling parallel: Day 1 (light/dark) pairs with Day 4 (sun, moon, stars); Day 2 (sky/sea separated) with Day 5 (birds, fish); Day 3 (land/plants) with Day 6 (land animals, humans); Day 7 is rest. Two columns, three paired rows, a seven-day bar along the foot. *(`generate_genesis1_svg.py`; **replaced** the earlier photo-stills treatment, retired to `backups/png_replaced_by_svg/Genesis/1/` — see `visuals/CREDITS.txt`)*
+- **Genesis 2** — ✅ Built · 🗺️ Map/Diagram. A schematic garden plan: the river out of Eden parting into four labelled heads (Pishon, Gihon, Hiddekel, Euphrates), the two named trees, the man and the woman, the animals named. Verses 1–3 close Genesis 1's seventh day. *(`generate_genesis2_svg.py`)*
+- **Genesis 3** — ✅ Built · 💡 Symbolic/Conceptual. The chapter has no numbers or geography, so the graphic is built from what it does have: a speaker strip (serpent, woman, man, God) with an arc from speaker to hearer on every line of dialogue — the blame arcs of 12–13 staying on screen so the chain reads whole — and a ledger pairing each Genesis 2 statement with the verse that reverses it. Three body modes: the garden (1–13), the three sentences as a triptych (14–19), the expulsion (20–24), closing with a flaming sword that turns every way. *(`generate_genesis3_svg.py`)*
+- **Genesis 4:17–22** — ✅ Built · 🌳 Genealogy. Cain's line down seven generations to Lamech and his three sons (herding, music, metalwork), with the murder story played across the tree and Seth/Enosh in Adam's other line. Covers all 26 verses. *(`generate_genesis4_svg.py`)*
 - **Genesis 5** — ✅ Built · 🌳 Genealogy. Adam to Noah, lifespans visualized. *(`visuals/Genesis/5/`)*
-- **Genesis 6–9** — 🆕 High · 🏛️ Architectural + ⏳ Timeline. The ark is given exact dimensions (300×50×30 cubits, three decks) and the flood is dated almost to the day (17th day of month 2 through the waters' full recession). A cutaway diagram suits the ark's structure; a dated timeline suits the flood's day-by-day chronology.
-- **Genesis 10** — 🆕 High · 🌳 Genealogy + 🗺️ Map. The Table of Nations: Noah's three sons' descendants mapped onto the known ancient world's peoples. A genealogy that doubles as a map — one of the richest hybrid candidates in the OT.
-- **Genesis 11** — ✅ Built (genealogy) · plus 🆕 Med · 💡 Tower of Babel (11:1–9), a dispersion diagram of one language becoming many, scattering peoples across the map already established in ch. 10.
+- **Genesis 6–9** — ✅ Built · 🏛️ Architectural + ⏳ Timeline. The ark to scale as a side elevation (300×50×30 cubits, three levels, door, roof) with a 50×30 end-view callout; the water level rises and falls verse by verse and the ark grounds on Ararat at 8:4; a 13-stop dated timeline along the foot carries the chronology. *(`generate_genesis69_svg.py`)*
+- **Genesis 10** — ✅ Built · 🌳 Genealogy + 🗺️ Map. The Table of Nations as both: a map of the known world with the three lines as bands and the son-level peoples as dots, plus a panel carrying the running name list and the per-line tallies that add to seventy. *(`generate_genesis10_svg.py`)*
+- **Genesis 11** — ✅ Built · 💡 Babel (1–9) + 🌳 Genealogy (10–32). Babel runs on the chapter's own vertical axis: men build up (a ziggurat rising course by course, its top never reaching the sky band it claims) while God comes down; the one-language band breaks into threads at v7, and a Genesis 10 map inset marks Shinar and fires the scattering back out of it. The panel carries the three “Come, let's…” summons — twice from below, once from above. Verses 10–32 remain the Shem-to-Abram genealogy. *(`generate_genesis11_svg.py` owns 1–9, `generate_genealogy_svg.py` owns 10–32 — the project's first split chapter, hence the `verses` ranges in `svg_generators.json`)*
 - **Genesis 12–25** — 🆕 High · 🗺️ Map. Abraham's travels: Ur → Haran → Canaan → Egypt (famine) → back to Canaan, plus the Lot separation and the rescue campaign in ch. 14. A career-spanning journey map.
 - **Genesis 14** — 🆕 Med · 🗺️ Map. The war of the four kings against five — a short, self-contained campaign map.
 - **Genesis 25:12–18** — 🆕 Low · 🌳 Genealogy. Ishmael's twelve sons/tribal princes.
@@ -92,10 +92,10 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Leviticus 26** — 🆕 Low · 📊 Chart. Conditional blessings vs. curses.
 
 ### Numbers
-*36 chapters. Numbers 32 and 34 are already built; the rest of the book is just as map-rich.*
+*36 chapters. Numbers 1–4, 32 and 34 are already built; the rest of the book is just as map-rich.*
 
-- **Numbers 1–2** — 🆕 High · 🔢 + 🏛️ Camp diagram. The census totals and the tribes' fixed positions around the tabernacle, by compass direction — an iconic organizational layout.
-- **Numbers 3–4** — 🆕 Med · 📊 Chart. Levite clans (Gershon, Kohath, Merari) and their assigned duties.
+- **Numbers 1–2** — ✅ Built · 🔢 + 🏛️ Camp diagram. Two halves of one world: on the left a plan of the four camps around the Tent of Meeting drawn with **east at the top** (the door faced the sunrise, Judah camps there and marches first, so the order of march reads clockwise); on the right the twelve tribes as a roster — a name, a bar on one shared scale, a number — with Levi held out on a dashed row and the running total climbing to 603,550. Chapter 1 drives the roster, chapter 2 the plan. A prince's name appears only on the row the current verse is naming. *(`generate_numbers1_2_svg.py`)*
+- **Numbers 3–4** — ✅ Built · 📊 Chart. An organization chart of the tribe Numbers 1 left out: Aaron's four sons across the top (two struck out at 3:4; the two who remain are the names the rest reports to), then Gershon, Kohath and Merari as three columns carrying families, prince, camp side, and — the body of each column — a drawing of what that clan is responsible for with its pieces labelled a word or two each. Both chapters' lists name the same objects, so chapter 3's standing duty and chapter 4's burden on the march simply light up parts of one drawing rather than being written out. The Kohathite panel drapes its six holy objects one at a time in the blue, scarlet and purple of 4:5–14. Below each column, both counts; on the right, the Levite ring and the 3:40–51 redemption ledger. *(`generate_numbers3_4_svg.py`)*
 - **Numbers 7** — 🆕 Low · 🔢 Chart. Twelve tribal leaders' dedication gifts — identical items repeated 12 times; a numeric roster more than a narrative.
 - **Numbers 10–14** — 🆕 High · 🗺️ Map. Departure from Sinai, the twelve spies' 40-day reconnaissance route into Canaan, and the report that triggers the wilderness sentence.
 - **Numbers 20–21** — 🆕 Med · 🗺️ Map. Edom's refusal of passage, Aaron's death at Hor, the bronze serpent, and the conquest of Sihon and Og — sets up the already-built Numbers 32 map.
@@ -178,7 +178,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### 1 Chronicles
 *29 chapters. Chapters 1–9's genealogies are a major candidate on their own.*
 
-- **1 Chronicles 1–9** — 🆕 High · 🌳 Genealogy. Nine chapters of genealogies from Adam through the returned exiles — the single largest genealogical block in Scripture. Candidates within it: ch. 1 (nations table, parallels Genesis 10), chs. 2–4 (Judah's line to David), ch. 6 (priestly/Levitical line), ch. 9 (post-exilic residents of Jerusalem).
+- **1 Chronicles 1–9** — ✅ Built · 🌳 Genealogy. Nine chapters of genealogies from Adam through the returned exiles — the single largest genealogical block in Scripture, rendered as one world per chapter viewed through a per-verse camera. *(`generate_1chronicles.py` + `svg_1chronicles_render.py`)* Sections within it: ch. 1 (nations table, parallels Genesis 10), chs. 2–4 (Judah's line to David), ch. 6 (priestly/Levitical line), ch. 9 (post-exilic residents of Jerusalem).
 - **1 Chronicles 11–12** — 🆕 Med · 📊 Roster chart. David's mighty men, listed with their individual exploits.
 - **1 Chronicles 22–27** — 🆕 High · 📊 + 🔢 Organizational chart. David's organization of temple service — 24 priestly divisions, Levite duties, army divisions by month, tribal leaders — an unusually structured administrative chart.
 - **1 Chronicles 28–29** — 🆕 Med · 🏛️ Architectural. The temple's plans handed to Solomon — ties directly to 1 Kings 6–7.
@@ -388,7 +388,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Acts 1–2** — 🆕 High · 🗺️ Map. The Ascension and Pentecost, including the list of nations/languages represented in Jerusalem.
 - **Acts 6–8** — 🆕 Med · 🗺️ Map. Stephen's martyrdom, the gospel's spread to Samaria, and the Ethiopian eunuch's road.
 - **Acts 9** — 🆕 Med · 🗺️ Map. Paul's conversion on the Damascus road.
-- **Acts 13–14** — 🆕 High · 🗺️ Map. Paul's First Missionary Journey — Cyprus and the Galatian region.
+- **Acts 13–14** — ✅ Built · 🗺️ Map. Paul's First Missionary Journey — Cyprus and the Galatian region, revealed leg by leg with a vertical itinerary strip. *(`generate_acts1314_svg.py`)*
 - **Acts 15** — 🆕 Med · 🔄 Process diagram. The Jerusalem Council's decision process.
 - **Acts 15–18** — 🆕 High · 🗺️ Map. Paul's Second Missionary Journey — Asia Minor into Macedonia and Greece, including Philippi, Athens, and Corinth.
 - **Acts 18–21** — 🆕 High · 🗺️ Map. Paul's Third Missionary Journey — centered on Ephesus, then the return to Jerusalem.

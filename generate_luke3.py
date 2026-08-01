@@ -167,10 +167,10 @@ def draw_frame(verse, slots, ranges, t):
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od = ImageDraw.Draw(overlay)
 
+    # (no caption line: the verse is narrated aloud — the road of names
+    # sliding under the camera carries it)
     d.text((28, 20), "From Jesus back to Adam — Luke 3", font=F_TITLE,
            fill=TEXT)
-    d.text((28, 52), f"verse {verse} — {caption[:92]}", font=F_VERSE,
-           fill=HL)
 
     # the camera rides the sweep tip: the marker stays centered while the
     # road slides past, from the previous verse's resting point to this

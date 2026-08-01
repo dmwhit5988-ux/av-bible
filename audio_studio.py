@@ -124,11 +124,18 @@ class App:
                      values=list(TRANSLATION_LABELS.values())).grid(
             row=1, column=3, sticky="w", padx=(4, 0), pady=(8, 0))
 
+        self.force_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            top, variable=self.force_var,
+            text="Overwrite existing files (re-render after a pronunciation "
+                 "or voice change)").grid(
+            row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
+
         ttk.Label(top, foreground="#888888", wraplength=600, justify="left",
                   text="Every translation you render is a separate set of files "
                        "on top of any others already rendered for the same "
                        "verses — watch the file-count guardrail below.").grid(
-            row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
+            row=3, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
         btns = ttk.Frame(self.root, padding=(10, 6))
         btns.pack(fill="x")
@@ -188,21 +195,26 @@ class App:
             return
         book, chapters = self._chapter_range()
         if not chapters:
-            messagebox.showerror("Audio Renderer", "Pick a valid chapter range.")
+            messagebox.showerror("Audio Renderer", "Pick a valid chapter range.",
+                                 parent=self.root)
             return
         voice = self.voice_var.get()
         translation = _LABEL_TO_CODE.get(self.translation_var.get(),
                                           showcase_audio.TRANSLATION)
+        force = self.force_var.get()
         self.busy = True
         self.render_btn.configure(state="disabled")
         self.status_var.set(f"Scanning {book} {chapters[0]}-{chapters[-1]}…")
-        threading.Thread(target=self._scan, args=(book, chapters, voice, translation),
+        threading.Thread(target=self._scan,
+                         args=(book, chapters, voice, translation, force),
                          daemon=True).start()
 
-    def _scan(self, book, chapters, voice, translation):
+    def _scan(self, book, chapters, voice, translation, force):
         """Pre-fetch each chapter to count new-vs-existing verses, so the
         confirm dialog can show the real projected file count. Passages
-        fetched here are reused by the render pass -- no double fetch."""
+        fetched here are reused by the render pass -- no double fetch.
+        Overwrites (force) don't add files, so they never count against the
+        ceiling -- only genuinely new files do."""
         manifest = showcase_audio._load_manifest()
         passages = {}
         new_files = 0
@@ -229,22 +241,32 @@ class App:
             return
         current_total = count_deploy_files()
         self.events.put(("confirm", book, chapters, voice, translation, passages,
-                         manifest, new_files, current_total, total_verses))
+                         manifest, new_files, current_total, total_verses,
+                         force))
 
     def _do_confirm(self, book, chapters, voice, translation, passages, manifest,
-                     new_files, current_total, total_verses):
+                     new_files, current_total, total_verses, force):
         resulting = current_total + new_files
         over = resulting > CLOUDFLARE_PAGES_FILE_LIMIT
+        overwrites = total_verses - new_files if force else 0
+        work = (f"{new_files} new file(s), {overwrites} overwrite(s)"
+                if force else f"{new_files} new file(s)")
         msg = (f"{book} {chapters[0]}-{chapters[-1]} ({translation}): "
-               f"{total_verses} verse(s), {new_files} new file(s) to render.\n\n"
+               f"{total_verses} verse(s), {work} to render.\n\n"
                f"Current deploy bundle: {current_total:,} files\n"
                f"Resulting total: {resulting:,} files "
                f"(limit ~{CLOUDFLARE_PAGES_FILE_LIMIT:,})\n\n")
         if over:
             msg += "This would EXCEED the Cloudflare Pages file-count ceiling.\n\n"
         msg += "Continue?"
+        # parent= keeps the dialog owned by this window (not the main studio's
+        # root), so dismissing it hands focus back here; the lift/focus_force
+        # belt-and-suspenders covers Windows restacking anyway.
         proceed = messagebox.askyesno(
-            "Confirm render", msg, icon="warning" if over else "question")
+            "Confirm render", msg, icon="warning" if over else "question",
+            parent=self.root)
+        self.root.lift()
+        self.root.focus_force()
         if not proceed:
             self.busy = False
             self.render_btn.configure(state="normal")
@@ -254,10 +276,12 @@ class App:
         self.cancel_btn.configure(state="normal")
         self.progress.configure(maximum=max(total_verses, 1), value=0)
         threading.Thread(target=self._render_worker,
-                         args=(book, chapters, voice, translation, passages, manifest),
+                         args=(book, chapters, voice, translation, passages,
+                               manifest, force),
                          daemon=True).start()
 
-    def _render_worker(self, book, chapters, voice, translation, passages, manifest):
+    def _render_worker(self, book, chapters, voice, translation, passages,
+                       manifest, force):
         done = 0
         totals = {"written": 0, "skipped": 0, "degraded": 0}
 
@@ -277,7 +301,7 @@ class App:
                 book, ch, manifest, voice=voice, rate=RATE,
                 translation=translation, passage=passage,
                 on_verse=lambda num, status, ch=ch: on_verse(num, status, ch),
-                should_stop=self._cancel.is_set)
+                should_stop=self._cancel.is_set, force=force)
             showcase_audio._save_manifest(manifest)  # per-chapter, resumable
         self.events.put(("render_done", totals["written"], totals["skipped"],
                          totals["degraded"]))
@@ -323,7 +347,7 @@ class App:
             if not messagebox.askyesno(
                 "Audio Renderer",
                 "A render is in progress. Close anyway? It will finish the "
-                "current verse, then stop."):
+                "current verse, then stop.", parent=self.root):
                 return
             self._cancel.set()
         self.root.destroy()

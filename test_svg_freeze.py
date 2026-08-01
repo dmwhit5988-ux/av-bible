@@ -8,7 +8,8 @@ import os
 import unittest
 import xml.etree.ElementTree as ET
 
-from svg_freeze import SVGNS, FreezeResult, freeze_to_base
+from svg_freeze import (SVGNS, FreezeResult, freeze_still, freeze_to_base,
+                        svg_is_animated)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -165,6 +166,88 @@ class FreezeCases(unittest.TestCase):
         # the rect was hoisted, not wrapped in a second group
         self.assertEqual(
             [k.tag.rsplit('}', 1)[-1] for k in base], ["rect"])
+
+
+class StillCases(unittest.TestCase):
+    """freeze_still: play-once animations freeze at their final values (same
+    case table), and everything else — perpetual pulses, transforms — is
+    stripped so the result contains no SMIL at all."""
+
+    def test_play_once_frozen_at_final_value(self):
+        svg = wrap(
+            '<polygon points="0,0 1,0 1,1" fill="rgb(1,2,3)" '
+            'fill-opacity="0.235">'
+            '<animate attributeName="fill-opacity" values="0.235;0.588" '
+            'dur="2.6s" fill="freeze"/></polygon>')
+        result = freeze_still(svg)
+        (poly,) = find_all(parse(result), "polygon")
+        self.assertEqual(poly.get("fill-opacity"), "0.588")
+        self.assertFalse(svg_is_animated(result.svg_text))
+        self.assertEqual(result.warnings, [])
+
+    def test_indefinite_pulse_stripped_to_base(self):
+        # The one case where still diverges from freeze_to_base: ambience is
+        # motion, so the pulse goes and the group keeps its base opacity.
+        svg = wrap(
+            '<g opacity="0.3"><animate attributeName="opacity" '
+            'values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>'
+            '<rect x="0" y="0" width="5" height="5"/></g>')
+        result = freeze_still(svg)
+        root = parse(result)
+        self.assertFalse(find_all(root, "animate"))
+        (g,) = find_all(root, "g")
+        self.assertEqual(g.get("opacity"), "0.3")
+        self.assertEqual(len(result.warnings), 1)
+        self.assertIn("removed for the still variant", result.warnings[0])
+
+    def test_play_once_transform_frozen_at_final(self):
+        # The genealogy slide-in shape: replace-mode animateTransform with
+        # fill="freeze" writes its final value as the transform attribute.
+        svg = wrap(
+            '<g><animateTransform attributeName="transform" '
+            'type="translate" values="184 0;0 0" dur="2.6s" '
+            'fill="freeze"/><rect width="5" height="5"/></g>')
+        result = freeze_still(svg)
+        (g,) = find_all(parse(result), "g")
+        self.assertEqual(g.get("transform"), "translate(0 0)")
+        self.assertFalse(svg_is_animated(result.svg_text))
+        self.assertEqual(result.warnings, [])
+
+    def test_indefinite_transform_stripped_with_warning(self):
+        svg = wrap(
+            '<rect x="0" y="0" width="10" height="10">'
+            '<animateTransform attributeName="transform" type="rotate" '
+            'values="0;360" dur="4s" repeatCount="indefinite"/></rect>')
+        result = freeze_still(svg)
+        self.assertFalse(svg_is_animated(result.svg_text))
+        (rect,) = find_all(parse(result), "rect")
+        self.assertIsNone(rect.get("transform"))  # base value stands
+        self.assertEqual(len(result.warnings), 1)
+
+    def test_no_structural_rewrite(self):
+        # Unlike freeze_to_base there is no frozen-base group and no overlay
+        # — the document keeps its own structure, minus the animation.
+        svg = wrap(
+            '<defs><clipPath id="c"><rect width="5" height="5"/></clipPath>'
+            '</defs><rect x="0" y="0" width="10" height="10"/>')
+        root = parse(freeze_still(svg))
+        self.assertEqual([k.tag.rsplit("}", 1)[-1] for k in root],
+                         ["defs", "rect"])
+        self.assertFalse([g for g in find_all(root, "g")
+                          if g.get("class") == "frozen-base"])
+
+    def test_real_output_contains_no_smil(self):
+        path = os.path.join(HERE, "visuals", "Exodus", "26",
+                            "Exodus_26_1.svg")
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        self.assertTrue(svg_is_animated(text))
+        result = freeze_still(text)
+        self.assertFalse(svg_is_animated(result.svg_text))
+        root = parse(result)
+        # traced borders froze fully drawn, same as freeze_to_base
+        for el in root.iter():
+            self.assertIsNone(el.get("stroke-dashoffset"))
 
 
 class RealOutputRoundTrips(unittest.TestCase):

@@ -38,7 +38,6 @@ from generate_tribal_maps import MapFrame, SEA, LAND, RIVER, WATER_TXT
 MAP_RECT = (24, 92, 636, 556)            # x0, y0, x1, y1 of the map window
 MF = MapFrame(34.35, 38.75, 29.85, 37.00, MAP_RECT)
 PANEL_X = 648
-FOOTER = "route and ancient site locations are approximate"
 
 DASH_UP = "5,6"          # upcoming (not-yet-travelled) legs
 DASH_SEA = "2,6"         # a travelled sea crossing (dotted "sailing" line)
@@ -432,11 +431,6 @@ def draw_panel(c, ch, v):
         c.text((PANEL_X, bot_y + 24), "↩  returning to Antioch", 13, HL,
                "la", italic=True)
 
-    # scene note
-    ny = bot_y + 52
-    for line in scene_note(ch, v):
-        c.text((PANEL_X, ny), line, 14, TEXT_DIM, "la", italic=True)
-        ny += 20
 
 
 # ---------------------------------------------------------------------------
@@ -446,10 +440,8 @@ def draw_panel(c, ch, v):
 def render(ch, v):
     focus_key, caption = STORY[(ch, v)]
     c = SvgCanvas(W, H, bg=BG)
-    c.text((28, 20), f"Paul’s First Missionary Journey — Acts {ch}",
+    c.text((28, 24), f"Paul’s First Missionary Journey — Acts {ch}",
            24, TEXT, "la", bold=True)
-    c.text((28, 54), f"verse {v} — {caption}", 17, HL, "la", italic=True)
-    c.text((28, H - 22), FOOTER, 13, TEXT_DIM, "la", italic=True)
 
     with c.group(MF.px, MF.py, clip=(MF.mw, MF.mh)):
         c.rect(0, 0, MF.mw, MF.mh, fill=SEA)

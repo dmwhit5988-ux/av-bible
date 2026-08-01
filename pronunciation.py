@@ -88,8 +88,12 @@ def load(force: bool = False) -> dict:
     }
     if _table:
         # Longest names first so a name that contains another matches whole.
+        # Lookarounds instead of \b so a key may end in a non-word character
+        # (e.g. "fathers’" -- \b after the apostrophe would never match).
         keys = sorted(_table, key=len, reverse=True)
-        _pattern = re.compile(r"\b(" + "|".join(re.escape(k) for k in keys) + r")\b")
+        _pattern = re.compile(
+            r"(?<!\w)(" + "|".join(re.escape(k) for k in keys) + r")(?!\w)"
+        )
     else:
         _pattern = None
     return _names

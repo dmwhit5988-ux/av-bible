@@ -17,6 +17,8 @@ from tkinter import ttk
 
 import audio_studio
 import config
+import coverage_studio
+import publish_studio
 import svg_studio
 from books import BOOK_NAMES, chapters_in
 from passages import (Passage, PassageError, fetch_passage, fetch_esv_audio,
@@ -60,7 +62,6 @@ class PlaybackSession(threading.Thread):
         self.mode = mode
         self.api_key = api_key
         self.player = AudioPlayer()
-        self.paused = False
         self._stop = threading.Event()
         self._jump = None
         self._jump_lock = threading.Lock()
@@ -74,20 +75,11 @@ class PlaybackSession(threading.Thread):
         self._stop.set()
         self.player.stop()
 
-    def pause(self):
-        self.paused = True
-        self.player.pause()
-
-    def resume(self):
-        self.paused = False
-        self.player.resume()
-
     def request_jump(self, index: int):
         if self.mode != "tts":
             return
         with self._jump_lock:
             self._jump = max(0, min(index, len(self.passage.verses) - 1))
-        self.paused = False
         self.player.stop()  # breaks the poll loop quickly
 
     def _take_jump(self):
@@ -121,7 +113,7 @@ class PlaybackSession(threading.Thread):
             if jump_pending:
                 return False
             mode = self.player.mode()
-            if mode in ("", "stopped") and not self.paused:
+            if mode in ("", "stopped"):
                 return True
             time.sleep(0.06)
         return False
@@ -274,6 +266,8 @@ class App:
         self.fullscreen_stage: FullscreenStage | None = None
         self.audio_studio_win: tk.Toplevel | None = None
         self.svg_studio_win: tk.Toplevel | None = None
+        self.publish_win: tk.Toplevel | None = None
+        self.coverage_win: tk.Toplevel | None = None
         self.stage = StageController()
 
         self._build_ui()
@@ -345,9 +339,6 @@ class App:
 
         self.play_btn = ttk.Button(bar, text="▶ Play", command=self.play)
         self.play_btn.pack(side="left")
-        self.pause_btn = ttk.Button(bar, text="⏸ Pause",
-                                    command=self.toggle_pause, state="disabled")
-        self.pause_btn.pack(side="left", padx=(6, 0))
         self.stop_btn = ttk.Button(bar, text="⏹ Stop", command=self.stop,
                                    state="disabled")
         self.stop_btn.pack(side="left", padx=(6, 14))
@@ -373,10 +364,16 @@ class App:
                         command=self._on_display_toggle).pack(side="left",
                                                               padx=(8, 0))
 
+        ttk.Button(bar, text="🚀 Publish",
+                   command=self.open_publish).pack(side="right", padx=(0, 6))
+        ttk.Button(bar, text="📊 Coverage",
+                   command=self.open_coverage).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎨 SVG Studio",
                    command=self.open_svg_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎙 Pronunciation Studio",
                    command=self.open_pronunciation_tool).pack(side="right", padx=(0, 6))
+        ttk.Button(bar, text="👂 Verifier",
+                   command=self.open_pronunciation_check).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎚 Audio Renderer",
                    command=self.open_audio_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🖥 Display window",
@@ -500,10 +497,27 @@ class App:
             )
             book = self.book_var.get()
             chapter = self._chapter()
-            subprocess.Popen([sys.executable, script_path, book, str(chapter)])
-            self.set_status(f"Pronunciation Studio launched on {book} {chapter}.")
+            translation = self.selected_translation()
+            subprocess.Popen([sys.executable, script_path, book, str(chapter), translation])
+            self.set_status(f"Pronunciation Studio launched on {book} {chapter} ({translation}).")
         except Exception as e:
             self.set_status(f"Error launching Pronunciation Studio: {e}")
+
+    def open_pronunciation_check(self):
+        """Launch the Pronunciation Verifier in a separate process.
+
+        No book/chapter is passed: unlike the Studio, the Verifier works across
+        the whole pronunciations.json list rather than one chapter's names.
+        """
+        try:
+            script_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "pronunciation_check.py"
+            )
+            subprocess.Popen([sys.executable, script_path])
+            self.set_status("Pronunciation Verifier launched.")
+        except Exception as e:
+            self.set_status(f"Error launching Pronunciation Verifier: {e}")
 
     def open_audio_studio(self):
         """Open the Audio Renderer as a Toplevel, pre-loaded on whatever
@@ -534,6 +548,44 @@ class App:
         svg_studio.App(top, book, chapter)
         self.svg_studio_win = top
         self.set_status(f"SVG Studio opened on {book} {chapter}.")
+
+    def open_publish(self):
+        """Open the Publish tool (stills → manifest → deploy bundle → git
+        push) as a Toplevel."""
+        if self.publish_win is not None and self.publish_win.winfo_exists():
+            self.publish_win.deiconify()
+            self.publish_win.lift()
+            self.publish_win.focus_force()
+            return
+        top = tk.Toplevel(self.root)
+        publish_studio.App(top)
+        self.publish_win = top
+        self.set_status("Publish tool opened.")
+
+    def open_coverage(self):
+        """Open the Coverage dashboard as a Toplevel. Its "Go to chapter"
+        action points the reader's pickers at the selected row."""
+        if self.coverage_win is not None and self.coverage_win.winfo_exists():
+            self.coverage_win.deiconify()
+            self.coverage_win.lift()
+            self.coverage_win.focus_force()
+            return
+
+        def goto(book, chapter):
+            if book not in BOOK_NAMES:
+                return
+            self.book_var.set(book)
+            self._on_book_change()
+            self.chapter_var.set(str(chapter))
+            self.root.deiconify()
+            self.root.lift()
+            self.set_status(f"Coverage: jumped to {book} {chapter} — "
+                            f"press Play or open a studio tool.")
+
+        top = tk.Toplevel(self.root)
+        coverage_studio.App(top, goto=goto)
+        self.coverage_win = top
+        self.set_status("Coverage dashboard opened.")
 
     # -- transport controls --------------------------------------------------
 
@@ -589,7 +641,6 @@ class App:
         self._save_position()
         self.session.start()
         self.play_btn.configure(state="normal")
-        self.pause_btn.configure(state="normal", text="⏸ Pause")
         self.stop_btn.configure(state="normal")
 
     def _stop_session(self):
@@ -600,21 +651,8 @@ class App:
 
     def stop(self):
         self._stop_session()
-        self.pause_btn.configure(state="disabled", text="⏸ Pause")
         self.stop_btn.configure(state="disabled")
         self.set_status("Stopped.")
-
-    def toggle_pause(self):
-        if not (self.session and self.session.is_alive()):
-            return
-        if self.session.paused:
-            self.session.resume()
-            self.pause_btn.configure(text="⏸ Pause")
-            self.set_status("Resumed.")
-        else:
-            self.session.pause()
-            self.pause_btn.configure(text="▶ Resume")
-            self.set_status("Paused.")
 
     def next_item(self):
         if self.session and self.session.is_alive() \
@@ -758,6 +796,10 @@ class App:
         elif kind == "verse":
             idx = event[2]
             self._highlight_verse(idx)
+            # Track playback in the verse dropdown (like the web app),
+            # so Stop followed by Play resumes from the verse being
+            # read instead of restarting the chapter.
+            self.verse_var.set(str(self.passage.verses[idx][0]))
             self.stage.show_verse(self._verse_context(idx))
         elif kind in ("intro", "narration"):
             p = self.passage
@@ -769,11 +811,13 @@ class App:
                 show_reference=bool(self.ref_var.get())))
         elif kind == "done":
             completed = event[2]
-            self.pause_btn.configure(state="disabled", text="⏸ Pause")
             self.stop_btn.configure(state="disabled")
             self.session = None
             self.current_sid = 0
             if completed and self.passage:
+                # A finished chapter replays from the top; a chapter
+                # stopped early keeps its place in the verse dropdown.
+                self.verse_var.set("1")
                 self.set_status(f"Finished {self.passage.canonical}.")
                 if self.auto_var.get():
                     at_end = (self.book_var.get() == BOOK_NAMES[-1]

@@ -366,8 +366,8 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
     grow = ease(min(1.0, t / 0.92))
 
     d.text((28, 20), cd.title, font=F_TITLE, fill=TEXT)
-    d.text((28, 52), f"verse {verse} — {spec['caption']}", font=F_VERSE,
-           fill=HL)
+    # (no caption line: the verse is narrated aloud, so the graphic carries
+    # only names, years and the chain — specs still hold `caption` data)
 
     focus = spec["focus"]
     stage = spec["stage"]
@@ -421,8 +421,8 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
             d.ellipse([x - 5, y - 5, x + 5, y + 5], outline=SAND, width=2)
             d.text((x, y - 17), nm, font=F_LABEL, fill=TEXT, anchor="mm")
 
-    # (the top-right fact card was removed at user request — the caption
-    # line carries the verse content, and the card crowded the year labels
+    # (the top-right fact card was removed at user request — the narration
+    # carries the verse content, and the card crowded the year labels
     # of the top timeline bars; specs still carry `card` data if a future
     # design wants it back)
 
