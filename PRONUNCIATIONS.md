@@ -162,7 +162,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Beersheba | beer-SHEE-buh | /bɪərˈʃiː.bə/ | Genesis 21:14 |  |
 | Buz | BUHZ | /bʌz/ | Genesis 22:21 |  |
 | Bethuel | buh-THYOO-el | /bəˈθjuː.əl/ | Genesis 22:22 |  |
-| Maacah | MAY-uh-kuh | /ˈmeɪ.ə.kə/ | Genesis 22:24 |  |
+| Maacah | MAY-uh-kuh | /ˈmeɪ.ə.kə/ | Genesis 22:24 | ✅ |
 | Kiriath | KIR-ee-ath | /ˈkɪr.i.æθ/ | Genesis 23:2 |  |
 | Keturah | kuh-TYOO-ruh | /kəˈtjʊər.ə/ | Genesis 25:1 |  |
 | Ishbak | ISH-bak | /ˈɪʃ.bæk/ | Genesis 25:2 |  |
@@ -228,7 +228,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Mizzah | MIZ-uh | /ˈmɪz.ə/ | Genesis 36:13 |  |
 | Nahath | NAY-hath | /ˈneɪ.hæθ/ | Genesis 36:13 |  |
 | Shammah | SHAM-uh | /ˈʃæm.ə/ | Genesis 36:13 |  |
-| Zerah | ZEE-ruh | /ˈzɪər.ə/ | Genesis 36:13 |  |
+| Zerah | ZEER-uh | /ˈzɪər.ə/ | Genesis 36:13 | ✅ |
 | Lotan | LOH-tan | /ˈloʊ.tæn/ | Genesis 36:20 |  |
 | Shobal | SHOH-buhl | /ˈʃoʊ.bəl/ | Genesis 36:20 |  |
 | Dishan | DY-shan | /ˈdaɪ.ʃæn/ | Genesis 36:21 |  |
@@ -278,7 +278,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Hezron | HEZ-ron | /ˈhɛz.rɒn/ | Genesis 46:9 |  |
 | Pallu | PAL-oo | /ˈpæl.uː/ | Genesis 46:9 |  |
 | Jachin | JAY-kin | /ˈdʒeɪ.kɪn/ | Genesis 46:10 |  |
-| Jamin | JAY-min | /ˈdʒeɪ.mɪn/ | Genesis 46:10 |  |
+| Jamin | JAY-mihn | /ˈdʒeɪ.mɪn/ | Genesis 46:10 | ✅ |
 | Gershon | GUR-shon | /ˈɡɜːr.ʃɒn/ | Genesis 46:11 |  |
 | Kohath | KOH-hath | /ˈkoʊ.hæθ/ | Genesis 46:11 |  |
 | Merari | muh-RAY-ry | /məˈreɪ.raɪ/ | Genesis 46:11 |  |
@@ -301,7 +301,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Hushim | HYOO-shim | /ˈhjuː.ʃɪm/ | Genesis 46:23 |  |
 | Guni | GYOO-ny | /ˈɡjuː.naɪ/ | Genesis 46:24 |  |
 | Jezer | JEE-zer | /ˈdʒiː.zər/ | Genesis 46:24 |  |
-| Machir | MAY-kur | /ˈmeɪ.kər/ | Genesis 50:23 |  |
+| Machir | maykuhr | /ˈmeɪ.kər/ | Genesis 50:23 | ✅ |
 | Puah | PYOO-uh | /ˈpjuː.ə/ | Exodus 1:15 |  |
 | Moses | MOH-ziz | /ˈmoʊ.zɪz/ | Exodus 2:10 |  |
 | Gershom | GUR-shuhm | /ˈɡɜːr.ʃəm/ | Exodus 2:22 |  |
@@ -320,11 +320,11 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Nepheg | NEE-feg | /ˈniː.fɛɡ/ | Exodus 6:21 |  |
 | Zichri | ZIK-ry | /ˈzɪk.raɪ/ | Exodus 6:21 |  |
 | Abihu | uh-BY-hyoo | /əˈbaɪ.hjuː/ | Exodus 6:23 |  |
-| Amminadab | uh-MIN-uh-dab | /əˈmɪn.ə.dæb/ | Exodus 6:23 |  |
+| Amminadab | uh-MIHN-uh-dab | /əˈmɪn.ə.dæb/ | Exodus 6:23 | ✅ |
 | Eleazar | el-ee-AY-zer | /ˌɛl.iˈeɪ.zər/ | Exodus 6:23 |  |
 | Ithamar | ITH-uh-mar | /ˈɪθ.ə.mɑːr/ | Exodus 6:23 |  |
 | Nadab | NAY-dab | /ˈneɪ.dæb/ | Exodus 6:23 |  |
-| Nahshon | NAH-shon | /ˈnɑː.ʃɒn/ | Exodus 6:23 |  |
+| Nahshon | NAH-shon | /ˈnɑː.ʃɒn/ | Exodus 6:23 | ✅ |
 | Assir | AS-ur | /ˈæs.ər/ | Exodus 6:24 |  |
 | Elkanah | el-KAY-nuh | /ɛlˈkeɪ.nə/ | Exodus 6:24 |  |
 | Korahites | KOR-uh-hites | /ˈkɔːr.ə.haɪts/ | Exodus 6:24 |  |
@@ -333,13 +333,13 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Joshua | JOSH-oo-uh | /ˈdʒɒʃ.u.ə/ | Exodus 17:9 |  |
 | Hur | HUR | /hɜːr/ | Exodus 17:10 |  |
 | Bezalel | BEZ-uh-lel | /ˈbɛz.ə.lɛl/ | Exodus 31:2 |  |
-| Uri | YOOR-eye | /ˈjʊər.aɪ/ | Exodus 31:2 |  |
+| Uri | YOORR-eye | /ˈjʊər.aɪ/ | Exodus 31:2 | ✅ |
 | Nun | NUHN | /nʌn/ | Exodus 33:11 |  |
 | Shelomith | shuh-LOH-mith | /ʃəˈloʊ.mɪθ/ | Leviticus 24:11 |  |
 | Nethanel | nuh-THAN-el | /nəˈθæn.əl/ | Numbers 1:8 |  |
 | Eliab | ee-LY-ab | /ɪˈlaɪ.æb/ | Numbers 1:9 |  |
 | Ammihud | uh-MY-hud | /əˈmaɪ.hʌd/ | Numbers 1:10 |  |
-| Elishama | ee-LISH-uh-muh | /ɪˈlɪʃ.ə.mə/ | Numbers 1:10 |  |
+| Elishama | ihlihshuhmuh | /ɪˈlɪʃ.ə.mə/ | Numbers 1:10 | ✅ |
 | Kohathites | KOH-hath-ites | /ˈkoʊ.hæθ.aɪts/ | Numbers 3:27 |  |
 | Abihail | ab-ih-HAY-il | /ˌæb.ɪˈheɪ.ɪl/ | Numbers 3:35 |  |
 | Zaccur | ZAK-er | /ˈzæk.ər/ | Numbers 13:4 |  |
@@ -353,13 +353,13 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ahiman | uh-HY-muhn | /əˈhaɪ.mən/ | Numbers 13:22 |  |
 | Talmai | TAL-my | /ˈtæl.maɪ/ | Numbers 13:22 |  |
 | Hormah | HOR-muh | /ˈhɔːr.mə/ | Numbers 14:45 |  |
-| Peleth | PEE-leth | /ˈpiː.lɛθ/ | Numbers 16:1 |  |
+| Peleth | PEE-lehth | /ˈpiː.lɛθ/ | Numbers 16:1 | ✅ |
 | Arad | AIR-ad | /ˈɛər.æd/ | Numbers 21:1 |  |
 | Heshbon | HESH-bon | /ˈhɛʃ.bɒn/ | Numbers 21:25 |  |
 | Jazer | JAY-zer | /ˈdʒeɪ.zər/ | Numbers 21:32 |  |
 | Bashan | BAY-shan | /ˈbeɪ.ʃæn/ | Numbers 21:33 |  |
 | Jericho | JER-ih-koh | /ˈdʒɛr.ɪ.koʊ/ | Numbers 22:1 |  |
-| Zimri | ZIM-ry | /ˈzɪm.raɪ/ | Numbers 25:14 |  |
+| Zimri | zihmreye | /ˈzɪm.raɪ/ | Numbers 25:14 | ✅ |
 | Zur | ZUR | /zɜːr/ | Numbers 25:15 |  |
 | Reubenites | ROO-ben-ites | /ˈruː.bən.aɪts/ | Numbers 26:7 |  |
 | Nemuel | NEM-yoo-el | /ˈnɛm.jʊ.əl/ | Numbers 26:9 |  |
@@ -375,8 +375,8 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Nebo | NEE-boh | /ˈniː.boʊ/ | Numbers 32:3 |  |
 | Aroer | uh-ROH-er | /əˈroʊ.ər/ | Numbers 32:34 |  |
 | Meon | MEE-on | /ˈmiː.ɒn/ | Numbers 32:38 |  |
-| Jair | JAY-ur | /ˈdʒeɪ.ər/ | Numbers 32:41 |  |
-| Kenath | KEE-nath | /ˈkiː.næθ/ | Numbers 32:42 |  |
+| Jair | jayuhr | /ˈdʒeɪ.ər/ | Numbers 32:41 | ✅ |
+| Kenath | KEE-naath | /ˈkiː.næθ/ | Numbers 32:42 | ✅ |
 | Rimmon | RIM-uhn | /ˈrɪm.ən/ | Numbers 33:19 |  |
 | Libnah | LIB-nuh | /ˈlɪb.nə/ | Numbers 33:20 |  |
 | Tahath | TAY-hath | /ˈteɪ.hæθ/ | Numbers 33:26 |  |
@@ -413,7 +413,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Megiddo | muh-GID-oh | /məˈɡɪd.oʊ/ | Joshua 12:21 |  |
 | Taanach | TAY-uh-nak | /ˈteɪ.ə.næk/ | Joshua 12:21 |  |
 | Kedesh | KEE-desh | /ˈkiː.dɛʃ/ | Joshua 12:22 |  |
-| Geshur | GESH-er | /ˈɡɛʃ.ər/ | Joshua 13:13 |  |
+| Geshur | GESH-uhr | /ˈɡɛʃ.ər/ | Joshua 13:13 | ✅ |
 | Mephaath | muh-FAY-ath | /məˈfeɪ.æθ/ | Joshua 13:18 |  |
 | Zereth | ZEE-reth | /ˈzɪər.ɛθ/ | Joshua 13:19 |  |
 | Shemesh | SHEM-esh | /ˈʃɛm.ɛʃ/ | Joshua 15:7 |  |
@@ -422,7 +422,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ziph | ZIF | /zɪf/ | Joshua 15:24 |  |
 | Moladah | MOH-luh-duh | /ˈmoʊ.lə.də/ | Joshua 15:26 |  |
 | Shema | SHEE-muh | /ˈʃiː.mə/ | Joshua 15:26 |  |
-| Pelet | PEE-let | /ˈpiː.lɛt/ | Joshua 15:27 |  |
+| Pelet | PEE-let | /ˈpiː.lɛt/ | Joshua 15:27 | ✅ |
 | Shual | SHOO-uhl | /ˈʃuː.əl/ | Joshua 15:28 |  |
 | Ezem | EE-zem | /ˈiː.zɛm/ | Joshua 15:29 |  |
 | Madmannah | mad-MAN-uh | /mædˈmæn.ə/ | Joshua 15:31 |  |
@@ -432,7 +432,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shaaraim | shay-uh-RAY-im | /ˌʃeɪ.əˈreɪ.ɪm/ | Joshua 15:36 |  |
 | Ashan | AY-shan | /ˈeɪ.ʃæn/ | Joshua 15:42 |  |
 | Keilah | kee-EYE-luh | /kiˈaɪ.lə/ | Joshua 15:44 |  |
-| Mareshah | muh-REE-shuh | /məˈriː.ʃə/ | Joshua 15:44 |  |
+| Mareshah | muh-REESH-uh | /məˈriː.ʃə/ | Joshua 15:44 | ✅ |
 | Jattir | JAT-ur | /ˈdʒæt.ər/ | Joshua 15:48 |  |
 | Maon | MAY-on | /ˈmeɪ.ɒn/ | Joshua 15:55 |  |
 | Jezreel | JEZ-ree-el | /ˈdʒɛz.ri.əl/ | Joshua 15:56 |  |
@@ -446,7 +446,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Daberath | DAB-uh-rath | /ˈdæb.ə.ræθ/ | Joshua 19:12 |  |
 | Tabor | TAY-ber | /ˈteɪ.bər/ | Joshua 19:12 |  |
 | Hammon | HAM-uhn | /ˈhæm.ən/ | Joshua 19:28 |  |
-| Hammath | HAM-ath | /ˈhæm.æθ/ | Joshua 19:35 |  |
+| Hammath | hamath | /ˈhæm.æθ/ | Joshua 19:35 | ✅ |
 | Galilee | GAL-ih-lee | /ˈɡæl.ɪ.liː/ | Joshua 20:7 |  |
 | Eshtemoa | esh-tuh-MOH-uh | /ˌɛʃ.təˈmoʊ.ə/ | Joshua 21:14 |  |
 | Anathoth | AN-uh-thoth | /ˈæn.ə.θɒθ/ | Joshua 21:18 |  |
@@ -454,7 +454,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ehud | EE-hud | /ˈiː.hʌd/ | Judges 3:15 |  |
 | Joash | JOH-ash | /ˈdʒoʊ.æʃ/ | Judges 6:11 |  |
 | Penuel | puh-NYOO-el | /pəˈnjuː.əl/ | Judges 8:8 |  |
-| Jether | JEE-ther | /ˈdʒiː.θər/ | Judges 8:20 |  |
+| Jether | JEE-thuhr | /ˈdʒiː.θər/ | Judges 8:20 | ✅ |
 | Jotham | JOH-thuhm | /ˈdʒoʊ.θəm/ | Judges 9:5 |  |
 | Etam | EE-tuhm | /ˈiː.təm/ | Judges 15:8 |  |
 | Micah | MY-kuh | /ˈmaɪ.kə/ | Judges 17:1 |  |
@@ -484,7 +484,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Abigail | AB-ih-gayl | /ˈæb.ɪ.ɡeɪl/ | 1 Samuel 25:3 |  |
 | Abishai | uh-BISH-eye | /əˈbɪʃ.aɪ/ | 1 Samuel 26:6 |  |
 | Joab | JOH-ab | /ˈdʒoʊ.æb/ | 1 Samuel 26:6 |  |
-| Zeruiah | zeh-roo-EYE-uh | /ˌzɛr.uːˈaɪ.ə/ | 1 Samuel 26:6 |  |
+| Zeruiah | zeh-roo-EYE-uh | /ˌzɛr.uːˈaɪ.ə/ | 1 Samuel 26:6 | ✅ |
 | Carmelitess | KAR-mel-ite-ess | /ˈkɑːr.mə.laɪ.tɛs/ | 1 Samuel 27:3 |  |
 | Jezreelitess | JEZ-ree-el-ite-ess | /ˈdʒɛz.ri.ə.laɪ.tɛs/ | 1 Samuel 27:3 |  |
 | Asahel | AS-uh-hel | /ˈæs.ə.hɛl/ | 2 Samuel 2:18 |  |
@@ -496,7 +496,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shephatiah | shef-uh-TY-uh | /ˌʃɛf.əˈtaɪ.ə/ | 2 Samuel 3:4 |  |
 | Eglah | EG-luh | /ˈɛɡ.lə/ | 2 Samuel 3:5 |  |
 | Ithream | ITH-ree-am | /ˈɪθ.ri.æm/ | 2 Samuel 3:5 |  |
-| Rechab | REE-kab | /ˈriː.kæb/ | 2 Samuel 4:2 |  |
+| Rechab | REE-kab | /ˈriː.kæb/ | 2 Samuel 4:2 | ✅ |
 | Nathan | NAY-thuhn | /ˈneɪ.θən/ | 2 Samuel 5:14 |  |
 | Shobab | SHOH-bab | /ˈʃoʊ.bæb/ | 2 Samuel 5:14 |  |
 | Solomon | SOL-uh-muhn | /ˈsɒl.ə.mən/ | 2 Samuel 5:14 |  |
@@ -512,8 +512,8 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Benaiah | buh-NAY-yuh | /bəˈneɪ.jə/ | 2 Samuel 8:18 |  |
 | Mica | MY-kuh | /ˈmaɪ.kə/ | 2 Samuel 9:12 |  |
 | Shimeah | SHIM-ee-uh | /ˈʃɪm.i.ə/ | 2 Samuel 13:3 |  |
-| Tekoa | tuh-KOH-uh | /təˈkoʊ.ə/ | 2 Samuel 14:2 |  |
-| Amasa | uh-MAY-suh | /əˈmeɪ.sə/ | 2 Samuel 17:25 |  |
+| Tekoa | ta-KOH-uh | /təˈkoʊ.ə/ | 2 Samuel 14:2 | ✅ |
+| Amasa | uh-MAY-suh | /əˈmeɪ.sə/ | 2 Samuel 17:25 | ✅ |
 | Sheva | SHEE-vuh | /ˈʃiː.və/ | 2 Samuel 20:25 |  |
 | Helez | HEE-lez | /ˈhiː.lɛz/ | 2 Samuel 23:26 |  |
 | Azmaveth | az-MAY-veth | /æzˈmeɪ.vɛθ/ | 2 Samuel 23:31 |  |
@@ -530,7 +530,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shemaiah | shuh-MAY-yuh | /ʃəˈmeɪ.jə/ | 1 Kings 12:22 |  |
 | Josiah | joh-SY-uh | /dʒoʊˈsaɪ.ə/ | 1 Kings 13:2 |  |
 | Asa | AY-suh | /ˈeɪ.sə/ | 1 Kings 15:8 |  |
-| Jehu | JEE-hyoo | /ˈdʒiː.hjuː/ | 1 Kings 16:1 |  |
+| Jehu | JEE-hyoo | /ˈdʒiː.hjuː/ | 1 Kings 16:1 | ✅ |
 | Omri | OM-ry | /ˈɒm.raɪ/ | 1 Kings 16:16 |  |
 | Shemer | SHEE-mer | /ˈʃiː.mər/ | 1 Kings 16:24 |  |
 | Segub | SEE-gub | /ˈsiː.ɡʌb/ | 1 Kings 16:34 |  |
@@ -586,19 +586,19 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Pai | PAY-eye | /ˈpeɪ.aɪ/ | 1 Chronicles 1:50 |  |
 | Aliah | uh-LY-uh | /əˈlaɪ.ə/ | 1 Chronicles 1:51 |  |
 | Canaanitess | KAY-nuh-nite-ess | /ˈkeɪ.nə.naɪ.tɛs/ | 1 Chronicles 2:3 |  |
-| Dara | DAIR-uh | /ˈdɛər.ə/ | 1 Chronicles 2:6 |  |
+| Dara | DAIRR-uh | /ˈdɛər.ə/ | 1 Chronicles 2:6 | ✅ |
 | Achar | AY-kar | /ˈeɪ.kɑːr/ | 1 Chronicles 2:7 |  |
 | Chelubai | kuh-LOO-by | /kəˈluː.baɪ/ | 1 Chronicles 2:9 |  |
 | Jerahmeel | juh-RAH-mee-el | /dʒəˈrɑː.mi.əl/ | 1 Chronicles 2:9 |  |
-| Salma | SAL-muh | /ˈsæl.mə/ | 1 Chronicles 2:11 |  |
-| Shimea | SHIM-ee-uh | /ˈʃɪm.i.ə/ | 1 Chronicles 2:13 |  |
+| Salma | sallmuh | /ˈsæl.mə/ | 1 Chronicles 2:11 | ✅ |
+| Shimea | SHIM-ee-uh | /ˈʃɪm.i.ə/ | 1 Chronicles 2:13 | ✅ |
 | Raddai | RAD-eye | /ˈræd.aɪ/ | 1 Chronicles 2:14 |  |
 | Ozem | OH-zem | /ˈoʊ.zɛm/ | 1 Chronicles 2:15 |  |
 | Ishmaelite | ISH-may-el-ite | /ˈɪʃ.meɪ.ə.laɪt/ | 1 Chronicles 2:17 |  |
 | Ardon | AR-don | /ˈɑːr.dɒn/ | 1 Chronicles 2:18 |  |
 | Jerioth | JER-ee-oth | /ˈdʒɛr.i.ɒθ/ | 1 Chronicles 2:18 |  |
 | Jesher | JEE-sher | /ˈdʒiː.ʃər/ | 1 Chronicles 2:18 |  |
-| Ashhur | ASH-hur | /ˈæʃ.hɜːr/ | 1 Chronicles 2:24 |  |
+| Ashhur | ASH-herr | /ˈæʃ.hɜːr/ | 1 Chronicles 2:24 | ✅ |
 | Bunah | BYOO-nuh | /ˈbjuː.nə/ | 1 Chronicles 2:25 |  |
 | Oren | OR-en | /ˈɔːr.ɛn/ | 1 Chronicles 2:25 |  |
 | Atarah | AT-uh-ruh | /ˈæt.ə.rə/ | 1 Chronicles 2:26 |  |
@@ -608,28 +608,28 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jada | JAY-duh | /ˈdʒeɪ.də/ | 1 Chronicles 2:28 |  |
 | Shammai | SHAM-eye | /ˈʃæm.aɪ/ | 1 Chronicles 2:28 |  |
 | Ahban | AH-ban | /ˈɑː.bæn/ | 1 Chronicles 2:29 |  |
-| Molid | MOH-lid | /ˈmoʊ.lɪd/ | 1 Chronicles 2:29 |  |
+| Molid | mohlihd | /ˈmoʊ.lɪd/ | 1 Chronicles 2:29 | ✅ |
 | Appaim | AP-ay-im | /ˈæp.eɪ.ɪm/ | 1 Chronicles 2:30 |  |
 | Seled | SEE-led | /ˈsiː.lɛd/ | 1 Chronicles 2:30 |  |
-| Ahlai | AH-ly | /ˈɑː.laɪ/ | 1 Chronicles 2:31 |  |
-| Ishi | ISH-eye | /ˈɪʃ.aɪ/ | 1 Chronicles 2:31 |  |
+| Ahlai | ahleye | /ˈɑː.laɪ/ | 1 Chronicles 2:31 | ✅ |
+| Ishi | IHSH-eye | /ˈɪʃ.aɪ/ | 1 Chronicles 2:31 | ✅ |
 | Sheshan | SHEE-shan | /ˈʃiː.ʃæn/ | 1 Chronicles 2:31 |  |
 | Zaza | ZAY-zuh | /ˈzeɪ.zə/ | 1 Chronicles 2:33 |  |
-| Jarha | JAR-huh | /ˈdʒɑːr.hə/ | 1 Chronicles 2:34 |  |
+| Jarha | jahrhuh | /ˈdʒɑːr.hə/ | 1 Chronicles 2:34 | ✅ |
 | Attai | AT-eye | /ˈæt.aɪ/ | 1 Chronicles 2:35 |  |
-| Zabad | ZAY-bad | /ˈzeɪ.bæd/ | 1 Chronicles 2:36 |  |
+| Zabad | ZAY-bad | /ˈzeɪ.bæd/ | 1 Chronicles 2:36 | ✅ |
 | Ephlal | EF-lal | /ˈɛf.læl/ | 1 Chronicles 2:37 |  |
 | Eleasah | el-ee-AY-suh | /ˌɛl.iˈeɪ.sə/ | 1 Chronicles 2:39 |  |
 | Sismai | SIS-my | /ˈsɪs.maɪ/ | 1 Chronicles 2:40 |  |
 | Jekamiah | jek-uh-MY-uh | /ˌdʒɛk.əˈmaɪ.ə/ | 1 Chronicles 2:41 |  |
 | Jorkeam | JOR-kee-am | /ˈdʒɔːr.ki.æm/ | 1 Chronicles 2:44 |  |
-| Raham | RAY-ham | /ˈreɪ.hæm/ | 1 Chronicles 2:44 |  |
+| Raham | RAY-ham | /ˈreɪ.hæm/ | 1 Chronicles 2:44 | ✅ |
 | Gazez | GAY-zez | /ˈɡeɪ.zɛz/ | 1 Chronicles 2:46 |  |
 | Moza | MOH-zuh | /ˈmoʊ.zə/ | 1 Chronicles 2:46 |  |
-| Geshan | GEE-shan | /ˈɡiː.ʃæn/ | 1 Chronicles 2:47 |  |
+| Geshan | geeshaan | /ˈɡiː.ʃæn/ | 1 Chronicles 2:47 | ✅ |
 | Jahdai | JAH-dye | /ˈdʒɑː.daɪ/ | 1 Chronicles 2:47 |  |
-| Jothan | JOH-than | /ˈdʒoʊ.θæn/ | 1 Chronicles 2:47 |  |
-| Regem | REE-gem | /ˈriː.ɡɛm/ | 1 Chronicles 2:47 |  |
+| Jothan | JO-thann | /ˈdʒoʊ.θæn/ | 1 Chronicles 2:47 | ✅ |
+| Regem | REE-ghem | /ˈriː.ɡɛm/ | 1 Chronicles 2:47 | ✅ |
 | Shaaph | SHAY-af | /ˈʃeɪ.æf/ | 1 Chronicles 2:47 |  |
 | Sheber | SHEE-ber | /ˈʃiː.bər/ | 1 Chronicles 2:48 |  |
 | Tirhanah | tur-HAY-nuh | /tɜːrˈheɪ.nə/ | 1 Chronicles 2:48 |  |
@@ -637,15 +637,15 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Machbena | mak-BEE-nuh | /mækˈbiː.nə/ | 1 Chronicles 2:49 |  |
 | Gader | GAY-der | /ˈɡeɪ.dər/ | 1 Chronicles 2:51 |  |
 | Hareph | HAIR-ef | /ˈhɛər.ɛf/ | 1 Chronicles 2:51 |  |
-| Haroeh | huh-ROH-eh | /həˈroʊ.ɛ/ | 1 Chronicles 2:52 |  |
-| Menuhoth | muh-NOO-hoth | /məˈnuː.hɒθ/ | 1 Chronicles 2:52 |  |
+| Haroeh | huroh-eh | /həˈroʊ.ɛ/ | 1 Chronicles 2:52 | ✅ |
+| Menuhoth | muh-NOO-hoth | /məˈnuː.hɒθ/ | 1 Chronicles 2:52 | ✅ |
 | Eshtaolites | ESH-tay-uh-lites | /ˈɛʃ.teɪ.ə.laɪts/ | 1 Chronicles 2:53 |  |
 | Ithrites | ITH-rites | /ˈɪθ.raɪts/ | 1 Chronicles 2:53 |  |
 | Mishraites | MISH-ruh-ites | /ˈmɪʃ.rə.aɪts/ | 1 Chronicles 2:53 |  |
 | Puthites | PYOO-thites | /ˈpjuː.θaɪts/ | 1 Chronicles 2:53 |  |
 | Shumathites | SHOO-muh-thites | /ˈʃuː.mə.θaɪts/ | 1 Chronicles 2:53 |  |
 | Zorathites | ZOR-uh-thites | /ˈzɔːr.ə.θaɪts/ | 1 Chronicles 2:53 |  |
-| Atroth | AT-roth | /ˈæt.rɒθ/ | 1 Chronicles 2:54 |  |
+| Atroth | AT-roth | /ˈæt.rɒθ/ | 1 Chronicles 2:54 | ✅ |
 | Manahathites | MAN-uh-hath-ites | /ˈmæn.ə.hæθ.aɪts/ | 1 Chronicles 2:54 |  |
 | Netophathites | nuh-TOF-uh-thites | /nəˈtɒf.ə.θaɪts/ | 1 Chronicles 2:54 |  |
 | Zorites | ZOR-ites | /ˈzɔːr.aɪts/ | 1 Chronicles 2:54 |  |
@@ -1590,4 +1590,4 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Rhegium | REE-jee-uhm | /ˈriː.dʒi.əm/ | Acts 28:13 |  |
 | Appius | AP-ee-uhs | /ˈæp.i.əs/ | Acts 28:15 |  |
 
-_1578 names — 80 respelled for the voice, 1498 reference-only._
+_1578 names — 118 respelled for the voice, 1460 reference-only._
