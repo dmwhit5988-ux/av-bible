@@ -274,17 +274,54 @@ def similarity(expected: str, heard: str) -> float:
     return 1.0 - _levenshtein(a, b) / max(len(a), len(b))
 
 
-# Below this many expected phones, hunting for a name inside a longer utterance
-# stops being meaningful. Measured against decoy recordings that did *not*
-# contain the name: at 4 phones or fewer the chance score equalled the real one
-# every time (Ur /ɜːr/ scored 1.00 against audio of "Nebuchadnezzar"), while at
-# 5+ phones every name tested beat its chance score by 0.17-0.80.
-MIN_PHONES_FOR_LOCAL = 5
+# A word spoken alone gets clipped by the voice ("Mahalalel" came back as
+# "mahalla"), so names are recorded inside a fixed carrier and cut back out
+# afterwards. The commas matter: without them a name's edge consonant merges
+# into the neighbouring word ("He said Dara twice" lost Dara's /d/ into "said",
+# leaving just "ɜː"). With them the anchors below transcribe identically every
+# time, which is what makes the cut reliable.
+CARRIER = "He said, {}, twice."
+_HEAD = ("h", "i", "s", "ɛ", "d")      # "He said"  (folded: iː -> i)
+_TAIL = ("t", "w", "aɪ", "s")          # "twice"
 
 
-def can_locate(expected: str) -> bool:
-    """True if ``expected`` is long enough to be found inside a carrier phrase."""
-    return len(normalize(expected)) >= MIN_PHONES_FOR_LOCAL
+def _prefix_end(pattern, seq) -> int:
+    """Index in ``seq`` where ``pattern`` best finishes, aligned from the start.
+
+    Ties resolve to the earliest index, which is what we want: the real carrier
+    word is the first thing in the utterance, so a chance match later in a name
+    never wins.
+    """
+    n = len(seq)
+    prev = list(range(n + 1))          # cost of skipping j tokens of seq
+    for i in range(1, len(pattern) + 1):
+        cur = [i]
+        for j in range(1, n + 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1,
+                           prev[j - 1] + (pattern[i - 1] != seq[j - 1])))
+        prev = cur
+    return min(range(n + 1), key=lambda j: prev[j])
+
+
+def strip_carrier(heard: str) -> str:
+    """Cut the carrier words off a transcription, leaving just the name.
+
+    Anchoring on known words beats searching for the name: an earlier version
+    hunted for the expected phones anywhere in the utterance and would happily
+    match them against "he sa[id]" instead of the name, silently scoring the
+    wrong span. Here the boundaries come from text we control, so the result
+    does not depend on the name being recognised correctly in the first place.
+    """
+    toks = phones(heard)
+    folded, origin = _fold_indexed(toks)
+    if not folded:
+        return ""
+    start = _prefix_end(_HEAD, folded)
+    # Search the tail from the end so a tie resolves to the real final word.
+    end = len(folded) - _prefix_end(tuple(reversed(_TAIL)), folded[::-1])
+    if not 0 <= start < end <= len(folded):
+        return "".join(toks)           # anchors implausible -- don't guess
+    return "".join(toks[origin[start]:origin[end - 1] + 1])
 
 
 def _fold_indexed(tokens):
@@ -295,46 +332,6 @@ def _fold_indexed(tokens):
             folded.append(p)
             origin.append(k)
     return folded, origin
-
-
-def locate(expected: str, heard: str):
-    """Find ``expected`` inside ``heard``. Returns ``(score, matched-span)``.
-
-    Approximate substring alignment: gaps *before and after* the match are free,
-    so when the name was spoken inside a carrier phrase the surrounding words
-    cost nothing. The returned span is the slice of the original (unfolded)
-    transcription that matched, which is what should be shown to a human -- the
-    name as heard, without "he said … again" wrapped around it.
-
-    Only meaningful when ``can_locate(expected)`` is true; on short names a
-    chance match somewhere in the carrier is as likely as a real one.
-    """
-    a = normalize(expected)
-    htoks = phones(heard)
-    b, origin = _fold_indexed(htoks)
-    if not a or not b:
-        return 0.0, ""
-
-    m, n = len(a), len(b)
-    prev = [0] * (n + 1)            # row 0: a match may start anywhere, free
-    pstart = list(range(n + 1))     # …and this is where it started
-    for i in range(1, m + 1):
-        cur, cstart = [i], [0]
-        for j in range(1, n + 1):
-            sub = prev[j - 1] + (a[i - 1] != b[j - 1])
-            dele = prev[j] + 1      # expected phone absent from the audio
-            ins = cur[j - 1] + 1    # extra phone in the audio
-            best = min(sub, dele, ins)
-            cur.append(best)
-            cstart.append(pstart[j - 1] if best == sub else
-                          pstart[j] if best == dele else cstart[j - 1])
-        prev, pstart = cur, cstart
-
-    end = min(range(1, n + 1), key=lambda j: prev[j])
-    score = max(0.0, 1.0 - prev[end] / len(a))
-    lo, hi = pstart[end], end
-    span = "".join(htoks[origin[lo]:origin[hi - 1] + 1]) if lo < hi else ""
-    return score, span
 
 
 def pretty(text: str) -> str:

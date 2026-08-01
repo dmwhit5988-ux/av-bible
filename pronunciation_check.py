@@ -51,13 +51,12 @@ CACHE_PATH = os.path.join(config.CACHE_DIR, "ipa_checks.json")
 OK_AT = 0.80
 WARN_AT = 0.55
 
-# Long names are checked inside a carrier phrase rather than alone. Spoken in
-# isolation the voice clips them -- "Mahalalel" came back as "mahalla" -- which
+# Every name is checked inside a carrier phrase rather than alone: spoken in
+# isolation the voice clips them ("Mahalalel" came back as "mahalla"), which
 # looks like a pronunciation fault but is an artefact of the recognizer, which
-# was trained on connected speech. In a sentence the same name transcribes
-# cleanly, and ipa_asr.locate() finds it again by ignoring the words around it.
-# Short names skip this: see ipa_asr.MIN_PHONES_FOR_LOCAL for why.
-CARRIER = "He said {} again."
+# was trained on connected speech. ipa_asr.strip_carrier() then cuts the
+# carrier words back off using their own fixed phones as anchors.
+CARRIER = ipa_asr.CARRIER
 
 FILTERS = (
     "All names",
@@ -193,12 +192,11 @@ class App:
         if not r:
             return None
         info = self.names.get(name, {})
-        # Editing the reference IPA can flip a name across the carrier threshold,
-        # so the mode is part of what makes a cached result still valid.
-        mode = "carrier" if ipa_asr.can_locate(info.get("ipa", "")) else "bare"
+        # The mode tag also versions the cache: results recorded by an older
+        # measuring method are discarded rather than silently compared.
         if (r.get("spoken") != spoken_for(name, info)
                 or r.get("voice") != self.voice_var.get()
-                or r.get("mode") != mode):
+                or r.get("mode") != "carrier-strip"):
             return None
         return r
 
@@ -308,8 +306,7 @@ class App:
                 continue
             spoken = spoken_for(name, info)
             expected = info.get("ipa", "")
-            carried = ipa_asr.can_locate(expected)
-            text = CARRIER.format(spoken) if carried else spoken
+            text = CARRIER.format(spoken)
             post(self.status_var.set, f"[{i}/{len(names)}] {name} — “{spoken}”…")
             try:
                 path = tts_engine.synthesize(text, voice, RATE, apply_respell=False)
@@ -319,18 +316,16 @@ class App:
                 post(self.status_var.set, f"{name}: {e}")
                 post(self._bump, i)  # keep the bar honest even when a name fails
                 continue
-            if not heard.strip():
-                # A very short clip spoken alone (e.g. "Ur") can decode to no
-                # phones at all, and is too short to use a carrier. That is a
-                # failure to measure, not a bad pronunciation -- leave it
-                # unscored rather than reporting a damning 0.00.
-                score, span = None, ""
-            elif carried:
-                score, span = ipa_asr.locate(expected, heard)
+            span = ipa_asr.strip_carrier(heard)
+            if not span:
+                # Nothing survived between the anchors: a failure to measure,
+                # not a bad pronunciation -- leave it unscored rather than
+                # reporting a damning 0.00.
+                score = None
             else:
-                score, span = ipa_asr.similarity(expected, heard), ipa_asr.pretty(heard)
+                score = ipa_asr.similarity(expected, span)
             post(self._apply_result, name, {
-                "spoken": spoken, "voice": voice, "mode": "carrier" if carried else "bare",
+                "spoken": spoken, "voice": voice, "mode": "carrier-strip",
                 "heard": span, "score": None if score is None else round(score, 3)}, i)
         post(self._finish)
 
@@ -379,9 +374,9 @@ class App:
         name = names[0]
         info = self.names[name]
         spoken = spoken_for(name, info)
-        # Play exactly the audio that was scored -- for a long name that is the
-        # carrier phrase, so what you hear is what the transcriber heard.
-        text = CARRIER.format(spoken) if ipa_asr.can_locate(info.get("ipa", "")) else spoken
+        # Play exactly the audio that was scored -- the carrier phrase -- so
+        # what you hear is what the transcriber heard.
+        text = CARRIER.format(spoken)
         voice = self.voice_var.get()
 
         def work():
