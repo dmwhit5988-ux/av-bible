@@ -157,7 +157,11 @@ _DIGRAPHS = (
 # Anything mapped to "" disappears entirely (e.g. eSpeak's inserted glottal stops).
 _FOLD = {
     "ɡ": "g", "ɫ": "l", "ɭ": "l",
-    "ɹ": "r", "ɻ": "r", "ɾ": "r", "ʀ": "r", "ʁ": "r",
+    "ɹ": "r", "ɻ": "r", "ʀ": "r", "ʁ": "r",
+    # ɾ is the American flap, an allophone of /t/ and /d/ between vowels -- not
+    # a rhotic. Folding it to "r" (as this table first did) penalised correct
+    # speech: "Eden" comes back as [iː ɾ ɪ ŋ] and scored 0.25 against /ˈiː.dən/.
+    "ɾ": "d",
     "ʍ": "w", "ʔ": "", "ʼ": "",
     # central / reduced vowels -- unstressed reduction is the noisiest signal
     # in the model's output, so they all become schwa.
@@ -174,6 +178,13 @@ _FOLD = {
     "e": "eɪ",
     "ɑɪ": "aɪ", "ɑʊ": "aʊ",
     "ɛə": "ɛr", "ɪə": "ɪr", "ʊə": "ur",
+    # The model's vocabulary carries r-coloured vowels as SINGLE tokens
+    # (ɑːɹ, ɔːɹ, ɛɹ, ɪɹ, ʊɹ, aɪɚ), while the written references spell them as a
+    # vowel followed by r. Without these they could never match: "Dara" came
+    # back as [d ɑːɹ ɹ ɐ] and could not line up with /ˈdɛər.ə/. The ː is already
+    # stripped by _clean, hence the keys here have none.
+    "ɑɹ": "ɔr", "ɔɹ": "ɔr", "ɛɹ": "ɛr", "ɪɹ": "ɪr", "ʊɹ": "ur", "aɪɚ": "aɪər",
+    "əl": "əl", "n̩": "n", "l̩": "l",
     "x": "k", "ç": "h",
 }
 
@@ -241,8 +252,19 @@ def fold(tokens) -> list:
 
 
 def normalize(text: str) -> list:
-    """``text`` -> comparable coarse phone list."""
-    return fold(phones(text))
+    """``text`` -> comparable coarse phone list.
+
+    Runs of the same phone collapse to one. English does not contrast length
+    here, and doubling arises spuriously on both sides: a reference like
+    /ˈdɛər.ə/ folds to d-ɛ-r-r-ə because "ɛə" already implies the rhotic that
+    the written r repeats, and the model separately likes to emit [ɔːɹ ɹ].
+    Without this, a correct match is penalised for an artefact of notation.
+    """
+    out = []
+    for p in fold(phones(text)):
+        if not out or out[-1] != p:
+            out.append(p)
+    return out
 
 
 def _levenshtein(a, b) -> int:
@@ -280,9 +302,26 @@ def similarity(expected: str, heard: str) -> float:
 # into the neighbouring word ("He said Dara twice" lost Dara's /d/ into "said",
 # leaving just "ɜː"). With them the anchors below transcribe identically every
 # time, which is what makes the cut reliable.
-CARRIER = "He said, {}, twice."
-_HEAD = ("h", "i", "s", "ɛ", "d")      # "He said"  (folded: iː -> i)
-_TAIL = ("t", "w", "aɪ", "s")          # "twice"
+# The tail word must not begin with a sound names commonly end in, or it eats
+# one: with "twice", "Phut" transcribed as [f ʌ t w aɪ s] -- a single /t/ doing
+# double duty -- and the strip returned "fʌ". "once" starts with /w/, which is
+# effectively absent word-finally in these names, so nothing merges. It also
+# stops the voice flapping a name's final /d/: "Eden" went from [iː ɾ ɪ ŋ]
+# before "twice" to a clean [iː d ə n] before "once".
+# Two carriers, because one measurement is not enough. The same name scores
+# differently depending on what follows it -- "Salma" kept its /l/ before
+# "yesterday" but dropped it before "once" -- so a single reading is a noisy
+# basis for changing a pronunciation. Measuring in both and averaging cancels
+# most of that context dependence.
+CARRIERS = (
+    ("He said, {}, once.",
+     ("h", "i", "s", "ɛ", "d"), ("w", "ə", "n", "s")),
+    ("He said, {}, yesterday.",
+     ("h", "i", "s", "ɛ", "d"), ("j", "ɛ", "s", "t", "ə", "r", "d", "eɪ")),
+)
+CARRIER = CARRIERS[0][0]               # the primary, for single-shot callers
+_HEAD = CARRIERS[0][1]
+_TAIL = CARRIERS[0][2]
 
 
 def _prefix_end(pattern, seq) -> int:
@@ -303,7 +342,7 @@ def _prefix_end(pattern, seq) -> int:
     return min(range(n + 1), key=lambda j: prev[j])
 
 
-def strip_carrier(heard: str) -> str:
+def strip_carrier(heard: str, head=None, tail=None) -> str:
     """Cut the carrier words off a transcription, leaving just the name.
 
     Anchoring on known words beats searching for the name: an earlier version
@@ -311,14 +350,20 @@ def strip_carrier(heard: str) -> str:
     match them against "he sa[id]" instead of the name, silently scoring the
     wrong span. Here the boundaries come from text we control, so the result
     does not depend on the name being recognised correctly in the first place.
+
+    Pass the ``head``/``tail`` of whichever entry in ``CARRIERS`` produced
+    ``heard``; the defaults are the primary carrier's. Stripping with the wrong
+    anchors leaves a carrier phone glued to the name rather than failing loudly.
     """
+    head = head or _HEAD
+    tail = tail or _TAIL
     toks = phones(heard)
     folded, origin = _fold_indexed(toks)
     if not folded:
         return ""
-    start = _prefix_end(_HEAD, folded)
+    start = _prefix_end(head, folded)
     # Search the tail from the end so a tie resolves to the real final word.
-    end = len(folded) - _prefix_end(tuple(reversed(_TAIL)), folded[::-1])
+    end = len(folded) - _prefix_end(tuple(reversed(tail)), folded[::-1])
     if not 0 <= start < end <= len(folded):
         return "".join(toks)           # anchors implausible -- don't guess
     return "".join(toks[origin[start]:origin[end - 1] + 1])

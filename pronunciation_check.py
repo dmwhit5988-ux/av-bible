@@ -196,7 +196,7 @@ class App:
         # measuring method are discarded rather than silently compared.
         if (r.get("spoken") != spoken_for(name, info)
                 or r.get("voice") != self.voice_var.get()
-                or r.get("mode") != "carrier-strip"):
+                or r.get("mode") != "carrier-avg"):
             return None
         return r
 
@@ -306,27 +306,35 @@ class App:
                 continue
             spoken = spoken_for(name, info)
             expected = info.get("ipa", "")
-            text = CARRIER.format(spoken)
             post(self.status_var.set, f"[{i}/{len(names)}] {name} — “{spoken}”…")
-            try:
-                path = tts_engine.synthesize(text, voice, RATE, apply_respell=False)
-                heard = ipa_asr.transcribe(
-                    path, status=lambda m: post(self.status_var.set, m))
-            except Exception as e:  # noqa: BLE001 - one bad name must not kill the sweep
-                post(self.status_var.set, f"{name}: {e}")
+            # Measure in every carrier and average. One reading is too noisy to
+            # change a pronunciation on: the same name can keep or lose a
+            # consonant depending only on the word that follows it.
+            scores, spans, failed = [], [], False
+            for text_fmt, head, tail in ipa_asr.CARRIERS:
+                try:
+                    path = tts_engine.synthesize(text_fmt.format(spoken), voice,
+                                                 RATE, apply_respell=False)
+                    heard = ipa_asr.transcribe(
+                        path, status=lambda m: post(self.status_var.set, m))
+                except Exception as e:  # noqa: BLE001 - one bad name must not kill the sweep
+                    post(self.status_var.set, f"{name}: {e}")
+                    failed = True
+                    break
+                span = ipa_asr.strip_carrier(heard, head, tail)
+                if span:
+                    spans.append(span)
+                    scores.append(ipa_asr.similarity(expected, span))
+            if failed:
                 post(self._bump, i)  # keep the bar honest even when a name fails
                 continue
-            span = ipa_asr.strip_carrier(heard)
-            if not span:
-                # Nothing survived between the anchors: a failure to measure,
-                # not a bad pronunciation -- leave it unscored rather than
-                # reporting a damning 0.00.
-                score = None
-            else:
-                score = ipa_asr.similarity(expected, span)
+            # No span in any carrier: a failure to measure, not a bad
+            # pronunciation -- leave it unscored rather than reporting 0.00.
+            score = (sum(scores) / len(scores)) if scores else None
             post(self._apply_result, name, {
-                "spoken": spoken, "voice": voice, "mode": "carrier-strip",
-                "heard": span, "score": None if score is None else round(score, 3)}, i)
+                "spoken": spoken, "voice": voice, "mode": "carrier-avg",
+                "heard": " / ".join(spans),
+                "score": None if score is None else round(score, 3)}, i)
         post(self._finish)
 
     def _bump(self, i):
@@ -374,8 +382,8 @@ class App:
         name = names[0]
         info = self.names[name]
         spoken = spoken_for(name, info)
-        # Play exactly the audio that was scored -- the carrier phrase -- so
-        # what you hear is what the transcriber heard.
+        # Play the primary carrier -- one of the two that were scored -- so what
+        # you hear is what the transcriber heard.
         text = CARRIER.format(spoken)
         voice = self.voice_var.get()
 
