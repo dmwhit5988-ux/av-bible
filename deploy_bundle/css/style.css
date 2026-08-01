@@ -189,21 +189,6 @@ select {
   z-index: 1000;
 }
 
-/* Landscape lock fallback for phones that can't use the Orientation API
-   (iOS Safari). When fullscreen is entered while the device is held in
-   portrait, rotate the whole stage 90° clockwise so the diagram fills the
-   screen in landscape. app.js toggles .rotate-cw and remaps the left/right
-   double-tap to the screen's vertical axis to match the rotation. */
-#stage-wrap.fullscreen.rotate-cw {
-  inset: auto;
-  top: 0;
-  left: 100vw;
-  width: 100dvh;
-  height: 100vw;
-  transform-origin: 0 0;
-  transform: rotate(90deg);
-}
-
 /* Center Play/Pause, video-player style: summoned by a single tap on
    the stage, fades back out after a few seconds (see app.js). */
 #btn-stage-play {

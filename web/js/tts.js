@@ -32,8 +32,27 @@ export class Player {
     this.onEnd = onEnd || (() => {});
     this._keepAlive = null;
     this._unlocked = false;
-    this.audioEl.addEventListener("ended", () => this._onClipEnded());
-    this.audioEl.addEventListener("error", () => this._onClipError());
+    // Generation counter: bumped every time the active clip is torn down.
+    // Both backends deliver their end/error events asynchronously, so a
+    // callback belonging to a clip we already abandoned can land after the
+    // next clip has started. Every callback captures the generation it was
+    // armed under and does nothing if it no longer matches.
+    this._gen = 0;
+    this._audioGen = -1; // generation that owns whatever is in audioEl
+    this._utter = null; // utterance currently queued with the synth
+    this._prefetchEl = null;
+    this._prefetchedUrl = null;
+    this.audioEl.addEventListener("ended", () => {
+      if (this._audioGen !== this._gen) return;
+      this._onClipEnded();
+    });
+    this.audioEl.addEventListener("error", () => {
+      // audioEl.error is cleared by the media load algorithm whenever a new
+      // src is set, so a null here means this event belongs to a clip that
+      // has already been replaced.
+      if (this._audioGen !== this._gen || !this.audioEl.error) return;
+      this._onClipError();
+    });
   }
 
   // Must be called synchronously inside a user-gesture handler (tap) so iOS
@@ -67,7 +86,7 @@ export class Player {
     if (this.state === "paused") {
       this.state = "playing";
       this.onStateChange(this.state);
-      if (this.backend === "audio") this.audioEl.play().catch(() => this._onClipError());
+      if (this.backend === "audio") this._playAudioEl();
       else {
         this.synth.resume();
         this._startKeepAlive();
@@ -115,7 +134,19 @@ export class Player {
     this._afterManualNav();
   }
 
+  // Tear down whatever is sounding right now and orphan its callbacks.
+  // synth.cancel() fires the pending utterance's "end"/"error" on a later
+  // task, and swapping the <audio> element's src rejects its in-flight
+  // play() promise — both of which used to arrive *after* the next verse had
+  // started and were mistaken for that verse failing, which is how Web
+  // Speech ended up reading over the top of a neural mp3 during fast skips.
   _haltPlayback() {
+    this._gen++;
+    if (this._utter) {
+      this._utter.onend = null;
+      this._utter.onerror = null;
+      this._utter = null;
+    }
     this.synth.cancel();
     this.audioEl.pause();
   }
@@ -143,24 +174,60 @@ export class Player {
     this.onVerseChange(this.index);
     if (url) {
       this.backend = "audio";
+      this._audioGen = this._gen;
       this.audioEl.src = url;
       this.audioEl.playbackRate = this.rate;
-      this.audioEl.play().catch(() => this._onClipError());
+      this._playAudioEl();
     } else {
       this.backend = "speech";
       this._speakCurrent();
     }
+    this._prefetchNext();
+  }
+
+  _playAudioEl() {
+    const gen = this._gen;
+    const p = this.audioEl.play();
+    if (!p || !p.catch) return;
+    p.catch((err) => {
+      if (gen !== this._gen) return; // superseded by a newer clip
+      // AbortError means the play was interrupted by a pause or a new src,
+      // not that the clip is unplayable — falling back to speech here is
+      // what made both voices sound at once on rapid Next taps.
+      if (err && err.name === "AbortError") return;
+      this._onClipError();
+    });
   }
 
   _speakCurrent() {
+    const gen = this._gen;
     const [, text] = this.queue[this.index];
     const u = new SpeechSynthesisUtterance(text);
     u.rate = this.rate;
     if (this.voice) u.voice = this.voice;
-    u.onend = () => this._onClipEnded();
-    u.onerror = () => this._onClipError();
+    u.onend = () => { if (gen === this._gen) this._onClipEnded(); };
+    u.onerror = () => { if (gen === this._gen) this._onClipError(); };
+    this._utter = u;
     this.synth.speak(u);
     this._startKeepAlive();
+  }
+
+  // Warm the next verse's mp3 through the media cache so a quick Next has it
+  // ready instead of stalling on the network. A detached element that is
+  // never played — some browsers treat preload as a hint and ignore it,
+  // which costs nothing.
+  _prefetchNext() {
+    const url = this.resolveAudio ? this.resolveAudio(this.index + 1) : null;
+    if (!url || url === this._prefetchedUrl) return;
+    this._prefetchedUrl = url;
+    try {
+      const el = this._prefetchEl || (this._prefetchEl = new Audio());
+      el.preload = "auto";
+      el.src = url;
+      el.load();
+    } catch {
+      // Prefetch is opportunistic; a failure just means the normal load path.
+    }
   }
 
   _onClipEnded() {
@@ -184,6 +251,7 @@ export class Player {
     this._stopKeepAlive();
     if (this.state === "playing" && this.backend === "audio") {
       this.backend = "speech";
+      this.audioEl.pause(); // make sure the dud clip can't sound underneath
       this._speakCurrent();
     }
   }

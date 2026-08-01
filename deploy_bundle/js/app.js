@@ -454,31 +454,6 @@ function revealControls() {
   }, 3000);
 }
 
-// Landscape lock for mobile fullscreen. Two mechanisms, because no single
-// one works everywhere:
-//  - Screen Orientation API (Android Chrome, some desktops): a real lock.
-//  - CSS rotate fallback (iOS Safari, which supports neither element
-//    requestFullscreen on a <div> nor orientation.lock): when the device is
-//    held in portrait we rotate the stage 90° so it presents as landscape.
-// Re-evaluated on every orientation/resize change while fullscreen.
-function applyFullscreenOrientation() {
-  if (!isFullscreen()) {
-    els.stageWrap.classList.remove("rotate-cw");
-    try { screen.orientation?.unlock?.(); } catch {}
-    return;
-  }
-  try { screen.orientation?.lock?.("landscape").catch(() => {}); } catch {}
-  // If a real lock (or the physical device) already has us in landscape,
-  // don't also rotate. Only rotate coarse-pointer devices still in portrait.
-  const portrait = window.matchMedia("(orientation: portrait)").matches;
-  const coarse = window.matchMedia("(pointer: coarse)").matches;
-  els.stageWrap.classList.toggle("rotate-cw", portrait && coarse);
-}
-
-function stageRotated() {
-  return els.stageWrap.classList.contains("rotate-cw");
-}
-
 function setFullscreen(on) {
   els.stageWrap.classList.toggle("fullscreen", on);
   if (on && els.stageWrap.requestFullscreen) {
@@ -486,28 +461,60 @@ function setFullscreen(on) {
   } else if (!on && document.fullscreenElement) {
     document.exitFullscreen().catch(() => {});
   }
-  applyFullscreenOrientation();
   updateFsButton();
   revealControls();
+}
+
+// Orientation-driven fullscreen on touch devices.
+//
+// A web app can't really lock the iPhone's orientation — iOS Safari has no
+// Screen Orientation API — and faking a lock by rotating the stage 90° meant
+// every physical rotation still re-laid-out the page underneath, which read
+// as clunky. So rather than fight the rotation, follow it: turning the phone
+// to landscape enters fullscreen, turning it back to portrait leaves.
+//
+// Manual control is untouched — the toggle still works in either
+// orientation. `autoEnteredFs` records whether *we* opened fullscreen, so a
+// fullscreen the user deliberately opened in portrait survives a round trip
+// through landscape, and one they deliberately closed in landscape stays
+// closed until the next rotation.
+const LANDSCAPE = window.matchMedia
+  ? window.matchMedia("(orientation: landscape)")
+  : null;
+const COARSE = window.matchMedia ? window.matchMedia("(pointer: coarse)") : null;
+let autoEnteredFs = false;
+
+function onOrientationChange() {
+  if (!COARSE || !COARSE.matches) return; // phones/tablets only
+  if (LANDSCAPE.matches) {
+    if (isFullscreen()) return;
+    setFullscreen(true);
+    autoEnteredFs = true;
+  } else if (isFullscreen() && autoEnteredFs) {
+    setFullscreen(false);
+    autoEnteredFs = false;
+  }
+}
+
+if (LANDSCAPE) {
+  if (LANDSCAPE.addEventListener) LANDSCAPE.addEventListener("change", onOrientationChange);
+  else if (LANDSCAPE.addListener) LANDSCAPE.addListener(onOrientationChange);
 }
 
 // Exiting API fullscreen via a system gesture (Back, swipe) must also
 // clear the CSS overlay so both mechanisms stay in sync.
 document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) els.stageWrap.classList.remove("fullscreen");
-  applyFullscreenOrientation();
+  if (!document.fullscreenElement) {
+    els.stageWrap.classList.remove("fullscreen");
+    autoEnteredFs = false;
+  }
   updateFsButton();
-});
-
-// A phone rotated to true landscape (or back) while fullscreen: drop or
-// re-apply the CSS rotation to match.
-window.addEventListener("resize", () => {
-  if (isFullscreen()) applyFullscreenOrientation();
 });
 
 fsBtn.addEventListener("click", (e) => {
   e.stopPropagation(); // not a stage tap
   setFullscreen(!isFullscreen());
+  autoEnteredFs = false; // an explicit choice outranks the next rotation
 });
 
 // Center Play/Pause: toggles playback, then re-reveals so the freshly
@@ -532,12 +539,7 @@ els.stage.addEventListener("click", (e) => {
     if (!passage) return;
     const rect = els.stage.getBoundingClientRect();
     player.unlock(); // synchronous, inside the gesture handler
-    // When the stage is rotated 90° CW for landscape (see
-    // applyFullscreenOrientation), the visual left/right axis is the
-    // screen's vertical axis: content-left (prev) sits at the top.
-    const firstHalf = stageRotated()
-      ? e.clientY - rect.top < rect.height / 2
-      : e.clientX - rect.left < rect.width / 2;
+    const firstHalf = e.clientX - rect.left < rect.width / 2;
     if (firstHalf) player.prev();
     else player.next();
   } else {
@@ -556,7 +558,7 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space") { e.preventDefault(); togglePlay(); }
   else if (e.code === "ArrowRight") player.next();
   else if (e.code === "ArrowLeft") player.prev();
-  else if (e.code === "Escape") setFullscreen(false);
+  else if (e.code === "Escape") { setFullscreen(false); autoEnteredFs = false; }
 });
 
 updateFsButton();
