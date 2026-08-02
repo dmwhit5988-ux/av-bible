@@ -1,19 +1,28 @@
 {
   "_readme": "Master pronunciation list for Bible proper nouns, used to help the neural TTS. 'say' is tuned by ear -- whatever sounds right spoken is stored, and (lowercased) is what the voice is fed when 'override' is true; on-screen text is never changed. 'ipa' is an optional formal reference. Keys are the exact spelling as it appears in the World English Bible (WEB); add translation-specific spellings (e.g. KJV 'Mahalaleel') as extra keys. 'status' records what checking the audio concluded -- ok (reads correctly as spelled), fixed (override in place and working), suggested (a better spelling is known but unapplied, decide by ear), unfixed (wrong, nothing found yet); absent means never checked, which is NOT the same as ok. 'score' is the agreement measured at that check, 0-1. Edit with the GUI: python pronunciation_tool.py (it plays names back and rewrites this file + PRONUNCIATIONS.md); check against real audio with python pronunciation_check.py.",
   "names": {
+    "Spirit": {
+      "say": "Spirit",
+      "ref": "Genesis 1:2",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "Havilah": {
       "say": "HAVih-lah",
       "ipa": "/ˈhæv.ɪ.lə/",
       "ref": "Genesis 2:11",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.833
     },
     "Pishon": {
       "say": "PIE-shon",
       "ipa": "/ˈpaɪ.ʃɒn/",
       "ref": "Genesis 2:11",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Pison": {
       "say": "pyson",
@@ -28,7 +37,8 @@
       "ipa": "/ˈdɛl.i.əm/",
       "ref": "Genesis 2:12",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Cush": {
       "say": "KUSH",
@@ -59,7 +69,15 @@
       "ipa": "/ˈhɪd.ə.kɛl/",
       "ref": "Genesis 2:14",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Man": {
+      "say": "Man",
+      "ref": "Genesis 2:23",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Cherubim": {
       "say": "CHER-uh-bim",
@@ -74,8 +92,8 @@
       "ipa": "/keɪn/",
       "ref": "Genesis 4:1",
       "override": false,
-      "status": "ok",
-      "score": 0.833
+      "status": "unfixed",
+      "score": 0.667
     },
     "Eve": {
       "say": "EEV",
@@ -98,14 +116,16 @@
       "ipa": "/ˈaɪ.ræd/",
       "ref": "Genesis 4:18",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Mehujael": {
       "say": "muh-HYOO-jay-el",
       "ipa": "/mɪˈhjuː.dʒeɪ.ɛl/",
       "ref": "Genesis 4:18",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Methusael": {
       "say": "meth-YOO-say-el",
@@ -120,36 +140,40 @@
       "ipa": "/mɪˈθuː.ʃeɪ.ɛl/",
       "ref": "Genesis 4:18",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.625
     },
     "Adah": {
       "say": "AY-duh",
       "ipa": "/ˈeɪ.də/",
       "ref": "Genesis 4:19",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.458
     },
     "Zillah": {
       "say": "ZIL-uh",
       "ipa": "/ˈzɪl.ə/",
       "ref": "Genesis 4:19",
       "override": false,
-      "status": "ok",
-      "score": 0.875
+      "status": "unfixed",
+      "score": 0.75
     },
     "Jabal": {
       "say": "JAY-bul",
       "ipa": "/ˈdʒeɪ.bəl/",
       "ref": "Genesis 4:20",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Jubal": {
       "say": "JOO-bul",
       "ipa": "/ˈdʒuː.bəl/",
       "ref": "Genesis 4:21",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Tubal": {
       "say": "TOO-buhl",
@@ -180,22 +204,24 @@
       "ipa": "/sɛθ/",
       "ref": "Genesis 5:3",
       "override": false,
-      "status": "ok",
-      "score": 0.833
+      "status": "unfixed",
+      "score": 0.667
     },
     "Enosh": {
       "say": "eenosh",
       "ipa": "/ˈiː.nɒʃ/",
       "ref": "Genesis 5:6",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Cainan": {
       "say": "Caynen",
       "ipa": "/ˈkeɪ.nən/",
       "ref": "Genesis 5:9",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Kenan": {
       "say": "KEE-nan",
@@ -210,14 +236,16 @@
       "ipa": "/məˈhæl.ə.lɛl/",
       "ref": "Genesis 5:12",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Mahalalel": {
       "say": "muh-HAL-uh-lel",
       "ipa": "/məˈhæl.ə.lɛl/",
       "ref": "Genesis 5:12",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Jared": {
       "say": "JAIR-ed",
@@ -231,9 +259,9 @@
       "say": "EE-nuhk",
       "ipa": "/ˈiː.nək/",
       "ref": "Genesis 5:18",
-      "override": true,
-      "status": "fixed",
-      "score": 0.875
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Methuselah": {
       "say": "muh-THOO-zuh-luh",
@@ -248,7 +276,8 @@
       "ipa": "/ˈleɪ.mɛk/",
       "ref": "Genesis 5:25",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Noah": {
       "say": "NOH-uh",
@@ -262,8 +291,8 @@
       "say": "YAH-way",
       "ipa": "/ˈjɑː.weɪ/",
       "ref": "Genesis 5:29",
-      "override": true,
-      "status": "fixed"
+      "override": false,
+      "status": "ok"
     },
     "Ham": {
       "say": "HAM",
@@ -278,7 +307,8 @@
       "ipa": "/ˈdʒeɪ.fɛθ/",
       "ref": "Genesis 5:32",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Shem": {
       "say": "SHEM",
@@ -293,15 +323,16 @@
       "ipa": "/ˈnɛf.ɪ.lɪm/",
       "ref": "Genesis 6:4",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.643
     },
     "Ararat": {
       "say": "AIR-uh-rat",
       "ipa": "/ˈær.ə.ræt/",
       "ref": "Genesis 8:4",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "status": "ok",
+      "score": 0.833
     },
     "Gomer": {
       "say": "GOH-mer",
@@ -316,14 +347,16 @@
       "ipa": "/ˈdʒeɪ.væn/",
       "ref": "Genesis 10:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Madai": {
       "say": "MAYdye",
       "ipa": "/ˈmeɪ.daɪ/",
       "ref": "Genesis 10:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Magog": {
       "say": "MAY-gog",
@@ -338,14 +371,16 @@
       "ipa": "/ˈmiː.ʃɛk/",
       "ref": "Genesis 10:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Tiras": {
       "say": "TYruss",
       "ipa": "/ˈtaɪ.rəs/",
       "ref": "Genesis 10:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Ashkenaz": {
       "say": "ASH-kuh-naz",
@@ -360,7 +395,8 @@
       "ipa": "/ˈraɪ.fæθ/",
       "ref": "Genesis 10:3",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Togarmah": {
       "say": "toh-GAR-muh",
@@ -383,7 +419,8 @@
       "ipa": "/ɪˈlaɪ.ʃə/",
       "ref": "Genesis 10:4",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.7
     },
     "Kittim": {
       "say": "KIT-im",
@@ -406,7 +443,8 @@
       "ipa": "/mɪzˈreɪ.ɪm/",
       "ref": "Genesis 10:6",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.786
     },
     "Phut": {
       "say": "FUT",
@@ -429,14 +467,16 @@
       "ipa": "/ˈdiː.dæn/",
       "ref": "Genesis 10:7",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Raamah": {
       "say": "RAY-uh-muh",
       "ipa": "/ˈreɪ.ə.mə/",
       "ref": "Genesis 10:7",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Sabtah": {
       "say": "SAB-tuh",
@@ -451,7 +491,8 @@
       "ipa": "/ˈsæb.tə.kə/",
       "ref": "Genesis 10:7",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.714
     },
     "Sabtechah": {
       "say": "SAB-tih-kah",
@@ -466,7 +507,8 @@
       "ipa": "/ˈsiː.bə/",
       "ref": "Genesis 10:7",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Sheba": {
       "say": "SHEE-buh",
@@ -497,28 +539,32 @@
       "ipa": "/ˈkæl.nɛ/",
       "ref": "Genesis 10:10",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.5
     },
     "Erech": {
       "say": "EH-rek",
       "ipa": "/ˈɛr.ɛk/",
       "ref": "Genesis 10:10",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Calah": {
       "say": "KAY-luh",
       "ipa": "/ˈkeɪ.lə/",
       "ref": "Genesis 10:11",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Ir": {
       "say": "ear",
       "ipa": "/ɪər/",
       "ref": "Genesis 10:11",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Rehoboth": {
       "say": "ruh-HOH-both",
@@ -533,7 +579,8 @@
       "ipa": "/ˈriː.sɛn/",
       "ref": "Genesis 10:12",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Anamim": {
       "say": "AN-uh-mim",
@@ -548,7 +595,8 @@
       "ipa": "/ləˈheɪ.bɪm/",
       "ref": "Genesis 10:13",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Ludim": {
       "say": "LOO-dim",
@@ -572,7 +620,7 @@
       "ref": "Genesis 10:14",
       "override": false,
       "status": "ok",
-      "score": 0.889
+      "score": 1.0
     },
     "Casluhim": {
       "say": "KAS-loo-him",
@@ -603,14 +651,16 @@
       "ipa": "/ˈfɪl.ɪ.stiːnz/",
       "ref": "Genesis 10:14",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Heth": {
       "say": "hetth",
       "ipa": "/hɛθ/",
       "ref": "Genesis 10:15",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.667
     },
     "Sidon": {
       "say": "SY-duhn",
@@ -625,7 +675,8 @@
       "ipa": "/ˈɡɜːr.ɡə.ʃaɪts/",
       "ref": "Genesis 10:16",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.444
     },
     "Girgasite": {
       "say": "gerrguhseyet",
@@ -648,7 +699,8 @@
       "ipa": "/ˈsaɪ.naɪts/",
       "ref": "Genesis 10:17",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Arvadites": {
       "say": "AR-vuh-dites",
@@ -672,7 +724,7 @@
       "ref": "Genesis 10:18",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 0.875
     },
     "Zemarites": {
       "say": "ZEM-uh-rites",
@@ -680,7 +732,7 @@
       "ref": "Genesis 10:18",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 0.875
     },
     "Admah": {
       "say": "AD-muh",
@@ -703,14 +755,16 @@
       "ipa": "/ˈleɪ.ʃə/",
       "ref": "Genesis 10:19",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Zeboiim": {
       "say": "zuh-BOY-im",
       "ipa": "/zɪˈbɔɪ.ɪm/",
       "ref": "Genesis 10:19",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.536
     },
     "Zeboim": {
       "say": "zeh-BOH-im",
@@ -718,7 +772,7 @@
       "ref": "Genesis 10:19",
       "override": false,
       "status": "unfixed",
-      "score": 0.75
+      "score": 0.667
     },
     "Aram": {
       "say": "AIR-uhm",
@@ -733,28 +787,32 @@
       "ipa": "/ˈæʃ.ər/",
       "ref": "Genesis 10:22",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Elam": {
       "say": "EEluhm",
       "ipa": "/ˈiː.ləm/",
       "ref": "Genesis 10:22",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Lud": {
       "say": "LUHD",
       "ipa": "/lʌd/",
       "ref": "Genesis 10:22",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.5
     },
     "Gether": {
       "say": "GuEE-ther",
       "ipa": "/ˈɡiː.θər/",
       "ref": "Genesis 10:23",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Hul": {
       "say": "HUHL",
@@ -762,7 +820,7 @@
       "ref": "Genesis 10:23",
       "override": false,
       "status": "unfixed",
-      "score": 0.5
+      "score": 0.667
     },
     "Mash": {
       "say": "MASH",
@@ -777,7 +835,8 @@
       "ipa": "/ʌz/",
       "ref": "Genesis 10:23",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Salah": {
       "say": "SAY-la",
@@ -800,7 +859,8 @@
       "ipa": "/ælˈmoʊ.dæd/",
       "ref": "Genesis 10:26",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.857
     },
     "Hazar-maveth": {
       "say": "hay-zahr-MAY-vehth",
@@ -871,7 +931,8 @@
       "ipa": "/ˈoʊ.bæl/",
       "ref": "Genesis 10:28",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.625
     },
     "Jobab": {
       "say": "JOH-bab",
@@ -902,14 +963,16 @@
       "ipa": "/ˈsiː.fɑːr/",
       "ref": "Genesis 10:30",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Shinar": {
       "say": "SHY-narr",
       "ipa": "/ˈʃaɪ.nɑːr/",
       "ref": "Genesis 11:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Babel": {
       "say": "BAY-bul",
@@ -924,56 +987,64 @@
       "ipa": "/ɑːrˈpæk.ʃæd/",
       "ref": "Genesis 11:10",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.938
     },
     "Shelah": {
       "say": "sheelah",
       "ipa": "/ˈʃiː.lə/",
       "ref": "Genesis 11:12",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Eber": {
       "say": "eeber",
       "ipa": "/ˈiː.bər/",
       "ref": "Genesis 11:14",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Peleg": {
       "say": "PEElegg",
       "ipa": "/ˈpiː.lɛg/",
       "ref": "Genesis 11:16",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Reu": {
       "say": "reeyou",
       "ipa": "/ˈriː.uː/",
       "ref": "Genesis 11:18",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.833
     },
     "Serug": {
       "say": "SEE-rug",
       "ipa": "/ˈsiː.rʌg/",
       "ref": "Genesis 11:20",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Nahor": {
       "say": "NAY-hor",
       "ipa": "/ˈneɪ.hɔːr/",
       "ref": "Genesis 11:22",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Terah": {
       "say": "TAIR-uh",
       "ipa": "/ˈtɛər.ə/",
       "ref": "Genesis 11:24",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.625
     },
     "Abram": {
       "say": "AY-bram",
@@ -988,7 +1059,8 @@
       "ipa": "/ˈhɛər.ən/",
       "ref": "Genesis 11:26",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.6
     },
     "Lot": {
       "say": "LOT",
@@ -1003,35 +1075,40 @@
       "ipa": "/kælˈdiːz/",
       "ref": "Genesis 11:28",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Ur": {
       "say": "urr",
       "ipa": "/ɜːr/",
       "ref": "Genesis 11:28",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Iscah": {
       "say": "isskah",
       "ipa": "/ˈɪs.kə/",
       "ref": "Genesis 11:29",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Milcah": {
       "say": "milkah",
       "ipa": "/ˈmɪl.kə/",
       "ref": "Genesis 11:29",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Sarai": {
       "say": "SAIR-eye",
       "ipa": "/ˈsɛər.aɪ/",
       "ref": "Genesis 11:29",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.75
     },
     "Canaan": {
       "say": "Canaan",
@@ -1049,6 +1126,13 @@
       "status": "ok",
       "score": 1.0
     },
+    "Ai": {
+      "say": "Ai",
+      "ref": "Genesis 12:8",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "Bethel": {
       "say": "BETH-el",
       "ipa": "/ˈbɛθ.əl/",
@@ -1056,6 +1140,13 @@
       "override": false,
       "status": "ok",
       "score": 0.9
+    },
+    "South": {
+      "say": "South",
+      "ref": "Genesis 12:9",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Pharaoh": {
       "say": "FAIR-oh",
@@ -1082,12 +1173,12 @@
       "score": 1.0
     },
     "Bela": {
-      "say": "BEE-luh",
+      "say": "BEEla",
       "ipa": "/ˈbiː.lə/",
       "ref": "Genesis 14:2",
-      "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Kiriathaim": {
       "say": "kir-ee-uh-THAY-im",
@@ -1111,7 +1202,7 @@
       "ref": "Genesis 14:7",
       "override": false,
       "status": "ok",
-      "score": 0.938
+      "score": 0.944
     },
     "Tamar": {
       "say": "TAY-mar",
@@ -1239,7 +1330,7 @@
       "ref": "Genesis 22:24",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Kiriath": {
       "say": "KIR-ee-ath",
@@ -1386,12 +1477,12 @@
       "score": 1.0
     },
     "Massa": {
-      "say": "MAS-uh",
+      "say": "MASsah",
       "ipa": "/ˈmæs.ə/",
       "ref": "Genesis 25:14",
-      "override": false,
-      "status": "unfixed",
-      "score": 0.675
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
     },
     "Mishma": {
       "say": "MISH-muh",
@@ -1566,15 +1657,15 @@
       "ipa": "/ˈɪz.reɪ.əl/",
       "ref": "Genesis 32:28",
       "override": false,
-      "status": "suggested",
-      "score": 0.667
+      "status": "ok"
     },
     "Hivite": {
       "say": "HYvite",
       "ipa": "/ˈhaɪ.vaɪt/",
       "ref": "Genesis 34:2",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Beth": {
       "say": "BETH",
@@ -1625,12 +1716,12 @@
       "score": 0.75
     },
     "Anah": {
-      "say": "AY-nuh",
+      "say": "Aina",
       "ipa": "/ˈeɪ.nə/",
       "ref": "Genesis 36:2",
-      "override": false,
-      "status": "unfixed",
-      "score": 0.583
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Oholibamah": {
       "say": "oh-hol-ih-BAH-muh",
@@ -1685,8 +1776,7 @@
       "ipa": "/ˈkɔːr.ə/",
       "ref": "Genesis 36:5",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Gatam": {
       "say": "GAY-tuhm",
@@ -1820,17 +1910,17 @@
       "say": "HOR-eye",
       "ipa": "/ˈhɔːr.aɪ/",
       "ref": "Genesis 36:22",
-      "override": false,
-      "status": "unfixed",
-      "score": 0.5
+      "override": true,
+      "status": "fixed",
+      "score": 0.75
     },
     "Ebal": {
-      "say": "EE-buhl",
+      "say": "EEbul",
       "ipa": "/ˈiː.bəl/",
       "ref": "Genesis 36:23",
-      "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Manahath": {
       "say": "MAN-uh-hath",
@@ -1845,8 +1935,7 @@
       "ipa": "/ˈoʊ.næm/",
       "ref": "Genesis 36:23",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Aiah": {
       "say": "ay-EYE-uh",
@@ -1869,7 +1958,7 @@
       "ipa": "/ˈɛʃ.bæn/",
       "ref": "Genesis 36:26",
       "override": false,
-      "status": "suggested",
+      "status": "unfixed",
       "score": 0.7
     },
     "Ithran": {
@@ -1908,9 +1997,9 @@
       "say": "BEE-or",
       "ipa": "/ˈbiː.ɔːr/",
       "ref": "Genesis 36:32",
-      "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
     },
     "Dinhabah": {
       "say": "DIN-huh-buh",
@@ -1942,7 +2031,7 @@
       "ref": "Genesis 36:34",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 0.875
     },
     "Avith": {
       "say": "ayvith",
@@ -2076,9 +2165,9 @@
       "say": "MAG-dee-el",
       "ipa": "/ˈmæɡ.di.ɛl/",
       "ref": "Genesis 36:43",
-      "override": false,
-      "status": "suggested",
-      "score": 0.714
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Shua": {
       "say": "shooa",
@@ -2121,7 +2210,7 @@
       "score": 1.0
     },
     "Ephraim": {
-      "say": "EE-fray-ihmm",
+      "say": "eefray-ihmm",
       "ipa": "/ˈiː.freɪ.ɪm/",
       "ref": "Genesis 41:52",
       "override": true,
@@ -2381,7 +2470,8 @@
       "ipa": "/ˈdʒɛb.jʊ.saɪt/",
       "ref": "Exodus 3:8",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Aaron": {
       "say": "AIR-uhn",
@@ -2396,14 +2486,16 @@
       "ipa": "/ˈfɑː.ðərz/",
       "ref": "Exodus 6:14",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "fathers’": {
       "say": "fathers",
       "ipa": "/ˈfɑː.ðərz/",
       "ref": "Exodus 6:14",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Libni": {
       "say": "LIB-ny",
@@ -2553,7 +2645,7 @@
       "ref": "Exodus 6:24",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 0.875
     },
     "Phinehas": {
       "say": "FIN-ee-uhs",
@@ -2601,7 +2693,7 @@
       "ref": "Exodus 31:2",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.75
     },
     "Nun": {
       "say": "NUHN",
@@ -2649,7 +2741,7 @@
       "ref": "Numbers 1:10",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.857
     },
     "Kohathites": {
       "say": "KOH-hath-ites",
@@ -2657,7 +2749,7 @@
       "ref": "Numbers 3:27",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 0.875
     },
     "Abihail": {
       "say": "ab-ih-HAY-il",
@@ -2825,7 +2917,7 @@
       "ref": "Numbers 26:7",
       "override": false,
       "status": "ok",
-      "score": 0.826
+      "score": 0.844
     },
     "Nemuel": {
       "say": "NEM-yoo-el",
@@ -2945,7 +3037,7 @@
       "ref": "Numbers 32:42",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Rimmon": {
       "say": "RIM-uhn",
@@ -3081,7 +3173,7 @@
       "ref": "Deuteronomy 3:12",
       "override": false,
       "status": "ok",
-      "score": 0.8
+      "score": 0.833
     },
     "Bezer": {
       "say": "BEE-zer",
@@ -3241,7 +3333,7 @@
       "ref": "Joshua 13:13",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.9
     },
     "Mephaath": {
       "say": "muh-FAY-athh",
@@ -3313,7 +3405,7 @@
       "ref": "Joshua 15:27",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.9
     },
     "Shual": {
       "say": "SHOO-uhl",
@@ -3393,7 +3485,7 @@
       "ref": "Joshua 15:44",
       "override": true,
       "status": "fixed",
-      "score": 0.857
+      "score": 1.0
     },
     "Jattir": {
       "say": "JAT-ur",
@@ -3440,8 +3532,8 @@
       "ipa": "/ˌeɪ.biˈiː.zər/",
       "ref": "Joshua 17:2",
       "override": false,
-      "status": "ok",
-      "score": 0.833
+      "status": "unfixed",
+      "score": 0.714
     },
     "Shean": {
       "say": "SHEE-an",
@@ -3505,7 +3597,7 @@
       "ref": "Joshua 19:35",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Galilee": {
       "say": "GAL-ih-lee",
@@ -3540,7 +3632,7 @@
       "score": 0.8
     },
     "Ehud": {
-      "say": "EE-huhd",
+      "say": "eehud",
       "ipa": "/ˈiː.hʌd/",
       "ref": "Judges 3:15",
       "override": true,
@@ -3569,7 +3661,7 @@
       "ref": "Judges 8:20",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.9
     },
     "Jotham": {
       "say": "JOH-thuhm",
@@ -3580,12 +3672,12 @@
       "score": 0.8
     },
     "Etam": {
-      "say": "EE-tuhm",
+      "say": "eetum",
       "ipa": "/ˈiː.təm/",
       "ref": "Judges 15:8",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.75
     },
     "Micah": {
       "say": "MY-kuh",
@@ -3672,7 +3764,7 @@
       "ipa": "/ˈsæm.jʊ.əl/",
       "ref": "1 Samuel 1:20",
       "override": false,
-      "status": "suggested",
+      "status": "unfixed",
       "score": 0.75
     },
     "Abinadab": {
@@ -4177,7 +4269,7 @@
       "ref": "1 Kings 16:1",
       "override": true,
       "status": "fixed",
-      "score": 0.833
+      "score": 0.717
     },
     "Omri": {
       "say": "omreye",
@@ -4441,7 +4533,7 @@
       "ref": "2 Kings 23:34",
       "override": false,
       "status": "unfixed",
-      "score": 0.75
+      "score": 0.708
     },
     "Pedaiah": {
       "say": "puhdayyuh",
@@ -4504,7 +4596,8 @@
       "ipa": "/ˈdaɪ.fæθ/",
       "ref": "1 Chronicles 1:6",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Rodanim": {
       "say": "ROH-duh-nim",
@@ -4519,7 +4612,8 @@
       "ipa": "/ˈreɪ.ə.mə/",
       "ref": "1 Chronicles 1:9",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Sabta": {
       "say": "SAB-tuh",
@@ -4574,7 +4668,8 @@
       "ipa": "/ˈsaɪ.naɪt/",
       "ref": "1 Chronicles 1:15",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.9
     },
     "Arvadite": {
       "say": "AR-vuh-dite",
@@ -4589,7 +4684,8 @@
       "ipa": "/ˈheɪ.mə.θaɪt/",
       "ref": "1 Chronicles 1:16",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.929
     },
     "Zemarite": {
       "say": "ZEM-uh-rite",
@@ -4597,7 +4693,7 @@
       "ref": "1 Chronicles 1:16",
       "override": false,
       "status": "ok",
-      "score": 0.929
+      "score": 0.857
     },
     "Jaalam": {
       "say": "JAY-a-lam",
@@ -4632,11 +4728,11 @@
       "score": 0.8
     },
     "Alian": {
-      "say": "AY-lee-uhn",
+      "say": "AYleeun",
       "ipa": "/ˈeɪ.li.ən/",
       "ref": "1 Chronicles 1:40",
-      "override": false,
-      "status": "unfixed",
+      "override": true,
+      "status": "fixed",
       "score": 0.7
     },
     "Shephi": {
@@ -4652,7 +4748,7 @@
       "ipa": "/ˈhæm.ræn/",
       "ref": "1 Chronicles 1:41",
       "override": false,
-      "status": "suggested",
+      "status": "unfixed",
       "score": 0.75
     },
     "Jakan": {
@@ -4670,6 +4766,13 @@
       "override": true,
       "status": "fixed",
       "score": 0.8
+    },
+    "River": {
+      "say": "River",
+      "ref": "1 Chronicles 1:48",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Baal-hanan": {
       "say": "bay-al-HAY-nan",
@@ -4725,7 +4828,7 @@
       "ref": "1 Chronicles 2:6",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.875
     },
     "Achar": {
       "say": "aykarr",
@@ -4757,15 +4860,15 @@
       "ref": "1 Chronicles 2:11",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Shimea": {
-      "say": "SHIM-ee-uh",
+      "say": "shimmee-uh",
       "ipa": "/ˈʃɪm.i.ə/",
       "ref": "1 Chronicles 2:13",
       "override": true,
       "status": "fixed",
-      "score": 0.833
+      "score": 0.8
     },
     "Shimma": {
       "say": "SHIM-uh",
@@ -4973,7 +5076,7 @@
       "ref": "1 Chronicles 2:31",
       "override": true,
       "status": "fixed",
-      "score": 1.0
+      "score": 0.667
     },
     "Ishi": {
       "say": "IHSH-eye",
@@ -5141,7 +5244,7 @@
       "ref": "1 Chronicles 2:47",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Regem": {
       "say": "REE-ghem",
@@ -5149,7 +5252,7 @@
       "ref": "1 Chronicles 2:47",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.9
     },
     "Shaaph": {
       "say": "SHAY-aff",
@@ -5253,7 +5356,7 @@
       "ref": "1 Chronicles 2:52",
       "override": true,
       "status": "fixed",
-      "score": 0.8
+      "score": 0.7
     },
     "Manahethites": {
       "say": "MAN-uh-heth-ites",
@@ -5261,7 +5364,7 @@
       "ref": "1 Chronicles 2:52",
       "override": false,
       "status": "unfixed",
-      "score": 0.667
+      "score": 0.7
     },
     "Menuhoth": {
       "say": "muh-NOO-hoth",
@@ -5269,7 +5372,7 @@
       "ref": "1 Chronicles 2:52",
       "override": true,
       "status": "fixed",
-      "score": 0.857
+      "score": 0.786
     },
     "Eshtaolites": {
       "say": "ESH-tay-uh-lites",
@@ -5309,7 +5412,7 @@
       "ref": "1 Chronicles 2:53",
       "override": false,
       "status": "ok",
-      "score": 0.917
+      "score": 0.929
     },
     "Puthites": {
       "say": "PYOO-thites",
@@ -5333,7 +5436,7 @@
       "ref": "1 Chronicles 2:53",
       "override": false,
       "status": "ok",
-      "score": 0.875
+      "score": 0.889
     },
     "Zorathites": {
       "say": "ZOR-uh-thites",
@@ -5421,7 +5524,7 @@
       "ref": "1 Chronicles 2:55",
       "override": false,
       "status": "ok",
-      "score": 0.929
+      "score": 0.938
     },
     "Tirathites": {
       "say": "TY-ruh-thites",
@@ -6717,7 +6820,7 @@
       "ref": "1 Chronicles 5:10",
       "override": false,
       "status": "ok",
-      "score": 0.917
+      "score": 0.929
     },
     "Salchah": {
       "say": "SAL-kuh",
@@ -7168,12 +7271,12 @@
       "score": 0.653
     },
     "Bileam": {
-      "say": "BIL-ee-uhm",
+      "say": "billeeuhm",
       "ipa": "/ˈbɪl.i.əm/",
       "ref": "1 Chronicles 6:70",
       "override": true,
       "status": "fixed",
-      "score": 0.929
+      "score": 1.0
     },
     "Anem": {
       "say": "AY-nem",
@@ -7520,12 +7623,12 @@
       "score": 0.583
     },
     "Elead": {
-      "say": "EL-ee-ad",
+      "say": "ellyad",
       "ipa": "/ˈɛl.i.æd/",
       "ref": "1 Chronicles 7:21",
       "override": true,
       "status": "fixed",
-      "score": 0.917
+      "score": 1.0
     },
     "Sheerah": {
       "say": "SHEE-uh-ruh",
@@ -8477,7 +8580,7 @@
       "ref": "1 Chronicles 9:5",
       "override": false,
       "status": "suggested",
-      "score": 0.714
+      "score": 0.75
     },
     "Jeuel": {
       "say": "juh-YOO-el",
@@ -8835,7 +8938,7 @@
       "ref": "1 Chronicles 11:22",
       "override": false,
       "status": "unfixed",
-      "score": 0.714
+      "score": 0.67
     },
     "Kabzeel": {
       "say": "KAB-zee-el",
@@ -9539,7 +9642,7 @@
       "ref": "1 Chronicles 12:35",
       "override": false,
       "status": "unfixed",
-      "score": 0.429
+      "score": 0.571
     },
     "Egypt": {
       "say": "EE-jipt",
@@ -9739,7 +9842,7 @@
       "ref": "1 Chronicles 15:18",
       "override": false,
       "status": "suggested",
-      "score": 0.75
+      "score": 0.643
     },
     "Jehiel": {
       "say": "juh-HY-el",
@@ -9882,8 +9985,8 @@
       "ipa": "/ˈmoʊ.ə.baɪts/",
       "ref": "1 Chronicles 18:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786
+      "status": "ok",
+      "score": 0.812
     },
     "Hadadezer": {
       "say": "had-ad-EE-zer",
@@ -10010,8 +10113,8 @@
       "ipa": "/ˈkɛr.ə.θaɪts/",
       "ref": "1 Chronicles 18:17",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786
+      "status": "ok",
+      "score": 0.812
     },
     "Pelethites": {
       "say": "PEL-eh-thites",
@@ -10147,7 +10250,7 @@
       "ref": "1 Chronicles 23:7",
       "override": false,
       "status": "unfixed",
-      "score": 0.75
+      "score": 0.778
     },
     "Laadan": {
       "say": "LAY-uh-dan",
@@ -10254,12 +10357,12 @@
       "score": 0.75
     },
     "Jeshebeab": {
-      "say": "juh-SHEHB-ee-abb",
+      "say": "jushebbyab",
       "ipa": "/dʒəˈʃɛb.i.æb/",
       "ref": "1 Chronicles 24:13",
       "override": true,
       "status": "fixed",
-      "score": 0.875
+      "score": 0.88
     },
     "Bilgah": {
       "say": "BIL-guh",
@@ -10282,8 +10385,8 @@
       "ipa": "/ˈhæp.ɪ.zɛz/",
       "ref": "1 Chronicles 24:15",
       "override": false,
-      "status": "ok",
-      "score": 0.857
+      "status": "unfixed",
+      "score": 0.75
     },
     "Hezir": {
       "say": "HEE-zer",
@@ -10355,7 +10458,7 @@
       "ref": "1 Chronicles 24:22",
       "override": false,
       "status": "suggested",
-      "score": 0.714
+      "score": 0.75
     },
     "Shelomoth": {
       "say": "SHEL-uh-moth",
@@ -10683,7 +10786,7 @@
       "ref": "1 Chronicles 26:23",
       "override": false,
       "status": "unfixed",
-      "score": 0.714
+      "score": 0.75
     },
     "Hebronites": {
       "say": "HEE-bruhn-ites",
@@ -10723,7 +10826,7 @@
       "ref": "1 Chronicles 26:32",
       "override": false,
       "status": "unfixed",
-      "score": 0.643
+      "score": 0.688
     },
     "Zabdiel": {
       "say": "ZAB-dee-el",
@@ -10787,7 +10890,7 @@
       "ref": "1 Chronicles 27:11",
       "override": false,
       "status": "suggested",
-      "score": 0.714
+      "score": 0.75
     },
     "Anetothite": {
       "say": "uh-NET-uh-thite",
@@ -10827,7 +10930,7 @@
       "ref": "1 Chronicles 27:16",
       "override": false,
       "status": "ok",
-      "score": 0.875
+      "score": 0.889
     },
     "Kemuel": {
       "say": "KEHM-yoo-el",
@@ -11049,7 +11152,7 @@
       "ref": "2 Chronicles 8:7",
       "override": false,
       "status": "ok",
-      "score": 0.857
+      "score": 1.0
     },
     "Hittites": {
       "say": "HIT-ites",
@@ -11063,7 +11166,7 @@
       "ref": "2 Chronicles 8:7",
       "override": false,
       "status": "ok",
-      "score": 0.8
+      "score": 0.833
     },
     "Perizzites": {
       "say": "PER-ih-zites",
@@ -12371,6 +12474,27 @@
       "ref": "Luke 24:19",
       "override": false
     },
+    "Holy": {
+      "say": "Holy",
+      "ref": "Acts 1:2",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Kingdom": {
+      "say": "Kingdom",
+      "ref": "Acts 1:3",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Father": {
+      "say": "Father",
+      "ref": "Acts 1:4",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "Judaea": {
       "say": "joo-DEE-uh",
       "ipa": "/dʒuːˈdiː.ə/",
@@ -12384,7 +12508,15 @@
       "ipa": "/səˈmɛər.i.ə/",
       "ref": "Acts 1:8",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
+    },
+    "Sabbath": {
+      "say": "Sabbath",
+      "ref": "Acts 1:12",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Andrew": {
       "say": "AN-droo",
@@ -12418,6 +12550,13 @@
       "status": "ok",
       "score": 1.0
     },
+    "Zealot": {
+      "say": "Zealot",
+      "ref": "Acts 1:13",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "Zelotes": {
       "say": "zi-LOH-teez",
       "ipa": "/zɪˈloʊ.tiːz/",
@@ -12426,6 +12565,13 @@
       "status": "fixed",
       "score": 0.857
     },
+    "Scripture": {
+      "say": "Scripture",
+      "ref": "Acts 1:16",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "Aceldama": {
       "say": "uh-KEL-duh-muh",
       "ipa": "/əˈkɛl.də.mə/",
@@ -12433,6 +12579,13 @@
       "override": false,
       "status": "ok",
       "score": 0.875
+    },
+    "Psalms": {
+      "say": "Psalms",
+      "ref": "Acts 1:20",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Barsabas": {
       "say": "BAR-suh-bus",
@@ -12447,7 +12600,8 @@
       "ipa": "/bɑːrˈsæb.əs/",
       "ref": "Acts 1:23",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Justus": {
       "say": "JUS-tuhs",
@@ -12472,6 +12626,13 @@
       "override": false,
       "status": "ok",
       "score": 1.0
+    },
+    "Jews": {
+      "say": "Jews",
+      "ref": "Acts 2:5",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Galilaeans": {
       "say": "gal-ih-LEE-unz",
@@ -12503,7 +12664,7 @@
       "ref": "Acts 2:9",
       "override": false,
       "status": "ok",
-      "score": 0.917
+      "score": 0.929
     },
     "Medes": {
       "say": "MEEDZ",
@@ -12518,7 +12679,7 @@
       "ipa": "/ˈpɒn.təs/",
       "ref": "Acts 2:9",
       "override": false,
-      "status": "suggested",
+      "status": "unfixed",
       "score": 0.75
     },
     "Libya": {
@@ -12544,6 +12705,41 @@
       "override": false,
       "status": "ok",
       "score": 1.0
+    },
+    "Beautiful": {
+      "say": "Beautiful",
+      "ref": "Acts 3:2",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Gate": {
+      "say": "Gate",
+      "ref": "Acts 3:10",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Servant": {
+      "say": "Servant",
+      "ref": "Acts 3:13",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Righteous": {
+      "say": "Righteous",
+      "ref": "Acts 3:14",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
+    "Prince": {
+      "say": "Prince",
+      "ref": "Acts 3:15",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Alexander": {
       "say": "al-ig-ZAN-der",
@@ -12830,8 +13026,8 @@
       "ipa": "/ˈɡɑː.zə/",
       "ref": "Acts 8:26",
       "override": false,
-      "status": "ok",
-      "score": 0.875
+      "status": "unfixed",
+      "score": 0.75
     },
     "Candace": {
       "say": "KAN-duh-see",
@@ -12934,7 +13130,8 @@
       "ipa": "/ˈæɡ.ə.bəs/",
       "ref": "Acts 11:28",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 1.0
     },
     "Claudius": {
       "say": "KLAW-dee-uhs",
@@ -12965,7 +13162,8 @@
       "ipa": "/ˌsɛs.əˈriː.ə/",
       "ref": "Acts 12:19",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Blastus": {
       "say": "BLAS-tuhs",
@@ -12980,7 +13178,8 @@
       "ipa": "/saɪˈriːn/",
       "ref": "Acts 13:1",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Lucius": {
       "say": "LOO-shuhs",
@@ -13019,7 +13218,8 @@
       "ipa": "/ˈsæl.ə.mɪs/",
       "ref": "Acts 13:5",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Bar-jesus": {
       "say": "bar-JEE-zus",
@@ -13034,7 +13234,8 @@
       "ipa": "/ˈpeɪ.fɒs/",
       "ref": "Acts 13:6",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.8
     },
     "Paulus": {
       "say": "PAW-luhs",
@@ -13153,7 +13354,8 @@
       "ipa": "/fəˈniː.ʃə/",
       "ref": "Acts 15:3",
       "override": true,
-      "status": "fixed"
+      "status": "fixed",
+      "score": 0.0
     },
     "Silas": {
       "say": "SY-luhs",

@@ -149,7 +149,7 @@ _STRIP_CHARS = set("ˈˌːˑ.·|‖ ʰʷʲˠˤ̩̯͜͡ⁿ")
 
 # Two-character units that must survive as one phone.
 _DIGRAPHS = (
-    "tʃ", "dʒ", "ts", "dz", "aɪ", "aʊ", "ɔɪ", "eɪ", "oʊ", "əʊ",
+    "tʃ", "dʒ", "aɪ", "aʊ", "ɔɪ", "eɪ", "oʊ", "əʊ",
     "ɛə", "ɪə", "ʊə", "ɑɪ", "ɑʊ",
 )
 
@@ -185,6 +185,11 @@ _FOLD = {
     # stripped by _clean, hence the keys here have none.
     "ɑɹ": "ɔr", "ɔɹ": "ɔr", "ɛɹ": "ɛr", "ɪɹ": "ɪr", "ʊɹ": "ur", "aɪɚ": "aɪər",
     "əl": "əl", "n̩": "n", "l̩": "l",
+    # English has no /ts/ or /dz/ phoneme, but the model's vocabulary carries
+    # them as single tokens while the written references spell them out. Every
+    # "-ites" name (Kenites, Amalekites, Manahathites -- and Chronicles is full
+    # of them) lost an edit to that mismatch until both sides were split.
+    "ts": "ts", "dz": "dz",
     "x": "k", "ç": "h",
 }
 
@@ -251,19 +256,33 @@ def fold(tokens) -> list:
     return out
 
 
+# The coarse alphabet's vowels, after folding. Used only to decide what may
+# collapse when it repeats -- see normalize().
+_VOWELS = {"i", "ɪ", "ɛ", "æ", "ə", "ɔ", "u", "ɜ",
+           "aɪ", "aʊ", "ɔɪ", "eɪ", "oʊ"}
+
+
 def normalize(text: str) -> list:
     """``text`` -> comparable coarse phone list.
 
-    Runs of the same phone collapse to one. English does not contrast length
-    here, and doubling arises spuriously on both sides: a reference like
-    /ˈdɛər.ə/ folds to d-ɛ-r-r-ə because "ɛə" already implies the rhotic that
-    the written r repeats, and the model separately likes to emit [ɔːɹ ɹ].
-    Without this, a correct match is penalised for an artefact of notation.
+    A doubled *consonant* collapses to one; a doubled *vowel* is kept.
+
+    Consonant gemination is an artefact on both sides -- English does not
+    contrast it, the model emits things like [m ə l l ɪ k aɪ t s], and a
+    reference like /ˈdɛər.ə/ folds to d-ɛ-r-r-ə because "ɛə" already implies the
+    rhotic that the written r repeats.
+
+    A doubled vowel is the opposite: it is the one thing that betrays a
+    respelling being read out as letters rather than spoken. "ee-huhd" said
+    "E, E, hud" comes back as [iː iː h ʌ d], and an earlier version of this
+    function collapsed every repeat, which made that score identically to the
+    correct pronunciation and hid the fault completely.
     """
     out = []
     for p in fold(phones(text)):
-        if not out or out[-1] != p:
-            out.append(p)
+        if out and out[-1] == p and p not in _VOWELS:
+            continue
+        out.append(p)
     return out
 
 

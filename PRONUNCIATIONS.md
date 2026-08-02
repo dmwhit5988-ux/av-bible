@@ -13,112 +13,114 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 
 | Name | Say it | IPA | First appears | TTS | Checked |
 | --- | --- | --- | --- | --- | --- |
-| Havilah | HAVih-lah | /ˈhæv.ɪ.lə/ | Genesis 2:11 | ✅ | overridden |
-| Pishon | PIE-shon | /ˈpaɪ.ʃɒn/ | Genesis 2:11 | ✅ | overridden |
+| Spirit | Spirit |  | Genesis 1:2 |  | fine as spelled |
+| Havilah | HAVih-lah | /ˈhæv.ɪ.lə/ | Genesis 2:11 | ✅ | overridden (0.83) |
+| Pishon | PIE-shon | /ˈpaɪ.ʃɒn/ | Genesis 2:11 | ✅ | overridden (1.00) |
 | Pison | pyson | /ˈpaɪ.sɒn/ | Genesis 2:11 | ✅ | overridden (1.00) |
-| Bdellium | DEL-eeum | /ˈdɛl.i.əm/ | Genesis 2:12 | ✅ | overridden |
+| Bdellium | DEL-eeum | /ˈdɛl.i.əm/ | Genesis 2:12 | ✅ | overridden (1.00) |
 | Cush | KUSH | /kʌʃ/ | Genesis 2:13 |  | still wrong (0.67) |
 | Assyria | uh-SEER-ee-uh | /əˈsɪr.i.ə/ | Genesis 2:14 |  | fine as spelled (0.83) |
 | Euphrates | yoo-FRAY-teez | /juːˈfreɪ.tiːz/ | Genesis 2:14 |  | fine as spelled (0.88) |
-| Hiddekel | HID-uh-kel | /ˈhɪd.ə.kɛl/ | Genesis 2:14 | ✅ | overridden |
+| Hiddekel | HID-uh-kel | /ˈhɪd.ə.kɛl/ | Genesis 2:14 | ✅ | overridden (1.00) |
+| Man | Man |  | Genesis 2:23 |  | fine as spelled |
 | Cherubim | CHER-uh-bim | /ˈtʃɛr.ə.bɪm/ | Genesis 3:24 |  | fine as spelled (1.00) |
-| Cain | KAYN | /keɪn/ | Genesis 4:1 |  | fine as spelled (0.83) |
+| Cain | KAYN | /keɪn/ | Genesis 4:1 |  | still wrong (0.67) |
 | Eve | EEV | /iːv/ | Genesis 4:1 |  | fine as spelled (1.00) |
 | Nod | NOD | /nɒd/ | Genesis 4:16 |  | fine as spelled (1.00) |
-| Irad | EYE-rad | /ˈaɪ.ræd/ | Genesis 4:18 | ✅ | overridden |
-| Mehujael | muh-HYOO-jay-el | /mɪˈhjuː.dʒeɪ.ɛl/ | Genesis 4:18 | ✅ | overridden |
+| Irad | EYE-rad | /ˈaɪ.ræd/ | Genesis 4:18 | ✅ | overridden (0.75) |
+| Mehujael | muh-HYOO-jay-el | /mɪˈhjuː.dʒeɪ.ɛl/ | Genesis 4:18 | ✅ | overridden (0.80) |
 | Methusael | meth-YOO-say-el | /mɪˈθjuː.seɪ.ɛl/ | Genesis 4:18 | ✅ | overridden (0.89) |
-| Methushael | muh-THOO-shay-el | /mɪˈθuː.ʃeɪ.ɛl/ | Genesis 4:18 | ✅ | overridden |
-| Adah | AY-duh | /ˈeɪ.də/ | Genesis 4:19 | ✅ | overridden |
-| Zillah | ZIL-uh | /ˈzɪl.ə/ | Genesis 4:19 |  | fine as spelled (0.88) |
-| Jabal | JAY-bul | /ˈdʒeɪ.bəl/ | Genesis 4:20 | ✅ | overridden |
-| Jubal | JOO-bul | /ˈdʒuː.bəl/ | Genesis 4:21 | ✅ | overridden |
+| Methushael | muh-THOO-shay-el | /mɪˈθuː.ʃeɪ.ɛl/ | Genesis 4:18 | ✅ | overridden (0.62) |
+| Adah | AY-duh | /ˈeɪ.də/ | Genesis 4:19 | ✅ | overridden (0.46) |
+| Zillah | ZIL-uh | /ˈzɪl.ə/ | Genesis 4:19 |  | still wrong (0.75) |
+| Jabal | JAY-bul | /ˈdʒeɪ.bəl/ | Genesis 4:20 | ✅ | overridden (0.90) |
+| Jubal | JOO-bul | /ˈdʒuː.bəl/ | Genesis 4:21 | ✅ | overridden (1.00) |
 | Tubal | TOO-buhl | /ˈtuː.bəl/ | Genesis 4:22 |  | fine as spelled (1.00) |
 | Tubal-cain | TOO-bal-kayn | /ˈtjuː.bəl.keɪn/ | Genesis 4:22 |  | fine as spelled (0.89) |
 | Adam | AD-uhm | /ˈæd.əm/ | Genesis 5:1 |  | fine as spelled (1.00) |
-| Seth | SETH | /sɛθ/ | Genesis 5:3 |  | fine as spelled (0.83) |
-| Enosh | eenosh | /ˈiː.nɒʃ/ | Genesis 5:6 | ✅ | overridden |
-| Cainan | Caynen | /ˈkeɪ.nən/ | Genesis 5:9 | ✅ | overridden |
+| Seth | SETH | /sɛθ/ | Genesis 5:3 |  | still wrong (0.67) |
+| Enosh | eenosh | /ˈiː.nɒʃ/ | Genesis 5:6 | ✅ | overridden (1.00) |
+| Cainan | Caynen | /ˈkeɪ.nən/ | Genesis 5:9 | ✅ | overridden (1.00) |
 | Kenan | KEE-nan | /ˈkiː.nən/ | Genesis 5:9 |  | fine as spelled (1.00) |
-| Mahalaleel | muh-HAL-uh-lel | /məˈhæl.ə.lɛl/ | Genesis 5:12 | ✅ | overridden |
-| Mahalalel | muh-HAL-uh-lel | /məˈhæl.ə.lɛl/ | Genesis 5:12 | ✅ | overridden |
+| Mahalaleel | muh-HAL-uh-lel | /məˈhæl.ə.lɛl/ | Genesis 5:12 | ✅ | overridden (1.00) |
+| Mahalalel | muh-HAL-uh-lel | /məˈhæl.ə.lɛl/ | Genesis 5:12 | ✅ | overridden (1.00) |
 | Jared | JAIR-ed | /ˈdʒɛər.ɛd/ | Genesis 5:15 |  | fine as spelled (0.80) |
-| Enoch | EE-nuhk | /ˈiː.nək/ | Genesis 5:18 | ✅ | overridden (0.88) |
+| Enoch | EE-nuhk | /ˈiː.nək/ | Genesis 5:18 |  | still wrong (0.75) |
 | Methuselah | muh-THOO-zuh-luh | /məˈθuː.zə.lə/ | Genesis 5:21 |  | fine as spelled (0.88) |
-| Lamech | LAY-mek | /ˈleɪ.mɛk/ | Genesis 5:25 | ✅ | overridden |
+| Lamech | LAY-mek | /ˈleɪ.mɛk/ | Genesis 5:25 | ✅ | overridden (1.00) |
 | Noah | NOH-uh | /ˈnoʊ.ə/ | Genesis 5:29 |  | fine as spelled (1.00) |
-| Yahweh | YAH-way | /ˈjɑː.weɪ/ | Genesis 5:29 | ✅ | overridden |
+| Yahweh | YAH-way | /ˈjɑː.weɪ/ | Genesis 5:29 |  | fine as spelled |
 | Ham | HAM | /hæm/ | Genesis 5:32 |  | still wrong (0.67) |
-| Japheth | JAY-feth | /ˈdʒeɪ.fɛθ/ | Genesis 5:32 | ✅ | overridden |
+| Japheth | JAY-feth | /ˈdʒeɪ.fɛθ/ | Genesis 5:32 | ✅ | overridden (1.00) |
 | Shem | SHEM | /ʃɛm/ | Genesis 5:32 |  | fine as spelled (1.00) |
-| Nephilim | NEFelim | /ˈnɛf.ɪ.lɪm/ | Genesis 6:4 | ✅ | overridden |
-| Ararat | AIR-uh-rat | /ˈær.ə.ræt/ | Genesis 8:4 |  | still wrong (0.67) |
+| Nephilim | NEFelim | /ˈnɛf.ɪ.lɪm/ | Genesis 6:4 | ✅ | overridden (0.64) |
+| Ararat | AIR-uh-rat | /ˈær.ə.ræt/ | Genesis 8:4 |  | fine as spelled (0.83) |
 | Gomer | GOH-mer | /ˈɡoʊ.mər/ | Genesis 10:2 |  | fine as spelled (1.00) |
-| Javan | JAY-van | /ˈdʒeɪ.væn/ | Genesis 10:2 | ✅ | overridden |
-| Madai | MAYdye | /ˈmeɪ.daɪ/ | Genesis 10:2 | ✅ | overridden |
+| Javan | JAY-van | /ˈdʒeɪ.væn/ | Genesis 10:2 | ✅ | overridden (0.80) |
+| Madai | MAYdye | /ˈmeɪ.daɪ/ | Genesis 10:2 | ✅ | overridden (1.00) |
 | Magog | MAY-gog | /ˈmeɪ.ɡɒɡ/ | Genesis 10:2 |  | fine as spelled (1.00) |
-| Meshech | MEEshech | /ˈmiː.ʃɛk/ | Genesis 10:2 | ✅ | overridden |
-| Tiras | TYruss | /ˈtaɪ.rəs/ | Genesis 10:2 | ✅ | overridden |
+| Meshech | MEEshech | /ˈmiː.ʃɛk/ | Genesis 10:2 | ✅ | overridden (1.00) |
+| Tiras | TYruss | /ˈtaɪ.rəs/ | Genesis 10:2 | ✅ | overridden (1.00) |
 | Ashkenaz | ASH-kuh-naz | /ˈæʃ.kə.næz/ | Genesis 10:3 |  | fine as spelled (1.00) |
-| Riphath | RYE-fath | /ˈraɪ.fæθ/ | Genesis 10:3 | ✅ | overridden |
+| Riphath | RYE-fath | /ˈraɪ.fæθ/ | Genesis 10:3 | ✅ | overridden (0.80) |
 | Togarmah | toh-GAR-muh | /toʊˈɡɑːr.mə/ | Genesis 10:3 |  | fine as spelled (0.86) |
 | Dodanim | dahduhnihm | /ˈdɒd.ə.nɪm/ | Genesis 10:4 | ✅ | overridden (0.86) |
-| Elishah | Elai-sha | /ɪˈlaɪ.ʃə/ | Genesis 10:4 | ✅ | overridden |
+| Elishah | Elai-sha | /ɪˈlaɪ.ʃə/ | Genesis 10:4 | ✅ | overridden (0.70) |
 | Kittim | KIT-im | /ˈkɪt.ɪm/ | Genesis 10:4 |  | fine as spelled (0.83) |
 | Tarshish | TAR-shish | /ˈtɑːr.ʃɪʃ/ | Genesis 10:4 |  | fine as spelled (1.00) |
-| Mizraim | mizRAYim | /mɪzˈreɪ.ɪm/ | Genesis 10:6 | ✅ | overridden |
+| Mizraim | mizRAYim | /mɪzˈreɪ.ɪm/ | Genesis 10:6 | ✅ | overridden (0.79) |
 | Phut | FUT | /fʌt/ | Genesis 10:6 |  | fine as spelled (1.00) |
 | Put | PUT | /pʌt/ | Genesis 10:6 |  | still wrong (0.67) |
-| Dedan | DEE-dan | /ˈdiː.dæn/ | Genesis 10:7 | ✅ | overridden |
-| Raamah | RAY-uh-muh | /ˈreɪ.ə.mə/ | Genesis 10:7 | ✅ | overridden |
+| Dedan | DEE-dan | /ˈdiː.dæn/ | Genesis 10:7 | ✅ | overridden (0.90) |
+| Raamah | RAY-uh-muh | /ˈreɪ.ə.mə/ | Genesis 10:7 | ✅ | overridden (0.90) |
 | Sabtah | SAB-tuh | /ˈsæb.tə/ | Genesis 10:7 |  | fine as spelled (0.80) |
-| Sabteca | SAB-tuck-uhh | /ˈsæb.tə.kə/ | Genesis 10:7 | ✅ | overridden |
+| Sabteca | SAB-tuck-uhh | /ˈsæb.tə.kə/ | Genesis 10:7 | ✅ | overridden (0.71) |
 | Sabtechah | SAB-tih-kah | /ˈsæb.tɪ.kɑː/ | Genesis 10:7 | ✅ | overridden (0.86) |
-| Seba | SEEba | /ˈsiː.bə/ | Genesis 10:7 | ✅ | overridden |
+| Seba | SEEba | /ˈsiː.bə/ | Genesis 10:7 | ✅ | overridden (1.00) |
 | Sheba | SHEE-buh | /ˈʃiː.bə/ | Genesis 10:7 |  | fine as spelled (1.00) |
 | Nimrod | NIM-rod | /ˈnɪm.rɒd/ | Genesis 10:8 |  | fine as spelled (1.00) |
 | Accad | AK-ad | /ˈæk.æd/ | Genesis 10:10 |  | fine as spelled (1.00) |
-| Calneh | KAL-neh | /ˈkæl.nɛ/ | Genesis 10:10 | ✅ | overridden |
-| Erech | EH-rek | /ˈɛr.ɛk/ | Genesis 10:10 | ✅ | overridden |
-| Calah | KAY-luh | /ˈkeɪ.lə/ | Genesis 10:11 | ✅ | overridden |
-| Ir | ear | /ɪər/ | Genesis 10:11 | ✅ | overridden |
+| Calneh | KAL-neh | /ˈkæl.nɛ/ | Genesis 10:10 | ✅ | overridden (0.50) |
+| Erech | EH-rek | /ˈɛr.ɛk/ | Genesis 10:10 | ✅ | overridden (0.75) |
+| Calah | KAY-luh | /ˈkeɪ.lə/ | Genesis 10:11 | ✅ | overridden (0.75) |
+| Ir | ear | /ɪər/ | Genesis 10:11 | ✅ | overridden (0.00) |
 | Rehoboth | ruh-HOH-both | /rəˈhoʊ.bɒθ/ | Genesis 10:11 |  | fine as spelled (0.86) |
-| Resen | REE-sen | /ˈriː.sɛn/ | Genesis 10:12 | ✅ | overridden |
+| Resen | REE-sen | /ˈriː.sɛn/ | Genesis 10:12 | ✅ | overridden (0.80) |
 | Anamim | AN-uh-mim | /ˈæn.ə.mɪm/ | Genesis 10:13 |  | fine as spelled (0.83) |
-| Lehabim | laHAY-bim | /ləˈheɪ.bɪm/ | Genesis 10:13 | ✅ | overridden |
+| Lehabim | laHAY-bim | /ləˈheɪ.bɪm/ | Genesis 10:13 | ✅ | overridden (1.00) |
 | Ludim | LOO-dim | /ˈluː.dɪm/ | Genesis 10:13 |  | fine as spelled (0.80) |
 | Naphtuhim | naftoohihm | /næfˈtuː.hɪm/ | Genesis 10:13 | ✅ | overridden (1.00) |
-| Caphtorim | KAFtarim | /ˈkæf.tə.rɪm/ | Genesis 10:14 |  | fine as spelled (0.89) |
+| Caphtorim | KAFtarim | /ˈkæf.tə.rɪm/ | Genesis 10:14 |  | fine as spelled (1.00) |
 | Casluhim | KAS-loo-him | /ˈkæs.luː.hɪm/ | Genesis 10:14 | ✅ | overridden (0.94) |
 | Pathrusim | path-ROO-sim | /pæθˈruː.sɪm/ | Genesis 10:14 |  | fine as spelled (0.88) |
 | Philistim | fih-LIS-tim | /fɪˈlɪs.tɪm/ | Genesis 10:14 |  | fine as spelled (0.88) |
-| Philistines | FILihsteenz | /ˈfɪl.ɪ.stiːnz/ | Genesis 10:14 | ✅ | overridden |
-| Heth | hetth | /hɛθ/ | Genesis 10:15 | ✅ | overridden |
+| Philistines | FILihsteenz | /ˈfɪl.ɪ.stiːnz/ | Genesis 10:14 | ✅ | overridden (1.00) |
+| Heth | hetth | /hɛθ/ | Genesis 10:15 | ✅ | overridden (0.67) |
 | Sidon | SY-duhn | /ˈsaɪ.dən/ | Genesis 10:15 |  | fine as spelled (1.00) |
-| Girgashites | GUR-guh-shites | /ˈɡɜːr.ɡə.ʃaɪts/ | Genesis 10:16 | ✅ | overridden |
+| Girgashites | GUR-guh-shites | /ˈɡɜːr.ɡə.ʃaɪts/ | Genesis 10:16 | ✅ | overridden (0.44) |
 | Girgasite | gerrguhseyet | /ˈɡɜːr.ɡə.saɪt/ | Genesis 10:16 | ✅ | overridden (0.81) |
 | Arkites | AR-kites | /ˈɑːr.kaɪts/ | Genesis 10:17 |  | fine as spelled (1.00) |
-| Sinites | SIGH-nites | /ˈsaɪ.naɪts/ | Genesis 10:17 | ✅ | overridden |
+| Sinites | SIGH-nites | /ˈsaɪ.naɪts/ | Genesis 10:17 | ✅ | overridden (1.00) |
 | Arvadites | AR-vuh-dites | /ˈɑːr.və.daɪts/ | Genesis 10:18 |  | fine as spelled (1.00) |
 | Canaanites | KAY-nuh-nites | /ˈkeɪ.nə.naɪts/ | Genesis 10:18 |  | fine as spelled (1.00) |
-| Hamathites | HAY-muh-thites | /ˈheɪ.mə.θaɪts/ | Genesis 10:18 |  | fine as spelled (0.86) |
-| Zemarites | ZEM-uh-rites | /ˈzɛm.ə.raɪts/ | Genesis 10:18 |  | fine as spelled (0.86) |
+| Hamathites | HAY-muh-thites | /ˈheɪ.mə.θaɪts/ | Genesis 10:18 |  | fine as spelled (0.88) |
+| Zemarites | ZEM-uh-rites | /ˈzɛm.ə.raɪts/ | Genesis 10:18 |  | fine as spelled (0.88) |
 | Admah | AD-muh | /ˈæd.mə/ | Genesis 10:19 |  | fine as spelled (1.00) |
 | Gomorrah | guh-MOR-uh | /ɡəˈmɒr.ə/ | Genesis 10:19 |  | fine as spelled (1.00) |
-| Lasha | LAY-shuh | /ˈleɪ.ʃə/ | Genesis 10:19 | ✅ | overridden |
-| Zeboiim | zuh-BOY-im | /zɪˈbɔɪ.ɪm/ | Genesis 10:19 | ✅ | overridden |
-| Zeboim | zeh-BOH-im | /zɪˈboʊ.ɪm/ | Genesis 10:19 |  | still wrong (0.75) |
+| Lasha | LAY-shuh | /ˈleɪ.ʃə/ | Genesis 10:19 | ✅ | overridden (0.75) |
+| Zeboiim | zuh-BOY-im | /zɪˈbɔɪ.ɪm/ | Genesis 10:19 | ✅ | overridden (0.54) |
+| Zeboim | zeh-BOH-im | /zɪˈboʊ.ɪm/ | Genesis 10:19 |  | still wrong (0.67) |
 | Aram | AIR-uhm | /ˈɛər.əm/ | Genesis 10:22 |  | fine as spelled (1.00) |
-| Asshur | ASH-er | /ˈæʃ.ər/ | Genesis 10:22 | ✅ | overridden |
-| Elam | EEluhm | /ˈiː.ləm/ | Genesis 10:22 | ✅ | overridden |
-| Lud | LUHD | /lʌd/ | Genesis 10:22 | ✅ | overridden |
-| Gether | GuEE-ther | /ˈɡiː.θər/ | Genesis 10:23 | ✅ | overridden |
-| Hul | HUHL | /hʌl/ | Genesis 10:23 |  | still wrong (0.50) |
+| Asshur | ASH-er | /ˈæʃ.ər/ | Genesis 10:22 | ✅ | overridden (1.00) |
+| Elam | EEluhm | /ˈiː.ləm/ | Genesis 10:22 | ✅ | overridden (1.00) |
+| Lud | LUHD | /lʌd/ | Genesis 10:22 | ✅ | overridden (0.50) |
+| Gether | GuEE-ther | /ˈɡiː.θər/ | Genesis 10:23 | ✅ | overridden (0.80) |
+| Hul | HUHL | /hʌl/ | Genesis 10:23 |  | still wrong (0.67) |
 | Mash | MASH | /mæʃ/ | Genesis 10:23 |  | fine as spelled (1.00) |
-| Uz | UHZ | /ʌz/ | Genesis 10:23 | ✅ | overridden |
+| Uz | UHZ | /ʌz/ | Genesis 10:23 | ✅ | overridden (1.00) |
 | Salah | SAY-la | /ˈseɪ.lə/ | Genesis 10:24 | ✅ | overridden (1.00) |
 | Joktan | JOKtan | /ˈdʒɒk.tæn/ | Genesis 10:25 |  | fine as spelled (0.83) |
-| Almodad | al-MOHdad | /ælˈmoʊ.dæd/ | Genesis 10:26 | ✅ | overridden |
+| Almodad | al-MOHdad | /ælˈmoʊ.dæd/ | Genesis 10:26 | ✅ | overridden (0.86) |
 | Hazar-maveth | hay-zahr-MAY-vehth | /ˌheɪ.zɑːrˈmeɪ.vɛθ/ | Genesis 10:26 | ✅ | overridden (1.00) |
 | Hazarmaveth | hay-zahr-MAY-vehth | /ˌheɪ.zɑːrˈmeɪ.vɛθ/ | Genesis 10:26 | ✅ | overridden (1.00) |
 | Jerah | jeerah | /ˈdʒɪər.ə/ | Genesis 10:26 | ✅ | overridden (1.00) |
@@ -127,36 +129,38 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Hadoram | huh-DAWR-uhm | /həˈdɔːr.əm/ | Genesis 10:27 | ✅ | overridden (0.86) |
 | Uzal | YOO-zuhl | /ˈjuː.zəl/ | Genesis 10:27 |  | fine as spelled (1.00) |
 | Abimael | uh-BIM-ay-el | /əˈbɪm.eɪ.ɛl/ | Genesis 10:28 |  | still wrong (0.57) |
-| Obal | OH-bal | /ˈoʊ.bæl/ | Genesis 10:28 | ✅ | overridden |
+| Obal | OH-bal | /ˈoʊ.bæl/ | Genesis 10:28 | ✅ | overridden (0.62) |
 | Jobab | JOH-bab | /ˈdʒoʊ.bæb/ | Genesis 10:29 |  | fine as spelled (1.00) |
 | Ophir | OH-fer | /ˈoʊ.fər/ | Genesis 10:29 |  | fine as spelled (1.00) |
 | Mesha | MEE-shuh | /ˈmiː.ʃə/ | Genesis 10:30 |  | fine as spelled (1.00) |
-| Sephar | SEE-far | /ˈsiː.fɑːr/ | Genesis 10:30 | ✅ | overridden |
-| Shinar | SHY-narr | /ˈʃaɪ.nɑːr/ | Genesis 11:2 | ✅ | overridden |
+| Sephar | SEE-far | /ˈsiː.fɑːr/ | Genesis 10:30 | ✅ | overridden (1.00) |
+| Shinar | SHY-narr | /ˈʃaɪ.nɑːr/ | Genesis 11:2 | ✅ | overridden (0.90) |
 | Babel | BAY-bul | /ˈbeɪ.bəl/ | Genesis 11:9 |  | fine as spelled (0.80) |
-| Arpachshad | arpackshad | /ɑːrˈpæk.ʃæd/ | Genesis 11:10 | ✅ | overridden |
-| Shelah | sheelah | /ˈʃiː.lə/ | Genesis 11:12 | ✅ | overridden |
-| Eber | eeber | /ˈiː.bər/ | Genesis 11:14 | ✅ | overridden |
-| Peleg | PEElegg | /ˈpiː.lɛg/ | Genesis 11:16 | ✅ | overridden |
-| Reu | reeyou | /ˈriː.uː/ | Genesis 11:18 | ✅ | overridden |
-| Serug | SEE-rug | /ˈsiː.rʌg/ | Genesis 11:20 | ✅ | overridden |
-| Nahor | NAY-hor | /ˈneɪ.hɔːr/ | Genesis 11:22 | ✅ | overridden |
-| Terah | TAIR-uh | /ˈtɛər.ə/ | Genesis 11:24 | ✅ | overridden |
+| Arpachshad | arpackshad | /ɑːrˈpæk.ʃæd/ | Genesis 11:10 | ✅ | overridden (0.94) |
+| Shelah | sheelah | /ˈʃiː.lə/ | Genesis 11:12 | ✅ | overridden (1.00) |
+| Eber | eeber | /ˈiː.bər/ | Genesis 11:14 | ✅ | overridden (1.00) |
+| Peleg | PEElegg | /ˈpiː.lɛg/ | Genesis 11:16 | ✅ | overridden (1.00) |
+| Reu | reeyou | /ˈriː.uː/ | Genesis 11:18 | ✅ | overridden (0.83) |
+| Serug | SEE-rug | /ˈsiː.rʌg/ | Genesis 11:20 | ✅ | overridden (1.00) |
+| Nahor | NAY-hor | /ˈneɪ.hɔːr/ | Genesis 11:22 | ✅ | overridden (0.90) |
+| Terah | TAIR-uh | /ˈtɛər.ə/ | Genesis 11:24 | ✅ | overridden (0.62) |
 | Abram | AY-bram | /ˈeɪ.bræm/ | Genesis 11:26 |  | fine as spelled (0.80) |
-| Haran | HAIR-uhn | /ˈhɛər.ən/ | Genesis 11:26 | ✅ | overridden |
+| Haran | HAIR-uhn | /ˈhɛər.ən/ | Genesis 11:26 | ✅ | overridden (0.60) |
 | Lot | LOT | /lɒt/ | Genesis 11:27 |  | fine as spelled (1.00) |
-| Chaldees | kaldeez | /kælˈdiːz/ | Genesis 11:28 | ✅ | overridden |
-| Ur | urr | /ɜːr/ | Genesis 11:28 | ✅ | overridden |
-| Iscah | isskah | /ˈɪs.kə/ | Genesis 11:29 | ✅ | overridden |
-| Milcah | milkah | /ˈmɪl.kə/ | Genesis 11:29 | ✅ | overridden |
-| Sarai | SAIR-eye | /ˈsɛər.aɪ/ | Genesis 11:29 | ✅ | overridden |
+| Chaldees | kaldeez | /kælˈdiːz/ | Genesis 11:28 | ✅ | overridden (1.00) |
+| Ur | urr | /ɜːr/ | Genesis 11:28 | ✅ | overridden (1.00) |
+| Iscah | isskah | /ˈɪs.kə/ | Genesis 11:29 | ✅ | overridden (0.75) |
+| Milcah | milkah | /ˈmɪl.kə/ | Genesis 11:29 | ✅ | overridden (0.90) |
+| Sarai | SAIR-eye | /ˈsɛər.aɪ/ | Genesis 11:29 | ✅ | overridden (0.75) |
 | Canaan | Canaan | /ˈkeɪ.nən/ | Genesis 11:31 |  | fine as spelled (1.00) |
 | Shechem | SHEK-uhm | /ˈʃɛk.əm/ | Genesis 12:6 |  | fine as spelled (1.00) |
+| Ai | Ai |  | Genesis 12:8 |  | fine as spelled |
 | Bethel | BETH-el | /ˈbɛθ.əl/ | Genesis 12:8 |  | fine as spelled (0.90) |
+| South | South |  | Genesis 12:9 |  | fine as spelled |
 | Pharaoh | FAIR-oh | /ˈfɛər.oʊ/ | Genesis 12:15 |  | still wrong (0.75) |
 | Jordan | JOR-duhn | /ˈdʒɔːr.dən/ | Genesis 13:10 |  | fine as spelled (1.00) |
 | Hebron | HEE-bruhn | /ˈhiː.brən/ | Genesis 13:18 |  | fine as spelled (1.00) |
-| Bela | BEE-luh | /ˈbiː.lə/ | Genesis 14:2 |  | suggestion waiting (0.75) |
+| Bela | BEEla | /ˈbiː.lə/ | Genesis 14:2 | ✅ | overridden (1.00) |
 | Kiriathaim | kir-ee-uh-THAY-im | /ˌkɪr.i.əˈθeɪ.ɪm/ | Genesis 14:5 |  | still wrong (0.78) |
 | Seir | SEE-ur | /ˈsiː.ər/ | Genesis 14:6 |  | fine as spelled (1.00) |
 | Amalekites | AM-uh-lek-ites | /ˈæm.ə.lɛk.aɪts/ | Genesis 14:7 |  | fine as spelled (0.94) |
@@ -175,7 +179,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Beersheba | beerrsheeba | /bɪərˈʃiː.bə/ | Genesis 21:14 | ✅ | overridden (0.93) |
 | Buz | BUHZ | /bʌz/ | Genesis 22:21 |  | fine as spelled (1.00) |
 | Bethuel | buh-THYOO-el | /bəˈθjuː.əl/ | Genesis 22:22 |  | fine as spelled (0.80) |
-| Maacah | MAY-uh-kuh | /ˈmeɪ.ə.kə/ | Genesis 22:24 | ✅ | overridden (0.80) |
+| Maacah | MAY-uh-kuh | /ˈmeɪ.ə.kə/ | Genesis 22:24 | ✅ | overridden (0.70) |
 | Kiriath | KIR-ee-ath | /ˈkɪr.i.æθ/ | Genesis 23:2 |  | still wrong (0.67) |
 | Keturah | kuh-TYOO-ruh | /kəˈtjʊər.ə/ | Genesis 25:1 |  | still wrong (0.71) |
 | Ishbak | ISH-bak | /ˈɪʃ.bæk/ | Genesis 25:2 |  | fine as spelled (1.00) |
@@ -194,7 +198,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Mibsam | MIB-sam | /ˈmɪb.sæm/ | Genesis 25:13 |  | fine as spelled (0.83) |
 | Nebaioth | nuh-BAY-oth | /nəˈbeɪ.ɒθ/ | Genesis 25:13 |  | fine as spelled (0.83) |
 | Dumah | DOO-muh | /ˈduː.mə/ | Genesis 25:14 |  | fine as spelled (1.00) |
-| Massa | MAS-uh | /ˈmæs.ə/ | Genesis 25:14 |  | still wrong (0.68) |
+| Massa | MASsah | /ˈmæs.ə/ | Genesis 25:14 | ✅ | overridden (0.90) |
 | Mishma | MISH-muh | /ˈmɪʃ.mə/ | Genesis 25:14 |  | fine as spelled (1.00) |
 | Hadad | HAY-dad | /ˈheɪ.dæd/ | Genesis 25:15 | ✅ | overridden (1.00) |
 | Jetur | JEE-tuhr | /ˈdʒiː.tər/ | Genesis 25:15 | ✅ | overridden (1.00) |
@@ -216,22 +220,22 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Joseph | JOH-zef | /ˈdʒoʊ.zəf/ | Genesis 30:24 |  | fine as spelled (0.80) |
 | Gilead | GIL-ee-uhd | /ˈɡɪl.i.əd/ | Genesis 31:21 |  | fine as spelled (0.83) |
 | Mahanaim | mayhanayihm | /ˌmeɪ.həˈneɪ.ɪm/ | Genesis 32:2 | ✅ | overridden (0.94) |
-| Israel | IZ-ray-el | /ˈɪz.reɪ.əl/ | Genesis 32:28 |  | suggestion waiting (0.67) |
-| Hivite | HYvite | /ˈhaɪ.vaɪt/ | Genesis 34:2 | ✅ | overridden |
+| Israel | IZ-ray-el | /ˈɪz.reɪ.əl/ | Genesis 32:28 |  | fine as spelled |
+| Hivite | HYvite | /ˈhaɪ.vaɪt/ | Genesis 34:2 | ✅ | overridden (1.00) |
 | Beth | BETH | /bɛθ/ | Genesis 35:7 |  | fine as spelled (1.00) |
 | Allon | AL-on | /ˈæl.ɒn/ | Genesis 35:8 |  | fine as spelled (1.00) |
 | Ephrath | EF-rath | /ˈɛf.ræθ/ | Genesis 35:16 |  | fine as spelled (0.80) |
 | Benjamin | BEN-juh-min | /ˈbɛn.dʒə.mɪn/ | Genesis 35:18 |  | still wrong (0.75) |
 | Bethlehem | BETH-lih-hem | /ˈbɛθ.lɪ.hɛm/ | Genesis 35:19 |  | still wrong (0.75) |
 | Eder | EE-der | /ˈiː.dər/ | Genesis 35:21 |  | suggestion waiting (0.75) |
-| Anah | AY-nuh | /ˈeɪ.nə/ | Genesis 36:2 |  | still wrong (0.58) |
+| Anah | Aina | /ˈeɪ.nə/ | Genesis 36:2 | ✅ | overridden (1.00) |
 | Oholibamah | oh-hol-ih-BAH-muh | /oʊˌhɒl.ɪˈbɑː.mə/ | Genesis 36:2 |  | still wrong (0.67) |
 | Zibeon | ZIB-ee-uhn | /ˈzɪb.i.ən/ | Genesis 36:2 |  | fine as spelled (1.00) |
 | Eliphaz | EL-ih-faz | /ˈɛl.ɪ.fæz/ | Genesis 36:4 |  | fine as spelled (0.92) |
 | Reuel | ROO-el | /ˈruː.ɛl/ | Genesis 36:4 |  | fine as spelled (1.00) |
 | Jalam | JAY-luhm | /ˈdʒeɪ.ləm/ | Genesis 36:5 |  | fine as spelled (0.80) |
 | Jeush | JEE-uhsh | /ˈdʒiː.ʌʃ/ | Genesis 36:5 | ✅ | overridden (0.88) |
-| Korah | KOR-uh | /ˈkɔːr.ə/ | Genesis 36:5 |  | still wrong (0.75) |
+| Korah | KOR-uh | /ˈkɔːr.ə/ | Genesis 36:5 |  | fine as spelled |
 | Gatam | GAY-tuhm | /ˈɡeɪ.təm/ | Genesis 36:11 | ✅ | overridden (1.00) |
 | Kenaz | KEE-naz | /ˈkiː.næz/ | Genesis 36:11 | ✅ | overridden (0.90) |
 | Omar | OH-mar | /ˈoʊ.mɑːr/ | Genesis 36:11 |  | fine as spelled (1.00) |
@@ -248,22 +252,22 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Dishon | DEYE-shon | /ˈdaɪ.ʃɒn/ | Genesis 36:21 | ✅ | overridden (1.00) |
 | Ezer | EE-zer | /ˈiː.zər/ | Genesis 36:21 |  | suggestion waiting (0.75) |
 | Heman | HEE-muhn | /ˈhiː.mən/ | Genesis 36:22 |  | suggestion waiting (0.67) |
-| Hori | HOR-eye | /ˈhɔːr.aɪ/ | Genesis 36:22 |  | still wrong (0.50) |
-| Ebal | EE-buhl | /ˈiː.bəl/ | Genesis 36:23 |  | suggestion waiting (0.75) |
+| Hori | HOR-eye | /ˈhɔːr.aɪ/ | Genesis 36:22 | ✅ | overridden (0.75) |
+| Ebal | EEbul | /ˈiː.bəl/ | Genesis 36:23 | ✅ | overridden (1.00) |
 | Manahath | MAN-uh-hath | /ˈmæn.ə.hæθ/ | Genesis 36:23 |  | still wrong (0.71) |
-| Onam | OH-nam | /ˈoʊ.næm/ | Genesis 36:23 |  | still wrong (0.75) |
+| Onam | OH-nam | /ˈoʊ.næm/ | Genesis 36:23 |  | fine as spelled |
 | Aiah | ay-EYE-uh | /eɪˈaɪ.ə/ | Genesis 36:24 |  | still wrong (0.67) |
 | Cheran | KEERR-an | /ˈkɪər.æn/ | Genesis 36:26 | ✅ | overridden (0.80) |
-| Eshban | ESH-ban | /ˈɛʃ.bæn/ | Genesis 36:26 |  | suggestion waiting (0.70) |
+| Eshban | ESH-ban | /ˈɛʃ.bæn/ | Genesis 36:26 |  | still wrong (0.70) |
 | Ithran | IHTH-ran | /ˈɪθ.ræn/ | Genesis 36:26 | ✅ | overridden (0.80) |
 | Bilhan | BIL-han | /ˈbɪl.hæn/ | Genesis 36:27 |  | fine as spelled (0.83) |
 | Zaavan | ZAY-uh-van | /ˈzeɪ.ə.væn/ | Genesis 36:27 | ✅ | overridden (0.83) |
 | Aran | AIR-an | /ˈɛər.æn/ | Genesis 36:28 |  | still wrong (0.75) |
-| Beor | BEE-or | /ˈbiː.ɔːr/ | Genesis 36:32 |  | suggestion waiting (0.75) |
+| Beor | BEE-or | /ˈbiː.ɔːr/ | Genesis 36:32 | ✅ | overridden (0.90) |
 | Dinhabah | DIN-huh-buh | /ˈdɪn.hə.bə/ | Genesis 36:32 |  | still wrong (0.74) |
 | Bozrah | BOZ-ruh | /ˈbɒz.rə/ | Genesis 36:33 |  | fine as spelled (1.00) |
 | Husham | HYOO-shuhm | /ˈhjuː.ʃəm/ | Genesis 36:34 |  | still wrong (0.67) |
-| Temanites | TEE-muh-nites | /ˈtiː.mə.naɪts/ | Genesis 36:34 |  | fine as spelled (0.86) |
+| Temanites | TEE-muh-nites | /ˈtiː.mə.naɪts/ | Genesis 36:34 |  | fine as spelled (0.88) |
 | Avith | ayvith | /ˈeɪ.vɪθ/ | Genesis 36:35 | ✅ | overridden (1.00) |
 | Bedad | BEE-dad | /ˈbiː.dæd/ | Genesis 36:35 |  | fine as spelled (0.80) |
 | Masrekah | MAS-ruh-kuh | /ˈmæs.rə.kə/ | Genesis 36:36 |  | still wrong (0.67) |
@@ -280,13 +284,13 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Pinon | peyenon | /ˈpaɪ.nɒn/ | Genesis 36:41 | ✅ | overridden (0.92) |
 | Mibzar | MIB-zar | /ˈmɪb.zɑːr/ | Genesis 36:42 |  | fine as spelled (0.83) |
 | Iram | eyeruhm | /ˈaɪ.rəm/ | Genesis 36:43 | ✅ | overridden (1.00) |
-| Magdiel | MAG-dee-el | /ˈmæɡ.di.ɛl/ | Genesis 36:43 |  | suggestion waiting (0.71) |
+| Magdiel | MAG-dee-el | /ˈmæɡ.di.ɛl/ | Genesis 36:43 | ✅ | overridden (1.00) |
 | Shua | shooa | /ˈʃuː.ə/ | Genesis 38:2 | ✅ | overridden (0.83) |
 | Er | urr | /ɜːr/ | Genesis 38:3 | ✅ | overridden (1.00) |
 | Onan | OH-nan | /ˈoʊ.næn/ | Genesis 38:4 |  | still wrong (0.75) |
 | Perez | PEE-rez | /ˈpiː.rɛz/ | Genesis 38:29 |  | fine as spelled (0.80) |
 | Manasseh | muh-NAS-uh | /məˈnæs.ə/ | Genesis 41:51 |  | fine as spelled (1.00) |
-| Ephraim | EE-fray-ihmm | /ˈiː.freɪ.ɪm/ | Genesis 41:52 | ✅ | overridden (1.00) |
+| Ephraim | eefray-ihmm | /ˈiː.freɪ.ɪm/ | Genesis 41:52 | ✅ | overridden (1.00) |
 | Carmi | KAR-my | /ˈkɑːr.maɪ/ | Genesis 46:9 |  | fine as spelled (1.00) |
 | Hezron | HEZ-ron | /ˈhɛz.rɒn/ | Genesis 46:9 |  | fine as spelled (0.83) |
 | Pallu | PAL-oo | /ˈpæl.uː/ | Genesis 46:9 |  | still wrong (0.75) |
@@ -318,10 +322,10 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Puah | PYOO-uh | /ˈpjuː.ə/ | Exodus 1:15 |  | still wrong (0.25) |
 | Moses | MOH-ziz | /ˈmoʊ.zɪz/ | Exodus 2:10 |  | fine as spelled (1.00) |
 | Gershom | GUR-shuhm | /ˈɡɜːr.ʃəm/ | Exodus 2:22 |  | fine as spelled (0.83) |
-| Jebusite | JEB-yoo-site | /ˈdʒɛb.jʊ.saɪt/ | Exodus 3:8 | ✅ | overridden |
+| Jebusite | JEB-yoo-site | /ˈdʒɛb.jʊ.saɪt/ | Exodus 3:8 | ✅ | overridden (1.00) |
 | Aaron | AIR-uhn | /ˈɛər.ən/ | Exodus 4:14 |  | fine as spelled (1.00) |
-| fathers' | fathers | /ˈfɑː.ðərz/ | Exodus 6:14 | ✅ | overridden |
-| fathers’ | fathers | /ˈfɑː.ðərz/ | Exodus 6:14 | ✅ | overridden |
+| fathers' | fathers | /ˈfɑː.ðərz/ | Exodus 6:14 | ✅ | overridden (1.00) |
+| fathers’ | fathers | /ˈfɑː.ðərz/ | Exodus 6:14 | ✅ | overridden (1.00) |
 | Libni | LIB-ny | /ˈlɪb.naɪ/ | Exodus 6:17 |  | fine as spelled (0.80) |
 | Shimei | SHIM-ee-eye | /ˈʃɪm.i.aɪ/ | Exodus 6:17 |  | fine as spelled (0.80) |
 | Amram | AM-ram | /ˈæm.ræm/ | Exodus 6:18 | ✅ | overridden (0.90) |
@@ -340,20 +344,20 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Nahshon | NAH-shon | /ˈnɑː.ʃɒn/ | Exodus 6:23 | ✅ | overridden (1.00) |
 | Assir | AS-ur | /ˈæs.ər/ | Exodus 6:24 |  | still wrong (0.62) |
 | Elkanah | el-KAY-nuh | /ɛlˈkeɪ.nə/ | Exodus 6:24 | ✅ | overridden (0.92) |
-| Korahites | KOR-uh-hites | /ˈkɔːr.ə.haɪts/ | Exodus 6:24 |  | fine as spelled (0.86) |
+| Korahites | KOR-uh-hites | /ˈkɔːr.ə.haɪts/ | Exodus 6:24 |  | fine as spelled (0.88) |
 | Phinehas | FIN-ee-uhs | /ˈfɪn.i.əs/ | Exodus 6:25 |  | suggestion waiting (0.71) |
 | Miriam | MIR-ee-uhm | /ˈmɪr.i.əm/ | Exodus 15:20 |  | fine as spelled (1.00) |
 | Joshua | JOSH-oo-uh | /ˈdʒɒʃ.u.ə/ | Exodus 17:9 |  | fine as spelled (0.92) |
 | Hur | HUR | /hɜːr/ | Exodus 17:10 |  | still wrong (0.67) |
 | Bezalel | BEZ-uh-lel | /ˈbɛz.ə.lɛl/ | Exodus 31:2 |  | still wrong (0.71) |
-| Uri | YOORR-eye | /ˈjʊər.aɪ/ | Exodus 31:2 | ✅ | overridden (0.80) |
+| Uri | YOORR-eye | /ˈjʊər.aɪ/ | Exodus 31:2 | ✅ | overridden (0.75) |
 | Nun | NUHN | /nʌn/ | Exodus 33:11 |  | fine as spelled (1.00) |
 | Shelomith | shuh-LOH-mith | /ʃəˈloʊ.mɪθ/ | Leviticus 24:11 |  | suggestion waiting (0.71) |
 | Nethanel | nuh-THAN-el | /nəˈθæn.əl/ | Numbers 1:8 |  | still wrong (0.71) |
 | Eliab | ee-LY-ab | /ɪˈlaɪ.æb/ | Numbers 1:9 |  | fine as spelled (0.80) |
 | Ammihud | ameyehuhd | /əˈmaɪ.hʌd/ | Numbers 1:10 | ✅ | overridden (1.00) |
-| Elishama | ihlihshuhmuh | /ɪˈlɪʃ.ə.mə/ | Numbers 1:10 | ✅ | overridden (1.00) |
-| Kohathites | KOH-hath-ites | /ˈkoʊ.hæθ.aɪts/ | Numbers 3:27 |  | fine as spelled (0.86) |
+| Elishama | ihlihshuhmuh | /ɪˈlɪʃ.ə.mə/ | Numbers 1:10 | ✅ | overridden (0.86) |
+| Kohathites | KOH-hath-ites | /ˈkoʊ.hæθ.aɪts/ | Numbers 3:27 |  | fine as spelled (0.88) |
 | Abihail | ab-ih-HAY-il | /ˌæb.ɪˈheɪ.ɪl/ | Numbers 3:35 |  | still wrong (0.57) |
 | Zaccur | ZAK-er | /ˈzæk.ər/ | Numbers 13:4 |  | fine as spelled (1.00) |
 | Shaphat | SHAY-fat | /ˈʃeɪ.fæt/ | Numbers 13:5 | ✅ | overridden (1.00) |
@@ -374,7 +378,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jericho | JER-ih-koh | /ˈdʒɛr.ɪ.koʊ/ | Numbers 22:1 |  | fine as spelled (1.00) |
 | Zimri | zihmreye | /ˈzɪm.raɪ/ | Numbers 25:14 | ✅ | overridden (1.00) |
 | Zur | zurr | /zɜːr/ | Numbers 25:15 | ✅ | overridden (1.00) |
-| Reubenites | ROO-ben-ites | /ˈruː.bən.aɪts/ | Numbers 26:7 |  | fine as spelled (0.83) |
+| Reubenites | ROO-ben-ites | /ˈruː.bən.aɪts/ | Numbers 26:7 |  | fine as spelled (0.84) |
 | Nemuel | NEM-yoo-el | /ˈnɛm.jʊ.əl/ | Numbers 26:9 |  | still wrong (0.73) |
 | Jashub | JAY-shub | /ˈdʒeɪ.ʃʌb/ | Numbers 26:24 |  | fine as spelled (0.80) |
 | Asriel | AS-ree-el | /ˈæs.ri.ɛl/ | Numbers 26:31 |  | still wrong (0.67) |
@@ -389,7 +393,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Aroer | uh-ROH-uhrr | /əˈroʊ.ər/ | Numbers 32:34 | ✅ | overridden (1.00) |
 | Meon | MEE-on | /ˈmiː.ɒn/ | Numbers 32:38 |  | suggestion waiting (0.75) |
 | Jair | jayuhr | /ˈdʒeɪ.ər/ | Numbers 32:41 | ✅ | overridden (1.00) |
-| Kenath | KEE-naath | /ˈkiː.næθ/ | Numbers 32:42 | ✅ | overridden (0.80) |
+| Kenath | KEE-naath | /ˈkiː.næθ/ | Numbers 32:42 | ✅ | overridden (0.70) |
 | Rimmon | RIM-uhn | /ˈrɪm.ən/ | Numbers 33:19 |  | fine as spelled (1.00) |
 | Libnah | LIB-nuh | /ˈlɪb.nə/ | Numbers 33:20 |  | fine as spelled (0.80) |
 | Tahath | TAY-hath | /ˈteɪ.hæθ/ | Numbers 33:26 | ✅ | overridden (0.80) |
@@ -406,7 +410,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Hermon | HUR-muhn | /ˈhɜːr.mən/ | Deuteronomy 3:8 |  | fine as spelled (0.83) |
 | Senir | SEE-nuhr | /ˈsiː.nər/ | Deuteronomy 3:9 | ✅ | overridden (1.00) |
 | Salecah | SAL-uh-kuh | /ˈsæl.ə.kə/ | Deuteronomy 3:10 | ✅ | overridden (0.83) |
-| Gadites | GAD-ites | /ˈɡæd.aɪts/ | Deuteronomy 3:12 |  | fine as spelled (0.80) |
+| Gadites | GAD-ites | /ˈɡæd.aɪts/ | Deuteronomy 3:12 |  | fine as spelled (0.83) |
 | Bezer | BEE-zer | /ˈbiː.zər/ | Deuteronomy 4:43 |  | fine as spelled (0.80) |
 | Golan | GOH-lan | /ˈɡoʊ.læn/ | Deuteronomy 4:43 |  | fine as spelled (0.80) |
 | Ramoth | raymahth | /ˈreɪ.mɒθ/ | Deuteronomy 4:43 | ✅ | overridden (1.00) |
@@ -426,7 +430,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Megiddo | muh-GID-oh | /məˈɡɪd.oʊ/ | Joshua 12:21 |  | fine as spelled (0.83) |
 | Taanach | TAY-uh-nak | /ˈteɪ.ə.næk/ | Joshua 12:21 |  | still wrong (0.58) |
 | Kedesh | KEE-desh | /ˈkiː.dɛʃ/ | Joshua 12:22 |  | fine as spelled (0.80) |
-| Geshur | GESH-uhr | /ˈɡɛʃ.ər/ | Joshua 13:13 | ✅ | overridden (1.00) |
+| Geshur | GESH-uhr | /ˈɡɛʃ.ər/ | Joshua 13:13 | ✅ | overridden (0.90) |
 | Mephaath | muh-FAY-athh | /məˈfeɪ.æθ/ | Joshua 13:18 | ✅ | overridden (0.92) |
 | Zereth | ZEE-reth | /ˈzɪər.ɛθ/ | Joshua 13:19 |  | fine as spelled (0.80) |
 | Shemesh | SHEM-esh | /ˈʃɛm.ɛʃ/ | Joshua 15:7 |  | fine as spelled (1.00) |
@@ -435,7 +439,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ziph | ZIF | /zɪf/ | Joshua 15:24 |  | fine as spelled (1.00) |
 | Moladah | MOH-la-duh | /ˈmoʊ.lə.də/ | Joshua 15:26 | ✅ | overridden (1.00) |
 | Shema | SHEE-muh | /ˈʃiː.mə/ | Joshua 15:26 |  | fine as spelled (1.00) |
-| Pelet | PEE-let | /ˈpiː.lɛt/ | Joshua 15:27 | ✅ | overridden (1.00) |
+| Pelet | PEE-let | /ˈpiː.lɛt/ | Joshua 15:27 | ✅ | overridden (0.90) |
 | Shual | SHOO-uhl | /ˈʃuː.əl/ | Joshua 15:28 |  | still wrong (0.50) |
 | Ezem | EE-zem | /ˈiː.zɛm/ | Joshua 15:29 |  | suggestion waiting (0.75) |
 | Madmannah | mad-MANN-uh | /mædˈmæn.ə/ | Joshua 15:31 | ✅ | overridden (0.86) |
@@ -445,13 +449,13 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shaaraim | shay-uh-RAY-im | /ˌʃeɪ.əˈreɪ.ɪm/ | Joshua 15:36 |  | still wrong (0.71) |
 | Ashan | AY-shan | /ˈeɪ.ʃæn/ | Joshua 15:42 |  | still wrong (0.50) |
 | Keilah | kee-EYE-luh | /kiˈaɪ.lə/ | Joshua 15:44 |  | still wrong (0.70) |
-| Mareshah | muh-REESH-uh | /məˈriː.ʃə/ | Joshua 15:44 | ✅ | overridden (0.86) |
+| Mareshah | muh-REESH-uh | /məˈriː.ʃə/ | Joshua 15:44 | ✅ | overridden (1.00) |
 | Jattir | JAT-ur | /ˈdʒæt.ər/ | Joshua 15:48 |  | fine as spelled (0.80) |
 | Maon | MAY-on | /ˈmeɪ.ɒn/ | Joshua 15:55 |  | still wrong (0.75) |
 | Jezreel | JEZ-ree-el | /ˈdʒɛz.ri.əl/ | Joshua 15:56 |  | fine as spelled (1.00) |
 | Gedor | geedawr | /ˈɡiː.dɔːr/ | Joshua 15:58 | ✅ | overridden (0.80) |
 | Naarah | NAY-a-ruh | /ˈneɪ.ə.rə/ | Joshua 16:7 | ✅ | overridden (0.80) |
-| Abiezer | ay-bee-EE-zer | /ˌeɪ.biˈiː.zər/ | Joshua 17:2 |  | fine as spelled (0.83) |
+| Abiezer | ay-bee-EE-zer | /ˌeɪ.biˈiː.zər/ | Joshua 17:2 |  | still wrong (0.71) |
 | Shean | SHEE-an | /ˈʃiː.æn/ | Joshua 17:11 |  | still wrong (0.62) |
 | Ophrah | OF-ruh | /ˈɒf.rə/ | Joshua 18:23 |  | still wrong (0.75) |
 | Geba | GEE-buh | /ˈɡiː.bə/ | Joshua 18:24 |  | still wrong (0.68) |
@@ -459,17 +463,17 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Daberath | DAB-uh-rath | /ˈdæb.ə.ræθ/ | Joshua 19:12 |  | fine as spelled (0.93) |
 | Tabor | TAY-ber | /ˈteɪ.bər/ | Joshua 19:12 |  | fine as spelled (1.00) |
 | Hammon | HAM-uhn | /ˈhæm.ən/ | Joshua 19:28 |  | fine as spelled (0.90) |
-| Hammath | hamath | /ˈhæm.æθ/ | Joshua 19:35 | ✅ | overridden (0.80) |
+| Hammath | hamath | /ˈhæm.æθ/ | Joshua 19:35 | ✅ | overridden (0.70) |
 | Galilee | GAL-ih-lee | /ˈɡæl.ɪ.liː/ | Joshua 20:7 |  | fine as spelled (0.83) |
 | Eshtemoa | esh-tuh-MOH-uh | /ˌɛʃ.təˈmoʊ.ə/ | Joshua 21:14 |  | fine as spelled (0.88) |
 | Anathoth | AN-uh-thoth | /ˈæn.ə.θɒθ/ | Joshua 21:18 |  | still wrong (0.75) |
 | Abdon | AB-don | /ˈæb.dɒn/ | Joshua 21:30 |  | fine as spelled (0.80) |
-| Ehud | EE-huhd | /ˈiː.hʌd/ | Judges 3:15 | ✅ | overridden (1.00) |
+| Ehud | eehud | /ˈiː.hʌd/ | Judges 3:15 | ✅ | overridden (1.00) |
 | Joash | JOH-ash | /ˈdʒoʊ.æʃ/ | Judges 6:11 |  | suggestion waiting (0.75) |
 | Penuel | puh-NYOO-el | /pəˈnjuː.əl/ | Judges 8:8 |  | still wrong (0.57) |
-| Jether | JEE-thuhr | /ˈdʒiː.θər/ | Judges 8:20 | ✅ | overridden (1.00) |
+| Jether | JEE-thuhr | /ˈdʒiː.θər/ | Judges 8:20 | ✅ | overridden (0.90) |
 | Jotham | JOH-thuhm | /ˈdʒoʊ.θəm/ | Judges 9:5 |  | fine as spelled (0.80) |
-| Etam | EE-tuhm | /ˈiː.təm/ | Judges 15:8 | ✅ | overridden (1.00) |
+| Etam | eetum | /ˈiː.təm/ | Judges 15:8 | ✅ | overridden (0.75) |
 | Micah | MY-kuh | /ˈmaɪ.kə/ | Judges 17:1 |  | fine as spelled (1.00) |
 | Jonathan | JON-uh-thuhn | /ˈdʒɒn.ə.θən/ | Judges 18:30 |  | fine as spelled (1.00) |
 | Boaz | BOH-az | /ˈboʊ.æz/ | Ruth 2:1 |  | fine as spelled (1.00) |
@@ -480,7 +484,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ram | RAM | /ræm/ | Ruth 4:19 |  | fine as spelled (1.00) |
 | Jeroham | juh-ROH-ham | /dʒəˈroʊ.hæm/ | 1 Samuel 1:1 | ✅ | overridden (0.86) |
 | Zuph | ZUHF | /zʌf/ | 1 Samuel 1:1 |  | fine as spelled (1.00) |
-| Samuel | SAM-yoo-el | /ˈsæm.jʊ.əl/ | 1 Samuel 1:20 |  | suggestion waiting (0.75) |
+| Samuel | SAM-yoo-el | /ˈsæm.jʊ.əl/ | 1 Samuel 1:20 |  | still wrong (0.75) |
 | Abinadab | uh-BIN-uh-dab | /əˈbɪn.ə.dæb/ | 1 Samuel 7:1 |  | fine as spelled (1.00) |
 | Abijah | uh-BY-juh | /əˈbaɪ.dʒə/ | 1 Samuel 8:2 |  | fine as spelled (0.80) |
 | Joel | JOH-uhll | /ˈdʒoʊ.əl/ | 1 Samuel 8:2 | ✅ | overridden (1.00) |
@@ -543,7 +547,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shemaiah | shuh-MAY-yuh | /ʃəˈmeɪ.jə/ | 1 Kings 12:22 |  | still wrong (0.67) |
 | Josiah | joh-SY-uh | /dʒoʊˈsaɪ.ə/ | 1 Kings 13:2 |  | fine as spelled (0.80) |
 | Asa | AY-suh | /ˈeɪ.sə/ | 1 Kings 15:8 |  | fine as spelled (0.83) |
-| Jehu | JEE-hyoo | /ˈdʒiː.hjuː/ | 1 Kings 16:1 | ✅ | overridden (0.83) |
+| Jehu | JEE-hyoo | /ˈdʒiː.hjuː/ | 1 Kings 16:1 | ✅ | overridden (0.72) |
 | Omri | omreye | /ˈɒm.raɪ/ | 1 Kings 16:16 | ✅ | overridden (1.00) |
 | Shemer | SHEE-mer | /ˈʃiː.mər/ | 1 Kings 16:24 |  | fine as spelled (0.80) |
 | Segub | SEE-gub | /ˈsiː.ɡʌb/ | 1 Kings 16:34 |  | fine as spelled (0.80) |
@@ -576,7 +580,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Asaiah | uh-SAY-yuh | /əˈseɪ.jə/ | 2 Kings 22:12 |  | still wrong (0.50) |
 | Melech | MEE-lek | /ˈmiː.lɛk/ | 2 Kings 23:11 |  | suggestion waiting (0.70) |
 | Jeremiah | jer-uh-MY-uh | /ˌdʒɛr.əˈmaɪ.ə/ | 2 Kings 23:31 |  | fine as spelled (1.00) |
-| Jehoiakim | juh-HOY-uh-kim | /dʒəˈhɔɪ.ə.kɪm/ | 2 Kings 23:34 |  | still wrong (0.75) |
+| Jehoiakim | juh-HOY-uh-kim | /dʒəˈhɔɪ.ə.kɪm/ | 2 Kings 23:34 |  | still wrong (0.71) |
 | Pedaiah | puhdayyuh | /pəˈdeɪ.jə/ | 2 Kings 23:36 | ✅ | overridden (0.83) |
 | Nebuchadnezzar | neb-yoo-kuhd-NEZ-er | /ˌnɛb.jʊ.kədˈnɛz.ər/ | 2 Kings 24:1 |  | fine as spelled (0.85) |
 | Mattaniah | mat-uh-NY-uh | /ˌmæt.əˈnaɪ.ə/ | 2 Kings 24:17 |  | still wrong (0.57) |
@@ -584,40 +588,41 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Johanan | joh-HAY-nan | /dʒoʊˈheɪ.næn/ | 2 Kings 25:23 |  | suggestion waiting (0.71) |
 | Sheth | seth | /sɛθ/ | 1 Chronicles 1:1 | ✅ | overridden (0.83) |
 | Henoch | HEE-nok | /ˈhiː.nɒk/ | 1 Chronicles 1:3 |  | fine as spelled (0.80) |
-| Diphath | DYfath | /ˈdaɪ.fæθ/ | 1 Chronicles 1:6 | ✅ | overridden |
+| Diphath | DYfath | /ˈdaɪ.fæθ/ | 1 Chronicles 1:6 | ✅ | overridden (0.80) |
 | Rodanim | ROH-duh-nim | /ˈroʊ.də.nɪm/ | 1 Chronicles 1:7 |  | fine as spelled (0.86) |
-| Raama | RAY-uh-muh | /ˈreɪ.ə.mə/ | 1 Chronicles 1:9 | ✅ | overridden |
+| Raama | RAY-uh-muh | /ˈreɪ.ə.mə/ | 1 Chronicles 1:9 | ✅ | overridden (0.90) |
 | Sabta | SAB-tuh | /ˈsæb.tə/ | 1 Chronicles 1:9 |  | fine as spelled (0.83) |
 | Sabtecha | SAB-tih-kah | /ˈsæb.tɪ.kɑː/ | 1 Chronicles 1:9 | ✅ | overridden (0.86) |
 | Napthtuhim | naftoohihm | /næfˈtuː.hɪm/ | 1 Chronicles 1:11 | ✅ | overridden (1.00) |
 | Caphthorim | KAF-thor-im | /ˈkæf.θɔː.rɪm/ | 1 Chronicles 1:12 |  | still wrong (0.62) |
 | Zidon | ZY-don | /ˈzaɪ.dɒn/ | 1 Chronicles 1:13 |  | suggestion waiting (0.70) |
 | Arkite | AR-kite | /ˈɑːr.kaɪt/ | 1 Chronicles 1:15 |  | fine as spelled (0.80) |
-| Sinite | Sainite | /ˈsaɪ.naɪt/ | 1 Chronicles 1:15 | ✅ | overridden |
+| Sinite | Sainite | /ˈsaɪ.naɪt/ | 1 Chronicles 1:15 | ✅ | overridden (0.90) |
 | Arvadite | AR-vuh-dite | /ˈɑːr.və.daɪt/ | 1 Chronicles 1:16 |  | fine as spelled (1.00) |
-| Hamathite | HAYmathite | /ˈheɪ.mə.θaɪt/ | 1 Chronicles 1:16 | ✅ | overridden |
-| Zemarite | ZEM-uh-rite | /ˈzɛm.ə.raɪt/ | 1 Chronicles 1:16 |  | fine as spelled (0.93) |
+| Hamathite | HAYmathite | /ˈheɪ.mə.θaɪt/ | 1 Chronicles 1:16 | ✅ | overridden (0.93) |
+| Zemarite | ZEM-uh-rite | /ˈzɛm.ə.raɪt/ | 1 Chronicles 1:16 |  | fine as spelled (0.86) |
 | Jaalam | JAY-a-lam | /ˈdʒeɪ.ə.læm/ | 1 Chronicles 1:35 | ✅ | overridden (0.83) |
 | Zephi | zeefeye | /ˈziː.faɪ/ | 1 Chronicles 1:36 | ✅ | overridden (1.00) |
 | Ezar | EE-zar | /ˈiː.zɑːr/ | 1 Chronicles 1:38 |  | suggestion waiting (0.75) |
 | Homam | HOH-mam | /ˈhoʊ.mæm/ | 1 Chronicles 1:39 |  | fine as spelled (0.80) |
-| Alian | AY-lee-uhn | /ˈeɪ.li.ən/ | 1 Chronicles 1:40 |  | still wrong (0.70) |
+| Alian | AYleeun | /ˈeɪ.li.ən/ | 1 Chronicles 1:40 | ✅ | overridden (0.70) |
 | Shephi | SHEE-fy | /ˈʃiː.faɪ/ | 1 Chronicles 1:40 |  | fine as spelled (1.00) |
-| Hamran | HAM-ran | /ˈhæm.ræn/ | 1 Chronicles 1:41 |  | suggestion waiting (0.75) |
+| Hamran | HAM-ran | /ˈhæm.ræn/ | 1 Chronicles 1:41 |  | still wrong (0.75) |
 | Jakan | JAY-kan | /ˈdʒeɪ.kæn/ | 1 Chronicles 1:42 | ✅ | overridden (0.80) |
 | Zavan | ZAY-van | /ˈzeɪ.væn/ | 1 Chronicles 1:42 | ✅ | overridden (0.80) |
+| River | River |  | 1 Chronicles 1:48 |  | fine as spelled |
 | Baal-hanan | bay-al-HAY-nan | /ˌbeɪ.əlˈheɪ.næn/ | 1 Chronicles 1:49 |  | still wrong (0.44) |
 | Pai | PAY-eye | /ˈpeɪ.aɪ/ | 1 Chronicles 1:50 | ✅ | overridden (1.00) |
 | Aliah | uh-LY-uh | /əˈlaɪ.ə/ | 1 Chronicles 1:51 |  | still wrong (0.62) |
 | Aholibamah | uh-hol-ih-BAH-muh | /ə.hɒl.ɪˈbɑː.mə/ | 1 Chronicles 1:52 |  | fine as spelled (0.89) |
 | Canaanitess | KAY-nuh-nite-ess | /ˈkeɪ.nə.naɪ.tɛs/ | 1 Chronicles 2:3 |  | still wrong (0.78) |
 | Pharez | FAIR-ez | /ˈfɛər.ɛz/ | 1 Chronicles 2:4 |  | suggestion waiting (0.70) |
-| Dara | DAIRR-uh | /ˈdɛər.ə/ | 1 Chronicles 2:6 | ✅ | overridden (0.80) |
+| Dara | DAIRR-uh | /ˈdɛər.ə/ | 1 Chronicles 2:6 | ✅ | overridden (0.88) |
 | Achar | aykarr | /ˈeɪ.kɑːr/ | 1 Chronicles 2:7 | ✅ | overridden (0.88) |
 | Chelubai | kuhloobeye | /kəˈluː.baɪ/ | 1 Chronicles 2:9 | ✅ | overridden (0.83) |
 | Jerahmeel | juh-RAH-mee-el | /dʒəˈrɑː.mi.əl/ | 1 Chronicles 2:9 | ✅ | overridden (0.88) |
-| Salma | sallmuh | /ˈsæl.mə/ | 1 Chronicles 2:11 | ✅ | overridden (0.80) |
-| Shimea | SHIM-ee-uh | /ˈʃɪm.i.ə/ | 1 Chronicles 2:13 | ✅ | overridden (0.83) |
+| Salma | sallmuh | /ˈsæl.mə/ | 1 Chronicles 2:11 | ✅ | overridden (0.70) |
+| Shimea | shimmee-uh | /ˈʃɪm.i.ə/ | 1 Chronicles 2:13 | ✅ | overridden (0.80) |
 | Shimma | SHIM-uh | /ˈʃɪm.ə/ | 1 Chronicles 2:13 |  | fine as spelled (1.00) |
 | Raddai | RAD-eye | /ˈræd.aɪ/ | 1 Chronicles 2:14 |  | fine as spelled (1.00) |
 | Ozem | OH-zem | /ˈoʊ.zɛm/ | 1 Chronicles 2:15 |  | still wrong (0.75) |
@@ -643,7 +648,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Molid | MOH-lid | /ˈmoʊ.lɪd/ | 1 Chronicles 2:29 |  | suggestion waiting (0.60) |
 | Appaim | AP-ay-im | /ˈæp.eɪ.ɪm/ | 1 Chronicles 2:30 |  | fine as spelled (0.80) |
 | Seled | SEE-led | /ˈsiː.lɛd/ | 1 Chronicles 2:30 |  | fine as spelled (0.80) |
-| Ahlai | ahleye | /ˈɑː.laɪ/ | 1 Chronicles 2:31 | ✅ | overridden (1.00) |
+| Ahlai | ahleye | /ˈɑː.laɪ/ | 1 Chronicles 2:31 | ✅ | overridden (0.67) |
 | Ishi | IHSH-eye | /ˈɪʃ.aɪ/ | 1 Chronicles 2:31 | ✅ | overridden (1.00) |
 | Sheshan | SHEE-shan | /ˈʃiː.ʃæn/ | 1 Chronicles 2:31 |  | fine as spelled (0.80) |
 | Zaza | ZAY-zuh | /ˈzeɪ.zə/ | 1 Chronicles 2:33 |  | still wrong (0.75) |
@@ -664,8 +669,8 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Gesham | geeshaam | /ˈɡiː.ʃæm/ | 1 Chronicles 2:47 | ✅ | overridden (0.80) |
 | Geshan | geeshaan | /ˈɡiː.ʃæn/ | 1 Chronicles 2:47 | ✅ | overridden (0.80) |
 | Jahdai | JAH-dye | /ˈdʒɑː.daɪ/ | 1 Chronicles 2:47 |  | fine as spelled (1.00) |
-| Jothan | JO-thann | /ˈdʒoʊ.θæn/ | 1 Chronicles 2:47 | ✅ | overridden (0.80) |
-| Regem | REE-ghem | /ˈriː.ɡɛm/ | 1 Chronicles 2:47 | ✅ | overridden (0.80) |
+| Jothan | JO-thann | /ˈdʒoʊ.θæn/ | 1 Chronicles 2:47 | ✅ | overridden (0.70) |
+| Regem | REE-ghem | /ˈriː.ɡɛm/ | 1 Chronicles 2:47 | ✅ | overridden (0.90) |
 | Shaaph | SHAY-aff | /ˈʃeɪ.æf/ | 1 Chronicles 2:47 | ✅ | overridden (1.00) |
 | Sheber | SHEE-ber | /ˈʃiː.bər/ | 1 Chronicles 2:48 |  | fine as spelled (0.80) |
 | Tirhanah | tur-HAY-nuh | /tɜːrˈheɪ.nə/ | 1 Chronicles 2:48 |  | still wrong (0.71) |
@@ -678,17 +683,17 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Beth-gader | beth-GAY-der | /bɛθˈɡeɪ.dər/ | 1 Chronicles 2:51 |  | fine as spelled (1.00) |
 | Gader | GAY-der | /ˈɡeɪ.dər/ | 1 Chronicles 2:51 |  | fine as spelled (1.00) |
 | Hareph | HAIR-ef | /ˈhɛər.ɛf/ | 1 Chronicles 2:51 |  | fine as spelled (0.80) |
-| Haroeh | huroh-eh | /həˈroʊ.ɛ/ | 1 Chronicles 2:52 | ✅ | overridden (0.80) |
-| Manahethites | MAN-uh-heth-ites | /ˈmæn.ə.hɛθ.aɪts/ | 1 Chronicles 2:52 |  | still wrong (0.67) |
-| Menuhoth | muh-NOO-hoth | /məˈnuː.hɒθ/ | 1 Chronicles 2:52 | ✅ | overridden (0.86) |
+| Haroeh | huroh-eh | /həˈroʊ.ɛ/ | 1 Chronicles 2:52 | ✅ | overridden (0.70) |
+| Manahethites | MAN-uh-heth-ites | /ˈmæn.ə.hɛθ.aɪts/ | 1 Chronicles 2:52 |  | still wrong (0.70) |
+| Menuhoth | muh-NOO-hoth | /məˈnuː.hɒθ/ | 1 Chronicles 2:52 | ✅ | overridden (0.79) |
 | Eshtaolites | ESH-tay-uh-lites | /ˈɛʃ.teɪ.ə.laɪts/ | 1 Chronicles 2:53 |  | still wrong (0.75) |
 | Eshtaulites | ESH-taw-lites | /ˈɛʃ.tɔː.laɪts/ | 1 Chronicles 2:53 |  | fine as spelled (1.00) |
 | Ithrites | ITH-rites | /ˈɪθ.raɪts/ | 1 Chronicles 2:53 |  | still wrong (0.43) |
 | Mishraites | MISH-ruh-ites | /ˈmɪʃ.rə.aɪts/ | 1 Chronicles 2:53 |  | still wrong (0.71) |
-| Puhites | PYOO-hites | /ˈpjuː.haɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.92) |
+| Puhites | PYOO-hites | /ˈpjuː.haɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.93) |
 | Puthites | PYOO-thites | /ˈpjuː.θaɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.83) |
 | Shumathites | SHOO-muh-thites | /ˈʃuː.mə.θaɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.86) |
-| Zareathites | ZAR-ee-uh-thites | /ˈzær.i.ə.θaɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.88) |
+| Zareathites | ZAR-ee-uh-thites | /ˈzær.i.ə.θaɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.89) |
 | Zorathites | ZOR-uh-thites | /ˈzɔːr.ə.θaɪts/ | 1 Chronicles 2:53 |  | fine as spelled (0.86) |
 | Ataroth | AT-uh-roth | /ˈæt.ə.rɒθ/ | 1 Chronicles 2:54 |  | suggestion waiting (0.75) |
 | Atroth | AT-roth | /ˈæt.rɒθ/ | 1 Chronicles 2:54 | ✅ | overridden (1.00) |
@@ -699,7 +704,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jabez | JAY-bez | /ˈdʒeɪ.bɛz/ | 1 Chronicles 2:55 |  | fine as spelled (1.00) |
 | Shimeathites | SHIM-ee-uh-thites | /ˈʃɪm.i.ə.θaɪts/ | 1 Chronicles 2:55 |  | still wrong (0.62) |
 | Sucathites | SOO-kuh-thites | /ˈsuː.kə.θaɪts/ | 1 Chronicles 2:55 |  | fine as spelled (1.00) |
-| Suchathites | SOO-kuh-thites | /ˈsuː.kə.θaɪts/ | 1 Chronicles 2:55 |  | fine as spelled (0.93) |
+| Suchathites | SOO-kuh-thites | /ˈsuː.kə.θaɪts/ | 1 Chronicles 2:55 |  | fine as spelled (0.94) |
 | Tirathites | TY-ruh-thites | /ˈtaɪ.rə.θaɪts/ | 1 Chronicles 2:55 |  | still wrong (0.71) |
 | Daniel | DAN-yuhl | /ˈdæn.jəl/ | 1 Chronicles 3:1 |  | fine as spelled (1.00) |
 | Maachah | MAY-a-kuh | /ˈmeɪ.ə.kə/ | 1 Chronicles 3:2 | ✅ | overridden (0.82) |
@@ -861,7 +866,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Azaz | AY-zaz | /ˈeɪ.zæz/ | 1 Chronicles 5:8 |  | still wrong (0.50) |
 | Baal-meon | bay-al-MEE-on | /ˌbeɪ.əlˈmiː.ɒn/ | 1 Chronicles 5:8 | ✅ | overridden (0.88) |
 | Hagarites | HAG-uh-rites | /ˈhæɡ.ə.raɪts/ | 1 Chronicles 5:10 |  | fine as spelled (1.00) |
-| Hagrites | HAG-rites | /ˈhæɡ.raɪts/ | 1 Chronicles 5:10 |  | fine as spelled (0.92) |
+| Hagrites | HAG-rites | /ˈhæɡ.raɪts/ | 1 Chronicles 5:10 |  | fine as spelled (0.93) |
 | Salchah | SAL-kuh | /ˈsæl.kə/ | 1 Chronicles 5:11 |  | fine as spelled (0.90) |
 | Jaanai | jayuhneye | /ˈdʒeɪ.ə.naɪ/ | 1 Chronicles 5:12 | ✅ | overridden (1.00) |
 | Janai | jayneye | /ˈdʒeɪ.naɪ/ | 1 Chronicles 5:12 | ✅ | overridden (1.00) |
@@ -918,7 +923,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Allemeth | AL-uh-meth | /ˈæl.ə.mɛθ/ | 1 Chronicles 6:60 |  | fine as spelled (1.00) |
 | Beth-horon | beth-HOR-on | /bɛθˈhɔːr.ɒn/ | 1 Chronicles 6:68 |  | fine as spelled (0.88) |
 | Gath-rimmon | gath-RIM-on | /ɡæθˈrɪm.ɒn/ | 1 Chronicles 6:69 |  | still wrong (0.65) |
-| Bileam | BIL-ee-uhm | /ˈbɪl.i.əm/ | 1 Chronicles 6:70 | ✅ | overridden (0.93) |
+| Bileam | billeeuhm | /ˈbɪl.i.əm/ | 1 Chronicles 6:70 | ✅ | overridden (1.00) |
 | Anem | AY-nem | /ˈeɪ.nɛm/ | 1 Chronicles 6:73 |  | still wrong (0.50) |
 | Mashal | MAY-shal | /ˈmeɪ.ʃæl/ | 1 Chronicles 6:74 |  | suggestion waiting (0.70) |
 | Hukok | HYOO-kok | /ˈhjuː.kɒk/ | 1 Chronicles 6:75 |  | suggestion waiting (0.75) |
@@ -962,7 +967,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shemidah | shih-MY-duh | /ʃɪˈmaɪ.də/ | 1 Chronicles 7:19 | ✅ | overridden (0.83) |
 | Eladah | EL-uh-duh | /ˈɛl.ə.də/ | 1 Chronicles 7:20 | ✅ | overridden (0.90) |
 | Eleadah | el-ee-AY-duh | /ˌɛl.iˈeɪ.də/ | 1 Chronicles 7:20 |  | still wrong (0.58) |
-| Elead | EL-ee-ad | /ˈɛl.i.æd/ | 1 Chronicles 7:21 | ✅ | overridden (0.92) |
+| Elead | ellyad | /ˈɛl.i.æd/ | 1 Chronicles 7:21 | ✅ | overridden (1.00) |
 | Sheerah | SHEE-uh-ruh | /ˈʃiː.ə.rə/ | 1 Chronicles 7:24 |  | fine as spelled (0.80) |
 | Sherah | SHEER-uh | /ˈʃɪər.ə/ | 1 Chronicles 7:24 |  | fine as spelled (0.88) |
 | Uzzen | UZ-en | /ˈʌz.ɛn/ | 1 Chronicles 7:24 |  | still wrong (0.75) |
@@ -1081,7 +1086,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Nethinims | NETH-ih-nimz | /ˈnɛθ.ɪ.nɪmz/ | 1 Chronicles 9:2 |  | fine as spelled (0.88) |
 | Imri | IM-ry | /ˈɪm.raɪ/ | 1 Chronicles 9:4 |  | suggestion waiting (0.75) |
 | Uthai | yootheye | /ˈjuː.θaɪ/ | 1 Chronicles 9:4 | ✅ | overridden (0.88) |
-| Shilonites | SHY-luh-nites | /ˈʃaɪ.lə.naɪts/ | 1 Chronicles 9:5 |  | suggestion waiting (0.71) |
+| Shilonites | SHY-luh-nites | /ˈʃaɪ.lə.naɪts/ | 1 Chronicles 9:5 |  | suggestion waiting (0.75) |
 | Jeuel | juh-YOO-el | /dʒəˈjuː.əl/ | 1 Chronicles 9:6 |  |  |
 | Hasenuah | has-ih-NYOO-uh | /ˌhæs.ɪˈnjuː.ə/ | 1 Chronicles 9:7 |  | still wrong (0.50) |
 | Hassenuah | has-uh-NOO-uh | /ˌhæs.əˈnuː.ə/ | 1 Chronicles 9:7 |  | fine as spelled (0.94) |
@@ -1126,7 +1131,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Adullam | uh-DUHL-uhm | /əˈdʌl.əm/ | 1 Chronicles 11:15 |  | fine as spelled (1.00) |
 | Rephaim | REHF-ay-ihmm | /ˈrɛf.eɪ.ɪm/ | 1 Chronicles 11:15 | ✅ | overridden (0.83) |
 | Ariel | AIR-ee-el | /ˈɛər.i.ɛl/ | 1 Chronicles 11:22 |  | fine as spelled (0.80) |
-| Jehoiada | juh-HOY-uh-duh | /dʒəˈhɔɪ.ə.də/ | 1 Chronicles 11:22 |  | still wrong (0.71) |
+| Jehoiada | juh-HOY-uh-duh | /dʒəˈhɔɪ.ə.də/ | 1 Chronicles 11:22 |  | still wrong (0.67) |
 | Kabzeel | KAB-zee-el | /ˈkæb.zi.ɛl/ | 1 Chronicles 11:22 |  | suggestion waiting (0.79) |
 | Elhanan | el-HAY-nan | /ɛlˈheɪ.næn/ | 1 Chronicles 11:26 | ✅ | overridden (0.93) |
 | Harorite | HAIR-oh-rite | /ˈhɛər.ə.raɪt/ | 1 Chronicles 11:27 |  | fine as spelled (0.86) |
@@ -1214,7 +1219,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Adnah | AD-nuh | /ˈæd.nə/ | 1 Chronicles 12:20 |  | fine as spelled (1.00) |
 | Elihu | ih-LY-hyoo | /ɪˈlaɪ.hjuː/ | 1 Chronicles 12:20 |  | still wrong (0.50) |
 | Aaronites | AIR-uh-nites | /ˈɛər.ə.naɪts/ | 1 Chronicles 12:27 |  | fine as spelled (1.00) |
-| Danites | DAN-ites | /ˈdæn.aɪts/ | 1 Chronicles 12:35 |  | still wrong (0.43) |
+| Danites | DAN-ites | /ˈdæn.aɪts/ | 1 Chronicles 12:35 |  | still wrong (0.57) |
 | Egypt | EE-jipt | /ˈiː.dʒɪpt/ | 1 Chronicles 13:5 |  | fine as spelled (1.00) |
 | Hamath | HAY-math | /ˈheɪ.mæθ/ | 1 Chronicles 13:5 | ✅ | overridden (1.00) |
 | Shihor | SHY-hawr | /ˈʃaɪ.hɔːr/ | 1 Chronicles 13:5 | ✅ | overridden (0.80) |
@@ -1239,7 +1244,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Kushaiah | koo-SHY-uh | /kuːˈʃaɪ.ə/ | 1 Chronicles 15:17 |  | suggestion waiting (0.73) |
 | Elipheleh | ih-LIF-ih-leh | /ɪˈlɪf.ɪ.lɛ/ | 1 Chronicles 15:18 |  | still wrong (0.57) |
 | Eliphelehu | i-lihf-uh-LEE-hoo | /ɪˌlɪf.əˈliː.huː/ | 1 Chronicles 15:18 | ✅ | overridden (0.89) |
-| Jaaziel | jay-AY-zee-el | /dʒeɪˈeɪ.zi.ɛl/ | 1 Chronicles 15:18 |  | suggestion waiting (0.75) |
+| Jaaziel | jay-AY-zee-el | /dʒeɪˈeɪ.zi.ɛl/ | 1 Chronicles 15:18 |  | suggestion waiting (0.64) |
 | Jehiel | juh-HY-el | /dʒəˈhaɪ.ɛl/ | 1 Chronicles 15:18 |  | suggestion waiting (0.75) |
 | Maaseiah | may-uh-SAY-uhh | /ˌmeɪ.əˈseɪ.ə/ | 1 Chronicles 15:18 | ✅ | overridden (1.00) |
 | Mikneiah | mik-NEE-yuh | /mɪkˈniː.ə/ | 1 Chronicles 15:18 |  | fine as spelled (0.93) |
@@ -1257,7 +1262,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jahaziel | juh-HAY-zee-ehll | /dʒəˈheɪ.zi.ɛl/ | 1 Chronicles 16:6 | ✅ | overridden (0.88) |
 | Jacob | JAY-kub | /ˈdʒeɪ.kəb/ | 1 Chronicles 16:13 |  | fine as spelled (1.00) |
 | Hosah | hohsa | /ˈhoʊ.sə/ | 1 Chronicles 16:38 | ✅ | overridden (0.88) |
-| Moabites | MOH-uh-bites | /ˈmoʊ.ə.baɪts/ | 1 Chronicles 18:2 |  | still wrong (0.79) |
+| Moabites | MOH-uh-bites | /ˈmoʊ.ə.baɪts/ | 1 Chronicles 18:2 |  | fine as spelled (0.81) |
 | Hadadezer | had-ad-EE-zer | /ˌhæd.ædˈiː.zər/ | 1 Chronicles 18:3 |  | fine as spelled (0.89) |
 | Hadarezer | had-ur-EE-zer | /ˌhæd.ərˈiː.zər/ | 1 Chronicles 18:3 |  | fine as spelled (0.94) |
 | Zobah | ZOH-buh | /ˈzoʊ.bə/ | 1 Chronicles 18:3 |  | fine as spelled (1.00) |
@@ -1273,7 +1278,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ahilud | uhheyeluhd | /əˈhaɪ.lʌd/ | 1 Chronicles 18:15 | ✅ | overridden (1.00) |
 | Abimelech | uh-BIM-eh-lek | /əˈbɪm.ə.lɛk/ | 1 Chronicles 18:16 |  | fine as spelled (1.00) |
 | Shavsha | SHAV-shuh | /ˈʃæv.ʃə/ | 1 Chronicles 18:16 |  | still wrong (0.70) |
-| Cherethites | KER-eh-thites | /ˈkɛr.ə.θaɪts/ | 1 Chronicles 18:17 |  | still wrong (0.79) |
+| Cherethites | KER-eh-thites | /ˈkɛr.ə.θaɪts/ | 1 Chronicles 18:17 |  | fine as spelled (0.81) |
 | Pelethites | PEL-eh-thites | /ˈpɛl.ə.θaɪts/ | 1 Chronicles 18:17 |  | still wrong (0.50) |
 | Hanun | HAY-nuhn | /ˈheɪ.nən/ | 1 Chronicles 19:2 |  | fine as spelled (0.90) |
 | Aram-maacah | AIR-uhm MAY-uh-kuh | /ˌɛər.əm ˈmeɪ.ə.kə/ | 1 Chronicles 19:6 |  | still wrong (0.62) |
@@ -1290,7 +1295,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ornan | OR-nan | /ˈɔːr.næn/ | 1 Chronicles 21:15 |  | suggestion waiting (0.73) |
 | Sidonians | sy-DOH-nee-uhnz | /saɪˈdoʊ.ni.ənz/ | 1 Chronicles 22:4 |  | fine as spelled (1.00) |
 | Zidonians | zy-DOH-nee-unz | /zaɪˈdoʊ.ni.ənz/ | 1 Chronicles 22:4 |  | fine as spelled (1.00) |
-| Gershonites | GUR-shuhn-ites | /ˈɡɜːr.ʃən.aɪts/ | 1 Chronicles 23:7 |  | still wrong (0.75) |
+| Gershonites | GUR-shuhn-ites | /ˈɡɜːr.ʃən.aɪts/ | 1 Chronicles 23:7 |  | still wrong (0.78) |
 | Laadan | LAY-uh-dan | /ˈleɪ.ə.dæn/ | 1 Chronicles 23:7 | ✅ | overridden (0.83) |
 | Zetham | ZEE-tham | /ˈziː.θæm/ | 1 Chronicles 23:8 |  | fine as spelled (0.80) |
 | Haziel | HAY-zee-el | /ˈheɪ.zi.ɛl/ | 1 Chronicles 23:9 |  | suggestion waiting (0.75) |
@@ -1304,10 +1309,10 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Mijamin | MIHJ-uh-mihn | /ˈmɪdʒ.ə.mɪn/ | 1 Chronicles 24:9 | ✅ | overridden (0.94) |
 | Jeshua | JESH-oo-uh | /ˈdʒɛʃ.u.ə/ | 1 Chronicles 24:11 |  | fine as spelled (1.00) |
 | Huppah | HUP-uh | /ˈhʌp.ə/ | 1 Chronicles 24:13 |  | still wrong (0.75) |
-| Jeshebeab | juh-SHEHB-ee-abb | /dʒəˈʃɛb.i.æb/ | 1 Chronicles 24:13 | ✅ | overridden (0.88) |
+| Jeshebeab | jushebbyab | /dʒəˈʃɛb.i.æb/ | 1 Chronicles 24:13 | ✅ | overridden (0.88) |
 | Bilgah | BIL-guh | /ˈbɪl.ɡə/ | 1 Chronicles 24:14 |  | fine as spelled (1.00) |
 | Aphses | AF-seez | /ˈæf.siːz/ | 1 Chronicles 24:15 |  | fine as spelled (0.80) |
-| Happizzez | HAP-ih-zez | /ˈhæp.ɪ.zɛz/ | 1 Chronicles 24:15 |  | fine as spelled (0.86) |
+| Happizzez | HAP-ih-zez | /ˈhæp.ɪ.zɛz/ | 1 Chronicles 24:15 |  | still wrong (0.75) |
 | Hezir | HEE-zer | /ˈhiː.zər/ | 1 Chronicles 24:15 |  | fine as spelled (1.00) |
 | Jehezekel | jih-HEZ-ih-kel | /dʒɪˈhɛz.ɪ.kɛl/ | 1 Chronicles 24:16 |  | still wrong (0.78) |
 | Jehezkel | juh-HEZ-kel | /dʒəˈhɛz.kɛl/ | 1 Chronicles 24:16 |  | suggestion waiting (0.75) |
@@ -1316,7 +1321,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Maaziah | may-uh-ZEYE-uh | /ˌmeɪ.əˈzaɪ.ə/ | 1 Chronicles 24:18 | ✅ | overridden (1.00) |
 | Jehdeiah | jeh-DEE-uh | /dʒɛˈdiː.ə/ | 1 Chronicles 24:20 | ✅ | overridden (0.80) |
 | Shubael | SHOO-bay-el | /ˈʃuː.beɪ.ɛl/ | 1 Chronicles 24:20 |  | suggestion waiting (0.75) |
-| Izharites | IZ-har-ites | /ˈɪz.hɑːr.aɪts/ | 1 Chronicles 24:22 |  | suggestion waiting (0.71) |
+| Izharites | IZ-har-ites | /ˈɪz.hɑːr.aɪts/ | 1 Chronicles 24:22 |  | suggestion waiting (0.75) |
 | Shelomoth | SHEL-uh-moth | /ˈʃɛl.ə.mɒθ/ | 1 Chronicles 24:22 |  | fine as spelled (0.93) |
 | Michah | MY-kuh | /ˈmaɪ.kə/ | 1 Chronicles 24:24 |  | fine as spelled (1.00) |
 | Shamir | shaymihr | /ˈʃeɪ.mɪr/ | 1 Chronicles 24:24 | ✅ | overridden (0.80) |
@@ -1357,12 +1362,12 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Parbar | PAR-bar | /ˈpɑːr.bɑːr/ | 1 Chronicles 26:18 |  | fine as spelled (0.83) |
 | Gershonite | GUR-shuhn-ite | /ˈɡɜːr.ʃən.aɪt/ | 1 Chronicles 26:21 |  | fine as spelled (0.88) |
 | Jehieli | ja-HEYE-uh-leye | /dʒəˈhaɪ.ə.laɪ/ | 1 Chronicles 26:21 | ✅ | overridden (0.86) |
-| Amramites | AM-ram-ites | /ˈæm.ræm.aɪts/ | 1 Chronicles 26:23 |  | still wrong (0.71) |
+| Amramites | AM-ram-ites | /ˈæm.ræm.aɪts/ | 1 Chronicles 26:23 |  | still wrong (0.75) |
 | Hebronites | HEE-bruhn-ites | /ˈhiː.brən.aɪts/ | 1 Chronicles 26:23 |  | fine as spelled (1.00) |
 | Uzzielites | azeyeuhleyets | /əˈzaɪ.əl.aɪts/ | 1 Chronicles 26:23 | ✅ | overridden (0.86) |
 | Abner | AB-ner | /ˈæb.nər/ | 1 Chronicles 26:28 |  | fine as spelled (1.00) |
 | Jerijah | juh-REYE-juh | /dʒəˈraɪ.dʒə/ | 1 Chronicles 26:31 | ✅ | overridden (0.83) |
-| Manassites | muh-NAS-ites | /məˈnæs.aɪts/ | 1 Chronicles 26:32 |  | still wrong (0.64) |
+| Manassites | muh-NAS-ites | /məˈnæs.aɪts/ | 1 Chronicles 26:32 |  | still wrong (0.69) |
 | Zabdiel | ZAB-dee-el | /ˈzæb.di.ɛl/ | 1 Chronicles 27:2 |  | suggestion waiting (0.79) |
 | Dodai | DOH-deye | /ˈdoʊ.daɪ/ | 1 Chronicles 27:4 | ✅ | overridden (1.00) |
 | Ammizabad | uh-MIHZ-uh-bad | /əˈmɪz.ə.bæd/ | 1 Chronicles 27:6 | ✅ | overridden (1.00) |
@@ -1370,12 +1375,12 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Shamhuth | SHAM-huth | /ˈʃæm.hʌθ/ | 1 Chronicles 27:8 |  | fine as spelled (0.83) |
 | Ira | EYE-ruh | /ˈaɪ.rə/ | 1 Chronicles 27:9 |  | fine as spelled (1.00) |
 | Zarhites | zahrheyets | /ˈzɑːr.haɪts/ | 1 Chronicles 27:11 | ✅ | overridden (0.88) |
-| Zerahites | ZER-uh-hites | /ˈzɛr.ə.haɪts/ | 1 Chronicles 27:11 |  | suggestion waiting (0.71) |
+| Zerahites | ZER-uh-hites | /ˈzɛr.ə.haɪts/ | 1 Chronicles 27:11 |  | suggestion waiting (0.75) |
 | Anetothite | uh-NET-uh-thite | /əˈnɛt.ə.θaɪt/ | 1 Chronicles 27:12 |  | still wrong (0.44) |
 | Benjamites | BEHN-ja-meyets | /ˈbɛn.dʒə.maɪts/ | 1 Chronicles 27:12 | ✅ | overridden (0.94) |
 | Maharai | MAY-huh-ry | /ˈmeɪ.hə.raɪ/ | 1 Chronicles 27:13 |  | fine as spelled (0.83) |
 | Heldai | HEL-dye | /ˈhɛl.daɪ/ | 1 Chronicles 27:15 |  | fine as spelled (0.80) |
-| Simeonites | SIM-ee-uhn-ites | /ˈsɪm.i.ən.aɪts/ | 1 Chronicles 27:16 |  | fine as spelled (0.88) |
+| Simeonites | SIM-ee-uhn-ites | /ˈsɪm.i.ən.aɪts/ | 1 Chronicles 27:16 |  | fine as spelled (0.89) |
 | Kemuel | KEHM-yoo-el | /ˈkɛm.ju.ɛl/ | 1 Chronicles 27:17 | ✅ | overridden (0.81) |
 | Ishmaiah | ish-MAY-yuh | /ɪʃˈmeɪ.ə/ | 1 Chronicles 27:19 |  | fine as spelled (1.00) |
 | Hoshea | hoh-SHEE-uh | /hoʊˈʃiː.ə/ | 1 Chronicles 27:20 |  | fine as spelled (0.80) |
@@ -1405,9 +1410,9 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Horeb | HOR-eb | /ˈhɔːr.ɛb/ | 2 Chronicles 5:10 |  |  |
 | Tadmor | TAD-mor | /ˈtæd.mɔːr/ | 2 Chronicles 8:4 |  |  |
 | Baalath | BAY-uh-lath | /ˈbeɪ.ə.læθ/ | 2 Chronicles 8:6 |  |  |
-| Amorites | AM-uh-rites | /ˈæm.ə.raɪts/ | 2 Chronicles 8:7 |  | fine as spelled (0.86) |
+| Amorites | AM-uh-rites | /ˈæm.ə.raɪts/ | 2 Chronicles 8:7 |  | fine as spelled (1.00) |
 | Hittites | HIT-ites | /ˈhɪt.aɪts/ | 2 Chronicles 8:7 |  |  |
-| Hivites | HY-vites | /ˈhaɪ.vaɪts/ | 2 Chronicles 8:7 |  | fine as spelled (0.80) |
+| Hivites | HY-vites | /ˈhaɪ.vaɪts/ | 2 Chronicles 8:7 |  | fine as spelled (0.83) |
 | Perizzites | PER-ih-zites | /ˈpɛr.ɪ.zaɪts/ | 2 Chronicles 8:7 |  |  |
 | Eloth | EE-loth | /ˈiː.lɒθ/ | 2 Chronicles 8:17 |  |  |
 | Ezion | EE-zee-on | /ˈiː.zi.ɒn/ | 2 Chronicles 8:17 |  |  |
@@ -1611,28 +1616,41 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Emmaus | eh-MAY-uhs | /ɛˈmeɪ.əs/ | Luke 24:13 |  |  |
 | Cleopas | KLEE-oh-puhs | /ˈkliː.ə.pəs/ | Luke 24:18 |  |  |
 | Nazarene | naz-uh-REEN | /ˌnæz.əˈriːn/ | Luke 24:19 |  |  |
+| Holy | Holy |  | Acts 1:2 |  | fine as spelled |
+| Kingdom | Kingdom |  | Acts 1:3 |  | fine as spelled |
+| Father | Father |  | Acts 1:4 |  | fine as spelled |
 | Judaea | joo-DEE-uh | /dʒuːˈdiː.ə/ | Acts 1:8 |  | fine as spelled (0.80) |
-| Samaria | Samairia | /səˈmɛər.i.ə/ | Acts 1:8 | ✅ | overridden |
+| Samaria | Samairia | /səˈmɛər.i.ə/ | Acts 1:8 | ✅ | overridden (0.00) |
+| Sabbath | Sabbath |  | Acts 1:12 |  | fine as spelled |
 | Andrew | AN-droo | /ˈæn.druː/ | Acts 1:13 |  | fine as spelled (1.00) |
 | Bartholomew | bar-THOL-uh-myoo | /bɑːrˈθɒl.ə.mjuː/ | Acts 1:13 |  | fine as spelled (0.95) |
 | Matthew | MATH-yoo | /ˈmæθ.juː/ | Acts 1:13 |  | fine as spelled (1.00) |
 | Thomas | TOM-uhs | /ˈtɒm.əs/ | Acts 1:13 |  | fine as spelled (1.00) |
+| Zealot | Zealot |  | Acts 1:13 |  | fine as spelled |
 | Zelotes | zi-LOH-teez | /zɪˈloʊ.tiːz/ | Acts 1:13 | ✅ | overridden (0.86) |
+| Scripture | Scripture |  | Acts 1:16 |  | fine as spelled |
 | Aceldama | uh-KEL-duh-muh | /əˈkɛl.də.mə/ | Acts 1:19 |  | fine as spelled (0.88) |
+| Psalms | Psalms |  | Acts 1:20 |  | fine as spelled |
 | Barsabas | BAR-suh-bus | /ˈbɑːr.sə.bəs/ | Acts 1:23 |  | still wrong (0.56) |
-| Barsabbas | Bar-sabbas | /bɑːrˈsæb.əs/ | Acts 1:23 | ✅ | overridden |
+| Barsabbas | Bar-sabbas | /bɑːrˈsæb.əs/ | Acts 1:23 | ✅ | overridden (0.00) |
 | Justus | JUS-tuhs | /ˈdʒʌs.təs/ | Acts 1:23 |  | fine as spelled (0.83) |
 | Matthias | muh-THY-uhs | /məˈθaɪ.əs/ | Acts 1:23 |  | fine as spelled (1.00) |
 | Pentecost | PEN-tih-kost | /ˈpɛn.tɪ.kɒst/ | Acts 2:1 |  | fine as spelled (1.00) |
+| Jews | Jews |  | Acts 2:5 |  | fine as spelled |
 | Galilaeans | gal-ih-LEE-unz | /ˌɡæl.ɪˈliː.ənz/ | Acts 2:7 |  | fine as spelled (0.89) |
 | Asia | AY-zhuh | /ˈeɪ.ʒə/ | Acts 2:9 |  | fine as spelled (1.00) |
 | Cappadocia | kap-uh-DOH-shuh | /ˌkæp.əˈdoʊ.ʃə/ | Acts 2:9 |  | fine as spelled (0.83) |
-| Elamites | EE-luh-mites | /ˈiː.lə.maɪts/ | Acts 2:9 |  | fine as spelled (0.92) |
+| Elamites | EE-luh-mites | /ˈiː.lə.maɪts/ | Acts 2:9 |  | fine as spelled (0.93) |
 | Medes | MEEDZ | /miːdz/ | Acts 2:9 |  | fine as spelled (1.00) |
-| Pontus | PON-tuhs | /ˈpɒn.təs/ | Acts 2:9 |  | suggestion waiting (0.75) |
+| Pontus | PON-tuhs | /ˈpɒn.təs/ | Acts 2:9 |  | still wrong (0.75) |
 | Libya | LIB-ee-uh | /ˈlɪb.i.ə/ | Acts 2:10 |  | fine as spelled (1.00) |
 | Pamphylia | pam-FIL-ee-uh | /pæmˈfɪl.i.ə/ | Acts 2:10 |  | fine as spelled (0.94) |
 | Rome | ROHM | /roʊm/ | Acts 2:10 |  | fine as spelled (1.00) |
+| Beautiful | Beautiful |  | Acts 3:2 |  | fine as spelled |
+| Gate | Gate |  | Acts 3:10 |  | fine as spelled |
+| Servant | Servant |  | Acts 3:13 |  | fine as spelled |
+| Righteous | Righteous |  | Acts 3:14 |  | fine as spelled |
+| Prince | Prince |  | Acts 3:15 |  | fine as spelled |
 | Alexander | al-ig-ZAN-der | /ˌæl.ɪɡˈzæn.dər/ | Acts 4:6 |  | fine as spelled (1.00) |
 | Barnabas | BAR-nuh-buhs | /ˈbɑːr.nə.bəs/ | Acts 4:36 |  | fine as spelled (1.00) |
 | Cyprus | SY-pruhs | /ˈsaɪ.prəs/ | Acts 4:36 |  | fine as spelled (1.00) |
@@ -1668,7 +1686,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Moloch | MOH-lok | /ˈmoʊ.lɒk/ | Acts 7:43 |  | fine as spelled (0.90) |
 | Remphan | REM-fan | /ˈrɛm.fæn/ | Acts 7:43 |  | fine as spelled (0.83) |
 | Rephan | REE-fann | /ˈriː.fæn/ | Acts 7:43 | ✅ | overridden (1.00) |
-| Gaza | GAH-zuh | /ˈɡɑː.zə/ | Acts 8:26 |  | fine as spelled (0.88) |
+| Gaza | GAH-zuh | /ˈɡɑː.zə/ | Acts 8:26 |  | still wrong (0.75) |
 | Candace | KAN-duh-see | /ˈkæn.də.siː/ | Acts 8:27 |  | suggestion waiting (0.71) |
 | Ethiopia | ee-thee-OH-pee-uh | /ˌiː.θiˈoʊ.pi.ə/ | Acts 8:27 |  | fine as spelled (1.00) |
 | Esaias | izayuhs | /ɪˈzeɪ.əs/ | Acts 8:28 | ✅ | overridden (1.00) |
@@ -1681,20 +1699,20 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Tabitha | TAB-ih-thuh | /ˈtæb.ɪ.θə/ | Acts 9:36 |  | fine as spelled (1.00) |
 | Cornelius | kor-NEEL-yuhs | /kɔːrˈniːl.jəs/ | Acts 10:1 |  | fine as spelled (0.83) |
 | Phenice | fihneyesee | /fɪˈnaɪ.siː/ | Acts 11:19 | ✅ | overridden (0.86) |
-| Agabus | AGga-bus | /ˈæɡ.ə.bəs/ | Acts 11:28 | ✅ | overridden |
+| Agabus | AGga-bus | /ˈæɡ.ə.bəs/ | Acts 11:28 | ✅ | overridden (1.00) |
 | Claudius | KLAW-dee-uhs | /ˈklɔː.di.əs/ | Acts 11:28 |  | fine as spelled (1.00) |
 | Mark | MARK | /mɑːrk/ | Acts 12:12 |  | fine as spelled (1.00) |
 | Rhoda | ROH-duh | /ˈroʊ.də/ | Acts 12:13 |  | fine as spelled (1.00) |
-| Caesarea | sessa-Rheea | /ˌsɛs.əˈriː.ə/ | Acts 12:19 | ✅ | overridden |
+| Caesarea | sessa-Rheea | /ˌsɛs.əˈriː.ə/ | Acts 12:19 | ✅ | overridden (0.00) |
 | Blastus | BLAS-tuhs | /ˈblæs.təs/ | Acts 12:20 |  | still wrong (0.71) |
-| Cyrene | siereen | /saɪˈriːn/ | Acts 13:1 | ✅ | overridden |
+| Cyrene | siereen | /saɪˈriːn/ | Acts 13:1 | ✅ | overridden (0.00) |
 | Lucius | LOO-shuhs | /ˈluː.ʃəs/ | Acts 13:1 |  | fine as spelled (1.00) |
 | Manaen | MAN-ay-en | /ˈmæn.eɪ.ɛn/ | Acts 13:1 |  | still wrong (0.50) |
 | Niger | NY-jer | /ˈnaɪ.dʒər/ | Acts 13:1 |  | fine as spelled (1.00) |
 | Seleucia | suh-LOO-shuh | /səˈluː.ʃə/ | Acts 13:4 |  | fine as spelled (0.86) |
-| Salamis | Salamiss | /ˈsæl.ə.mɪs/ | Acts 13:5 | ✅ | overridden |
+| Salamis | Salamiss | /ˈsæl.ə.mɪs/ | Acts 13:5 | ✅ | overridden (0.00) |
 | Bar-jesus | bar-JEE-zus | /bɑːrˈdʒiː.zəs/ | Acts 13:6 |  | fine as spelled (0.94) |
-| Paphos | PAYfose | /ˈpeɪ.fɒs/ | Acts 13:6 | ✅ | overridden |
+| Paphos | PAYfose | /ˈpeɪ.fɒs/ | Acts 13:6 | ✅ | overridden (0.80) |
 | Paulus | PAW-luhs | /ˈpɔː.ləs/ | Acts 13:7 |  | suggestion waiting (0.70) |
 | Sergius | SUR-jee-uhs | /ˈsɜːr.dʒi.əs/ | Acts 13:7 |  | fine as spelled (0.86) |
 | Elymas | ehlihmuhs | /ˈɛl.ɪ.məs/ | Acts 13:8 | ✅ | overridden (0.83) |
@@ -1709,7 +1727,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jupiter | JOO-pih-ter | /ˈdʒuː.pɪ.tər/ | Acts 14:12 |  | fine as spelled (0.86) |
 | Mercurius | mur-KYOOR-ee-us | /mɜːrˈkjʊər.i.əs/ | Acts 14:12 |  | fine as spelled (0.90) |
 | Attalia | at-uh-LY-uh | /ˌæt.əˈlaɪ.ə/ | Acts 14:25 |  | still wrong (0.46) |
-| Phoenicia | Phoneesha | /fəˈniː.ʃə/ | Acts 15:3 | ✅ | overridden |
+| Phoenicia | Phoneesha | /fəˈniː.ʃə/ | Acts 15:3 | ✅ | overridden (0.00) |
 | Silas | SY-luhs | /ˈsaɪ.ləs/ | Acts 15:22 |  | fine as spelled (1.00) |
 | Timotheus | tih-MOH-thee-us | /tɪˈmoʊ.θi.əs/ | Acts 16:1 |  | fine as spelled (0.88) |
 | Timothy | TIM-uh-thee | /ˈtɪm.ə.θi/ | Acts 16:1 |  | fine as spelled (1.00) |
@@ -1826,6 +1844,6 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Appii | AP-ee-eye | /ˈæp.i.aɪ/ | Acts 28:15 |  | fine as spelled (1.00) |
 | Appius | AP-ee-uhs | /ˈæp.i.əs/ | Acts 28:15 |  | fine as spelled (1.00) |
 
-**Checked:** 171 unchecked, 805 fine as spelled, 430 overridden, 131 suggestion waiting, 275 still wrong.
+**Checked:** 171 unchecked, 824 fine as spelled, 436 overridden, 122 suggestion waiting, 277 still wrong.
 
-_1812 names — 430 respelled for the voice, 1382 reference-only._
+_1830 names — 436 respelled for the voice, 1394 reference-only._
