@@ -20,7 +20,7 @@
       "override": true
     },
     "Bdellium": {
-      "say": "DEL-ee-um",
+      "say": "DEL-eeum",
       "ipa": "/ˈdɛl.i.əm/",
       "ref": "Genesis 2:12",
       "override": true
@@ -926,10 +926,10 @@
       "override": false
     },
     "Bered": {
-      "say": "BEE-red",
+      "say": "BEERR-ehd",
       "ipa": "/ˈbɪər.ɛd/",
       "ref": "Genesis 16:14",
-      "override": false
+      "override": true
     },
     "Abraham": {
       "say": "AY-bruh-ham",
@@ -956,10 +956,10 @@
       "override": false
     },
     "Beersheba": {
-      "say": "beer-SHEE-buh",
+      "say": "beerrsheeba",
       "ipa": "/bɪərˈʃiː.bə/",
       "ref": "Genesis 21:14",
-      "override": false
+      "override": true
     },
     "Buz": {
       "say": "BUHZ",
@@ -1007,7 +1007,7 @@
       "say": "MEE-dan",
       "ipa": "/ˈmiː.dæn/",
       "ref": "Genesis 25:2",
-      "override": false
+      "override": true
     },
     "Midian": {
       "say": "MID-ee-uhn",
@@ -1055,19 +1055,19 @@
       "say": "HAY-nok",
       "ipa": "/ˈheɪ.nɒk/",
       "ref": "Genesis 25:4",
-      "override": false
+      "override": true
     },
     "Adbeel": {
       "say": "AD-bee-el",
       "ipa": "/ˈæd.biː.ɛl/",
       "ref": "Genesis 25:13",
-      "override": false
+      "override": true
     },
     "Kedar": {
-      "say": "KEE-der",
+      "say": "KEE-duhr",
       "ipa": "/ˈkiː.dər/",
       "ref": "Genesis 25:13",
-      "override": false
+      "override": true
     },
     "Mibsam": {
       "say": "MIB-sam",
@@ -1103,19 +1103,19 @@
       "say": "HAY-dad",
       "ipa": "/ˈheɪ.dæd/",
       "ref": "Genesis 25:15",
-      "override": false
+      "override": true
     },
     "Jetur": {
-      "say": "JEE-ter",
+      "say": "JEE-tuhr",
       "ipa": "/ˈdʒiː.tər/",
       "ref": "Genesis 25:15",
-      "override": false
+      "override": true
     },
     "Kedemah": {
-      "say": "KED-uh-muh",
+      "say": "kehduhmuh",
       "ipa": "/ˈkɛd.ə.mə/",
       "ref": "Genesis 25:15",
-      "override": false
+      "override": true
     },
     "Naphish": {
       "say": "NAY-fish",
@@ -1214,10 +1214,10 @@
       "override": false
     },
     "Mahanaim": {
-      "say": "may-huh-NAY-im",
+      "say": "mayhanayihm",
       "ipa": "/ˌmeɪ.həˈneɪ.ɪm/",
       "ref": "Genesis 32:2",
-      "override": false
+      "override": true
     },
     "Israel": {
       "say": "IZ-ray-el",
@@ -1304,10 +1304,10 @@
       "override": false
     },
     "Jeush": {
-      "say": "JEE-ush",
+      "say": "JEE-uhsh",
       "ipa": "/ˈdʒiː.ʌʃ/",
       "ref": "Genesis 36:5",
-      "override": false
+      "override": true
     },
     "Korah": {
       "say": "KOR-uh",
@@ -1319,13 +1319,13 @@
       "say": "GAY-tuhm",
       "ipa": "/ˈɡeɪ.təm/",
       "ref": "Genesis 36:11",
-      "override": false
+      "override": true
     },
     "Kenaz": {
       "say": "KEE-naz",
       "ipa": "/ˈkiː.næz/",
       "ref": "Genesis 36:11",
-      "override": false
+      "override": true
     },
     "Omar": {
       "say": "OH-mar",
@@ -1358,10 +1358,10 @@
       "override": false
     },
     "Nahath": {
-      "say": "NAY-hath",
+      "say": "nayhath",
       "ipa": "/ˈneɪ.hæθ/",
       "ref": "Genesis 36:13",
-      "override": false
+      "override": true
     },
     "Shammah": {
       "say": "SHAM-uh",
@@ -1376,10 +1376,10 @@
       "override": true
     },
     "Lotan": {
-      "say": "LOH-tan",
+      "say": "lohtan",
       "ipa": "/ˈloʊ.tæn/",
       "ref": "Genesis 36:20",
-      "override": false
+      "override": true
     },
     "Shobal": {
       "say": "SHOH-buhl",
@@ -1388,16 +1388,16 @@
       "override": false
     },
     "Dishan": {
-      "say": "DY-shan",
+      "say": "DEYE-shan",
       "ipa": "/ˈdaɪ.ʃæn/",
       "ref": "Genesis 36:21",
-      "override": false
+      "override": true
     },
     "Dishon": {
-      "say": "DY-shon",
+      "say": "DEYE-shon",
       "ipa": "/ˈdaɪ.ʃɒn/",
       "ref": "Genesis 36:21",
-      "override": false
+      "override": true
     },
     "Ezer": {
       "say": "EE-zer",
@@ -1442,10 +1442,10 @@
       "override": false
     },
     "Cheran": {
-      "say": "KEE-ran",
+      "say": "KEERR-an",
       "ipa": "/ˈkɪər.æn/",
       "ref": "Genesis 36:26",
-      "override": false
+      "override": true
     },
     "Eshban": {
       "say": "ESH-ban",
@@ -1454,10 +1454,10 @@
       "override": false
     },
     "Ithran": {
-      "say": "ITH-ran",
+      "say": "IHTH-ran",
       "ipa": "/ˈɪθ.ræn/",
       "ref": "Genesis 36:26",
-      "override": false
+      "override": true
     },
     "Bilhan": {
       "say": "BIL-han",
@@ -1469,7 +1469,7 @@
       "say": "ZAY-uh-van",
       "ipa": "/ˈzeɪ.ə.væn/",
       "ref": "Genesis 36:27",
-      "override": false
+      "override": true
     },
     "Aran": {
       "say": "AIR-an",
@@ -1508,10 +1508,10 @@
       "override": false
     },
     "Avith": {
-      "say": "AY-vith",
+      "say": "ayvith",
       "ipa": "/ˈeɪ.vɪθ/",
       "ref": "Genesis 36:35",
-      "override": false
+      "override": true
     },
     "Bedad": {
       "say": "BEE-dad",
@@ -1532,10 +1532,10 @@
       "override": false
     },
     "Shaul": {
-      "say": "SHAY-uhl",
+      "say": "SHAY-uhll",
       "ipa": "/ˈʃeɪ.əl/",
       "ref": "Genesis 36:37",
-      "override": false
+      "override": true
     },
     "Achbor": {
       "say": "AK-bor",
@@ -1544,28 +1544,28 @@
       "override": false
     },
     "Baal": {
-      "say": "BAY-uhl",
+      "say": "bayal",
       "ipa": "/ˈbeɪ.əl/",
       "ref": "Genesis 36:38",
-      "override": false
+      "override": true
     },
     "Hanan": {
-      "say": "HAY-nan",
+      "say": "haynan",
       "ipa": "/ˈheɪ.næn/",
       "ref": "Genesis 36:38",
-      "override": false
+      "override": true
     },
     "Matred": {
-      "say": "MAY-tred",
+      "say": "maytrehd",
       "ipa": "/ˈmeɪ.trɛd/",
       "ref": "Genesis 36:39",
-      "override": false
+      "override": true
     },
     "Mehetabel": {
-      "say": "muh-HET-uh-bel",
+      "say": "mahehtuhbehl",
       "ipa": "/məˈhɛt.ə.bɛl/",
       "ref": "Genesis 36:39",
-      "override": false
+      "override": true
     },
     "Mezahab": {
       "say": "MEZ-uh-hab",
@@ -1574,10 +1574,10 @@
       "override": false
     },
     "Jetheth": {
-      "say": "JEE-theth",
+      "say": "jeethehth",
       "ipa": "/ˈdʒiː.θɛθ/",
       "ref": "Genesis 36:40",
-      "override": false
+      "override": true
     },
     "Elah": {
       "say": "EE-luh",
@@ -1586,10 +1586,10 @@
       "override": false
     },
     "Pinon": {
-      "say": "PY-non",
+      "say": "peyenon",
       "ipa": "/ˈpaɪ.nɒn/",
       "ref": "Genesis 36:41",
-      "override": false
+      "override": true
     },
     "Mibzar": {
       "say": "MIB-zar",
@@ -1598,10 +1598,10 @@
       "override": false
     },
     "Iram": {
-      "say": "EYE-ruhm",
+      "say": "eyeruhm",
       "ipa": "/ˈaɪ.rəm/",
       "ref": "Genesis 36:43",
-      "override": false
+      "override": true
     },
     "Magdiel": {
       "say": "MAG-dee-el",
@@ -1640,10 +1640,10 @@
       "override": false
     },
     "Ephraim": {
-      "say": "EE-fray-im",
+      "say": "EE-fray-ihmm",
       "ipa": "/ˈiː.freɪ.ɪm/",
       "ref": "Genesis 41:52",
-      "override": false
+      "override": true
     },
     "Carmi": {
       "say": "KAR-my",
@@ -1664,10 +1664,10 @@
       "override": false
     },
     "Jachin": {
-      "say": "JAY-kin",
+      "say": "JAY-kihn",
       "ipa": "/ˈdʒeɪ.kɪn/",
       "ref": "Genesis 46:10",
-      "override": false
+      "override": true
     },
     "Jamin": {
       "say": "JAY-mihn",
@@ -1688,10 +1688,10 @@
       "override": false
     },
     "Merari": {
-      "say": "muh-RAY-ry",
+      "say": "muh-RAY-reye",
       "ipa": "/məˈreɪ.raɪ/",
       "ref": "Genesis 46:11",
-      "override": false
+      "override": true
     },
     "Hamul": {
       "say": "HAY-muhl",
@@ -1742,10 +1742,10 @@
       "override": false
     },
     "Ishvi": {
-      "say": "ISH-vy",
+      "say": "ihshveye",
       "ipa": "/ˈɪʃ.vaɪ/",
       "ref": "Genesis 46:17",
-      "override": false
+      "override": true
     },
     "Malchiel": {
       "say": "MAL-kee-el",
@@ -1766,10 +1766,10 @@
       "override": false
     },
     "Becher": {
-      "say": "BEE-ker",
+      "say": "beekuhr",
       "ipa": "/ˈbiː.kər/",
       "ref": "Genesis 46:21",
-      "override": false
+      "override": true
     },
     "Gera": {
       "say": "GEE-ruh",
@@ -1787,13 +1787,13 @@
       "say": "NAY-uh-muhn",
       "ipa": "/ˈneɪ.ə.mən/",
       "ref": "Genesis 46:21",
-      "override": false
+      "override": true
     },
     "Hushim": {
-      "say": "HYOO-shim",
+      "say": "hyooshihm",
       "ipa": "/ˈhjuː.ʃɪm/",
       "ref": "Genesis 46:23",
-      "override": false
+      "override": true
     },
     "Guni": {
       "say": "GYOO-ny",
@@ -1871,7 +1871,7 @@
       "say": "AM-ram",
       "ipa": "/ˈæm.ræm/",
       "ref": "Exodus 6:18",
-      "override": false
+      "override": true
     },
     "Izhar": {
       "say": "IZ-har",
@@ -1898,10 +1898,10 @@
       "override": false
     },
     "Mushi": {
-      "say": "MYOO-shy",
+      "say": "myoosheye",
       "ipa": "/ˈmjuː.ʃaɪ/",
       "ref": "Exodus 6:19",
-      "override": false
+      "override": true
     },
     "Nepheg": {
       "say": "NEE-feg",
@@ -1910,10 +1910,10 @@
       "override": false
     },
     "Zichri": {
-      "say": "ZIK-ry",
+      "say": "ZIHK-reye",
       "ipa": "/ˈzɪk.raɪ/",
       "ref": "Exodus 6:21",
-      "override": false
+      "override": true
     },
     "Abihu": {
       "say": "uh-BY-hyoo",
@@ -1961,7 +1961,7 @@
       "say": "el-KAY-nuh",
       "ipa": "/ɛlˈkeɪ.nə/",
       "ref": "Exodus 6:24",
-      "override": false
+      "override": true
     },
     "Korahites": {
       "say": "KOR-uh-hites",
@@ -2030,10 +2030,10 @@
       "override": false
     },
     "Ammihud": {
-      "say": "uh-MY-hud",
+      "say": "ameyehuhd",
       "ipa": "/əˈmaɪ.hʌd/",
       "ref": "Numbers 1:10",
-      "override": false
+      "override": true
     },
     "Elishama": {
       "say": "ihlihshuhmuh",
@@ -2063,7 +2063,7 @@
       "say": "SHAY-fat",
       "ipa": "/ˈʃeɪ.fæt/",
       "ref": "Numbers 13:5",
-      "override": false
+      "override": true
     },
     "Caleb": {
       "say": "KAY-leb",
@@ -2132,10 +2132,10 @@
       "override": false
     },
     "Heshbon": {
-      "say": "HESH-bon",
+      "say": "HEHSH-bon",
       "ipa": "/ˈhɛʃ.bɒn/",
       "ref": "Numbers 21:25",
-      "override": false
+      "override": true
     },
     "Jazer": {
       "say": "JAY-zer",
@@ -2201,7 +2201,7 @@
       "say": "shuh-MY-duh",
       "ipa": "/ʃəˈmaɪ.də/",
       "ref": "Numbers 26:32",
-      "override": false
+      "override": true
     },
     "Mahlah": {
       "say": "MAH-luh",
@@ -2213,7 +2213,7 @@
       "say": "zuh-LOH-fuh-had",
       "ipa": "/zəˈloʊ.fə.hæd/",
       "ref": "Numbers 26:33",
-      "override": false
+      "override": true
     },
     "Shuthelah": {
       "say": "shoo-THEE-luh",
@@ -2225,7 +2225,7 @@
       "say": "TAY-han",
       "ipa": "/ˈteɪ.hæn/",
       "ref": "Numbers 26:35",
-      "override": false
+      "override": true
     },
     "Rekem": {
       "say": "REE-kem",
@@ -2240,10 +2240,10 @@
       "override": false
     },
     "Aroer": {
-      "say": "uh-ROH-er",
+      "say": "uh-ROH-uhrr",
       "ipa": "/əˈroʊ.ər/",
       "ref": "Numbers 32:34",
-      "override": false
+      "override": true
     },
     "Meon": {
       "say": "MEE-on",
@@ -2279,13 +2279,13 @@
       "say": "TAY-hath",
       "ipa": "/ˈteɪ.hæθ/",
       "ref": "Numbers 33:26",
-      "override": false
+      "override": true
     },
     "Jaakan": {
       "say": "JAY-uh-kan",
       "ipa": "/ˈdʒeɪ.ə.kæn/",
       "ref": "Numbers 33:31",
-      "override": false
+      "override": true
     },
     "Addar": {
       "say": "AD-ar",
@@ -2312,10 +2312,10 @@
       "override": false
     },
     "Bukki": {
-      "say": "BUK-eye",
+      "say": "buhkeye",
       "ipa": "/ˈbʌk.aɪ/",
       "ref": "Numbers 34:22",
-      "override": false
+      "override": true
     },
     "Hanniel": {
       "say": "HAN-ee-el",
@@ -2324,10 +2324,10 @@
       "override": false
     },
     "Ahihud": {
-      "say": "uh-HY-hud",
+      "say": "uh-HEYE-huhd",
       "ipa": "/əˈhaɪ.hʌd/",
       "ref": "Numbers 34:27",
-      "override": false
+      "override": true
     },
     "Ashtaroth": {
       "say": "ASH-tuh-roth",
@@ -2348,16 +2348,16 @@
       "override": false
     },
     "Senir": {
-      "say": "SEE-nur",
+      "say": "SEE-nuhr",
       "ipa": "/ˈsiː.nər/",
       "ref": "Deuteronomy 3:9",
-      "override": false
+      "override": true
     },
     "Salecah": {
       "say": "SAL-uh-kuh",
       "ipa": "/ˈsæl.ə.kə/",
       "ref": "Deuteronomy 3:10",
-      "override": false
+      "override": true
     },
     "Gadites": {
       "say": "GAD-ites",
@@ -2378,10 +2378,10 @@
       "override": false
     },
     "Ramoth": {
-      "say": "RAY-moth",
+      "say": "raymahth",
       "ipa": "/ˈreɪ.mɒθ/",
       "ref": "Deuteronomy 4:43",
-      "override": false
+      "override": true
     },
     "Girgashite": {
       "say": "GUR-guh-shite",
@@ -2390,10 +2390,10 @@
       "override": false
     },
     "Zabdi": {
-      "say": "ZAB-dy",
+      "say": "ZAB-deye",
       "ipa": "/ˈzæb.daɪ/",
       "ref": "Joshua 7:1",
-      "override": false
+      "override": true
     },
     "Gibeon": {
       "say": "GIB-ee-uhn",
@@ -2414,16 +2414,16 @@
       "override": false
     },
     "Debir": {
-      "say": "DEE-bur",
+      "say": "DEE-buhr",
       "ipa": "/ˈdiː.bər/",
       "ref": "Joshua 10:3",
-      "override": false
+      "override": true
     },
     "Japhia": {
-      "say": "juh-FY-uh",
+      "say": "juhfeyeuh",
       "ipa": "/dʒəˈfaɪ.ə/",
       "ref": "Joshua 10:3",
-      "override": false
+      "override": true
     },
     "Horon": {
       "say": "HOR-on",
@@ -2486,10 +2486,10 @@
       "override": true
     },
     "Mephaath": {
-      "say": "muh-FAY-ath",
+      "say": "muh-FAY-athh",
       "ipa": "/məˈfeɪ.æθ/",
       "ref": "Joshua 13:18",
-      "override": false
+      "override": true
     },
     "Zereth": {
       "say": "ZEE-reth",
@@ -2522,10 +2522,10 @@
       "override": false
     },
     "Moladah": {
-      "say": "MOH-luh-duh",
+      "say": "MOH-la-duh",
       "ipa": "/ˈmoʊ.lə.də/",
       "ref": "Joshua 15:26",
-      "override": false
+      "override": true
     },
     "Shema": {
       "say": "SHEE-muh",
@@ -2570,10 +2570,10 @@
       "override": false
     },
     "Gederah": {
-      "say": "guh-DEE-ruh",
+      "say": "gadeerruh",
       "ipa": "/ɡəˈdɪər.ə/",
       "ref": "Joshua 15:36",
-      "override": false
+      "override": true
     },
     "Shaaraim": {
       "say": "shay-uh-RAY-im",
@@ -2618,16 +2618,16 @@
       "override": false
     },
     "Gedor": {
-      "say": "GEE-dor",
+      "say": "geedawr",
       "ipa": "/ˈɡiː.dɔːr/",
       "ref": "Joshua 15:58",
-      "override": false
+      "override": true
     },
     "Naarah": {
-      "say": "NAY-uh-ruh",
+      "say": "NAY-a-ruh",
       "ipa": "/ˈneɪ.ə.rə/",
       "ref": "Joshua 16:7",
-      "override": false
+      "override": true
     },
     "Abiezer": {
       "say": "ay-bee-EE-zer",
@@ -2708,10 +2708,10 @@
       "override": false
     },
     "Ehud": {
-      "say": "EE-hud",
+      "say": "EE-huhd",
       "ipa": "/ˈiː.hʌd/",
       "ref": "Judges 3:15",
-      "override": false
+      "override": true
     },
     "Joash": {
       "say": "JOH-ash",
@@ -2741,7 +2741,7 @@
       "say": "EE-tuhm",
       "ipa": "/ˈiː.təm/",
       "ref": "Judges 15:8",
-      "override": false
+      "override": true
     },
     "Micah": {
       "say": "MY-kuh",
@@ -2795,7 +2795,7 @@
       "say": "juh-ROH-ham",
       "ipa": "/dʒəˈroʊ.hæm/",
       "ref": "1 Samuel 1:1",
-      "override": false
+      "override": true
     },
     "Zuph": {
       "say": "ZUHF",
@@ -2822,10 +2822,10 @@
       "override": false
     },
     "Joel": {
-      "say": "JOH-el",
+      "say": "JOH-uhll",
       "ipa": "/ˈdʒoʊ.əl/",
       "ref": "1 Samuel 8:2",
-      "override": false
+      "override": true
     },
     "Kish": {
       "say": "KISH",
@@ -2843,7 +2843,7 @@
       "say": "NAY-hash",
       "ipa": "/ˈneɪ.hæʃ/",
       "ref": "1 Samuel 11:1",
-      "override": false
+      "override": true
     },
     "Bedan": {
       "say": "BEE-dan",
@@ -2858,16 +2858,16 @@
       "override": false
     },
     "Ahitub": {
-      "say": "uh-HY-tub",
+      "say": "uh-HEYE-tuhb",
       "ipa": "/əˈhaɪ.tʌb/",
       "ref": "1 Samuel 14:3",
-      "override": false
+      "override": true
     },
     "Malchishua": {
-      "say": "mal-ky-SHOO-uh",
+      "say": "mal-keye-SHOO-uh",
       "ipa": "/ˌmæl.kaɪˈʃuː.ə/",
       "ref": "1 Samuel 14:49",
-      "override": false
+      "override": true
     },
     "Ahimaaz": {
       "say": "uh-HIM-ay-az",
@@ -2945,7 +2945,7 @@
       "say": "uh-BY-tuhl",
       "ipa": "/əˈbaɪ.təl/",
       "ref": "2 Samuel 3:4",
-      "override": false
+      "override": true
     },
     "Adonijah": {
       "say": "ad-oh-NY-juh",
@@ -3110,10 +3110,10 @@
       "override": false
     },
     "Bani": {
-      "say": "BAY-ny",
+      "say": "bayneye",
       "ipa": "/ˈbeɪ.naɪ/",
       "ref": "2 Samuel 23:36",
-      "override": false
+      "override": true
     },
     "Azariah": {
       "say": "az-uh-RY-uh",
@@ -3122,10 +3122,10 @@
       "override": false
     },
     "Hesed": {
-      "say": "HEE-sed",
+      "say": "heesehd",
       "ipa": "/ˈhiː.sɛd/",
       "ref": "1 Kings 4:10",
-      "override": false
+      "override": true
     },
     "Jokmeam": {
       "say": "JOK-mee-am",
@@ -3188,10 +3188,10 @@
       "override": true
     },
     "Omri": {
-      "say": "OM-ry",
+      "say": "omreye",
       "ipa": "/ˈɒm.raɪ/",
       "ref": "1 Kings 16:16",
-      "override": false
+      "override": true
     },
     "Shemer": {
       "say": "SHEE-mer",
@@ -3230,10 +3230,10 @@
       "override": false
     },
     "Amon": {
-      "say": "AY-muhn",
+      "say": "aymuhn",
       "ipa": "/ˈeɪ.mən/",
       "ref": "1 Kings 22:26",
-      "override": false
+      "override": true
     },
     "Ahaziah": {
       "say": "ay-huh-ZY-uh",
@@ -3314,10 +3314,10 @@
       "override": false
     },
     "Halah": {
-      "say": "HAY-luh",
+      "say": "HAY-la",
       "ipa": "/ˈheɪ.lə/",
       "ref": "2 Kings 17:6",
-      "override": false
+      "override": true
     },
     "Babylon": {
       "say": "BAB-ih-luhn",
@@ -3386,10 +3386,10 @@
       "override": false
     },
     "Pedaiah": {
-      "say": "puh-DAY-yuh",
+      "say": "puhdayyuh",
       "ipa": "/pəˈdeɪ.jə/",
       "ref": "2 Kings 23:36",
-      "override": false
+      "override": true
     },
     "Nebuchadnezzar": {
       "say": "neb-yoo-kuhd-NEZ-er",
@@ -3415,6 +3415,18 @@
       "ref": "2 Kings 25:23",
       "override": false
     },
+    "Sheth": {
+      "say": "seth",
+      "ipa": "/sɛθ/",
+      "ref": "1 Chronicles 1:1",
+      "override": true
+    },
+    "Henoch": {
+      "say": "HEE-nok",
+      "ipa": "/ˈhiː.nɒk/",
+      "ref": "1 Chronicles 1:3",
+      "override": false
+    },
     "Diphath": {
       "say": "DYfath",
       "ipa": "/ˈdaɪ.fæθ/",
@@ -3437,6 +3449,30 @@
       "say": "SAB-tuh",
       "ipa": "/ˈsæb.tə/",
       "ref": "1 Chronicles 1:9",
+      "override": false
+    },
+    "Sabtecha": {
+      "say": "SAB-tih-kah",
+      "ipa": "/ˈsæb.tɪ.kɑː/",
+      "ref": "1 Chronicles 1:9",
+      "override": true
+    },
+    "Napthtuhim": {
+      "say": "naftoohihm",
+      "ipa": "/næfˈtuː.hɪm/",
+      "ref": "1 Chronicles 1:11",
+      "override": true
+    },
+    "Caphthorim": {
+      "say": "KAF-thor-im",
+      "ipa": "/ˈkæf.θɔː.rɪm/",
+      "ref": "1 Chronicles 1:12",
+      "override": false
+    },
+    "Zidon": {
+      "say": "ZY-don",
+      "ipa": "/ˈzaɪ.dɒn/",
+      "ref": "1 Chronicles 1:13",
       "override": false
     },
     "Arkite": {
@@ -3469,10 +3505,22 @@
       "ref": "1 Chronicles 1:16",
       "override": false
     },
+    "Jaalam": {
+      "say": "JAY-a-lam",
+      "ipa": "/ˈdʒeɪ.ə.læm/",
+      "ref": "1 Chronicles 1:35",
+      "override": true
+    },
     "Zephi": {
-      "say": "ZEE-fy",
+      "say": "zeefeye",
       "ipa": "/ˈziː.faɪ/",
       "ref": "1 Chronicles 1:36",
+      "override": true
+    },
+    "Ezar": {
+      "say": "EE-zar",
+      "ipa": "/ˈiː.zɑːr/",
+      "ref": "1 Chronicles 1:38",
       "override": false
     },
     "Homam": {
@@ -3499,11 +3547,29 @@
       "ref": "1 Chronicles 1:41",
       "override": false
     },
+    "Jakan": {
+      "say": "JAY-kan",
+      "ipa": "/ˈdʒeɪ.kæn/",
+      "ref": "1 Chronicles 1:42",
+      "override": true
+    },
+    "Zavan": {
+      "say": "ZAY-van",
+      "ipa": "/ˈzeɪ.væn/",
+      "ref": "1 Chronicles 1:42",
+      "override": true
+    },
+    "Baal-hanan": {
+      "say": "bay-al-HAY-nan",
+      "ipa": "/ˌbeɪ.əlˈheɪ.næn/",
+      "ref": "1 Chronicles 1:49",
+      "override": false
+    },
     "Pai": {
       "say": "PAY-eye",
       "ipa": "/ˈpeɪ.aɪ/",
       "ref": "1 Chronicles 1:50",
-      "override": false
+      "override": true
     },
     "Aliah": {
       "say": "uh-LY-uh",
@@ -3511,10 +3577,22 @@
       "ref": "1 Chronicles 1:51",
       "override": false
     },
+    "Aholibamah": {
+      "say": "uh-hol-ih-BAH-muh",
+      "ipa": "/ə.hɒl.ɪˈbɑː.mə/",
+      "ref": "1 Chronicles 1:52",
+      "override": false
+    },
     "Canaanitess": {
       "say": "KAY-nuh-nite-ess",
       "ipa": "/ˈkeɪ.nə.naɪ.tɛs/",
       "ref": "1 Chronicles 2:3",
+      "override": false
+    },
+    "Pharez": {
+      "say": "FAIR-ez",
+      "ipa": "/ˈfɛər.ɛz/",
+      "ref": "1 Chronicles 2:4",
       "override": false
     },
     "Dara": {
@@ -3553,6 +3631,12 @@
       "ref": "1 Chronicles 2:13",
       "override": true
     },
+    "Shimma": {
+      "say": "SHIM-uh",
+      "ipa": "/ˈʃɪm.ə/",
+      "ref": "1 Chronicles 2:13",
+      "override": false
+    },
     "Raddai": {
       "say": "RAD-eye",
       "ipa": "/ˈræd.aɪ/",
@@ -3568,6 +3652,12 @@
     "Ishmaelite": {
       "say": "ISH-may-el-ite",
       "ipa": "/ˈɪʃ.meɪ.ə.laɪt/",
+      "ref": "1 Chronicles 2:17",
+      "override": false
+    },
+    "Ishmeelite": {
+      "say": "ISH-mee-uh-lite",
+      "ipa": "/ˈɪʃ.miː.ə.laɪt/",
       "ref": "1 Chronicles 2:17",
       "override": false
     },
@@ -3589,11 +3679,35 @@
       "ref": "1 Chronicles 2:18",
       "override": false
     },
+    "Bezaleel": {
+      "say": "bih-ZAL-ee-el",
+      "ipa": "/bɪˈzæl.i.ɛl/",
+      "ref": "1 Chronicles 2:20",
+      "override": false
+    },
+    "Abiah": {
+      "say": "uh-BY-uh",
+      "ipa": "/əˈbaɪ.ə/",
+      "ref": "1 Chronicles 2:24",
+      "override": true
+    },
     "Ashhur": {
       "say": "ASH-herr",
       "ipa": "/ˈæʃ.hɜːr/",
       "ref": "1 Chronicles 2:24",
       "override": true
+    },
+    "Ashur": {
+      "say": "ASH-ur",
+      "ipa": "/ˈæʃ.ər/",
+      "ref": "1 Chronicles 2:24",
+      "override": false
+    },
+    "Caleb-ephratah": {
+      "say": "kay-leb-EF-ruh-tah",
+      "ipa": "/ˌkeɪ.lɛbˈɛf.rə.tɑː/",
+      "ref": "1 Chronicles 2:24",
+      "override": false
     },
     "Bunah": {
       "say": "BYOO-nuh",
@@ -3721,6 +3835,12 @@
       "ref": "1 Chronicles 2:39",
       "override": true
     },
+    "Sisamai": {
+      "say": "SIS-uh-my",
+      "ipa": "/ˈsɪs.ə.maɪ/",
+      "ref": "1 Chronicles 2:40",
+      "override": false
+    },
     "Sismai": {
       "say": "SIS-my",
       "ipa": "/ˈsɪs.maɪ/",
@@ -3739,10 +3859,22 @@
       "ref": "1 Chronicles 2:44",
       "override": false
     },
+    "Jorkoam": {
+      "say": "JOR-koh-am",
+      "ipa": "/ˈdʒɔːr.koʊ.æm/",
+      "ref": "1 Chronicles 2:44",
+      "override": false
+    },
     "Raham": {
       "say": "RAY-ham",
       "ipa": "/ˈreɪ.hæm/",
       "ref": "1 Chronicles 2:44",
+      "override": true
+    },
+    "Beth-zur": {
+      "say": "bethzerr",
+      "ipa": "/bɛθˈzɜːr/",
+      "ref": "1 Chronicles 2:45",
       "override": true
     },
     "Gazez": {
@@ -3756,6 +3888,12 @@
       "ipa": "/ˈmoʊ.zə/",
       "ref": "1 Chronicles 2:46",
       "override": false
+    },
+    "Gesham": {
+      "say": "geeshaam",
+      "ipa": "/ˈɡiː.ʃæm/",
+      "ref": "1 Chronicles 2:47",
+      "override": true
     },
     "Geshan": {
       "say": "geeshaan",
@@ -3799,6 +3937,12 @@
       "ref": "1 Chronicles 2:48",
       "override": false
     },
+    "Achsa": {
+      "say": "AK-suh",
+      "ipa": "/ˈæk.sə/",
+      "ref": "1 Chronicles 2:49",
+      "override": false
+    },
     "Gibea": {
       "say": "GIB-ee-uh",
       "ipa": "/ˈɡɪb.i.ə/",
@@ -3809,6 +3953,30 @@
       "say": "mak-BEE-nuh",
       "ipa": "/mækˈbiː.nə/",
       "ref": "1 Chronicles 2:49",
+      "override": false
+    },
+    "Machbenah": {
+      "say": "mak-BEE-nuh",
+      "ipa": "/mækˈbiː.nə/",
+      "ref": "1 Chronicles 2:49",
+      "override": false
+    },
+    "Ephratah": {
+      "say": "EF-ruh-tah",
+      "ipa": "/ˈɛf.rə.tɑː/",
+      "ref": "1 Chronicles 2:50",
+      "override": false
+    },
+    "Kirjath-jearim": {
+      "say": "kur-jath-JEE-uh-rim",
+      "ipa": "/ˌkɜːr.dʒæθˈdʒiː.ə.rɪm/",
+      "ref": "1 Chronicles 2:50",
+      "override": false
+    },
+    "Beth-gader": {
+      "say": "beth-GAY-der",
+      "ipa": "/bɛθˈɡeɪ.dər/",
+      "ref": "1 Chronicles 2:51",
       "override": false
     },
     "Gader": {
@@ -3829,6 +3997,12 @@
       "ref": "1 Chronicles 2:52",
       "override": true
     },
+    "Manahethites": {
+      "say": "MAN-uh-heth-ites",
+      "ipa": "/ˈmæn.ə.hɛθ.aɪts/",
+      "ref": "1 Chronicles 2:52",
+      "override": false
+    },
     "Menuhoth": {
       "say": "muh-NOO-hoth",
       "ipa": "/məˈnuː.hɒθ/",
@@ -3838,6 +4012,12 @@
     "Eshtaolites": {
       "say": "ESH-tay-uh-lites",
       "ipa": "/ˈɛʃ.teɪ.ə.laɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false
+    },
+    "Eshtaulites": {
+      "say": "ESH-taw-lites",
+      "ipa": "/ˈɛʃ.tɔː.laɪts/",
       "ref": "1 Chronicles 2:53",
       "override": false
     },
@@ -3853,6 +4033,12 @@
       "ref": "1 Chronicles 2:53",
       "override": false
     },
+    "Puhites": {
+      "say": "PYOO-hites",
+      "ipa": "/ˈpjuː.haɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false
+    },
     "Puthites": {
       "say": "PYOO-thites",
       "ipa": "/ˈpjuː.θaɪts/",
@@ -3865,10 +4051,22 @@
       "ref": "1 Chronicles 2:53",
       "override": false
     },
+    "Zareathites": {
+      "say": "ZAR-ee-uh-thites",
+      "ipa": "/ˈzær.i.ə.θaɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false
+    },
     "Zorathites": {
       "say": "ZOR-uh-thites",
       "ipa": "/ˈzɔːr.ə.θaɪts/",
       "ref": "1 Chronicles 2:53",
+      "override": false
+    },
+    "Ataroth": {
+      "say": "AT-uh-roth",
+      "ipa": "/ˈæt.ə.rɒθ/",
+      "ref": "1 Chronicles 2:54",
       "override": false
     },
     "Atroth": {
@@ -3895,6 +4093,12 @@
       "ref": "1 Chronicles 2:54",
       "override": false
     },
+    "Hemath": {
+      "say": "HEE-math",
+      "ipa": "/ˈhiː.mæθ/",
+      "ref": "1 Chronicles 2:55",
+      "override": false
+    },
     "Jabez": {
       "say": "JAY-bez",
       "ipa": "/ˈdʒeɪ.bɛz/",
@@ -3913,6 +4117,12 @@
       "ref": "1 Chronicles 2:55",
       "override": false
     },
+    "Suchathites": {
+      "say": "SOO-kuh-thites",
+      "ipa": "/ˈsuː.kə.θaɪts/",
+      "ref": "1 Chronicles 2:55",
+      "override": false
+    },
     "Tirathites": {
       "say": "TY-ruh-thites",
       "ipa": "/ˈtaɪ.rə.θaɪts/",
@@ -3923,6 +4133,18 @@
       "say": "DAN-yuhl",
       "ipa": "/ˈdæn.jəl/",
       "ref": "1 Chronicles 3:1",
+      "override": false
+    },
+    "Maachah": {
+      "say": "MAY-a-kuh",
+      "ipa": "/ˈmeɪ.ə.kə/",
+      "ref": "1 Chronicles 3:2",
+      "override": true
+    },
+    "Bath-shua": {
+      "say": "bath-SHOO-uh",
+      "ipa": "/bæθˈʃuː.ə/",
+      "ref": "1 Chronicles 3:5",
       "override": false
     },
     "Bathshua": {
@@ -3937,11 +4159,23 @@
       "ref": "1 Chronicles 3:7",
       "override": false
     },
+    "Abia": {
+      "say": "uh-BY-uh",
+      "ipa": "/əˈbaɪ.ə/",
+      "ref": "1 Chronicles 3:10",
+      "override": true
+    },
     "Jeconiah": {
       "say": "jek-uh-NY-uh",
       "ipa": "/ˌdʒɛk.əˈnaɪ.ə/",
       "ref": "1 Chronicles 3:16",
       "override": false
+    },
+    "Salathiel": {
+      "say": "suhlaytheeehl",
+      "ipa": "/səˈleɪ.θi.ɛl/",
+      "ref": "1 Chronicles 3:17",
+      "override": true
     },
     "Shealtiel": {
       "say": "shee-AL-tee-el",
@@ -3955,6 +4189,12 @@
       "ref": "1 Chronicles 3:18",
       "override": false
     },
+    "Jecamiah": {
+      "say": "jek-uh-MY-uh",
+      "ipa": "/ˌdʒɛk.əˈmaɪ.ə/",
+      "ref": "1 Chronicles 3:18",
+      "override": false
+    },
     "Malchiram": {
       "say": "mal-KY-ruhm",
       "ipa": "/mælˈkaɪ.rəm/",
@@ -3964,6 +4204,12 @@
     "Nedabiah": {
       "say": "ned-uh-BY-uh",
       "ipa": "/ˌnɛd.əˈbaɪ.ə/",
+      "ref": "1 Chronicles 3:18",
+      "override": false
+    },
+    "Shenazar": {
+      "say": "shih-NAZ-er",
+      "ipa": "/ʃɪˈnæz.ər/",
       "ref": "1 Chronicles 3:18",
       "override": false
     },
@@ -3986,10 +4232,10 @@
       "override": false
     },
     "Berechiah": {
-      "say": "behr-uh-KY-uh",
+      "say": "behr-uh-KEYE-uh",
       "ipa": "/ˌbɛr.əˈkaɪ.ə/",
       "ref": "1 Chronicles 3:20",
-      "override": false
+      "override": true
     },
     "Hasadiah": {
       "say": "has-uh-DY-uh",
@@ -4004,22 +4250,34 @@
       "override": false
     },
     "Jushab": {
-      "say": "JOO-shab",
+      "say": "jooshab",
       "ipa": "/ˈdʒuː.ʃæb/",
       "ref": "1 Chronicles 3:20",
-      "override": false
+      "override": true
+    },
+    "Jushab-hesed": {
+      "say": "joo-shaab-HEE-sehd",
+      "ipa": "/ˌdʒuː.ʃæbˈhiː.sɛd/",
+      "ref": "1 Chronicles 3:20",
+      "override": true
     },
     "Ohel": {
-      "say": "OH-hel",
+      "say": "OH-hehl",
       "ipa": "/ˈoʊ.hɛl/",
       "ref": "1 Chronicles 3:20",
-      "override": false
+      "override": true
     },
     "Arnan": {
       "say": "AR-nan",
       "ipa": "/ˈɑːr.næn/",
       "ref": "1 Chronicles 3:21",
       "override": false
+    },
+    "Jesaiah": {
+      "say": "jih-ZEYE-uh",
+      "ipa": "/dʒɪˈzaɪ.ə/",
+      "ref": "1 Chronicles 3:21",
+      "override": true
     },
     "Jeshaiah": {
       "say": "juh-SHAY-yuh",
@@ -4045,6 +4303,12 @@
       "ref": "1 Chronicles 3:21",
       "override": false
     },
+    "Shechaniah": {
+      "say": "shek-uh-NY-uh",
+      "ipa": "/ˌʃɛk.əˈnaɪ.ə/",
+      "ref": "1 Chronicles 3:21",
+      "override": false
+    },
     "Bariah": {
       "say": "buh-RY-uh",
       "ipa": "/bəˈraɪ.ə/",
@@ -4052,8 +4316,14 @@
       "override": false
     },
     "Hattush": {
-      "say": "HAT-ush",
+      "say": "HAT-oosh",
       "ipa": "/ˈhæt.ʊʃ/",
+      "ref": "1 Chronicles 3:22",
+      "override": true
+    },
+    "Igeal": {
+      "say": "IG-ee-ul",
+      "ipa": "/ˈɪɡ.i.əl/",
       "ref": "1 Chronicles 3:22",
       "override": false
     },
@@ -4088,20 +4358,32 @@
       "override": false
     },
     "Anani": {
-      "say": "uh-NAY-ny",
+      "say": "uhnayneye",
       "ipa": "/əˈneɪ.naɪ/",
+      "ref": "1 Chronicles 3:24",
+      "override": true
+    },
+    "Dalaiah": {
+      "say": "duh-LAY-uh",
+      "ipa": "/dəˈleɪ.ə/",
       "ref": "1 Chronicles 3:24",
       "override": false
     },
     "Delaiah": {
-      "say": "duh-LAY-yuh",
+      "say": "duh-LAY-yuhh",
       "ipa": "/dəˈleɪ.jə/",
       "ref": "1 Chronicles 3:24",
-      "override": false
+      "override": true
     },
     "Eliashib": {
       "say": "ee-LY-uh-shib",
       "ipa": "/ɪˈlaɪ.ə.ʃɪb/",
+      "ref": "1 Chronicles 3:24",
+      "override": false
+    },
+    "Hodaiah": {
+      "say": "hoh-DY-uh",
+      "ipa": "/hoʊˈdaɪ.ə/",
       "ref": "1 Chronicles 3:24",
       "override": false
     },
@@ -4112,10 +4394,10 @@
       "override": false
     },
     "Pelaiah": {
-      "say": "puh-LAY-yuh",
+      "say": "puhlayyuh",
       "ipa": "/pəˈleɪ.jə/",
       "ref": "1 Chronicles 3:24",
-      "override": false
+      "override": true
     },
     "Ahumai": {
       "say": "uh-HYOO-my",
@@ -4127,18 +4409,24 @@
       "say": "JAY-hath",
       "ipa": "/ˈdʒeɪ.hæθ/",
       "ref": "1 Chronicles 4:2",
-      "override": false
+      "override": true
     },
     "Lahad": {
       "say": "LAY-had",
       "ipa": "/ˈleɪ.hæd/",
       "ref": "1 Chronicles 4:2",
-      "override": false
+      "override": true
     },
     "Reaiah": {
       "say": "ree-AY-yuh",
       "ipa": "/riˈeɪ.jə/",
       "ref": "1 Chronicles 4:2",
+      "override": false
+    },
+    "Hazelelponi": {
+      "say": "haz-ih-LEL-poh-ny",
+      "ipa": "/ˌhæz.ɪˈlɛl.poʊ.naɪ/",
+      "ref": "1 Chronicles 4:3",
       "override": false
     },
     "Hazzelelponi": {
@@ -4160,15 +4448,21 @@
       "override": false
     },
     "Hushah": {
-      "say": "HYOO-shuh",
+      "say": "hyoosha",
       "ipa": "/ˈhjuː.ʃə/",
       "ref": "1 Chronicles 4:4",
-      "override": false
+      "override": true
     },
     "Helah": {
       "say": "HEE-luh",
       "ipa": "/ˈhiː.lə/",
       "ref": "1 Chronicles 4:5",
+      "override": false
+    },
+    "Ahuzam": {
+      "say": "uh-HYOO-zam",
+      "ipa": "/əˈhjuː.zæm/",
+      "ref": "1 Chronicles 4:6",
       "override": false
     },
     "Ahuzzam": {
@@ -4178,10 +4472,10 @@
       "override": false
     },
     "Haahashtari": {
-      "say": "hay-uh-HASH-tuh-ry",
+      "say": "hay-uh-HASH-tuh-reye",
       "ipa": "/ˌheɪ.əˈhæʃ.tə.raɪ/",
       "ref": "1 Chronicles 4:6",
-      "override": false
+      "override": true
     },
     "Temeni": {
       "say": "TEM-uh-ny",
@@ -4190,8 +4484,14 @@
       "override": false
     },
     "Ethnan": {
-      "say": "ETH-nan",
+      "say": "EHTH-nan",
       "ipa": "/ˈɛθ.næn/",
+      "ref": "1 Chronicles 4:7",
+      "override": true
+    },
+    "Jezoar": {
+      "say": "jih-ZOH-ar",
+      "ipa": "/dʒɪˈzoʊ.ɑːr/",
       "ref": "1 Chronicles 4:7",
       "override": false
     },
@@ -4202,10 +4502,16 @@
       "override": false
     },
     "Anub": {
-      "say": "AY-nub",
+      "say": "aynuhb",
       "ipa": "/ˈeɪ.nʌb/",
       "ref": "1 Chronicles 4:8",
-      "override": false
+      "override": true
+    },
+    "Coz": {
+      "say": "koz",
+      "ipa": "/kɒz/",
+      "ref": "1 Chronicles 4:8",
+      "override": true
     },
     "Hakkoz": {
       "say": "HAK-oz",
@@ -4247,7 +4553,19 @@
       "say": "SHOO-huh",
       "ipa": "/ˈʃuː.hə/",
       "ref": "1 Chronicles 4:11",
+      "override": true
+    },
+    "Beth-rapha": {
+      "say": "beth-RAY-fuh",
+      "ipa": "/bɛθˈreɪ.fə/",
+      "ref": "1 Chronicles 4:12",
       "override": false
+    },
+    "Ir-nahash": {
+      "say": "eerr-NAY-haash",
+      "ipa": "/ɪərˈneɪ.hæʃ/",
+      "ref": "1 Chronicles 4:12",
+      "override": true
     },
     "Paseah": {
       "say": "puh-SEE-uh",
@@ -4267,6 +4585,12 @@
       "ref": "1 Chronicles 4:12",
       "override": false
     },
+    "Rechah": {
+      "say": "reeka",
+      "ipa": "/ˈriː.kə/",
+      "ref": "1 Chronicles 4:12",
+      "override": true
+    },
     "Tehinnah": {
       "say": "tuh-HIN-uh",
       "ipa": "/təˈhɪn.ə/",
@@ -4274,22 +4598,28 @@
       "override": false
     },
     "Hathath": {
-      "say": "HAY-thath",
+      "say": "haythath",
       "ipa": "/ˈheɪ.θæθ/",
       "ref": "1 Chronicles 4:13",
-      "override": false
+      "override": true
+    },
+    "Charashim": {
+      "say": "KAR-uh-shihmm",
+      "ipa": "/ˈkær.ə.ʃɪm/",
+      "ref": "1 Chronicles 4:14",
+      "override": true
     },
     "Ge": {
-      "say": "GAY",
+      "say": "gay",
       "ipa": "/ɡeɪ/",
       "ref": "1 Chronicles 4:14",
-      "override": false
+      "override": true
     },
     "Harashim": {
-      "say": "huh-RASH-im",
+      "say": "huh-RASH-ihmm",
       "ipa": "/həˈræʃ.ɪm/",
       "ref": "1 Chronicles 4:14",
-      "override": false
+      "override": true
     },
     "Meonothai": {
       "say": "mee-ON-oh-thy",
@@ -4298,10 +4628,10 @@
       "override": false
     },
     "Iru": {
-      "say": "EYE-roo",
+      "say": "eyeroo",
       "ipa": "/ˈaɪ.ruː/",
       "ref": "1 Chronicles 4:15",
-      "override": false
+      "override": true
     },
     "Naam": {
       "say": "NAY-am",
@@ -4309,9 +4639,21 @@
       "ref": "1 Chronicles 4:15",
       "override": false
     },
+    "Asareel": {
+      "say": "uh-SAR-ee-el",
+      "ipa": "/əˈsær.i.ɛl/",
+      "ref": "1 Chronicles 4:16",
+      "override": false
+    },
     "Asarel": {
       "say": "AS-uh-rel",
       "ipa": "/ˈæs.ə.rɛl/",
+      "ref": "1 Chronicles 4:16",
+      "override": false
+    },
+    "Jehaleleel": {
+      "say": "jih-HAL-ih-leel",
+      "ipa": "/dʒɪˈhæl.ɪ.liːl/",
       "ref": "1 Chronicles 4:16",
       "override": false
     },
@@ -4333,6 +4675,12 @@
       "ref": "1 Chronicles 4:16",
       "override": false
     },
+    "Ezra": {
+      "say": "EZ-ruh",
+      "ipa": "/ˈɛz.rə/",
+      "ref": "1 Chronicles 4:17",
+      "override": false
+    },
     "Ezrah": {
       "say": "EZ-ruh",
       "ipa": "/ˈɛz.rə/",
@@ -4352,14 +4700,20 @@
       "override": false
     },
     "Mered": {
-      "say": "MEE-red",
+      "say": "meerehd",
       "ipa": "/ˈmiː.rɛd/",
       "ref": "1 Chronicles 4:17",
-      "override": false
+      "override": true
     },
     "Bithiah": {
       "say": "bih-THY-uh",
       "ipa": "/bɪˈθaɪ.ə/",
+      "ref": "1 Chronicles 4:18",
+      "override": false
+    },
+    "Jehudijah": {
+      "say": "jeh-hyoo-DY-juh",
+      "ipa": "/ˌdʒɛ.hjuːˈdaɪ.dʒə/",
       "ref": "1 Chronicles 4:18",
       "override": false
     },
@@ -4370,8 +4724,14 @@
       "override": false
     },
     "Jered": {
-      "say": "JEE-red",
+      "say": "JEERR-ehd",
       "ipa": "/ˈdʒɪər.ɛd/",
+      "ref": "1 Chronicles 4:18",
+      "override": true
+    },
+    "Socho": {
+      "say": "SOH-koh",
+      "ipa": "/ˈsoʊ.koʊ/",
       "ref": "1 Chronicles 4:18",
       "override": false
     },
@@ -4393,10 +4753,28 @@
       "ref": "1 Chronicles 4:19",
       "override": false
     },
+    "Maachathite": {
+      "say": "muh-AK-uh-thite",
+      "ipa": "/məˈæk.ə.θaɪt/",
+      "ref": "1 Chronicles 4:19",
+      "override": false
+    },
     "Naham": {
       "say": "NAY-ham",
       "ipa": "/ˈneɪ.hæm/",
       "ref": "1 Chronicles 4:19",
+      "override": true
+    },
+    "Ben-hanan": {
+      "say": "behn-HAY-nan",
+      "ipa": "/bɛnˈheɪ.næn/",
+      "ref": "1 Chronicles 4:20",
+      "override": true
+    },
+    "Ben-zoheth": {
+      "say": "ben-ZOH-heth",
+      "ipa": "/bɛnˈzoʊ.hɛθ/",
+      "ref": "1 Chronicles 4:20",
       "override": false
     },
     "Rinnah": {
@@ -4406,10 +4784,10 @@
       "override": false
     },
     "Shimon": {
-      "say": "SHY-muhn",
+      "say": "sheyemuhn",
       "ipa": "/ˈʃaɪ.mən/",
       "ref": "1 Chronicles 4:20",
-      "override": false
+      "override": true
     },
     "Tilon": {
       "say": "TY-lon",
@@ -4430,10 +4808,10 @@
       "override": false
     },
     "Laadah": {
-      "say": "LAY-uh-duh",
+      "say": "LAY-uh-da",
       "ipa": "/ˈleɪ.ə.də/",
       "ref": "1 Chronicles 4:21",
-      "override": false
+      "override": true
     },
     "Lecah": {
       "say": "LEE-kuh",
@@ -4441,9 +4819,21 @@
       "ref": "1 Chronicles 4:21",
       "override": false
     },
+    "Chozeba": {
+      "say": "koh-ZEE-buh",
+      "ipa": "/koʊˈziː.bə/",
+      "ref": "1 Chronicles 4:22",
+      "override": false
+    },
     "Cozeba": {
       "say": "koh-ZEE-buh",
       "ipa": "/koʊˈziː.bə/",
+      "ref": "1 Chronicles 4:22",
+      "override": false
+    },
+    "Jashubi-lehem": {
+      "say": "juh-shoo-bih-LEE-hem",
+      "ipa": "/dʒəˌʃuː.bɪˈliː.hɛm/",
       "ref": "1 Chronicles 4:22",
       "override": false
     },
@@ -4466,10 +4856,10 @@
       "override": false
     },
     "Netaim": {
-      "say": "nuh-TAY-im",
+      "say": "nuhtayihm",
       "ipa": "/nəˈteɪ.ɪm/",
       "ref": "1 Chronicles 4:23",
-      "override": false
+      "override": true
     },
     "Jarib": {
       "say": "JAIR-ib",
@@ -4481,6 +4871,24 @@
       "say": "HAM-yoo-el",
       "ipa": "/ˈhæm.jʊ.əl/",
       "ref": "1 Chronicles 4:26",
+      "override": false
+    },
+    "Zacchur": {
+      "say": "ZAK-ur",
+      "ipa": "/ˈzæk.ər/",
+      "ref": "1 Chronicles 4:26",
+      "override": false
+    },
+    "Beer-sheba": {
+      "say": "beer-SHEE-buh",
+      "ipa": "/ˌbɪərˈʃiː.bə/",
+      "ref": "1 Chronicles 4:28",
+      "override": false
+    },
+    "Hazar-shual": {
+      "say": "hay-zar-SHOO-ul",
+      "ipa": "/ˌheɪ.zɑːrˈʃuː.əl/",
+      "ref": "1 Chronicles 4:28",
       "override": false
     },
     "Hazarshual": {
@@ -4495,9 +4903,27 @@
       "ref": "1 Chronicles 4:29",
       "override": false
     },
+    "Beth-birei": {
+      "say": "beth-BIR-ee-eye",
+      "ipa": "/bɛθˈbɪr.i.aɪ/",
+      "ref": "1 Chronicles 4:31",
+      "override": false
+    },
+    "Beth-marcaboth": {
+      "say": "beth-MAR-kuh-both",
+      "ipa": "/bɛθˈmɑːr.kə.bɒθ/",
+      "ref": "1 Chronicles 4:31",
+      "override": false
+    },
     "Biri": {
       "say": "BIR-eye",
       "ipa": "/ˈbɪr.aɪ/",
+      "ref": "1 Chronicles 4:31",
+      "override": false
+    },
+    "Hazar-susim": {
+      "say": "hay-zar-SOO-sim",
+      "ipa": "/ˌheɪ.zɑːrˈsuː.sɪm/",
       "ref": "1 Chronicles 4:31",
       "override": false
     },
@@ -4529,7 +4955,7 @@
       "say": "muh-SHOH-bab",
       "ipa": "/məˈʃoʊ.bæb/",
       "ref": "1 Chronicles 4:34",
-      "override": false
+      "override": true
     },
     "Asiel": {
       "say": "AY-see-el",
@@ -4540,6 +4966,12 @@
     "Joshibiah": {
       "say": "josh-ih-BY-uh",
       "ipa": "/ˌdʒɒʃ.ɪˈbaɪ.ə/",
+      "ref": "1 Chronicles 4:35",
+      "override": false
+    },
+    "Josibiah": {
+      "say": "jos-ih-BY-uh",
+      "ipa": "/ˌdʒɒs.ɪˈbaɪ.ə/",
       "ref": "1 Chronicles 4:35",
       "override": false
     },
@@ -4568,10 +5000,10 @@
       "override": false
     },
     "Jedaiah": {
-      "say": "juh-DAY-yuh",
+      "say": "ja-DAY-yuh",
       "ipa": "/dʒəˈdeɪ.jə/",
       "ref": "1 Chronicles 4:37",
-      "override": false
+      "override": true
     },
     "Shimri": {
       "say": "SHIM-ry",
@@ -4580,10 +5012,10 @@
       "override": false
     },
     "Shiphi": {
-      "say": "SHY-fy",
+      "say": "sheyefeye",
       "ipa": "/ˈʃaɪ.faɪ/",
       "ref": "1 Chronicles 4:37",
-      "override": false
+      "override": true
     },
     "Ziza": {
       "say": "ZY-zuh",
@@ -4595,12 +5027,18 @@
       "say": "muh-YOO-nim",
       "ipa": "/məˈjuː.nɪm/",
       "ref": "1 Chronicles 4:41",
-      "override": false
+      "override": true
     },
     "Gog": {
       "say": "GOG",
       "ipa": "/ɡɒɡ/",
       "ref": "1 Chronicles 5:4",
+      "override": false
+    },
+    "Reaia": {
+      "say": "ree-AY-uh",
+      "ipa": "/riːˈeɪ.ə/",
+      "ref": "1 Chronicles 5:5",
       "override": false
     },
     "Beerah": {
@@ -4621,6 +5059,12 @@
       "ref": "1 Chronicles 5:6",
       "override": false
     },
+    "Tilgath-pilneser": {
+      "say": "til-gath-pil-NEE-zer",
+      "ipa": "/ˌtɪl.ɡæθ.pɪlˈniː.zər/",
+      "ref": "1 Chronicles 5:6",
+      "override": false
+    },
     "Jeiel": {
       "say": "juh-EYE-el",
       "ipa": "/dʒəˈaɪ.əl/",
@@ -4633,29 +5077,59 @@
       "ref": "1 Chronicles 5:8",
       "override": false
     },
+    "Baal-meon": {
+      "say": "bay-al-MEE-on",
+      "ipa": "/ˌbeɪ.əlˈmiː.ɒn/",
+      "ref": "1 Chronicles 5:8",
+      "override": true
+    },
+    "Hagarites": {
+      "say": "HAG-uh-rites",
+      "ipa": "/ˈhæɡ.ə.raɪts/",
+      "ref": "1 Chronicles 5:10",
+      "override": false
+    },
     "Hagrites": {
       "say": "HAG-rites",
       "ipa": "/ˈhæɡ.raɪts/",
       "ref": "1 Chronicles 5:10",
       "override": false
     },
+    "Salchah": {
+      "say": "SAL-kuh",
+      "ipa": "/ˈsæl.kə/",
+      "ref": "1 Chronicles 5:11",
+      "override": false
+    },
+    "Jaanai": {
+      "say": "jayuhneye",
+      "ipa": "/ˈdʒeɪ.ə.naɪ/",
+      "ref": "1 Chronicles 5:12",
+      "override": true
+    },
     "Janai": {
-      "say": "JAY-ny",
+      "say": "jayneye",
       "ipa": "/ˈdʒeɪ.naɪ/",
       "ref": "1 Chronicles 5:12",
-      "override": false
+      "override": true
     },
     "Shapham": {
       "say": "SHAY-fam",
       "ipa": "/ˈʃeɪ.fæm/",
       "ref": "1 Chronicles 5:12",
-      "override": false
+      "override": true
     },
     "Jacan": {
       "say": "JAY-kan",
       "ipa": "/ˈdʒeɪ.kæn/",
       "ref": "1 Chronicles 5:13",
-      "override": false
+      "override": true
+    },
+    "Jachan": {
+      "say": "JAY-kan",
+      "ipa": "/ˈdʒeɪ.kæn/",
+      "ref": "1 Chronicles 5:13",
+      "override": true
     },
     "Jorai": {
       "say": "JOR-eye",
@@ -4664,10 +5138,10 @@
       "override": false
     },
     "Zia": {
-      "say": "ZY-uh",
+      "say": "ZEYE-uh",
       "ipa": "/ˈzaɪ.ə/",
       "ref": "1 Chronicles 5:13",
-      "override": false
+      "override": true
     },
     "Huri": {
       "say": "HYOOR-eye",
@@ -4711,11 +5185,23 @@
       "ref": "1 Chronicles 5:16",
       "override": false
     },
+    "Nephish": {
+      "say": "NEE-fish",
+      "ipa": "/ˈniː.fɪʃ/",
+      "ref": "1 Chronicles 5:19",
+      "override": false
+    },
     "Nodab": {
       "say": "NOH-dab",
       "ipa": "/ˈnoʊ.dæb/",
       "ref": "1 Chronicles 5:19",
       "override": false
+    },
+    "Baal-hermon": {
+      "say": "bay-al-HERR-mon",
+      "ipa": "/ˌbeɪ.əlˈhɜːr.mɒn/",
+      "ref": "1 Chronicles 5:23",
+      "override": true
     },
     "Azriel": {
       "say": "AZ-ree-el",
@@ -4724,10 +5210,10 @@
       "override": false
     },
     "Eliel": {
-      "say": "EE-lee-el",
+      "say": "EE-lee-ehll",
       "ipa": "/ˈiː.li.ɛl/",
       "ref": "1 Chronicles 5:24",
-      "override": false
+      "override": true
     },
     "Jahdiel": {
       "say": "JAH-dee-el",
@@ -4748,10 +5234,10 @@
       "override": false
     },
     "Uzzi": {
-      "say": "UZ-eye",
+      "say": "UHZ-eye",
       "ipa": "/ˈʌz.aɪ/",
       "ref": "1 Chronicles 6:5",
-      "override": false
+      "override": true
     },
     "Meraioth": {
       "say": "muh-RAY-oth",
@@ -4766,10 +5252,10 @@
       "override": false
     },
     "Amariah": {
-      "say": "am-uh-RY-uh",
+      "say": "am-a-REYE-uh",
       "ipa": "/ˌæm.əˈraɪ.ə/",
       "ref": "1 Chronicles 6:7",
-      "override": false
+      "override": true
     },
     "Jehozadak": {
       "say": "juh-HOZ-uh-dak",
@@ -4783,40 +5269,52 @@
       "ref": "1 Chronicles 6:20",
       "override": false
     },
-    "Jeatherai": {
-      "say": "juh-ATH-uh-ry",
-      "ipa": "/dʒəˈæθ.ə.raɪ/",
+    "Jeaterai": {
+      "say": "jee-AT-uh-ry",
+      "ipa": "/dʒiːˈæt.ə.raɪ/",
       "ref": "1 Chronicles 6:21",
       "override": false
+    },
+    "Jeatherai": {
+      "say": "jaathuhreye",
+      "ipa": "/dʒəˈæθ.ə.raɪ/",
+      "ref": "1 Chronicles 6:21",
+      "override": true
     },
     "Ebiasaph": {
       "say": "uh-BY-uh-saf",
       "ipa": "/əˈbaɪ.ə.sæf/",
       "ref": "1 Chronicles 6:23",
-      "override": false
+      "override": true
     },
     "Uriel": {
-      "say": "YOOR-ee-el",
+      "say": "yoorriehl",
       "ipa": "/ˈjʊər.i.ɛl/",
       "ref": "1 Chronicles 6:24",
-      "override": false
+      "override": true
     },
     "Ahimoth": {
-      "say": "uh-HY-moth",
+      "say": "uh-HEYE-moth",
       "ipa": "/əˈhaɪ.mɒθ/",
       "ref": "1 Chronicles 6:25",
-      "override": false
+      "override": true
     },
     "Amasai": {
       "say": "uh-MAS-eye",
       "ipa": "/əˈmæs.aɪ/",
       "ref": "1 Chronicles 6:25",
-      "override": false
+      "override": true
     },
     "Zophai": {
       "say": "ZOH-fy",
       "ipa": "/ˈzoʊ.faɪ/",
       "ref": "1 Chronicles 6:26",
+      "override": false
+    },
+    "Vashni": {
+      "say": "VASH-ny",
+      "ipa": "/ˈvæʃ.naɪ/",
+      "ref": "1 Chronicles 6:28",
       "override": false
     },
     "Haggiah": {
@@ -4835,7 +5333,13 @@
       "say": "MAY-hath",
       "ipa": "/ˈmeɪ.hæθ/",
       "ref": "1 Chronicles 6:35",
-      "override": false
+      "override": true
+    },
+    "Berachiah": {
+      "say": "behr-uh-KEYE-uh",
+      "ipa": "/ˌbɛr.əˈkaɪ.ə/",
+      "ref": "1 Chronicles 6:39",
+      "override": true
     },
     "Baaseiah": {
       "say": "bay-uh-SEE-yuh",
@@ -4843,29 +5347,35 @@
       "ref": "1 Chronicles 6:40",
       "override": false
     },
-    "Malchijah": {
-      "say": "mal-KY-juh",
-      "ipa": "/mælˈkaɪ.dʒə/",
+    "Malchiah": {
+      "say": "mal-KY-uh",
+      "ipa": "/mælˈkaɪ.ə/",
       "ref": "1 Chronicles 6:40",
       "override": false
     },
+    "Malchijah": {
+      "say": "mal-KEYE-juh",
+      "ipa": "/mælˈkaɪ.dʒə/",
+      "ref": "1 Chronicles 6:40",
+      "override": true
+    },
     "Ethni": {
-      "say": "ETH-ny",
+      "say": "ehthneye",
       "ipa": "/ˈɛθ.naɪ/",
       "ref": "1 Chronicles 6:41",
-      "override": false
+      "override": true
     },
     "Abdi": {
-      "say": "AB-dy",
+      "say": "abdeye",
       "ipa": "/ˈæb.daɪ/",
       "ref": "1 Chronicles 6:44",
-      "override": false
+      "override": true
     },
     "Kishi": {
-      "say": "KISH-eye",
+      "say": "KIHSH-eye",
       "ipa": "/ˈkɪʃ.aɪ/",
       "ref": "1 Chronicles 6:44",
-      "override": false
+      "override": true
     },
     "Malluch": {
       "say": "MAL-uhk",
@@ -4885,10 +5395,22 @@
       "ref": "1 Chronicles 6:46",
       "override": false
     },
+    "Shamer": {
+      "say": "SHAY-mer",
+      "ipa": "/ˈʃeɪ.mər/",
+      "ref": "1 Chronicles 6:46",
+      "override": false
+    },
     "Hilen": {
       "say": "HY-len",
       "ipa": "/ˈhaɪ.lɛn/",
       "ref": "1 Chronicles 6:58",
+      "override": false
+    },
+    "Beth-shemesh": {
+      "say": "beth-SHEM-esh",
+      "ipa": "/bɛθˈʃɛm.ɛʃ/",
+      "ref": "1 Chronicles 6:59",
       "override": false
     },
     "Allemeth": {
@@ -4897,11 +5419,23 @@
       "ref": "1 Chronicles 6:60",
       "override": false
     },
+    "Beth-horon": {
+      "say": "beth-HOR-on",
+      "ipa": "/bɛθˈhɔːr.ɒn/",
+      "ref": "1 Chronicles 6:68",
+      "override": false
+    },
+    "Gath-rimmon": {
+      "say": "gath-RIM-on",
+      "ipa": "/ɡæθˈrɪm.ɒn/",
+      "ref": "1 Chronicles 6:69",
+      "override": false
+    },
     "Bileam": {
       "say": "BIL-ee-uhm",
       "ipa": "/ˈbɪl.i.əm/",
       "ref": "1 Chronicles 6:70",
-      "override": false
+      "override": true
     },
     "Anem": {
       "say": "AY-nem",
@@ -4921,6 +5455,12 @@
       "ref": "1 Chronicles 6:75",
       "override": false
     },
+    "Kirjathaim": {
+      "say": "kur-juh-THAY-im",
+      "ipa": "/ˌkɜːr.dʒəˈθeɪ.ɪm/",
+      "ref": "1 Chronicles 6:76",
+      "override": false
+    },
     "Rimmono": {
       "say": "rih-MOH-noh",
       "ipa": "/rɪˈmoʊ.noʊ/",
@@ -4931,6 +5471,12 @@
       "say": "JAH-zuh",
       "ipa": "/ˈdʒɑː.zə/",
       "ref": "1 Chronicles 6:78",
+      "override": false
+    },
+    "Shimrom": {
+      "say": "SHIM-rom",
+      "ipa": "/ˈʃɪm.rɒm/",
+      "ref": "1 Chronicles 7:1",
       "override": false
     },
     "Ibsam": {
@@ -4946,9 +5492,21 @@
       "override": false
     },
     "Jeriel": {
-      "say": "JEER-ee-el",
+      "say": "jeerreeehl",
       "ipa": "/ˈdʒɪər.i.ɛl/",
       "ref": "1 Chronicles 7:2",
+      "override": true
+    },
+    "Jibsam": {
+      "say": "JIHB-samm",
+      "ipa": "/ˈdʒɪb.sæm/",
+      "ref": "1 Chronicles 7:2",
+      "override": true
+    },
+    "Ishiah": {
+      "say": "ih-SHY-uh",
+      "ipa": "/ɪˈʃaɪ.ə/",
+      "ref": "1 Chronicles 7:3",
       "override": false
     },
     "Isshiah": {
@@ -4981,11 +5539,17 @@
       "ref": "1 Chronicles 7:7",
       "override": false
     },
-    "Alemeth": {
+    "Alameth": {
       "say": "AL-uh-meth",
       "ipa": "/ˈæl.ə.mɛθ/",
       "ref": "1 Chronicles 7:8",
       "override": false
+    },
+    "Alemeth": {
+      "say": "AL-uh-mehth",
+      "ipa": "/ˈæl.ə.mɛθ/",
+      "ref": "1 Chronicles 7:8",
+      "override": true
     },
     "Jeremoth": {
       "say": "JER-uh-moth",
@@ -5005,11 +5569,17 @@
       "ref": "1 Chronicles 7:10",
       "override": false
     },
-    "Zethan": {
-      "say": "ZEE-than",
-      "ipa": "/ˈziː.θæn/",
+    "Tharshish": {
+      "say": "THAR-shish",
+      "ipa": "/ˈθɑːr.ʃɪʃ/",
       "ref": "1 Chronicles 7:10",
       "override": false
+    },
+    "Zethan": {
+      "say": "ZEE-thann",
+      "ipa": "/ˈziː.θæn/",
+      "ref": "1 Chronicles 7:10",
+      "override": true
     },
     "Aher": {
       "say": "AY-hur",
@@ -5065,29 +5635,59 @@
       "ref": "1 Chronicles 7:18",
       "override": false
     },
+    "Hammoleketh": {
+      "say": "huh-MOL-ih-keth",
+      "ipa": "/həˈmɒl.ɪ.kɛθ/",
+      "ref": "1 Chronicles 7:18",
+      "override": false
+    },
     "Ishhod": {
       "say": "ISH-hod",
       "ipa": "/ˈɪʃ.hɒd/",
       "ref": "1 Chronicles 7:18",
       "override": false
     },
+    "Ishod": {
+      "say": "EYE-shod",
+      "ipa": "/ˈaɪ.ʃɒd/",
+      "ref": "1 Chronicles 7:18",
+      "override": true
+    },
+    "Mahalah": {
+      "say": "MAH-uh-luh",
+      "ipa": "/ˈmæh.ə.lə/",
+      "ref": "1 Chronicles 7:18",
+      "override": false
+    },
     "Ahian": {
-      "say": "uh-HY-uhn",
+      "say": "uh-HEYE-uhn",
       "ipa": "/əˈhaɪ.ən/",
       "ref": "1 Chronicles 7:19",
-      "override": false
+      "override": true
     },
     "Aniam": {
-      "say": "uh-NY-uhm",
+      "say": "uh-NEYE-uhm",
       "ipa": "/əˈnaɪ.əm/",
       "ref": "1 Chronicles 7:19",
-      "override": false
+      "override": true
     },
     "Likhi": {
-      "say": "LIK-hy",
+      "say": "LIK-heye",
       "ipa": "/ˈlɪk.haɪ/",
       "ref": "1 Chronicles 7:19",
-      "override": false
+      "override": true
+    },
+    "Shemidah": {
+      "say": "shih-MY-duh",
+      "ipa": "/ʃɪˈmaɪ.də/",
+      "ref": "1 Chronicles 7:19",
+      "override": true
+    },
+    "Eladah": {
+      "say": "EL-uh-duh",
+      "ipa": "/ˈɛl.ə.də/",
+      "ref": "1 Chronicles 7:20",
+      "override": true
     },
     "Eleadah": {
       "say": "el-ee-AY-duh",
@@ -5099,7 +5699,7 @@
       "say": "EL-ee-ad",
       "ipa": "/ˈɛl.i.æd/",
       "ref": "1 Chronicles 7:21",
-      "override": false
+      "override": true
     },
     "Sheerah": {
       "say": "SHEE-uh-ruh",
@@ -5107,9 +5707,21 @@
       "ref": "1 Chronicles 7:24",
       "override": false
     },
+    "Sherah": {
+      "say": "SHEER-uh",
+      "ipa": "/ˈʃɪər.ə/",
+      "ref": "1 Chronicles 7:24",
+      "override": false
+    },
     "Uzzen": {
       "say": "UZ-en",
       "ipa": "/ˈʌz.ɛn/",
+      "ref": "1 Chronicles 7:24",
+      "override": false
+    },
+    "Uzzen-sherah": {
+      "say": "uz-en-SHEER-uh",
+      "ipa": "/ˌʌz.ɛnˈʃɪər.ə/",
       "ref": "1 Chronicles 7:24",
       "override": false
     },
@@ -5137,6 +5749,12 @@
       "ref": "1 Chronicles 7:26",
       "override": false
     },
+    "Jehoshuah": {
+      "say": "jih-HOSH-oo-uh",
+      "ipa": "/dʒɪˈhɒʃ.u.ə/",
+      "ref": "1 Chronicles 7:27",
+      "override": false
+    },
     "Azzah": {
       "say": "AZ-uh",
       "ipa": "/ˈæz.ə/",
@@ -5147,11 +5765,35 @@
       "say": "NAY-uh-ran",
       "ipa": "/ˈneɪ.ə.ræn/",
       "ref": "1 Chronicles 7:28",
+      "override": true
+    },
+    "Beth-shean": {
+      "say": "beth-SHEE-un",
+      "ipa": "/bɛθˈʃiː.ən/",
+      "ref": "1 Chronicles 7:29",
+      "override": false
+    },
+    "Ishuai": {
+      "say": "ISH-yoo-eye",
+      "ipa": "/ˈɪʃ.ju.aɪ/",
+      "ref": "1 Chronicles 7:30",
+      "override": false
+    },
+    "Isuah": {
+      "say": "IS-yoo-uh",
+      "ipa": "/ˈɪs.ju.ə/",
+      "ref": "1 Chronicles 7:30",
       "override": false
     },
     "Birzaith": {
       "say": "bur-ZAY-ith",
       "ipa": "/bərˈzeɪ.ɪθ/",
+      "ref": "1 Chronicles 7:31",
+      "override": false
+    },
+    "Birzavith": {
+      "say": "BUR-zuh-vith",
+      "ipa": "/ˈbɜːr.zə.vɪθ/",
       "ref": "1 Chronicles 7:31",
       "override": false
     },
@@ -5183,7 +5825,7 @@
       "say": "PAY-sak",
       "ipa": "/ˈpeɪ.sæk/",
       "ref": "1 Chronicles 7:33",
-      "override": false
+      "override": true
     },
     "Jehubbah": {
       "say": "juh-HUB-uh",
@@ -5207,7 +5849,7 @@
       "say": "HEE-lem",
       "ipa": "/ˈhiː.lɛm/",
       "ref": "1 Chronicles 7:35",
-      "override": false
+      "override": true
     },
     "Imna": {
       "say": "IM-nuh",
@@ -5287,9 +5929,27 @@
       "ref": "1 Chronicles 7:38",
       "override": false
     },
+    "Pispah": {
+      "say": "PIS-puh",
+      "ipa": "/ˈpɪs.pə/",
+      "ref": "1 Chronicles 7:38",
+      "override": false
+    },
     "Arah": {
       "say": "AY-ruh",
       "ipa": "/ˈeɪ.rə/",
+      "ref": "1 Chronicles 7:39",
+      "override": false
+    },
+    "Haniel": {
+      "say": "HAN-ee-el",
+      "ipa": "/ˈhæn.i.ɛl/",
+      "ref": "1 Chronicles 7:39",
+      "override": false
+    },
+    "Rezia": {
+      "say": "rih-ZY-uh",
+      "ipa": "/rɪˈzaɪ.ə/",
       "ref": "1 Chronicles 7:39",
       "override": false
     },
@@ -5300,10 +5960,10 @@
       "override": false
     },
     "Ulla": {
-      "say": "UL-uh",
+      "say": "uhla",
       "ipa": "/ˈʌl.ə/",
       "ref": "1 Chronicles 7:39",
-      "override": false
+      "override": true
     },
     "Aharah": {
       "say": "uh-HAIR-uh",
@@ -5318,10 +5978,10 @@
       "override": false
     },
     "Abihud": {
-      "say": "uh-BY-hud",
+      "say": "uh-BY-huhd",
       "ipa": "/əˈbaɪ.hʌd/",
       "ref": "1 Chronicles 8:3",
-      "override": false
+      "override": true
     },
     "Ahoah": {
       "say": "uh-HOH-uh",
@@ -5341,11 +6001,17 @@
       "ref": "1 Chronicles 8:5",
       "override": false
     },
+    "Ahiah": {
+      "say": "uh-HY-uh",
+      "ipa": "/əˈhaɪ.ə/",
+      "ref": "1 Chronicles 8:7",
+      "override": false
+    },
     "Baara": {
-      "say": "BAY-uh-ruh",
+      "say": "BAY-a-ruh",
       "ipa": "/ˈbeɪ.ə.rə/",
       "ref": "1 Chronicles 8:8",
-      "override": false
+      "override": true
     },
     "Shaharaim": {
       "say": "shay-huh-RAY-im",
@@ -5365,6 +6031,12 @@
       "ref": "1 Chronicles 8:9",
       "override": false
     },
+    "Malcham": {
+      "say": "MAL-kam",
+      "ipa": "/ˈmæl.kæm/",
+      "ref": "1 Chronicles 8:9",
+      "override": false
+    },
     "Zibia": {
       "say": "ZIB-ee-uh",
       "ipa": "/ˈzɪb.i.ə/",
@@ -5372,8 +6044,14 @@
       "override": false
     },
     "Jeuz": {
-      "say": "JEE-uz",
+      "say": "JEE-uhz",
       "ipa": "/ˈdʒiː.ʌz/",
+      "ref": "1 Chronicles 8:10",
+      "override": true
+    },
+    "Mirma": {
+      "say": "MUR-muh",
+      "ipa": "/ˈmɜːr.mə/",
       "ref": "1 Chronicles 8:10",
       "override": false
     },
@@ -5384,16 +6062,16 @@
       "override": false
     },
     "Shachia": {
-      "say": "shuh-KY-uh",
+      "say": "shuh-KEYE-uh",
       "ipa": "/ʃəˈkaɪ.ə/",
       "ref": "1 Chronicles 8:10",
-      "override": false
+      "override": true
     },
     "Abitub": {
-      "say": "uh-BY-tub",
+      "say": "uh-BY-tuhb",
       "ipa": "/əˈbaɪ.tʌb/",
       "ref": "1 Chronicles 8:11",
-      "override": false
+      "override": true
     },
     "Elpaal": {
       "say": "el-PAY-uhl",
@@ -5408,10 +6086,10 @@
       "override": false
     },
     "Misham": {
-      "say": "MY-shuhm",
+      "say": "meyeshuhm",
       "ipa": "/ˈmaɪ.ʃəm/",
       "ref": "1 Chronicles 8:12",
-      "override": false
+      "override": true
     },
     "Ono": {
       "say": "OH-noh",
@@ -5419,16 +6097,28 @@
       "ref": "1 Chronicles 8:12",
       "override": false
     },
-    "Shemed": {
-      "say": "SHEE-med",
-      "ipa": "/ˈʃiː.mɛd/",
+    "Shamed": {
+      "say": "SHAY-med",
+      "ipa": "/ˈʃeɪ.mɛd/",
       "ref": "1 Chronicles 8:12",
       "override": false
+    },
+    "Shemed": {
+      "say": "SHEE-mehd",
+      "ipa": "/ˈʃiː.mɛd/",
+      "ref": "1 Chronicles 8:12",
+      "override": true
     },
     "Shashak": {
       "say": "SHAY-shak",
       "ipa": "/ˈʃeɪ.ʃæk/",
       "ref": "1 Chronicles 8:14",
+      "override": true
+    },
+    "Ader": {
+      "say": "AY-der",
+      "ipa": "/ˈeɪ.dər/",
+      "ref": "1 Chronicles 8:15",
       "override": false
     },
     "Zebadiah": {
@@ -5443,17 +6133,29 @@
       "ref": "1 Chronicles 8:16",
       "override": false
     },
+    "Ispah": {
+      "say": "IS-puh",
+      "ipa": "/ˈɪs.pə/",
+      "ref": "1 Chronicles 8:16",
+      "override": false
+    },
     "Joha": {
       "say": "JOH-huh",
       "ipa": "/ˈdʒoʊ.hə/",
       "ref": "1 Chronicles 8:16",
       "override": false
     },
+    "Hezeki": {
+      "say": "hehzihkeye",
+      "ipa": "/ˈhɛz.ɪ.kaɪ/",
+      "ref": "1 Chronicles 8:17",
+      "override": true
+    },
     "Hizki": {
-      "say": "HIZ-ky",
+      "say": "HIZ-keye",
       "ipa": "/ˈhɪz.kaɪ/",
       "ref": "1 Chronicles 8:17",
-      "override": false
+      "override": true
     },
     "Ishmerai": {
       "say": "ISH-muh-ry",
@@ -5464,6 +6166,12 @@
     "Izliah": {
       "say": "iz-LY-uh",
       "ipa": "/ɪzˈlaɪ.ə/",
+      "ref": "1 Chronicles 8:18",
+      "override": false
+    },
+    "Jezliah": {
+      "say": "jez-LY-uh",
+      "ipa": "/dʒɛzˈlaɪ.ə/",
       "ref": "1 Chronicles 8:18",
       "override": false
     },
@@ -5485,11 +6193,23 @@
       "ref": "1 Chronicles 8:20",
       "override": false
     },
+    "Zilthai": {
+      "say": "ZIL-thy",
+      "ipa": "/ˈzɪl.θaɪ/",
+      "ref": "1 Chronicles 8:20",
+      "override": false
+    },
     "Beraiah": {
       "say": "buh-RAY-yuh",
       "ipa": "/bəˈreɪ.jə/",
       "ref": "1 Chronicles 8:21",
       "override": false
+    },
+    "Shimhi": {
+      "say": "SHIM-heye",
+      "ipa": "/ˈʃɪm.haɪ/",
+      "ref": "1 Chronicles 8:21",
+      "override": true
     },
     "Shimrath": {
       "say": "SHIM-rath",
@@ -5509,9 +6229,21 @@
       "ref": "1 Chronicles 8:24",
       "override": false
     },
+    "Antothijah": {
+      "say": "an-toh-THY-juh",
+      "ipa": "/ˌæn.toʊˈθaɪ.dʒə/",
+      "ref": "1 Chronicles 8:24",
+      "override": false
+    },
     "Iphdeiah": {
       "say": "if-DEE-yuh",
       "ipa": "/ɪfˈdiː.jə/",
+      "ref": "1 Chronicles 8:25",
+      "override": false
+    },
+    "Iphedeiah": {
+      "say": "if-ih-DEE-uh",
+      "ipa": "/ˌɪf.ɪˈdiː.ə/",
       "ref": "1 Chronicles 8:25",
       "override": false
     },
@@ -5522,15 +6254,33 @@
       "override": false
     },
     "Shehariah": {
-      "say": "shee-huh-RY-uh",
+      "say": "shee-huh-REYE-uh",
       "ipa": "/ˌʃiː.həˈraɪ.ə/",
       "ref": "1 Chronicles 8:26",
+      "override": true
+    },
+    "Eliah": {
+      "say": "ih-LY-uh",
+      "ipa": "/ɪˈlaɪ.ə/",
+      "ref": "1 Chronicles 8:27",
       "override": false
     },
     "Jaareshiah": {
       "say": "jay-uh-ruh-SHY-uh",
       "ipa": "/ˌdʒeɪ.ə.rəˈʃaɪ.ə/",
       "ref": "1 Chronicles 8:27",
+      "override": false
+    },
+    "Jaresiah": {
+      "say": "jar-ih-SY-uh",
+      "ipa": "/ˌdʒær.ɪˈsaɪ.ə/",
+      "ref": "1 Chronicles 8:27",
+      "override": false
+    },
+    "Zacher": {
+      "say": "ZAY-ker",
+      "ipa": "/ˈzeɪ.kər/",
+      "ref": "1 Chronicles 8:31",
       "override": false
     },
     "Zecher": {
@@ -5545,11 +6295,23 @@
       "ref": "1 Chronicles 8:32",
       "override": false
     },
-    "Eshbaal": {
-      "say": "esh-BAY-uhl",
+    "Esh-baal": {
+      "say": "eshbayuhl",
       "ipa": "/ɛʃˈbeɪ.əl/",
       "ref": "1 Chronicles 8:33",
-      "override": false
+      "override": true
+    },
+    "Eshbaal": {
+      "say": "eshbayuhl",
+      "ipa": "/ɛʃˈbeɪ.əl/",
+      "ref": "1 Chronicles 8:33",
+      "override": true
+    },
+    "Malchi-shua": {
+      "say": "mal-keye-SHOO-uh",
+      "ipa": "/ˌmæl.kaɪˈʃuː.ə/",
+      "ref": "1 Chronicles 8:33",
+      "override": true
     },
     "Merib": {
       "say": "MER-ib",
@@ -5557,16 +6319,28 @@
       "ref": "1 Chronicles 8:34",
       "override": false
     },
+    "Merib-baal": {
+      "say": "mehr-ihb-BAY-uhll",
+      "ipa": "/ˌmɛr.ɪbˈbeɪ.əl/",
+      "ref": "1 Chronicles 8:34",
+      "override": true
+    },
     "Pithon": {
-      "say": "PY-thon",
+      "say": "peyethon",
       "ipa": "/ˈpaɪ.θɒn/",
       "ref": "1 Chronicles 8:35",
-      "override": false
+      "override": true
     },
     "Tarea": {
       "say": "tuh-REE-uh",
       "ipa": "/təˈriː.ə/",
       "ref": "1 Chronicles 8:35",
+      "override": false
+    },
+    "Jehoadah": {
+      "say": "jih-HOH-uh-duh",
+      "ipa": "/dʒɪˈhoʊ.ə.də/",
+      "ref": "1 Chronicles 8:36",
       "override": false
     },
     "Jehoaddah": {
@@ -5611,6 +6385,18 @@
       "ref": "1 Chronicles 8:39",
       "override": false
     },
+    "Jehush": {
+      "say": "JEE-hush",
+      "ipa": "/ˈdʒiː.hʌʃ/",
+      "ref": "1 Chronicles 8:39",
+      "override": false
+    },
+    "Nethinims": {
+      "say": "NETH-ih-nimz",
+      "ipa": "/ˈnɛθ.ɪ.nɪmz/",
+      "ref": "1 Chronicles 9:2",
+      "override": false
+    },
     "Imri": {
       "say": "IM-ry",
       "ipa": "/ˈɪm.raɪ/",
@@ -5618,10 +6404,10 @@
       "override": false
     },
     "Uthai": {
-      "say": "YOO-thy",
+      "say": "yootheye",
       "ipa": "/ˈjuː.θaɪ/",
       "ref": "1 Chronicles 9:4",
-      "override": false
+      "override": true
     },
     "Shilonites": {
       "say": "SHY-luh-nites",
@@ -5633,6 +6419,12 @@
       "say": "juh-YOO-el",
       "ipa": "/dʒəˈjuː.əl/",
       "ref": "1 Chronicles 9:6",
+      "override": false
+    },
+    "Hasenuah": {
+      "say": "has-ih-NYOO-uh",
+      "ipa": "/ˌhæs.ɪˈnjuː.ə/",
+      "ref": "1 Chronicles 9:7",
       "override": false
     },
     "Hassenuah": {
@@ -5648,10 +6440,10 @@
       "override": false
     },
     "Ibneiah": {
-      "say": "ib-NEE-yuh",
+      "say": "ihbneeyuh",
       "ipa": "/ɪbˈniː.jə/",
       "ref": "1 Chronicles 9:8",
-      "override": false
+      "override": true
     },
     "Ibnijah": {
       "say": "ib-NY-juh",
@@ -5660,10 +6452,10 @@
       "override": false
     },
     "Michri": {
-      "say": "MIK-ry",
+      "say": "MIK-reye",
       "ipa": "/ˈmɪk.raɪ/",
       "ref": "1 Chronicles 9:8",
-      "override": false
+      "override": true
     },
     "Jehoiarib": {
       "say": "juh-HOY-uh-rib",
@@ -5689,6 +6481,12 @@
       "ref": "1 Chronicles 9:12",
       "override": false
     },
+    "Maasiai": {
+      "say": "maayseeeye",
+      "ipa": "/məˈeɪ.si.aɪ/",
+      "ref": "1 Chronicles 9:12",
+      "override": true
+    },
     "Meshillemith": {
       "say": "muh-SHIL-uh-mith",
       "ipa": "/məˈʃɪl.ə.mɪθ/",
@@ -5701,11 +6499,17 @@
       "ref": "1 Chronicles 9:12",
       "override": false
     },
+    "Pashur": {
+      "say": "PASH-ur",
+      "ipa": "/ˈpæʃ.ər/",
+      "ref": "1 Chronicles 9:12",
+      "override": false
+    },
     "Hasshub": {
-      "say": "HASH-uhb",
+      "say": "hashuhb",
       "ipa": "/ˈhæʃ.əb/",
       "ref": "1 Chronicles 9:14",
-      "override": false
+      "override": true
     },
     "Bakbakkar": {
       "say": "bak-BAK-er",
@@ -5797,6 +6601,12 @@
       "ref": "1 Chronicles 10:11",
       "override": false
     },
+    "Jabesh-gilead": {
+      "say": "jay-besh-GIL-ee-ud",
+      "ipa": "/ˌdʒeɪ.bɛʃˈɡɪl.i.əd/",
+      "ref": "1 Chronicles 10:11",
+      "override": false
+    },
     "Jebus": {
       "say": "JEE-buhs",
       "ipa": "/ˈdʒiː.bəs/",
@@ -5839,6 +6649,12 @@
       "ref": "1 Chronicles 11:12",
       "override": false
     },
+    "Pas-dammim": {
+      "say": "pas-DAM-im",
+      "ipa": "/pæsˈdæm.ɪm/",
+      "ref": "1 Chronicles 11:13",
+      "override": false
+    },
     "Pasdammim": {
       "say": "pas-DAM-im",
       "ipa": "/pæsˈdæm.ɪm/",
@@ -5852,10 +6668,10 @@
       "override": false
     },
     "Rephaim": {
-      "say": "REF-ay-im",
+      "say": "REHF-ay-ihmm",
       "ipa": "/ˈrɛf.eɪ.ɪm/",
       "ref": "1 Chronicles 11:15",
-      "override": false
+      "override": true
     },
     "Ariel": {
       "say": "AIR-ee-el",
@@ -5879,7 +6695,7 @@
       "say": "el-HAY-nan",
       "ipa": "/ɛlˈheɪ.næn/",
       "ref": "1 Chronicles 11:26",
-      "override": false
+      "override": true
     },
     "Harorite": {
       "say": "HAIR-oh-rite",
@@ -5893,9 +6709,21 @@
       "ref": "1 Chronicles 11:27",
       "override": false
     },
+    "Abi-ezer": {
+      "say": "aybeyeeezuhr",
+      "ipa": "/ˌeɪ.baɪˈiː.zər/",
+      "ref": "1 Chronicles 11:28",
+      "override": true
+    },
     "Anathothite": {
       "say": "AN-uh-thoth-ite",
       "ipa": "/ˈæn.ə.θɒθ.aɪt/",
+      "ref": "1 Chronicles 11:28",
+      "override": false
+    },
+    "Antothite": {
+      "say": "AN-tuh-thite",
+      "ipa": "/ˈæn.tə.θaɪt/",
       "ref": "1 Chronicles 11:28",
       "override": false
     },
@@ -5906,10 +6734,10 @@
       "override": false
     },
     "Tekoite": {
-      "say": "tuh-KOH-ite",
+      "say": "tuh-KOH-eyett",
       "ipa": "/təˈkoʊ.aɪt/",
       "ref": "1 Chronicles 11:28",
-      "override": false
+      "override": true
     },
     "Hushathite": {
       "say": "HOO-shuh-thite",
@@ -5918,22 +6746,22 @@
       "override": false
     },
     "Ilai": {
-      "say": "EYE-ly",
+      "say": "eyeleye",
       "ipa": "/ˈaɪ.laɪ/",
       "ref": "1 Chronicles 11:29",
-      "override": false
+      "override": true
     },
     "Baanah": {
       "say": "BAY-uh-nuh",
       "ipa": "/ˈbeɪ.ə.nə/",
       "ref": "1 Chronicles 11:30",
-      "override": false
+      "override": true
     },
     "Heled": {
       "say": "HEE-led",
       "ipa": "/ˈhiː.lɛd/",
       "ref": "1 Chronicles 11:30",
-      "override": false
+      "override": true
     },
     "Netophathite": {
       "say": "nih-TOF-uh-thite",
@@ -5960,10 +6788,10 @@
       "override": false
     },
     "Abiel": {
-      "say": "AY-bee-el",
+      "say": "aybiehl",
       "ipa": "/ˈeɪ.bi.ɛl/",
       "ref": "1 Chronicles 11:32",
-      "override": false
+      "override": true
     },
     "Arbathite": {
       "say": "AR-buh-thite",
@@ -6008,16 +6836,22 @@
       "override": false
     },
     "Hashem": {
-      "say": "HAY-shem",
+      "say": "HAY-shehm",
       "ipa": "/ˈheɪ.ʃɛm/",
       "ref": "1 Chronicles 11:34",
-      "override": false
+      "override": true
     },
-    "Shagee": {
-      "say": "SHAY-gee",
+    "Shage": {
+      "say": "SHAY-ghee",
       "ipa": "/ˈʃeɪ.ɡiː/",
       "ref": "1 Chronicles 11:34",
-      "override": false
+      "override": true
+    },
+    "Shagee": {
+      "say": "SHAY-ghee",
+      "ipa": "/ˈʃeɪ.ɡiː/",
+      "ref": "1 Chronicles 11:34",
+      "override": true
     },
     "Eliphal": {
       "say": "ih-LY-fal",
@@ -6026,10 +6860,10 @@
       "override": false
     },
     "Sacar": {
-      "say": "SAY-kar",
+      "say": "SAY-kahr",
       "ipa": "/ˈseɪ.kɑːr/",
       "ref": "1 Chronicles 11:35",
-      "override": false
+      "override": true
     },
     "Mecherathite": {
       "say": "muh-KER-uh-thite",
@@ -6053,6 +6887,12 @@
       "say": "NAY-uh-ry",
       "ipa": "/ˈneɪ.ə.raɪ/",
       "ref": "1 Chronicles 11:37",
+      "override": false
+    },
+    "Haggeri": {
+      "say": "HAG-uh-ry",
+      "ipa": "/ˈhæɡ.ə.raɪ/",
+      "ref": "1 Chronicles 11:38",
       "override": false
     },
     "Hagri": {
@@ -6139,6 +6979,12 @@
       "ref": "1 Chronicles 11:44",
       "override": false
     },
+    "Hothan": {
+      "say": "HOH-than",
+      "ipa": "/ˈhoʊ.θæn/",
+      "ref": "1 Chronicles 11:44",
+      "override": false
+    },
     "Shama": {
       "say": "SHAY-muh",
       "ipa": "/ˈʃeɪ.mə/",
@@ -6155,7 +7001,7 @@
       "say": "el-NAY-am",
       "ipa": "/ɛlˈneɪ.æm/",
       "ref": "1 Chronicles 11:46",
-      "override": false
+      "override": true
     },
     "Ithmah": {
       "say": "ITH-muh",
@@ -6176,10 +7022,10 @@
       "override": false
     },
     "Mahavite": {
-      "say": "MAY-huh-vite",
+      "say": "mayhuhveyet",
       "ipa": "/ˈmeɪ.hə.vaɪt/",
       "ref": "1 Chronicles 11:46",
-      "override": false
+      "override": true
     },
     "Moabite": {
       "say": "MOH-uh-bite",
@@ -6191,13 +7037,25 @@
       "say": "jay-AY-see-el",
       "ipa": "/dʒeɪˈeɪ.si.ɛl/",
       "ref": "1 Chronicles 11:47",
-      "override": false
+      "override": true
+    },
+    "Jasiel": {
+      "say": "jayseeehl",
+      "ipa": "/ˈdʒeɪ.si.ɛl/",
+      "ref": "1 Chronicles 11:47",
+      "override": true
+    },
+    "Mesobaite": {
+      "say": "misohbayeyet",
+      "ipa": "/mɪˈsoʊ.beɪ.aɪt/",
+      "ref": "1 Chronicles 11:47",
+      "override": true
     },
     "Mezobaite": {
-      "say": "muh-ZOH-bay-ite",
+      "say": "muh-ZOH-bay-eyett",
       "ipa": "/məˈzoʊ.beɪ.aɪt/",
       "ref": "1 Chronicles 11:47",
-      "override": false
+      "override": true
     },
     "Ahiezer": {
       "say": "ay-hy-EE-zer",
@@ -6205,17 +7063,29 @@
       "ref": "1 Chronicles 12:3",
       "override": false
     },
+    "Berachah": {
+      "say": "BEHR-a-kuh",
+      "ipa": "/ˈbɛr.ə.kə/",
+      "ref": "1 Chronicles 12:3",
+      "override": true
+    },
     "Gibeathite": {
       "say": "GIB-ee-uh-thite",
       "ipa": "/ˈɡɪb.i.ə.θaɪt/",
       "ref": "1 Chronicles 12:3",
       "override": false
     },
-    "Shemaah": {
-      "say": "shuh-MAY-uh",
-      "ipa": "/ʃəˈmeɪ.ə/",
+    "Jeziel": {
+      "say": "JEE-zee-el",
+      "ipa": "/ˈdʒiː.zi.ɛl/",
       "ref": "1 Chronicles 12:3",
       "override": false
+    },
+    "Shemaah": {
+      "say": "shuhmayuh",
+      "ipa": "/ʃəˈmeɪ.ə/",
+      "ref": "1 Chronicles 12:3",
+      "override": true
     },
     "Gederathite": {
       "say": "guh-DER-uh-thite",
@@ -6229,10 +7099,28 @@
       "ref": "1 Chronicles 12:4",
       "override": false
     },
+    "Ismaiah": {
+      "say": "iz-MY-uh",
+      "ipa": "/ɪzˈmaɪ.ə/",
+      "ref": "1 Chronicles 12:4",
+      "override": false
+    },
+    "Josabad": {
+      "say": "JOS-uh-bad",
+      "ipa": "/ˈdʒɒs.ə.bæd/",
+      "ref": "1 Chronicles 12:4",
+      "override": true
+    },
     "Jozabad": {
       "say": "JOZ-uh-bad",
       "ipa": "/ˈdʒɒz.ə.bæd/",
       "ref": "1 Chronicles 12:4",
+      "override": false
+    },
+    "Bealiah": {
+      "say": "bee-uh-LY-uh",
+      "ipa": "/ˌbiː.əˈlaɪ.ə/",
+      "ref": "1 Chronicles 12:5",
       "override": false
     },
     "Haruphite": {
@@ -6241,15 +7129,27 @@
       "ref": "1 Chronicles 12:5",
       "override": false
     },
-    "Azarel": {
-      "say": "AZ-uh-rel",
-      "ipa": "/ˈæz.ə.rɛl/",
+    "Azareel": {
+      "say": "uh-ZAR-ee-el",
+      "ipa": "/əˈzær.i.ɛl/",
       "ref": "1 Chronicles 12:6",
       "override": false
     },
+    "Azarel": {
+      "say": "azuhrehl",
+      "ipa": "/ˈæz.ə.rɛl/",
+      "ref": "1 Chronicles 12:6",
+      "override": true
+    },
     "Jashobeam": {
-      "say": "juh-SHOH-bee-am",
+      "say": "juhshohbeeam",
       "ipa": "/dʒəˈʃoʊ.bi.æm/",
+      "ref": "1 Chronicles 12:6",
+      "override": true
+    },
+    "Jesiah": {
+      "say": "jih-SY-uh",
+      "ipa": "/dʒɪˈsaɪ.ə/",
       "ref": "1 Chronicles 12:6",
       "override": false
     },
@@ -6258,6 +7158,12 @@
       "ipa": "/dʒoʊˈiː.zər/",
       "ref": "1 Chronicles 12:6",
       "override": false
+    },
+    "Korhites": {
+      "say": "KAWR-heyetss",
+      "ipa": "/ˈkɔːr.haɪts/",
+      "ref": "1 Chronicles 12:6",
+      "override": true
     },
     "Joelah": {
       "say": "joh-EE-luh",
@@ -6271,16 +7177,34 @@
       "ref": "1 Chronicles 12:12",
       "override": false
     },
+    "Machbanai": {
+      "say": "MAK-buh-ny",
+      "ipa": "/ˈmæk.bə.naɪ/",
+      "ref": "1 Chronicles 12:13",
+      "override": false
+    },
     "Machbannai": {
       "say": "mak-BAN-eye",
       "ipa": "/mækˈbæn.aɪ/",
       "ref": "1 Chronicles 12:13",
+      "override": true
+    },
+    "Adnah": {
+      "say": "AD-nuh",
+      "ipa": "/ˈæd.nə/",
+      "ref": "1 Chronicles 12:20",
       "override": false
     },
     "Elihu": {
       "say": "ih-LY-hyoo",
       "ipa": "/ɪˈlaɪ.hjuː/",
       "ref": "1 Chronicles 12:20",
+      "override": false
+    },
+    "Aaronites": {
+      "say": "AIR-uh-nites",
+      "ipa": "/ˈɛər.ə.naɪts/",
+      "ref": "1 Chronicles 12:27",
       "override": false
     },
     "Danites": {
@@ -6299,24 +7223,30 @@
       "say": "HAY-math",
       "ipa": "/ˈheɪ.mæθ/",
       "ref": "1 Chronicles 13:5",
-      "override": false
+      "override": true
     },
     "Shihor": {
-      "say": "SHY-hor",
+      "say": "SHY-hawr",
       "ipa": "/ˈʃaɪ.hɔːr/",
       "ref": "1 Chronicles 13:5",
-      "override": false
+      "override": true
     },
     "Baalah": {
-      "say": "BAY-uh-luh",
+      "say": "BAY-uh-la",
       "ipa": "/ˈbeɪ.ə.lə/",
       "ref": "1 Chronicles 13:6",
-      "override": false
+      "override": true
     },
     "Chidon": {
-      "say": "KY-don",
+      "say": "KEYE-don",
       "ipa": "/ˈkaɪ.dɒn/",
       "ref": "1 Chronicles 13:9",
+      "override": true
+    },
+    "Perez-uzza": {
+      "say": "per-ez-UZ-uh",
+      "ipa": "/ˌpɛr.ɛzˈʌz.ə/",
+      "ref": "1 Chronicles 13:11",
       "override": false
     },
     "Gittite": {
@@ -6331,6 +7261,18 @@
       "ref": "1 Chronicles 13:13",
       "override": false
     },
+    "Obed-edom": {
+      "say": "oh-bed-EE-dum",
+      "ipa": "/ˌoʊ.bɛdˈiː.dəm/",
+      "ref": "1 Chronicles 13:13",
+      "override": false
+    },
+    "Hiram": {
+      "say": "HY-rum",
+      "ipa": "/ˈhaɪ.rəm/",
+      "ref": "1 Chronicles 14:1",
+      "override": false
+    },
     "Tyre": {
       "say": "TIRE",
       "ipa": "/taɪər/",
@@ -6343,22 +7285,46 @@
       "ref": "1 Chronicles 14:5",
       "override": false
     },
-    "Elpelet": {
-      "say": "el-PEE-let",
-      "ipa": "/ɛlˈpiː.lɛt/",
+    "Elpalet": {
+      "say": "el-PAY-let",
+      "ipa": "/ɛlˈpeɪ.lɛt/",
       "ref": "1 Chronicles 14:5",
       "override": false
     },
+    "Elpelet": {
+      "say": "el-PEE-leht",
+      "ipa": "/ɛlˈpiː.lɛt/",
+      "ref": "1 Chronicles 14:5",
+      "override": true
+    },
     "Beeliada": {
-      "say": "bee-uh-LY-uh-duh",
+      "say": "bee-uh-LEYE-uh-duhh",
       "ipa": "/ˌbiː.əˈlaɪ.ə.də/",
       "ref": "1 Chronicles 14:7",
+      "override": true
+    },
+    "Eliphalet": {
+      "say": "ih-LIF-uh-let",
+      "ipa": "/ɪˈlɪf.ə.lɛt/",
+      "ref": "1 Chronicles 14:7",
       "override": false
+    },
+    "Baal-perazim": {
+      "say": "bay-uhl-puh-RAY-zihmm",
+      "ipa": "/ˌbeɪ.əl.pəˈreɪ.zɪm/",
+      "ref": "1 Chronicles 14:11",
+      "override": true
     },
     "Perazim": {
       "say": "puh-RAY-zim",
       "ipa": "/pəˈreɪ.zɪm/",
       "ref": "1 Chronicles 14:11",
+      "override": false
+    },
+    "Gazer": {
+      "say": "GAY-zer",
+      "ipa": "/ˈɡeɪ.zər/",
+      "ref": "1 Chronicles 14:16",
       "override": false
     },
     "Elizaphan": {
@@ -6379,11 +7345,17 @@
       "ref": "1 Chronicles 15:17",
       "override": false
     },
-    "Eliphelehu": {
-      "say": "ih-lif-uh-LEE-hyoo",
-      "ipa": "/ɪˌlɪf.əˈliː.huː/",
+    "Elipheleh": {
+      "say": "ih-LIF-ih-leh",
+      "ipa": "/ɪˈlɪf.ɪ.lɛ/",
       "ref": "1 Chronicles 15:18",
       "override": false
+    },
+    "Eliphelehu": {
+      "say": "i-lihf-uh-LEE-hoo",
+      "ipa": "/ɪˌlɪf.əˈliː.huː/",
+      "ref": "1 Chronicles 15:18",
+      "override": true
     },
     "Jaaziel": {
       "say": "jay-AY-zee-el",
@@ -6398,10 +7370,10 @@
       "override": false
     },
     "Maaseiah": {
-      "say": "may-uh-SAY-uh",
+      "say": "may-uh-SAY-uhh",
       "ipa": "/ˌmeɪ.əˈseɪ.ə/",
       "ref": "1 Chronicles 15:18",
-      "override": false
+      "override": true
     },
     "Mikneiah": {
       "say": "mik-NEE-yuh",
@@ -6419,7 +7391,7 @@
       "say": "UHN-eye",
       "ipa": "/ˈʌn.aɪ/",
       "ref": "1 Chronicles 15:18",
-      "override": false
+      "override": true
     },
     "Alamoth": {
       "say": "AL-uh-moth",
@@ -6439,6 +7411,12 @@
       "ref": "1 Chronicles 15:21",
       "override": false
     },
+    "Sheminith": {
+      "say": "SHEM-ih-nith",
+      "ipa": "/ˈʃɛm.ɪ.nɪθ/",
+      "ref": "1 Chronicles 15:21",
+      "override": false
+    },
     "Chenaniah": {
       "say": "ken-uh-NY-uh",
       "ipa": "/ˌkɛn.əˈnaɪ.ə/",
@@ -6451,6 +7429,18 @@
       "ref": "1 Chronicles 15:24",
       "override": false
     },
+    "Nethaneel": {
+      "say": "nih-THAN-ee-el",
+      "ipa": "/nɪˈθæn.i.ɛl/",
+      "ref": "1 Chronicles 15:24",
+      "override": false
+    },
+    "Shebaniah": {
+      "say": "sheb-uh-NY-uh",
+      "ipa": "/ˌʃɛb.əˈnaɪ.ə/",
+      "ref": "1 Chronicles 15:24",
+      "override": false
+    },
     "Michal": {
       "say": "MY-kal",
       "ipa": "/ˈmaɪ.kæl/",
@@ -6458,10 +7448,10 @@
       "override": false
     },
     "Jahaziel": {
-      "say": "juh-HAY-zee-el",
+      "say": "juh-HAY-zee-ehll",
       "ipa": "/dʒəˈheɪ.zi.ɛl/",
       "ref": "1 Chronicles 16:6",
-      "override": false
+      "override": true
     },
     "Jacob": {
       "say": "JAY-kub",
@@ -6470,10 +7460,10 @@
       "override": false
     },
     "Hosah": {
-      "say": "HOH-suh",
+      "say": "hohsa",
       "ipa": "/ˈhoʊ.sə/",
       "ref": "1 Chronicles 16:38",
-      "override": false
+      "override": true
     },
     "Moabites": {
       "say": "MOH-uh-bites",
@@ -6484,6 +7474,12 @@
     "Hadadezer": {
       "say": "had-ad-EE-zer",
       "ipa": "/ˌhæd.ædˈiː.zər/",
+      "ref": "1 Chronicles 18:3",
+      "override": false
+    },
+    "Hadarezer": {
+      "say": "had-ur-EE-zer",
+      "ipa": "/ˌhæd.ərˈiː.zər/",
       "ref": "1 Chronicles 18:3",
       "override": false
     },
@@ -6505,11 +7501,23 @@
       "ref": "1 Chronicles 18:6",
       "override": false
     },
-    "Cun": {
-      "say": "KUHN",
+    "Syria-damascus": {
+      "say": "sir-ee-uh-duh-MAS-kus",
+      "ipa": "/ˌsɪr.i.ə.dəˈmæs.kəs/",
+      "ref": "1 Chronicles 18:6",
+      "override": false
+    },
+    "Chun": {
+      "say": "kuhnn",
       "ipa": "/kʌn/",
       "ref": "1 Chronicles 18:8",
-      "override": false
+      "override": true
+    },
+    "Cun": {
+      "say": "kuhnn",
+      "ipa": "/kʌn/",
+      "ref": "1 Chronicles 18:8",
+      "override": true
     },
     "Tibhath": {
       "say": "TIB-hath",
@@ -6536,14 +7544,20 @@
       "override": false
     },
     "Ahilud": {
-      "say": "uh-HY-lud",
+      "say": "uhheyeluhd",
       "ipa": "/əˈhaɪ.lʌd/",
       "ref": "1 Chronicles 18:15",
-      "override": false
+      "override": true
     },
     "Abimelech": {
       "say": "uh-BIM-eh-lek",
       "ipa": "/əˈbɪm.ə.lɛk/",
+      "ref": "1 Chronicles 18:16",
+      "override": false
+    },
+    "Shavsha": {
+      "say": "SHAV-shuh",
+      "ipa": "/ˈʃæv.ʃə/",
       "ref": "1 Chronicles 18:16",
       "override": false
     },
@@ -6577,17 +7591,23 @@
       "ref": "1 Chronicles 19:6",
       "override": false
     },
+    "Syria-maachah": {
+      "say": "sir-ee-uh-MAY-uh-kuh",
+      "ipa": "/ˌsɪr.i.əˈmeɪ.ə.kə/",
+      "ref": "1 Chronicles 19:6",
+      "override": false
+    },
     "Medeba": {
-      "say": "MED-eh-buh",
+      "say": "MEHD-uh-buhh",
       "ipa": "/ˈmɛd.ə.bə/",
       "ref": "1 Chronicles 19:7",
-      "override": false
+      "override": true
     },
     "Shophach": {
       "say": "SHOH-fak",
       "ipa": "/ˈʃoʊ.fæk/",
       "ref": "1 Chronicles 19:16",
-      "override": false
+      "override": true
     },
     "Rabbah": {
       "say": "RAB-uh",
@@ -6598,6 +7618,12 @@
     "Sibbecai": {
       "say": "SIB-eh-ky",
       "ipa": "/ˈsɪb.ə.kaɪ/",
+      "ref": "1 Chronicles 20:4",
+      "override": false
+    },
+    "Sibbechai": {
+      "say": "SIB-ih-ky",
+      "ipa": "/ˈsɪb.ɪ.kaɪ/",
       "ref": "1 Chronicles 20:4",
       "override": false
     },
@@ -6631,11 +7657,23 @@
       "ref": "1 Chronicles 22:4",
       "override": false
     },
+    "Zidonians": {
+      "say": "zy-DOH-nee-unz",
+      "ipa": "/zaɪˈdoʊ.ni.ənz/",
+      "ref": "1 Chronicles 22:4",
+      "override": false
+    },
     "Gershonites": {
       "say": "GUR-shuhn-ites",
       "ipa": "/ˈɡɜːr.ʃən.aɪts/",
       "ref": "1 Chronicles 23:7",
       "override": false
+    },
+    "Laadan": {
+      "say": "LAY-uh-dan",
+      "ipa": "/ˈleɪ.ə.dæn/",
+      "ref": "1 Chronicles 23:7",
+      "override": true
     },
     "Zetham": {
       "say": "ZEE-tham",
@@ -6680,10 +7718,10 @@
       "override": false
     },
     "Harim": {
-      "say": "HAY-rim",
+      "say": "HAY-rihm",
       "ipa": "/ˈheɪ.rɪm/",
       "ref": "1 Chronicles 24:8",
-      "override": false
+      "override": true
     },
     "Seorim": {
       "say": "see-OR-im",
@@ -6692,10 +7730,10 @@
       "override": false
     },
     "Mijamin": {
-      "say": "MIJ-uh-min",
+      "say": "MIHJ-uh-mihn",
       "ipa": "/ˈmɪdʒ.ə.mɪn/",
       "ref": "1 Chronicles 24:9",
-      "override": false
+      "override": true
     },
     "Jeshua": {
       "say": "JESH-oo-uh",
@@ -6710,15 +7748,21 @@
       "override": false
     },
     "Jeshebeab": {
-      "say": "juh-SHEB-ee-ab",
+      "say": "juh-SHEHB-ee-abb",
       "ipa": "/dʒəˈʃɛb.i.æb/",
       "ref": "1 Chronicles 24:13",
-      "override": false
+      "override": true
     },
     "Bilgah": {
       "say": "BIL-guh",
       "ipa": "/ˈbɪl.ɡə/",
       "ref": "1 Chronicles 24:14",
+      "override": false
+    },
+    "Aphses": {
+      "say": "AF-seez",
+      "ipa": "/ˈæf.siːz/",
+      "ref": "1 Chronicles 24:15",
       "override": false
     },
     "Happizzez": {
@@ -6731,6 +7775,12 @@
       "say": "HEE-zer",
       "ipa": "/ˈhiː.zər/",
       "ref": "1 Chronicles 24:15",
+      "override": false
+    },
+    "Jehezekel": {
+      "say": "jih-HEZ-ih-kel",
+      "ipa": "/dʒɪˈhɛz.ɪ.kɛl/",
+      "ref": "1 Chronicles 24:16",
       "override": false
     },
     "Jehezkel": {
@@ -6752,16 +7802,16 @@
       "override": false
     },
     "Maaziah": {
-      "say": "may-uh-ZY-uh",
+      "say": "may-uh-ZEYE-uh",
       "ipa": "/ˌmeɪ.əˈzaɪ.ə/",
       "ref": "1 Chronicles 24:18",
-      "override": false
+      "override": true
     },
     "Jehdeiah": {
-      "say": "jeh-DEE-yuh",
+      "say": "jeh-DEE-uh",
       "ipa": "/dʒɛˈdiː.ə/",
       "ref": "1 Chronicles 24:20",
-      "override": false
+      "override": true
     },
     "Shubael": {
       "say": "SHOO-bay-el",
@@ -6781,11 +7831,17 @@
       "ref": "1 Chronicles 24:22",
       "override": false
     },
-    "Shamir": {
-      "say": "SHAY-meer",
-      "ipa": "/ˈʃeɪ.mɪr/",
+    "Michah": {
+      "say": "MY-kuh",
+      "ipa": "/ˈmaɪ.kə/",
       "ref": "1 Chronicles 24:24",
       "override": false
+    },
+    "Shamir": {
+      "say": "shaymihr",
+      "ipa": "/ˈʃeɪ.mɪr/",
+      "ref": "1 Chronicles 24:24",
+      "override": true
     },
     "Beno": {
       "say": "BEE-noh",
@@ -6794,10 +7850,10 @@
       "override": false
     },
     "Jaaziah": {
-      "say": "jay-uh-ZY-uh",
+      "say": "jay-uh-ZEYE-uh",
       "ipa": "/ˌdʒeɪ.əˈzaɪ.ə/",
       "ref": "1 Chronicles 24:26",
-      "override": false
+      "override": true
     },
     "Ibri": {
       "say": "IB-ry",
@@ -6809,6 +7865,12 @@
       "say": "SHOH-ham",
       "ipa": "/ˈʃoʊ.hæm/",
       "ref": "1 Chronicles 24:27",
+      "override": true
+    },
+    "Asarelah": {
+      "say": "as-uh-REE-luh",
+      "ipa": "/ˌæs.əˈriː.lə/",
+      "ref": "1 Chronicles 25:2",
       "override": false
     },
     "Asharelah": {
@@ -6830,10 +7892,10 @@
       "override": false
     },
     "Zeri": {
-      "say": "ZEE-ry",
+      "say": "zeereye",
       "ipa": "/ˈziː.raɪ/",
       "ref": "1 Chronicles 25:3",
-      "override": false
+      "override": true
     },
     "Bukkiah": {
       "say": "buh-KY-uh",
@@ -6854,28 +7916,28 @@
       "override": false
     },
     "Hanani": {
-      "say": "huh-NAY-ny",
+      "say": "hanayneye",
       "ipa": "/həˈneɪ.naɪ/",
       "ref": "1 Chronicles 25:4",
-      "override": false
+      "override": true
     },
     "Hothir": {
-      "say": "HOH-ther",
+      "say": "hohthuhr",
       "ipa": "/ˈhoʊ.θər/",
       "ref": "1 Chronicles 25:4",
-      "override": false
+      "override": true
     },
     "Joshbekashah": {
-      "say": "josh-beh-KAY-shuh",
+      "say": "jahshbuhkayshuh",
       "ipa": "/ˌdʒɒʃ.bəˈkeɪ.ʃə/",
       "ref": "1 Chronicles 25:4",
-      "override": false
+      "override": true
     },
     "Mahazioth": {
       "say": "muh-HAY-zee-oth",
       "ipa": "/məˈheɪ.zi.ɒθ/",
       "ref": "1 Chronicles 25:4",
-      "override": false
+      "override": true
     },
     "Mallothi": {
       "say": "MAL-oh-thy",
@@ -6889,6 +7951,12 @@
       "ref": "1 Chronicles 25:4",
       "override": false
     },
+    "Romamti-ezer": {
+      "say": "roh-mam-tee-EE-zer",
+      "ipa": "/roʊˌmæm.tiˈiː.zər/",
+      "ref": "1 Chronicles 25:4",
+      "override": false
+    },
     "Shebuel": {
       "say": "shih-BYOO-el",
       "ipa": "/ʃɪˈbjuː.ɛl/",
@@ -6896,16 +7964,16 @@
       "override": false
     },
     "Izri": {
-      "say": "IZ-ry",
+      "say": "ihzreye",
       "ipa": "/ˈɪz.raɪ/",
       "ref": "1 Chronicles 25:11",
-      "override": false
+      "override": true
     },
     "Jesharelah": {
-      "say": "jesh-uh-REE-luh",
+      "say": "jehsh-uh-REE-luh",
       "ipa": "/ˌdʒɛʃ.əˈriː.lə/",
       "ref": "1 Chronicles 25:14",
-      "override": false
+      "override": true
     },
     "Jathniel": {
       "say": "JATH-nee-el",
@@ -6923,7 +7991,7 @@
       "say": "jee-hoh-HAY-nan",
       "ipa": "/ˌdʒiː.hoʊˈheɪ.næn/",
       "ref": "1 Chronicles 26:3",
-      "override": false
+      "override": true
     },
     "Jehozabad": {
       "say": "juh-HOZ-uh-bad",
@@ -6937,17 +8005,23 @@
       "ref": "1 Chronicles 26:5",
       "override": false
     },
-    "Rephael": {
-      "say": "REF-ay-el",
-      "ipa": "/ˈrɛf.eɪ.ɛl/",
-      "ref": "1 Chronicles 26:7",
+    "Peulthai": {
+      "say": "pee-UL-thy",
+      "ipa": "/piːˈʌl.θaɪ/",
+      "ref": "1 Chronicles 26:5",
       "override": false
     },
+    "Rephael": {
+      "say": "REHF-ay-el",
+      "ipa": "/ˈrɛf.eɪ.ɛl/",
+      "ref": "1 Chronicles 26:7",
+      "override": true
+    },
     "Semachiah": {
-      "say": "sem-uh-KY-uh",
+      "say": "sehm-uh-KEYE-uh",
       "ipa": "/ˌsɛm.əˈkaɪ.ə/",
       "ref": "1 Chronicles 26:7",
-      "override": false
+      "override": true
     },
     "Tebaliah": {
       "say": "teb-uh-LY-uh",
@@ -6959,6 +8033,12 @@
       "say": "shel-uh-MY-uh",
       "ipa": "/ˌʃɛl.əˈmaɪ.ə/",
       "ref": "1 Chronicles 26:14",
+      "override": false
+    },
+    "Asuppim": {
+      "say": "uh-SUP-im",
+      "ipa": "/əˈsʌp.ɪm/",
+      "ref": "1 Chronicles 26:15",
       "override": false
     },
     "Shallecheth": {
@@ -6980,10 +8060,10 @@
       "override": false
     },
     "Jehieli": {
-      "say": "juh-HY-eh-ly",
+      "say": "ja-HEYE-uh-leye",
       "ipa": "/dʒəˈhaɪ.ə.laɪ/",
       "ref": "1 Chronicles 26:21",
-      "override": false
+      "override": true
     },
     "Amramites": {
       "say": "AM-ram-ites",
@@ -6998,10 +8078,10 @@
       "override": false
     },
     "Uzzielites": {
-      "say": "uh-ZY-el-ites",
+      "say": "azeyeuhleyets",
       "ipa": "/əˈzaɪ.əl.aɪts/",
       "ref": "1 Chronicles 26:23",
-      "override": false
+      "override": true
     },
     "Abner": {
       "say": "AB-ner",
@@ -7010,10 +8090,10 @@
       "override": false
     },
     "Jerijah": {
-      "say": "juh-RY-juh",
+      "say": "juh-REYE-juh",
       "ipa": "/dʒəˈraɪ.dʒə/",
       "ref": "1 Chronicles 26:31",
-      "override": false
+      "override": true
     },
     "Manassites": {
       "say": "muh-NAS-ites",
@@ -7028,22 +8108,22 @@
       "override": false
     },
     "Dodai": {
-      "say": "DOH-dye",
+      "say": "DOH-deye",
       "ipa": "/ˈdoʊ.daɪ/",
       "ref": "1 Chronicles 27:4",
-      "override": false
+      "override": true
     },
     "Ammizabad": {
-      "say": "uh-MIZ-uh-bad",
+      "say": "uh-MIHZ-uh-bad",
       "ipa": "/əˈmɪz.ə.bæd/",
       "ref": "1 Chronicles 27:6",
-      "override": false
+      "override": true
     },
     "Izrahite": {
-      "say": "IZ-ruh-hite",
+      "say": "ihzruhheyet",
       "ipa": "/ˈɪz.rə.haɪt/",
       "ref": "1 Chronicles 27:8",
-      "override": false
+      "override": true
     },
     "Shamhuth": {
       "say": "SHAM-huth",
@@ -7057,17 +8137,29 @@
       "ref": "1 Chronicles 27:9",
       "override": false
     },
+    "Zarhites": {
+      "say": "zahrheyets",
+      "ipa": "/ˈzɑːr.haɪts/",
+      "ref": "1 Chronicles 27:11",
+      "override": true
+    },
     "Zerahites": {
       "say": "ZER-uh-hites",
       "ipa": "/ˈzɛr.ə.haɪts/",
       "ref": "1 Chronicles 27:11",
       "override": false
     },
-    "Benjamites": {
-      "say": "BEN-juh-mites",
-      "ipa": "/ˈbɛn.dʒə.maɪts/",
+    "Anetothite": {
+      "say": "uh-NET-uh-thite",
+      "ipa": "/əˈnɛt.ə.θaɪt/",
       "ref": "1 Chronicles 27:12",
       "override": false
+    },
+    "Benjamites": {
+      "say": "BEHN-ja-meyets",
+      "ipa": "/ˈbɛn.dʒə.maɪts/",
+      "ref": "1 Chronicles 27:12",
+      "override": true
     },
     "Maharai": {
       "say": "MAY-huh-ry",
@@ -7088,10 +8180,10 @@
       "override": false
     },
     "Kemuel": {
-      "say": "KEM-yoo-el",
+      "say": "KEHM-yoo-el",
       "ipa": "/ˈkɛm.ju.ɛl/",
       "ref": "1 Chronicles 27:17",
-      "override": false
+      "override": true
     },
     "Ishmaiah": {
       "say": "ish-MAY-yuh",
@@ -7118,10 +8210,10 @@
       "override": false
     },
     "Shiphmite": {
-      "say": "SHIF-mite",
+      "say": "SHIHF-meyet",
       "ipa": "/ˈʃɪf.maɪt/",
       "ref": "1 Chronicles 27:27",
-      "override": false
+      "override": true
     },
     "Gederite": {
       "say": "GED-uh-rite",
@@ -7154,10 +8246,10 @@
       "override": false
     },
     "Jaziz": {
-      "say": "JAY-ziz",
+      "say": "JAY-zihzz",
       "ipa": "/ˈdʒeɪ.zɪz/",
       "ref": "1 Chronicles 27:30",
-      "override": false
+      "override": true
     },
     "Meronothite": {
       "say": "muh-RON-oh-thite",
@@ -7171,17 +8263,23 @@
       "ref": "1 Chronicles 27:30",
       "override": false
     },
+    "Hagerite": {
+      "say": "haguhreyet",
+      "ipa": "/ˈhæɡ.ə.raɪt/",
+      "ref": "1 Chronicles 27:31",
+      "override": true
+    },
     "Hachmoni": {
-      "say": "HAK-moh-ny",
+      "say": "hakmuhneye",
       "ipa": "/ˈhæk.mə.naɪ/",
       "ref": "1 Chronicles 27:32",
-      "override": false
+      "override": true
     },
     "Ahithophel": {
-      "say": "uh-HITH-uh-fel",
+      "say": "uh-HITH-uh-fehl",
       "ipa": "/əˈhɪθ.ə.fɛl/",
       "ref": "1 Chronicles 27:33",
-      "override": false
+      "override": true
     },
     "Archite": {
       "say": "AR-kite",
@@ -7568,10 +8666,10 @@
       "override": false
     },
     "Beracah": {
-      "say": "BER-uh-kuh",
+      "say": "BEHR-a-kuh",
       "ipa": "/ˈbɛr.ə.kə/",
       "ref": "2 Chronicles 20:26",
-      "override": false
+      "override": true
     },
     "Shilhi": {
       "say": "SHIL-hy",
