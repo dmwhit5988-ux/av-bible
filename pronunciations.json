@@ -10997,7 +10997,9 @@
       "say": "JOP-uh",
       "ipa": "/ˈdʒɒp.ə/",
       "ref": "2 Chronicles 2:16",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Moriah": {
       "say": "muh-RY-uh",
@@ -11305,7 +11307,9 @@
       "say": "uh-RAY-bee-uhnz",
       "ipa": "/əˈreɪ.bi.ənz/",
       "ref": "2 Chronicles 17:11",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Amasiah": {
       "say": "am-uh-SY-uh",
@@ -11353,7 +11357,9 @@
       "say": "LEE-vite",
       "ipa": "/ˈliː.vaɪt/",
       "ref": "2 Chronicles 20:14",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Jeruel": {
       "say": "juh-ROO-el",
@@ -11487,7 +11493,9 @@
       "say": "eye-ZAY-uh",
       "ipa": "/aɪˈzeɪ.ə/",
       "ref": "2 Chronicles 26:22",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Jerushah": {
       "say": "juh-ROO-shuh",
@@ -11697,7 +11705,9 @@
       "say": "thee-OF-ih-luhs",
       "ipa": "/θiˈɒf.ɪ.ləs/",
       "ref": "Luke 1:3",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Elizabeth": {
       "say": "ih-LIZ-uh-beth",
@@ -11709,13 +11719,17 @@
       "say": "HAIR-uhd",
       "ipa": "/ˈhɛr.əd/",
       "ref": "Luke 1:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Judea": {
       "say": "joo-DEE-uh",
       "ipa": "/dʒuːˈdiː.ə/",
       "ref": "Luke 1:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Zacharias": {
       "say": "zak-uh-RY-uhs",
@@ -11727,7 +11741,9 @@
       "say": "JON",
       "ipa": "/dʒɒn/",
       "ref": "Luke 1:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Gabriel": {
       "say": "GAY-bree-el",
@@ -11739,25 +11755,33 @@
       "say": "NAZ-uh-reth",
       "ipa": "/ˈnæz.ə.rɛθ/",
       "ref": "Luke 1:26",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Mary": {
       "say": "MAIR-ee",
       "ipa": "/ˈmɛər.i/",
       "ref": "Luke 1:27",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Augustus": {
       "say": "aw-GUS-tuhs",
       "ipa": "/ɔːˈɡʌs.təs/",
       "ref": "Luke 2:1",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.786
     },
     "Caesar": {
       "say": "SEE-zer",
       "ipa": "/ˈsiː.zər/",
       "ref": "Luke 2:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Quirinius": {
       "say": "kwih-RIN-ee-uhs",
@@ -11769,13 +11793,17 @@
       "say": "KRYST",
       "ipa": "/kraɪst/",
       "ref": "Luke 2:11",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Jesus": {
       "say": "JEE-zuhs",
       "ipa": "/ˈdʒiː.zəs/",
       "ref": "Luke 2:21",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Anna": {
       "say": "AN-uh",
@@ -11811,19 +11839,25 @@
       "say": "FIL-ip",
       "ipa": "/ˈfɪl.ɪp/",
       "ref": "Luke 3:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Pilate": {
       "say": "PY-luht",
       "ipa": "/ˈpaɪ.lət/",
       "ref": "Luke 3:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Pontius": {
       "say": "PON-shuhs",
       "ipa": "/ˈpɒn.ʃəs/",
       "ref": "Luke 3:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Tiberius": {
       "say": "ty-BEER-ee-uhs",
@@ -11841,13 +11875,17 @@
       "say": "AN-uhs",
       "ipa": "/ˈæn.əs/",
       "ref": "Luke 3:2",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.575
     },
     "Caiaphas": {
       "say": "KAY-uh-fuhs",
       "ipa": "/ˈkeɪ.ə.fəs/",
       "ref": "Luke 3:2",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
     },
     "Herodias": {
       "say": "huh-ROH-dee-uhs",
@@ -12045,7 +12083,9 @@
       "say": "SY-muhn",
       "ipa": "/ˈsaɪ.mən/",
       "ref": "Luke 4:38",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Gennesaret": {
       "say": "guh-NES-uh-ret",
@@ -12057,13 +12097,17 @@
       "say": "PEE-ter",
       "ipa": "/ˈpiː.tər/",
       "ref": "Luke 5:8",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "James": {
       "say": "JAYMZ",
       "ipa": "/dʒeɪmz/",
       "ref": "Luke 5:10",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Zebedee": {
       "say": "ZEB-uh-dee",
@@ -12075,13 +12119,17 @@
       "say": "FAIR-ih-seez",
       "ipa": "/ˈfær.ɪ.siːz/",
       "ref": "Luke 5:17",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Alphaeus": {
       "say": "al-FEE-uhs",
       "ipa": "/ælˈfiː.əs/",
       "ref": "Luke 6:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Iscariot": {
       "say": "is-KAIR-ee-uht",
@@ -12093,7 +12141,9 @@
       "say": "JOO-duhs",
       "ipa": "/ˈdʒuː.dəs/",
       "ref": "Luke 6:16",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Nain": {
       "say": "NAYN",
@@ -12105,7 +12155,9 @@
       "say": "FAIR-ih-see",
       "ipa": "/ˈfær.ɪ.siː/",
       "ref": "Luke 7:36",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Magdalene": {
       "say": "MAG-duh-leen",
@@ -12147,7 +12199,9 @@
       "say": "suh-MAIR-ih-tuhnz",
       "ipa": "/səˈmær.ɪ.tənz/",
       "ref": "Luke 9:52",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.85
     },
     "Sodom": {
       "say": "SOD-uhm",
@@ -12167,7 +12221,9 @@
       "say": "HAY-deez",
       "ipa": "/ˈheɪ.diːz/",
       "ref": "Luke 10:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Samaritan": {
       "say": "suh-MAIR-ih-tuhn",
@@ -12223,7 +12279,9 @@
       "say": "gal-ih-LEE-uhnz",
       "ipa": "/ˌɡæl.ɪˈliː.ənz/",
       "ref": "Luke 13:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.889
     },
     "Siloam": {
       "say": "sy-LOH-uhm",
@@ -12262,16 +12320,20 @@
       "override": false
     },
     "Olivet": {
-      "say": "OL-ih-vet",
+      "say": "ahlihveht",
       "ipa": "/ˈɒl.ɪ.vɛt/",
       "ref": "Luke 19:29",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.917
     },
     "Sadducees": {
       "say": "SAD-joo-seez",
       "ipa": "/ˈsædʒ.ə.siːz/",
       "ref": "Luke 20:27",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Galilean": {
       "say": "gal-ih-LEE-uhn",
@@ -12309,259 +12371,459 @@
       "ref": "Luke 24:19",
       "override": false
     },
+    "Judaea": {
+      "say": "joo-DEE-uh",
+      "ipa": "/dʒuːˈdiː.ə/",
+      "ref": "Acts 1:8",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
     "Samaria": {
       "say": "Samairia",
+      "ipa": "/səˈmɛər.i.ə/",
       "ref": "Acts 1:8",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
     },
     "Andrew": {
       "say": "AN-droo",
       "ipa": "/ˈæn.druː/",
       "ref": "Acts 1:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Bartholomew": {
       "say": "bar-THOL-uh-myoo",
       "ipa": "/bɑːrˈθɒl.ə.mjuː/",
       "ref": "Acts 1:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.95
     },
     "Matthew": {
       "say": "MATH-yoo",
       "ipa": "/ˈmæθ.juː/",
       "ref": "Acts 1:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Thomas": {
       "say": "TOM-uhs",
       "ipa": "/ˈtɒm.əs/",
       "ref": "Acts 1:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Zelotes": {
+      "say": "zi-LOH-teez",
+      "ipa": "/zɪˈloʊ.tiːz/",
+      "ref": "Acts 1:13",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Aceldama": {
+      "say": "uh-KEL-duh-muh",
+      "ipa": "/əˈkɛl.də.mə/",
+      "ref": "Acts 1:19",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Barsabas": {
+      "say": "BAR-suh-bus",
+      "ipa": "/ˈbɑːr.sə.bəs/",
+      "ref": "Acts 1:23",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.562
     },
     "Barsabbas": {
       "say": "Bar-sabbas",
+      "ipa": "/bɑːrˈsæb.əs/",
       "ref": "Acts 1:23",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
     },
     "Justus": {
       "say": "JUS-tuhs",
       "ipa": "/ˈdʒʌs.təs/",
       "ref": "Acts 1:23",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Matthias": {
       "say": "muh-THY-uhs",
       "ipa": "/məˈθaɪ.əs/",
       "ref": "Acts 1:23",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Pentecost": {
       "say": "PEN-tih-kost",
       "ipa": "/ˈpɛn.tɪ.kɒst/",
       "ref": "Acts 2:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Galilaeans": {
+      "say": "gal-ih-LEE-unz",
+      "ipa": "/ˌɡæl.ɪˈliː.ənz/",
+      "ref": "Acts 2:7",
+      "override": false,
+      "status": "ok",
+      "score": 0.889
     },
     "Asia": {
       "say": "AY-zhuh",
       "ipa": "/ˈeɪ.ʒə/",
       "ref": "Acts 2:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Cappadocia": {
       "say": "kap-uh-DOH-shuh",
       "ipa": "/ˌkæp.əˈdoʊ.ʃə/",
       "ref": "Acts 2:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Elamites": {
       "say": "EE-luh-mites",
       "ipa": "/ˈiː.lə.maɪts/",
       "ref": "Acts 2:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.917
     },
     "Medes": {
       "say": "MEEDZ",
       "ipa": "/miːdz/",
       "ref": "Acts 2:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Pontus": {
       "say": "PON-tuhs",
       "ipa": "/ˈpɒn.təs/",
       "ref": "Acts 2:9",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
     },
     "Libya": {
       "say": "LIB-ee-uh",
       "ipa": "/ˈlɪb.i.ə/",
       "ref": "Acts 2:10",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Pamphylia": {
       "say": "pam-FIL-ee-uh",
       "ipa": "/pæmˈfɪl.i.ə/",
       "ref": "Acts 2:10",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.938
     },
     "Rome": {
       "say": "ROHM",
       "ipa": "/roʊm/",
       "ref": "Acts 2:10",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Alexander": {
       "say": "al-ig-ZAN-der",
       "ipa": "/ˌæl.ɪɡˈzæn.dər/",
       "ref": "Acts 4:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Barnabas": {
       "say": "BAR-nuh-buhs",
       "ipa": "/ˈbɑːr.nə.bəs/",
       "ref": "Acts 4:36",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Cyprus": {
       "say": "SY-pruhs",
       "ipa": "/ˈsaɪ.prəs/",
       "ref": "Acts 4:36",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Joses": {
+      "say": "JOH-seez",
+      "ipa": "/ˈdʒoʊ.siːz/",
+      "ref": "Acts 4:36",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Ananias": {
       "say": "an-uh-NY-uhs",
       "ipa": "/ˌæn.əˈnaɪ.əs/",
       "ref": "Acts 5:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.929
     },
     "Sapphira": {
-      "say": "suh-FY-ruh",
+      "say": "suhfeyeruh",
       "ipa": "/səˈfaɪ.rə/",
       "ref": "Acts 5:1",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
     },
     "Gamaliel": {
       "say": "guh-MAY-lee-el",
       "ipa": "/ɡəˈmeɪ.li.əl/",
       "ref": "Acts 5:34",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Theudas": {
-      "say": "THOO-duhs",
+      "say": "thoodas",
       "ipa": "/ˈθuː.dəs/",
       "ref": "Acts 5:36",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Grecians": {
+      "say": "GREE-shunz",
+      "ipa": "/ˈɡriː.ʃənz/",
+      "ref": "Acts 6:1",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Hellenists": {
       "say": "HEL-uh-nists",
       "ipa": "/ˈhɛl.ə.nɪsts/",
       "ref": "Acts 6:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Antioch": {
       "say": "AN-tee-ok",
       "ipa": "/ˈæn.ti.ɒk/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.917
     },
     "Nicanor": {
       "say": "ny-KAY-nor",
       "ipa": "/naɪˈkeɪ.nɔːr/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Nicolas": {
+      "say": "NIK-uh-lus",
+      "ipa": "/ˈnɪk.ə.ləs/",
+      "ref": "Acts 6:5",
+      "override": false,
+      "status": "ok",
+      "score": 0.929
     },
     "Nicolaus": {
       "say": "nik-uh-LAY-uhs",
       "ipa": "/ˌnɪk.əˈleɪ.əs/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Parmenas": {
       "say": "PAR-muh-nuhs",
       "ipa": "/ˈpɑːr.mə.nəs/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Prochorus": {
-      "say": "PROK-uh-ruhs",
+      "say": "PROK-uh-ruhss",
       "ipa": "/ˈprɒk.ə.rəs/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Stephen": {
       "say": "STEE-vuhn",
       "ipa": "/ˈstiː.vən/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Timon": {
       "say": "TY-muhn",
       "ipa": "/ˈtaɪ.mən/",
       "ref": "Acts 6:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Alexandrians": {
       "say": "al-ig-ZAN-dree-uhnz",
       "ipa": "/ˌæl.ɪɡˈzæn.dri.ənz/",
       "ref": "Acts 6:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Cilicia": {
       "say": "sih-LISH-uh",
       "ipa": "/sɪˈlɪʃ.ə/",
       "ref": "Acts 6:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Cyrenians": {
       "say": "sy-REE-nee-uhnz",
       "ipa": "/saɪˈriː.ni.ənz/",
       "ref": "Acts 6:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.944
     },
     "Libertines": {
       "say": "LIB-er-teenz",
       "ipa": "/ˈlɪb.ər.tiːnz/",
       "ref": "Acts 6:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Charran": {
+      "say": "karuhn",
+      "ipa": "/ˈkær.ən/",
+      "ref": "Acts 7:2",
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
     },
     "Chaldaeans": {
       "say": "kal-DEE-uhnz",
       "ipa": "/kælˈdiː.ənz/",
       "ref": "Acts 7:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Chanaan": {
+      "say": "KAY-nann",
+      "ipa": "/ˈkeɪ.næn/",
+      "ref": "Acts 7:11",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Emmor": {
+      "say": "EHM-awr",
+      "ipa": "/ˈɛm.ɔːr/",
+      "ref": "Acts 7:16",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Hamor": {
-      "say": "HAY-mor",
+      "say": "HAY-mawr",
       "ipa": "/ˈheɪ.mɔːr/",
       "ref": "Acts 7:16",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Sychem": {
+      "say": "SY-kem",
+      "ipa": "/ˈsaɪ.kɛm/",
+      "ref": "Acts 7:16",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Egyptians": {
       "say": "ee-JIP-shuhnz",
       "ipa": "/iˈdʒɪp.ʃənz/",
       "ref": "Acts 7:22",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Madian": {
+      "say": "MAY-dee-un",
+      "ipa": "/ˈmeɪ.di.ən/",
+      "ref": "Acts 7:29",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Sina": {
+      "say": "SY-nuh",
+      "ipa": "/ˈsaɪ.nə/",
+      "ref": "Acts 7:30",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.675
     },
     "Sinai": {
       "say": "SY-ny",
       "ipa": "/ˈsaɪ.naɪ/",
       "ref": "Acts 7:30",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Moloch": {
       "say": "MOH-lok",
       "ipa": "/ˈmoʊ.lɒk/",
       "ref": "Acts 7:43",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Remphan": {
+      "say": "REM-fan",
+      "ipa": "/ˈrɛm.fæn/",
+      "ref": "Acts 7:43",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Rephan": {
-      "say": "REE-fan",
+      "say": "REE-fann",
       "ipa": "/ˈriː.fæn/",
       "ref": "Acts 7:43",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Gaza": {
       "say": "GAH-zuh",
@@ -12575,7 +12837,9 @@
       "say": "KAN-duh-see",
       "ipa": "/ˈkæn.də.siː/",
       "ref": "Acts 8:27",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
     },
     "Ethiopia": {
       "say": "ee-thee-OH-pee-uh",
@@ -12585,47 +12849,85 @@
       "status": "ok",
       "score": 1.0
     },
+    "Esaias": {
+      "say": "izayuhs",
+      "ipa": "/ɪˈzeɪ.əs/",
+      "ref": "Acts 8:28",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
     "Azotus": {
-      "say": "uh-ZOH-tuhs",
+      "say": "uh-ZOH-tuhss",
       "ipa": "/əˈzoʊ.təs/",
       "ref": "Acts 8:40",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.917
     },
     "Tarsus": {
       "say": "TAR-suhs",
       "ipa": "/ˈtɑːr.səs/",
       "ref": "Acts 9:11",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Lydda": {
       "say": "LID-uh",
       "ipa": "/ˈlɪd.ə/",
       "ref": "Acts 9:32",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Aeneas": {
       "say": "ih-NEE-uhs",
       "ipa": "/ɪˈniː.əs/",
       "ref": "Acts 9:33",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Saron": {
+      "say": "SAIRR-on",
+      "ipa": "/ˈsɛər.ɒn/",
+      "ref": "Acts 9:35",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Dorcas": {
       "say": "DOR-kuhs",
       "ipa": "/ˈdɔːr.kəs/",
       "ref": "Acts 9:36",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Tabitha": {
       "say": "TAB-ih-thuh",
       "ipa": "/ˈtæb.ɪ.θə/",
       "ref": "Acts 9:36",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Cornelius": {
       "say": "kor-NEEL-yuhs",
       "ipa": "/kɔːrˈniːl.jəs/",
       "ref": "Acts 10:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Phenice": {
+      "say": "fihneyesee",
+      "ipa": "/fɪˈnaɪ.siː/",
+      "ref": "Acts 11:19",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
     },
     "Agabus": {
       "say": "AGga-bus",
@@ -12638,70 +12940,94 @@
       "say": "KLAW-dee-uhs",
       "ipa": "/ˈklɔː.di.əs/",
       "ref": "Acts 11:28",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Mark": {
       "say": "MARK",
       "ipa": "/mɑːrk/",
       "ref": "Acts 12:12",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Rhoda": {
       "say": "ROH-duh",
       "ipa": "/ˈroʊ.də/",
       "ref": "Acts 12:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Caesarea": {
       "say": "sessa-Rheea",
+      "ipa": "/ˌsɛs.əˈriː.ə/",
       "ref": "Acts 12:19",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
     },
     "Blastus": {
       "say": "BLAS-tuhs",
       "ipa": "/ˈblæs.təs/",
       "ref": "Acts 12:20",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.714
     },
     "Cyrene": {
       "say": "siereen",
+      "ipa": "/saɪˈriːn/",
       "ref": "Acts 13:1",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
     },
     "Lucius": {
       "say": "LOO-shuhs",
       "ipa": "/ˈluː.ʃəs/",
       "ref": "Acts 13:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Manaen": {
       "say": "MAN-ay-en",
       "ipa": "/ˈmæn.eɪ.ɛn/",
       "ref": "Acts 13:1",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
     },
     "Niger": {
       "say": "NY-jer",
       "ipa": "/ˈnaɪ.dʒər/",
       "ref": "Acts 13:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Seleucia": {
       "say": "suh-LOO-shuh",
       "ipa": "/səˈluː.ʃə/",
       "ref": "Acts 13:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Salamis": {
       "say": "Salamiss",
+      "ipa": "/ˈsæl.ə.mɪs/",
       "ref": "Acts 13:5",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
+    },
+    "Bar-jesus": {
+      "say": "bar-JEE-zus",
+      "ipa": "/bɑːrˈdʒiː.zəs/",
+      "ref": "Acts 13:6",
+      "override": false,
+      "status": "ok",
+      "score": 0.938
     },
     "Paphos": {
       "say": "PAYfose",
@@ -12714,656 +13040,1040 @@
       "say": "PAW-luhs",
       "ipa": "/ˈpɔː.ləs/",
       "ref": "Acts 13:7",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.7
     },
     "Sergius": {
       "say": "SUR-jee-uhs",
       "ipa": "/ˈsɜːr.dʒi.əs/",
       "ref": "Acts 13:7",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Elymas": {
-      "say": "EL-ih-muhs",
+      "say": "ehlihmuhs",
       "ipa": "/ˈɛl.ɪ.məs/",
       "ref": "Acts 13:8",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
     },
     "Paul": {
       "say": "PAWL",
       "ipa": "/pɔːl/",
       "ref": "Acts 13:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Perga": {
       "say": "PUR-guh",
       "ipa": "/ˈpɜːr.ɡə/",
       "ref": "Acts 13:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Pisidia": {
       "say": "pih-SID-ee-uh",
       "ipa": "/pɪˈsɪd.i.ə/",
       "ref": "Acts 13:14",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.929
+    },
+    "Cis": {
+      "say": "SIS",
+      "ipa": "/sɪs/",
+      "ref": "Acts 13:21",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Iconium": {
       "say": "eye-KOH-nee-uhm",
       "ipa": "/aɪˈkoʊ.ni.əm/",
       "ref": "Acts 13:51",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Derbe": {
-      "say": "DUR-bee",
+      "say": "DERR-bee",
       "ipa": "/ˈdɜːr.bi/",
       "ref": "Acts 14:6",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Lycaonia": {
       "say": "lik-ay-OH-nee-uh",
       "ipa": "/ˌlɪk.eɪˈoʊ.ni.ə/",
       "ref": "Acts 14:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.812
     },
     "Lystra": {
       "say": "LIS-truh",
       "ipa": "/ˈlɪs.trə/",
       "ref": "Acts 14:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Jupiter": {
       "say": "JOO-pih-ter",
       "ipa": "/ˈdʒuː.pɪ.tər/",
       "ref": "Acts 14:12",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Mercurius": {
+      "say": "mur-KYOOR-ee-us",
+      "ipa": "/mɜːrˈkjʊər.i.əs/",
+      "ref": "Acts 14:12",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Attalia": {
       "say": "at-uh-LY-uh",
       "ipa": "/ˌæt.əˈlaɪ.ə/",
       "ref": "Acts 14:25",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.464
     },
     "Phoenicia": {
       "say": "Phoneesha",
+      "ipa": "/fəˈniː.ʃə/",
       "ref": "Acts 15:3",
       "override": true,
-      "status": "fixed",
-      "ipa": ""
+      "status": "fixed"
     },
     "Silas": {
       "say": "SY-luhs",
       "ipa": "/ˈsaɪ.ləs/",
       "ref": "Acts 15:22",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Timotheus": {
+      "say": "tih-MOH-thee-us",
+      "ipa": "/tɪˈmoʊ.θi.əs/",
+      "ref": "Acts 16:1",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Timothy": {
       "say": "TIM-uh-thee",
       "ipa": "/ˈtɪm.ə.θi/",
       "ref": "Acts 16:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Galatia": {
       "say": "guh-LAY-shuh",
       "ipa": "/ɡəˈleɪ.ʃə/",
       "ref": "Acts 16:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.929
     },
     "Phrygia": {
       "say": "FRIJ-ee-uh",
       "ipa": "/ˈfrɪdʒ.i.ə/",
       "ref": "Acts 16:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Bithynia": {
       "say": "bih-THIN-ee-uh",
       "ipa": "/bɪˈθɪn.i.ə/",
       "ref": "Acts 16:7",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.714
     },
     "Mysia": {
       "say": "MISH-ee-uh",
       "ipa": "/ˈmɪʃ.i.ə/",
       "ref": "Acts 16:7",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Troas": {
       "say": "TROH-az",
       "ipa": "/ˈtroʊ.æz/",
       "ref": "Acts 16:8",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Macedonia": {
       "say": "mas-uh-DOH-nee-uh",
       "ipa": "/ˌmæs.əˈdoʊ.ni.ə/",
       "ref": "Acts 16:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.944
     },
     "Neapolis": {
       "say": "nee-AP-oh-lis",
       "ipa": "/niˈæp.ə.lɪs/",
       "ref": "Acts 16:11",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Samothrace": {
       "say": "SAM-oh-thrayss",
       "ipa": "/ˈsæm.ə.θreɪs/",
       "ref": "Acts 16:11",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Samothracia": {
+      "say": "sam-oh-THRAY-shuh",
+      "ipa": "/ˌsæm.oʊˈθreɪ.ʃə/",
+      "ref": "Acts 16:11",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.794
     },
     "Philippi": {
       "say": "fih-LIP-eye",
       "ipa": "/fɪˈlɪp.aɪ/",
       "ref": "Acts 16:12",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Lydia": {
       "say": "LID-ee-uh",
       "ipa": "/ˈlɪd.i.ə/",
       "ref": "Acts 16:14",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Thyatira": {
       "say": "thy-uh-TY-ruh",
       "ipa": "/ˌθaɪ.əˈtaɪ.rə/",
       "ref": "Acts 16:14",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.643
     },
     "Amphipolis": {
       "say": "am-FIP-oh-lis",
       "ipa": "/æmˈfɪp.ə.lɪs/",
       "ref": "Acts 17:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.889
     },
     "Apollonia": {
       "say": "ap-uh-LOH-nee-uh",
       "ipa": "/ˌæp.əˈloʊ.ni.ə/",
       "ref": "Acts 17:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Thessalonica": {
       "say": "thes-uh-loh-NY-kuh",
       "ipa": "/ˌθɛs.ə.loʊˈnaɪ.kə/",
       "ref": "Acts 17:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Jason": {
       "say": "JAY-suhn",
       "ipa": "/ˈdʒeɪ.sən/",
       "ref": "Acts 17:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Berea": {
+      "say": "buh-REE-uh",
+      "ipa": "/bəˈriː.ə/",
+      "ref": "Acts 17:10",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Beroea": {
       "say": "buh-REE-uh",
       "ipa": "/bəˈriː.ə/",
       "ref": "Acts 17:10",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.633
     },
     "Athens": {
       "say": "ATH-inz",
       "ipa": "/ˈæθ.ɪnz/",
       "ref": "Acts 17:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Epicurean": {
+      "say": "ep-ih-kyoo-REE-un",
+      "ipa": "/ˌɛp.ɪ.kjʊˈriː.ən/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Epicureans": {
+      "say": "ep-ih-kyoo-REE-unz",
+      "ipa": "/ˌɛp.ɪ.kjʊˈriː.ənz/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 0.955
+    },
+    "Stoic": {
+      "say": "STOH-ik",
+      "ipa": "/ˈstoʊ.ɪk/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Stoicks": {
+      "say": "STOH-iks",
+      "ipa": "/ˈstoʊ.ɪks/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Areopagus": {
       "say": "air-ee-OP-uh-guhs",
       "ipa": "/ˌær.iˈɒp.ə.ɡəs/",
       "ref": "Acts 17:19",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.778
     },
     "Athenians": {
       "say": "uh-THEE-nee-uhnz",
       "ipa": "/əˈθiː.ni.ənz/",
       "ref": "Acts 17:21",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Mars": {
+      "say": "MARZ",
+      "ipa": "/mɑːrz/",
+      "ref": "Acts 17:22",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Areopagite": {
       "say": "air-ee-OP-uh-jite",
       "ipa": "/ˌær.iˈɒp.ə.dʒaɪt/",
       "ref": "Acts 17:34",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.889
     },
     "Damaris": {
       "say": "DAM-uh-ris",
       "ipa": "/ˈdæm.ə.rɪs/",
       "ref": "Acts 17:34",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.714
     },
     "Dionysius": {
       "say": "dy-uh-NISH-ee-uhs",
       "ipa": "/ˌdaɪ.əˈnɪʃ.i.əs/",
       "ref": "Acts 17:34",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.889
     },
     "Corinth": {
       "say": "KOR-inth",
       "ipa": "/ˈkɔːr.ɪnθ/",
       "ref": "Acts 18:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Aquila": {
       "say": "AK-wih-luh",
       "ipa": "/ˈæk.wɪ.lə/",
       "ref": "Acts 18:2",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.417
     },
     "Italy": {
       "say": "IT-uh-lee",
       "ipa": "/ˈɪt.ə.li/",
       "ref": "Acts 18:2",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Priscilla": {
       "say": "prih-SIL-uh",
       "ipa": "/prɪˈsɪl.ə/",
       "ref": "Acts 18:2",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Corinthians": {
       "say": "kuh-RIN-thee-uhnz",
       "ipa": "/kəˈrɪn.θi.ənz/",
       "ref": "Acts 18:8",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.905
+    },
+    "Crispus": {
+      "say": "KRIS-pus",
+      "ipa": "/ˈkrɪs.pəs/",
+      "ref": "Acts 18:8",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Achaia": {
-      "say": "uh-KAY-yuh",
+      "say": "a-KAY-uh",
       "ipa": "/əˈkeɪ.ə/",
       "ref": "Acts 18:12",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
     },
     "Gallio": {
       "say": "GAL-ee-oh",
       "ipa": "/ˈɡæl.i.oʊ/",
       "ref": "Acts 18:12",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Sosthenes": {
       "say": "SOS-thuh-neez",
       "ipa": "/ˈsɒs.θə.niːz/",
       "ref": "Acts 18:17",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Cenchrea": {
+      "say": "SENG-krih-uh",
+      "ipa": "/ˈsɛŋ.krɪ.ə/",
+      "ref": "Acts 18:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.643
     },
     "Cenchreae": {
-      "say": "sen-KREE-ee",
+      "say": "sehn-KREE-ee",
       "ipa": "/sɛnˈkriː.iː/",
       "ref": "Acts 18:18",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
     },
     "Ephesus": {
       "say": "EF-uh-suhs",
       "ipa": "/ˈɛf.ə.səs/",
       "ref": "Acts 18:19",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.667
     },
     "Alexandrian": {
       "say": "al-ig-ZAN-dree-uhn",
       "ipa": "/ˌæl.ɪɡˈzæn.dri.ən/",
       "ref": "Acts 18:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.958
     },
     "Apollos": {
       "say": "uh-POL-uhs",
       "ipa": "/əˈpɒl.əs/",
       "ref": "Acts 18:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Tyrannus": {
       "say": "ty-RAN-uhs",
       "ipa": "/taɪˈræn.əs/",
       "ref": "Acts 19:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Sceva": {
       "say": "SEE-vuh",
       "ipa": "/ˈsiː.və/",
       "ref": "Acts 19:14",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Erastus": {
       "say": "ih-RAS-tuhs",
       "ipa": "/ɪˈræs.təs/",
       "ref": "Acts 19:22",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Artemis": {
       "say": "AR-tuh-mis",
       "ipa": "/ˈɑːr.tə.mɪs/",
       "ref": "Acts 19:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Demetrius": {
       "say": "dih-MEE-tree-uhs",
       "ipa": "/dɪˈmiː.tri.əs/",
       "ref": "Acts 19:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.944
+    },
+    "Diana": {
+      "say": "dy-AN-uh",
+      "ipa": "/daɪˈæn.ə/",
+      "ref": "Acts 19:24",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Ephesians": {
       "say": "ih-FEE-zhuhnz",
       "ipa": "/ɪˈfiː.ʒənz/",
       "ref": "Acts 19:28",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Aristarchus": {
       "say": "air-is-TAR-kuhs",
       "ipa": "/ˌær.ɪsˈtɑːr.kəs/",
       "ref": "Acts 19:29",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Gaius": {
       "say": "GAY-uhs",
       "ipa": "/ˈɡeɪ.əs/",
       "ref": "Acts 19:29",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Asiarchs": {
       "say": "AY-zhee-arks",
       "ipa": "/ˈeɪ.ʒi.ɑːrks/",
       "ref": "Acts 19:31",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.786
     },
     "Zeus": {
       "say": "ZOOS",
       "ipa": "/zuːs/",
       "ref": "Acts 19:35",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Greece": {
       "say": "GREESS",
       "ipa": "/ɡriːs/",
       "ref": "Acts 20:2",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Secundus": {
       "say": "suh-KUN-duhs",
       "ipa": "/səˈkʌn.dəs/",
       "ref": "Acts 20:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Sopater": {
+      "say": "SOH-puh-ter",
+      "ipa": "/ˈsoʊ.pə.tər/",
+      "ref": "Acts 20:4",
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
     },
     "Thessalonians": {
       "say": "thes-uh-LOH-nee-uhnz",
       "ipa": "/ˌθɛs.əˈloʊ.ni.ənz/",
       "ref": "Acts 20:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.909
     },
     "Trophimus": {
       "say": "TROF-ih-muhs",
       "ipa": "/ˈtrɒf.ɪ.məs/",
       "ref": "Acts 20:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Tychicus": {
       "say": "TIK-ih-kuhs",
       "ipa": "/ˈtɪk.ɪ.kəs/",
       "ref": "Acts 20:4",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.929
     },
     "Eutychus": {
       "say": "YOO-tih-kuhs",
       "ipa": "/ˈjuː.tɪ.kəs/",
       "ref": "Acts 20:9",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Assos": {
       "say": "AS-os",
       "ipa": "/ˈæs.ɒs/",
       "ref": "Acts 20:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Mitylene": {
       "say": "mit-ih-LEE-nee",
       "ipa": "/ˌmɪt.ɪˈliː.ni/",
       "ref": "Acts 20:14",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.625
     },
     "Chios": {
       "say": "KY-os",
       "ipa": "/ˈkaɪ.ɒs/",
       "ref": "Acts 20:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Miletus": {
       "say": "my-LEE-tuhs",
       "ipa": "/maɪˈliː.təs/",
       "ref": "Acts 20:15",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.929
     },
     "Samos": {
       "say": "SAY-mos",
       "ipa": "/ˈseɪ.mɒs/",
       "ref": "Acts 20:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Trogyllium": {
       "say": "troh-JIL-ee-uhm",
       "ipa": "/troʊˈdʒɪl.i.əm/",
       "ref": "Acts 20:15",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Coos": {
+      "say": "KOH-os",
+      "ipa": "/ˈkoʊ.ɒs/",
+      "ref": "Acts 21:1",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.25
     },
     "Cos": {
       "say": "KOS",
       "ipa": "/kɒs/",
       "ref": "Acts 21:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Patara": {
       "say": "PAT-uh-ruh",
       "ipa": "/ˈpæt.ə.rə/",
       "ref": "Acts 21:1",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.69
     },
     "Rhodes": {
       "say": "ROHDZ",
       "ipa": "/roʊdz/",
       "ref": "Acts 21:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Phenicia": {
+      "say": "fihnihshuh",
+      "ipa": "/fɪˈnɪʃ.ə/",
+      "ref": "Acts 21:2",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
     },
     "Ptolemais": {
       "say": "tol-uh-MAY-is",
       "ipa": "/ˌtɒl.əˈmeɪ.ɪs/",
       "ref": "Acts 21:7",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Mnason": {
       "say": "NAY-suhn",
       "ipa": "/ˈneɪ.sən/",
       "ref": "Acts 21:16",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Ephesian": {
       "say": "ih-FEE-zhuhn",
       "ipa": "/ɪˈfiː.ʒən/",
       "ref": "Acts 21:29",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Felix": {
       "say": "FEE-liks",
       "ipa": "/ˈfiː.lɪks/",
       "ref": "Acts 23:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Lysias": {
       "say": "LIS-ee-uhs",
       "ipa": "/ˈlɪs.i.əs/",
       "ref": "Acts 23:26",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Antipatris": {
       "say": "an-TIP-uh-tris",
       "ipa": "/ænˈtɪp.ə.trɪs/",
       "ref": "Acts 23:31",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Tertullus": {
-      "say": "ter-TUL-uhs",
+      "say": "tuhr-TUHL-uhss",
       "ipa": "/tərˈtʌl.əs/",
       "ref": "Acts 24:1",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
     },
     "Nazarenes": {
       "say": "naz-uh-REENZ",
       "ipa": "/ˌnæz.əˈriːnz/",
       "ref": "Acts 24:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Drusilla": {
       "say": "droo-SIL-uh",
       "ipa": "/druːˈsɪl.ə/",
       "ref": "Acts 24:24",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Festus": {
       "say": "FES-tuhs",
       "ipa": "/ˈfɛs.təs/",
       "ref": "Acts 24:27",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
     },
     "Porcius": {
-      "say": "POR-shuhs",
+      "say": "pawrshas",
       "ipa": "/ˈpɔːr.ʃəs/",
       "ref": "Acts 24:27",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
     },
     "Agrippa": {
       "say": "uh-GRIP-uh",
       "ipa": "/əˈɡrɪp.ə/",
       "ref": "Acts 25:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.929
     },
     "Bernice": {
       "say": "ber-NEE-see",
       "ipa": "/bərˈniː.siː/",
       "ref": "Acts 25:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.857
     },
     "Augustan": {
       "say": "aw-GUS-tuhn",
       "ipa": "/ɔːˈɡʌs.tən/",
       "ref": "Acts 27:1",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.786
     },
     "Julius": {
       "say": "JOOL-yuhs",
       "ipa": "/ˈdʒuːl.jəs/",
       "ref": "Acts 27:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Adramyttium": {
       "say": "ad-ruh-MIT-ee-uhm",
       "ipa": "/ˌæd.rəˈmɪt.i.əm/",
       "ref": "Acts 27:2",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.9
     },
     "Macedonian": {
       "say": "mas-uh-DOH-nee-uhn",
       "ipa": "/ˌmæs.əˈdoʊ.ni.ən/",
       "ref": "Acts 27:2",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Lycia": {
       "say": "LISH-ee-uh",
       "ipa": "/ˈlɪʃ.i.ə/",
       "ref": "Acts 27:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Myra": {
       "say": "MY-ruh",
       "ipa": "/ˈmaɪ.rə/",
       "ref": "Acts 27:5",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Alexandria": {
       "say": "al-ig-ZAN-dree-uh",
       "ipa": "/ˌæl.ɪɡˈzæn.dri.ə/",
       "ref": "Acts 27:6",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.955
     },
     "Cnidus": {
       "say": "NY-duhs",
       "ipa": "/ˈnaɪ.dəs/",
       "ref": "Acts 27:7",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Crete": {
       "say": "KREET",
       "ipa": "/kriːt/",
       "ref": "Acts 27:7",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Salmone": {
       "say": "sal-MOH-nee",
       "ipa": "/sælˈmoʊ.ni/",
       "ref": "Acts 27:7",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
     },
     "Lasea": {
       "say": "luh-SEE-uh",
       "ipa": "/ləˈsiː.ə/",
       "ref": "Acts 27:8",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Phoenix": {
       "say": "FEE-niks",
       "ipa": "/ˈfiː.nɪks/",
       "ref": "Acts 27:12",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Euroclydon": {
       "say": "yoo-ROK-lih-don",
       "ipa": "/jʊˈrɒk.lɪ.dɒn/",
       "ref": "Acts 27:14",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.65
     },
     "Clauda": {
       "say": "KLAW-duh",
       "ipa": "/ˈklɔː.də/",
       "ref": "Acts 27:16",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.917
     },
     "Syrtis": {
       "say": "SUR-tis",
       "ipa": "/ˈsɜːr.tɪs/",
       "ref": "Acts 27:17",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.667
+    },
+    "Adria": {
+      "say": "AY-dree-uh",
+      "ipa": "/ˈeɪ.dri.ə/",
+      "ref": "Acts 27:27",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
     },
     "Adriatic": {
       "say": "ay-dree-AT-ik",
       "ipa": "/ˌeɪ.driˈæt.ɪk/",
       "ref": "Acts 27:27",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.875
     },
     "Malta": {
       "say": "MAWL-tuh",
       "ipa": "/ˈmɔːl.tə/",
       "ref": "Acts 28:1",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 0.917
+    },
+    "Melita": {
+      "say": "MEL-ih-tuh",
+      "ipa": "/ˈmɛl.ɪ.tə/",
+      "ref": "Acts 28:1",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
     },
     "Publius": {
       "say": "PUB-lee-uhs",
       "ipa": "/ˈpʌb.li.əs/",
       "ref": "Acts 28:7",
-      "override": false
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
+    },
+    "Castor": {
+      "say": "KAS-ter",
+      "ipa": "/ˈkæs.tər/",
+      "ref": "Acts 28:11",
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Pollux": {
+      "say": "POL-uks",
+      "ipa": "/ˈpɒl.əks/",
+      "ref": "Acts 28:11",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
     },
     "Syracuse": {
-      "say": "SEER-uh-kyooz",
+      "say": "SIHR-a-kyooz",
       "ipa": "/ˈsɪr.ə.kjuːz/",
       "ref": "Acts 28:12",
-      "override": false
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
     },
     "Puteoli": {
       "say": "pyoo-TEE-oh-ly",
       "ipa": "/pjuːˈtiː.ə.laɪ/",
       "ref": "Acts 28:13",
-      "override": false
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
     },
     "Rhegium": {
       "say": "REE-jee-uhm",
       "ipa": "/ˈriː.dʒi.əm/",
       "ref": "Acts 28:13",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Appii": {
+      "say": "AP-ee-eye",
+      "ipa": "/ˈæp.i.aɪ/",
+      "ref": "Acts 28:15",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     },
     "Appius": {
       "say": "AP-ee-uhs",
       "ipa": "/ˈæp.i.əs/",
       "ref": "Acts 28:15",
-      "override": false
+      "override": false,
+      "status": "ok",
+      "score": 1.0
     }
   }
 }

@@ -1,6 +1,8 @@
 # Pronunciation to-do
 
-Names the Pronunciation Verifier (`python pronunciation_check.py`) could **not** settle, across Genesis 1–11 and all of 1 Chronicles. Everything else in those chapters either reads correctly as spelled or now has a working override in `pronunciations.json`.
+Names the Pronunciation Verifier (`python pronunciation_check.py`) could **not** settle, across Genesis 1–11, all of 1 Chronicles, and Acts. Everything else in those books either reads correctly as spelled or now has a working override in `pronunciations.json`.
+
+New Testament names fare much better as spelled — 72% of Acts needed nothing, against 47% of 1 Chronicles — because names like Paul, Timothy, Corinth and Ephesus reached English through ordinary use, while Chronicles genealogy is rare Hebrew transliteration the voice has never met.
 
 **How to read this.** "Voice says now" is what the neural voice actually produces for the plain scripture spelling, transcribed back from the audio; two readings are shown because each name is measured inside two different carrier sentences and the score is the average. A correctly-said name usually lands around 0.85–1.00. Treat the number as a ranking, not a verdict — the final call is your ear, via the play buttons in the Pronunciation Studio.
 
@@ -490,6 +492,87 @@ No respelling tried improved on the plain spelling. Many are near-misses on a si
 | **Cherethites** | /ˈkɛr.ə.θaɪts/ | `tʃɛɹəθaɪts / tʃɛɹɪθaɪts` (0.79) | `kehr-a-theyets` | `kɛɹɐθeɪɪts / kɛɹəθeɪɪts` | 0.75 |
 | **Jaresiah** ⚑ | /ˌdʒær.ɪˈsaɪ.ə/ | `dʒɚɹɪsaɪɐ / dʒɛɹəsaɪɐ` (0.79) | `jaarihseyeuh` | `dʒɛɹisɑju / dʒɛɹisaɪju` | 0.44 |
 
+## Acts
+
+### Improved, but not confirmed (19)
+
+A respelling beat the plain spelling but did not reach 0.80. Probably better than what is there now, unproven.
+
+| Name | Reference IPA | Voice says now | Best try | That gives | Score |
+| --- | --- | --- | --- | --- | --- |
+| **Coos** ⚑ | /ˈkoʊ.ɒs/ | `kuz / kuz` (0.25) | `koh-os` | `koʊoʊwæs / koʊæs` | 0.68 |
+| **Aquila** | /ˈæk.wɪ.lə/ | `ɐkilɚ / ɐkilɐ` (0.42) | `akwihluh` | `ɐkwɪlu / ɐkwɪlu` | 0.67 |
+| **Attalia** | /ˌæt.əˈlaɪ.ə/ | `ɐteɪliɚ / ɐteɪliɐ` (0.46) | `at-uh-leye-uh` | `æɾɐleɪɐ / ædɐleɪɐ` | 0.67 |
+| **Manaen** | /ˈmæn.eɪ.ɛn/ | `mənin / mɪnin` (0.50) | `manayehn` | `məneɪən / məneɪən` | 0.67 |
+| **Puteoli** | /pjuːˈtiː.ə.laɪ/ | `hitili / putili` (0.50) | `pyoo-tee-uh-leye` | `paɪutiɐleɪ / haɪʊtiəlleɪ` | 0.69 |
+| **Melita** ⚑ | /ˈmɛl.ɪ.tə/ | `mɐliɾɐ / mɐlidɐ` (0.50) | `melihtuh` | `mɪlᵻtu / mɛlətu` | 0.67 |
+| **Barsabas** ⚑ | /ˈbɑːr.sə.bəs/ | `ɔsᵻbəz / vɑɹsᵻbəz` (0.56) | `bahr-sa-buhs` | `bɔɹɪseɪbʌts / bɑɹɹɪseɪbʌs` | 0.72 |
+| **Mitylene** | /ˌmɪt.ɪˈliː.ni/ | `mɪdəllin / mɪdəllin` (0.62) | `mihtihleenee` | `mɪdəllini / mɪdəllini` | 0.75 |
+| **Beroea** | /bəˈriː.ə/ | `bɚɹoɪ / bɚɹoɪɐ` (0.63) | `buh-ree-uh` | `bʌtɹioʊ / bʌtɹiɐ` | 0.75 |
+| **Paulus** | /ˈpɔː.ləs/ | `pɑlɪs / hɑlɪs` (0.70) | `paw-luhss` | `pɑlʌs / pɑlɐs` | 1.00 |
+| **Candace** | /ˈkæn.də.siː/ | `kændɪs / kændɪs` (0.71) | `kaanduhsee` | `kɑndəsi / kɑndəsi` | 0.86 |
+| **Salmone** | /sælˈmoʊ.ni/ | `sæməni / sæməni` (0.71) | `sal-moh-neee` | `sæɹmoʊni / sæmoʊni` | 0.86 |
+| **Publius** | /ˈpʌb.li.əs/ | `pʌblɪəs / pʌblɪəs` (0.71) | `puhb-lee-uhss` | `pʌbliəs / pʌblias` | 0.93 |
+| **Sopater** ⚑ | /ˈsoʊ.pə.tər/ | `soʊpeɪɾɚ / soʊpeɪɾɚ` (0.71) | `soh-puh-tuhr` | `soʊputɚ / soʊputɚ` | 0.86 |
+| **Pontus** | /ˈpɒn.təs/ | `hɑntᵻs / pɑntɪs` (0.75) | `pon-tuhs` | `pɑntəs / pɑntəs` | 1.00 |
+| **Caiaphas** | /ˈkeɪ.ə.fəs/ | `kaɪfəs / kaɪɐfəs` (0.75) | `kay-uh-fuhs` | `keɪɐfʌs / keɪɐfʌs` | 1.00 |
+| **Sosthenes** | /ˈsɒs.θə.niːz/ | `sɑsθinz / sɑsθinz` (0.75) | `sosthuhneez` | `sɑsθəniz / sɑsθəniz` | 1.00 |
+| **Trogyllium** | /troʊˈdʒɪl.i.əm/ | `tɹɚdʒɪliəm / tʃɹɚdʒɪliəm` (0.75) | `troh-jihl-ee-uhm` | `tɹoʊdʒɪliəm / tɹoʊdʒɪliʌm` | 1.00 |
+| **Castor** ⚑ | /ˈkæs.tər/ | `kæstoʊ / kæstoɹ` (0.75) | `kastuhr` | `kæstɚ / kæstɚ` | 1.00 |
+
+<details><summary>Spellings already tried</summary>
+
+- **Aquila** — `akwihluh` 0.67, `aakwihluh` 0.67, `aak-wih-luh` 0.50, `ak-wih-luh` 0.43, `ak-wi-luh` 0.43, `ak-wih-luhh` 0.43
+- **Attalia** — `at-uh-leye-uh` 0.67, `at-a-leye-uh` 0.67, `at-uh-leye-uhh` 0.67, `aat-uh-leye-uh` 0.43, `aatuhleyeuh` 0.33, `atuhleyeuh` 0.29
+- **Barsabas** — `bahr-suh-buhss` 0.75, `bahr-sa-buhs` 0.67, `bahr-suh-buhs` 0.62, `bahrsabuhs` 0.62, `bahrsuhbuhs` 0.50, `bahr-suh-bas` 0.38
+- **Beroea** — `buh-ree-uh` 0.67, `buh-ree-a` 0.67, `buh-ree-uhh` 0.67, `bareeuh` 0.60, `ba-ree-uh` 0.57, `buhreeuh` 0.40
+- **Caiaphas** — `kay-uh-fuhs` 1.00, `kay-a-fuhs` 1.00, `kay-uh-fuhss` 1.00, `kayafuhs` 0.67, `kay-uh-fas` 0.67, `kayuhfuhs` 0.29
+- **Candace** — `kaan-duh-see` 0.86, `kaanduhsee` 0.86, `kan-da-see` 0.86, `kan-duh-seee` 0.86, `kan-duh-see` 0.71, `kanduhsee` 0.71
+- **Castor** — `kastuhr` 1.00, `kaastuhr` 1.00, `kas-tuhr` 0.86, `kas-tuhrr` 0.86, `kas-tar` 0.83, `kaas-tuhr` 0.50
+- **Coos** — `koh-os` 0.60, `koh-ahs` 0.50, `koh-oss` 0.50, `kohos` 0.40, `kohahs` 0.40
+- **Manaen** — `manayehn` 0.67, `maanayehn` 0.67, `man-ay-ehn` 0.50, `maan-ay-ehn` 0.50, `man-ay-en` 0.50, `man-ay-ehnn` 0.50
+- **Melita** — `melihtuh` 0.67, `mehl-i-tuh` 0.67, `mehl-ih-tuh` 0.50, `mehlihtuh` 0.50, `mel-ih-tuh` 0.50, `mehl-ih-tuhh` 0.50
+- **Mitylene** — `mihtihleenee` 0.75, `mitihleenee` 0.75, `miht-ih-lee-neee` 0.56, `miht-ih-lee-nee` 0.50, `miht-i-lee-nee` 0.50, `mit-ih-lee-nee` 0.46
+- **Paulus** — `paw-luhss` 1.00, `paw-luhs` 0.80, `paw-las` 0.80, `pawlas` 0.80, `pawluhs` 0.60
+- **Pontus** — `pon-tuhs` 1.00, `pahn-tuhs` 1.00, `pon-tuhss` 0.83, `pontuhs` 0.67, `pahntuhs` 0.67, `pon-tas` 0.62
+- **Publius** — `puhb-lee-uhss` 1.00, `puhbliuhs` 0.71, `puhb-lee-as` 0.71, `puhb-lee-uhs` 0.62, `puhb-li-uhs` 0.62, `puhbleeuhs` 0.57
+- **Puteoli** — `pyoo-tee-uh-leye` 0.75, `pyooteeuhleye` 0.62, `pyooteealeye` 0.62, `pyoo-tee-a-leye` 0.50, `pyoo-tee-uh-ly` 0.50, `pyoo-tee-uh-leyee` 0.25
+- **Salmone** — `sal-moh-neee` 0.86, `sal-moh-nee` 0.71, `salmohnee` 0.71, `saalmohnee` 0.71, `saal-moh-nee` 0.57, `sal-moh-ni` 0.43
+- **Sopater** — `soh-puh-tuhr` 0.86, `soh-pa-tuhr` 0.86, `soh-puh-tuhrr` 0.86, `sohpatuhr` 0.71, `soh-puh-tar` 0.71, `sohpuhtuhr` 0.62
+- **Sosthenes** — `sosthuhneez` 1.00, `sahs-thuh-neez` 0.88, `sahsthuhneez` 0.88, `sos-thuh-neez` 0.60, `sos-tha-neez` 0.60, `sos-thuh-neezz` 0.60
+- **Trogyllium** — `troh-jihl-ee-uhm` 1.00, `trohjileeuhm` 1.00, `troh-jil-ee-uhm` 0.89, `troh-jihl-i-uhm` 0.89, `troh-jihl-ee-uhmm` 0.89, `trohjihleeuhm` 0.78
+
+</details>
+
+### Nothing worked (22)
+
+No respelling tried improved on the plain spelling. Many are near-misses on a single vowel and may be fine in a sentence.
+
+| Name | Reference IPA | Voice says now | Best try | That gives | Score |
+| --- | --- | --- | --- | --- | --- |
+| **Annas** | /ˈæn.əs/ | `ɑnɚz / ɑnəs` (0.57) | `anuhs` | `ænuz / ænuz` | 0.50 |
+| **Thyatira** | /ˌθaɪ.əˈtaɪ.rə/ | `ðaɪɐtiɹɐ / ðaɪtiɹə` (0.64) | `thy-uh-teye-ruh` | `ðaɪɐtɚɹu / ðaɪɐtɚɹu` | 0.57 |
+| **Cenchrea** ⚑ | /ˈsɛŋ.krɪ.ə/ | `seɪŋkɹiɐ / sɛŋkɹiɐ` (0.64) | `sehng-krih-uh` | `seɪnkɹaɪɚ / seɪnkɹaɪɚ` | 0.50 |
+| **Euroclydon** | /jʊˈrɒk.lɪ.dɒn/ | `joʊɹɐklaɪɾən / juɹoʊklaɪdən` (0.65) | `yuu-rok-lih-don` | `juɹɑkᵻleɪdʒdɔn / juɹɑkɪlɐeɪdʒdɑn` | 0.72 |
+| **Ephesus** | /ˈɛf.ə.səs/ | `ɛfɪsɪs / ɛfɪsɪs` (0.67) | `ef-uh-suhs` | `jɛfɐsuz / jɛfɐsuz` | 0.57 |
+| **Syrtis** | /ˈsɜːr.tɪs/ | `sɜvɪs / sɜdɪs` (0.67) | `serrtihs` | `sɜvɪs / sɜdɪs` | 0.67 |
+| **Sina** ⚑ | /ˈsaɪ.nə/ | `sinɚ / sinɐ` (0.68) | `seyenuh` | `saɪnu / saɪnu` | 0.75 |
+| **Patara** | /ˈpæt.ə.rə/ | `pæɾɛɹɐ / pætɾɛɹɐ` (0.69) | `pat-uh-ruh` | `pæɾɚɹu / pæɾɚɹu` | 0.67 |
+| **Blastus** | /ˈblæs.təs/ | `læstɪs / læstɪs` (0.71) | `blas-tuhs` | `lɑstɐs / lɑstʌs` | 0.71 |
+| **Bithynia** | /bɪˈθɪn.i.ə/ | `bəθɪniɐ / əθɪnɐ` (0.71) | `bihthihneeuh` | `bɪθənu / bɪθənu` | 0.57 |
+| **Damaris** | /ˈdæm.ə.rɪs/ | `dəmɑɹɪs / dəmɔɹɪs` (0.71) | `dam-uh-rihss` | `dæmɚɹaɪs / deɪmɚɹaɪs` | 0.79 |
+| **Theophilus** | /θiˈɒf.ɪ.ləs/ | `θiɑfəllɪs / θiɑfəllɪs` (0.75) | `theeofihluhs` | `ðiəfaɪləs / θiəfaɪləs` | 0.69 |
+| **Parmenas** | /ˈpɑːr.mə.nəs/ | `pɚminəs / pɚminəs` (0.75) | `pahr-muh-nuhss` | `hɑɹmənɑs / hɑɹmənas` | 0.75 |
+| **Dorcas** | /ˈdɔːr.kəs/ | `doʊkəs / doɹkəs` (0.75) | `dawrkuhs` | `doɹkəs / doɹkəs` | 0.83 |
+| **Neapolis** | /niˈæp.ə.lɪs/ | `nipəlləs / nipəlləs` (0.75) | `nee-ap-uh-lihss` | `neɪeɪpilɪs / neɪeɪpiəllɪs` | 0.62 |
+| **Ptolemais** | /ˌtɒl.əˈmeɪ.ɪs/ | `tɑləmeɪ / tɑləmeɪ` (0.75) | `toluhmayihs` | `tɑləmeɪz / tɑləmeɪz` | 0.75 |
+| **Festus** | /ˈfɛs.təs/ | `vɛstɪs / fɛstɪs` (0.75) | `fehs-tuhs` | `feɪstɐs / feɪstʌs` | 0.83 |
+| **Areopagus** | /ˌær.iˈɒp.ə.ɡəs/ | `ɛɹiɑpɪɡəs / ɛɹiɑpɪɡəs` (0.78) | `ar-ee-op-uh-guhss` | `eɪɹiaʊpɐɡʌs / eɪɑɹɹiaʊlpɐɡʌs` | 0.71 |
+| **Asiarchs** | /ˈeɪ.ʒi.ɑːrks/ | `ɐʒɑɹks / eɪʒɑɹks` (0.79) | `ay-zhi-ahrks` | `aɪʒiɑɹks / aɪʒiɔɹks` | 0.86 |
+| **Augustan** | /ɔːˈɡʌs.tən/ | `ɐɡʌstɪn / ɑɡʌstɪn` (0.79) | `awguhstuhn` | `ɑɡəstaɪn / ɑɡəstɑn` | 0.86 |
+| **Augustus** | /ɔːˈɡʌs.təs/ | `ɐɡʌstəs / ɐɡʌstᵻs` (0.79) | `awguhstuhs` | `ɑɡəstɪz / ɑɡəstəs` | 0.86 |
+| **Samothracia** ⚑ | /ˌsæm.oʊˈθreɪ.ʃə/ | `sæmɐfɹeɪʃɚ / sæməθɹeɪʃə` (0.79) | `saam-oh-thray-shuh` | `sʌmoʊθɹeɪʃu / sʌmoʊfɹeɪʃu` | 0.72 |
+
 ---
 
-_Genesis 1–11 and 1 Chronicles swept in WEB + KJV spellings; voice en-US-AndrewNeural; each name measured in two carrier sentences. 406 of 1772 names in the list now carry an override._
+_Genesis 1–11 and 1 Chronicles swept in WEB + KJV spellings; voice en-US-AndrewNeural; each name measured in two carrier sentences. 430 of 1812 names in the list now carry an override._

@@ -1397,7 +1397,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Hushai | HOO-shy | /ˈhuː.ʃaɪ/ | 1 Chronicles 27:33 |  | suggestion waiting (0.75) |
 | Kue | KOO-ay | /ˈkuː.eɪ/ | 2 Chronicles 1:16 |  |  |
 | Lebanon | LEB-uh-nuhn | /ˈlɛb.ə.nən/ | 2 Chronicles 2:8 |  |  |
-| Joppa | JOP-uh | /ˈdʒɒp.ə/ | 2 Chronicles 2:16 |  |  |
+| Joppa | JOP-uh | /ˈdʒɒp.ə/ | 2 Chronicles 2:16 |  | fine as spelled (0.90) |
 | Moriah | muh-RY-uh | /məˈraɪ.ə/ | 2 Chronicles 3:1 |  |  |
 | Parvaim | par-VAY-im | /pɑːrˈveɪ.ɪm/ | 2 Chronicles 3:6 |  |  |
 | Succoth | SUHK-oth | /ˈsʌk.ɒθ/ | 2 Chronicles 4:17 |  |  |
@@ -1446,7 +1446,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jehoram | juh-HOR-uhm | /dʒəˈhɔːr.əm/ | 2 Chronicles 17:8 |  |  |
 | Tobadonijah | tob-ad-oh-NY-juh | /ˌtɒb.æd.oʊˈnaɪ.dʒə/ | 2 Chronicles 17:8 |  |  |
 | Tobijah | toh-BY-juh | /toʊˈbaɪ.dʒə/ | 2 Chronicles 17:8 |  |  |
-| Arabians | uh-RAY-bee-uhnz | /əˈreɪ.bi.ənz/ | 2 Chronicles 17:11 |  |  |
+| Arabians | uh-RAY-bee-uhnz | /əˈreɪ.bi.ənz/ | 2 Chronicles 17:11 |  | fine as spelled (1.00) |
 | Amasiah | am-uh-SY-uh | /ˌæm.əˈsaɪ.ə/ | 2 Chronicles 17:16 |  |  |
 | Ahab | AY-hab | /ˈeɪ.hæb/ | 2 Chronicles 18:1 |  |  |
 | Imla | IM-luh | /ˈɪm.lə/ | 2 Chronicles 18:7 |  |  |
@@ -1454,7 +1454,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Ammonites | AM-uh-nites | /ˈæm.ə.naɪts/ | 2 Chronicles 20:1 |  |  |
 | Gedi | GED-ee | /ˈɡɛd.i/ | 2 Chronicles 20:2 |  |  |
 | Hazazon | HAZ-uh-zon | /ˈhæz.ə.zɒn/ | 2 Chronicles 20:2 |  |  |
-| Levite | LEE-vite | /ˈliː.vaɪt/ | 2 Chronicles 20:14 |  |  |
+| Levite | LEE-vite | /ˈliː.vaɪt/ | 2 Chronicles 20:14 |  | fine as spelled (1.00) |
 | Jeruel | juh-ROO-el | /dʒəˈruː.ɛl/ | 2 Chronicles 20:16 |  |  |
 | Ziz | ZIZ | /zɪz/ | 2 Chronicles 20:16 |  |  |
 | Beracah | BEHR-a-kuh | /ˈbɛr.ə.kə/ | 2 Chronicles 20:26 | ✅ | overridden (0.83) |
@@ -1476,7 +1476,7 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Jabneh | JAB-neh | /ˈdʒæb.nə/ | 2 Chronicles 26:6 |  |  |
 | Gur | GOOR | /ɡʊər/ | 2 Chronicles 26:7 |  |  |
 | Amoz | AY-moz | /ˈeɪ.mɒz/ | 2 Chronicles 26:22 |  |  |
-| Isaiah | eye-ZAY-uh | /aɪˈzeɪ.ə/ | 2 Chronicles 26:22 |  |  |
+| Isaiah | eye-ZAY-uh | /aɪˈzeɪ.ə/ | 2 Chronicles 26:22 |  | fine as spelled (1.00) |
 | Jerushah | juh-ROO-shuh | /dʒəˈruː.ʃə/ | 2 Chronicles 27:1 |  |  |
 | Ophel | OH-fel | /ˈoʊ.fɛl/ | 2 Chronicles 27:3 |  |  |
 | Hinnom | HIN-uhm | /ˈhɪn.əm/ | 2 Chronicles 28:3 |  |  |
@@ -1510,32 +1510,32 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Chaldeans | kal-DEE-uhnz | /kælˈdiː.ənz/ | 2 Chronicles 36:17 |  |  |
 | Persia | PUR-zhuh | /ˈpɜːr.ʒə/ | 2 Chronicles 36:20 |  |  |
 | Cyrus | SY-ruhs | /ˈsaɪ.rəs/ | 2 Chronicles 36:22 |  |  |
-| Theophilus | thee-OF-ih-luhs | /θiˈɒf.ɪ.ləs/ | Luke 1:3 |  |  |
+| Theophilus | thee-OF-ih-luhs | /θiˈɒf.ɪ.ləs/ | Luke 1:3 |  | still wrong (0.75) |
 | Elizabeth | ih-LIZ-uh-beth | /ɪˈlɪz.ə.bɛθ/ | Luke 1:5 |  |  |
-| Herod | HAIR-uhd | /ˈhɛr.əd/ | Luke 1:5 |  |  |
-| Judea | joo-DEE-uh | /dʒuːˈdiː.ə/ | Luke 1:5 |  |  |
+| Herod | HAIR-uhd | /ˈhɛr.əd/ | Luke 1:5 |  | fine as spelled (0.80) |
+| Judea | joo-DEE-uh | /dʒuːˈdiː.ə/ | Luke 1:5 |  | fine as spelled (1.00) |
 | Zacharias | zak-uh-RY-uhs | /ˌzæk.əˈraɪ.əs/ | Luke 1:5 |  |  |
-| John | JON | /dʒɒn/ | Luke 1:13 |  |  |
+| John | JON | /dʒɒn/ | Luke 1:13 |  | fine as spelled (1.00) |
 | Gabriel | GAY-bree-el | /ˈɡeɪ.bri.əl/ | Luke 1:19 |  |  |
-| Nazareth | NAZ-uh-reth | /ˈnæz.ə.rɛθ/ | Luke 1:26 |  |  |
-| Mary | MAIR-ee | /ˈmɛər.i/ | Luke 1:27 |  |  |
-| Augustus | aw-GUS-tuhs | /ɔːˈɡʌs.təs/ | Luke 2:1 |  |  |
-| Caesar | SEE-zer | /ˈsiː.zər/ | Luke 2:1 |  |  |
+| Nazareth | NAZ-uh-reth | /ˈnæz.ə.rɛθ/ | Luke 1:26 |  | fine as spelled (0.86) |
+| Mary | MAIR-ee | /ˈmɛər.i/ | Luke 1:27 |  | fine as spelled (1.00) |
+| Augustus | aw-GUS-tuhs | /ɔːˈɡʌs.təs/ | Luke 2:1 |  | still wrong (0.79) |
+| Caesar | SEE-zer | /ˈsiː.zər/ | Luke 2:1 |  | fine as spelled (1.00) |
 | Quirinius | kwih-RIN-ee-uhs | /kwɪˈrɪn.i.əs/ | Luke 2:2 |  |  |
-| Christ | KRYST | /kraɪst/ | Luke 2:11 |  |  |
-| Jesus | JEE-zuhs | /ˈdʒiː.zəs/ | Luke 2:21 |  |  |
+| Christ | KRYST | /kraɪst/ | Luke 2:11 |  | fine as spelled (1.00) |
+| Jesus | JEE-zuhs | /ˈdʒiː.zəs/ | Luke 2:21 |  | fine as spelled (1.00) |
 | Anna | AN-uh | /ˈæn.ə/ | Luke 2:36 |  |  |
 | Phanuel | fuh-NYOO-el | /fəˈnjuː.ɛl/ | Luke 2:36 |  |  |
 | Abilene | ab-ih-LEE-nee | /ˌæb.ɪˈliː.ni/ | Luke 3:1 |  |  |
 | Ituraea | it-yoo-REE-uh | /ˌɪt.jʊˈriː.ə/ | Luke 3:1 |  |  |
 | Lysanias | ly-SAY-nee-uhs | /laɪˈseɪ.ni.əs/ | Luke 3:1 |  |  |
-| Philip | FIL-ip | /ˈfɪl.ɪp/ | Luke 3:1 |  |  |
-| Pilate | PY-luht | /ˈpaɪ.lət/ | Luke 3:1 |  |  |
-| Pontius | PON-shuhs | /ˈpɒn.ʃəs/ | Luke 3:1 |  |  |
+| Philip | FIL-ip | /ˈfɪl.ɪp/ | Luke 3:1 |  | fine as spelled (1.00) |
+| Pilate | PY-luht | /ˈpaɪ.lət/ | Luke 3:1 |  | fine as spelled (1.00) |
+| Pontius | PON-shuhs | /ˈpɒn.ʃəs/ | Luke 3:1 |  | fine as spelled (0.83) |
 | Tiberius | ty-BEER-ee-uhs | /taɪˈbɪr.i.əs/ | Luke 3:1 |  |  |
 | Trachonitis | trak-oh-NY-tis | /ˌtræk.oʊˈnaɪ.tɪs/ | Luke 3:1 |  |  |
-| Annas | AN-uhs | /ˈæn.əs/ | Luke 3:2 |  |  |
-| Caiaphas | KAY-uh-fuhs | /ˈkeɪ.ə.fəs/ | Luke 3:2 |  |  |
+| Annas | AN-uhs | /ˈæn.əs/ | Luke 3:2 |  | still wrong (0.57) |
+| Caiaphas | KAY-uh-fuhs | /ˈkeɪ.ə.fəs/ | Luke 3:2 |  | suggestion waiting (0.75) |
 | Herodias | huh-ROH-dee-uhs | /həˈroʊ.di.əs/ | Luke 3:19 |  |  |
 | Heli | HEE-ly | /ˈhiː.laɪ/ | Luke 3:23 |  |  |
 | Jannai | JAN-eye | /ˈdʒæn.aɪ/ | Luke 3:24 |  |  |
@@ -1567,27 +1567,27 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Capernaum | kuh-PUR-nay-uhm | /kəˈpɜːr.neɪ.əm/ | Luke 4:23 |  |  |
 | Zarephath | ZAIR-uh-fath | /ˈzɛr.ə.fæθ/ | Luke 4:26 |  |  |
 | Elisha | ih-LY-shuh | /ɪˈlaɪ.ʃə/ | Luke 4:27 |  |  |
-| Simon | SY-muhn | /ˈsaɪ.mən/ | Luke 4:38 |  |  |
+| Simon | SY-muhn | /ˈsaɪ.mən/ | Luke 4:38 |  | fine as spelled (1.00) |
 | Gennesaret | guh-NES-uh-ret | /ɡəˈnɛs.ə.rɛt/ | Luke 5:1 |  |  |
-| Peter | PEE-ter | /ˈpiː.tər/ | Luke 5:8 |  |  |
-| James | JAYMZ | /dʒeɪmz/ | Luke 5:10 |  |  |
+| Peter | PEE-ter | /ˈpiː.tər/ | Luke 5:8 |  | fine as spelled (0.80) |
+| James | JAYMZ | /dʒeɪmz/ | Luke 5:10 |  | fine as spelled (1.00) |
 | Zebedee | ZEB-uh-dee | /ˈzɛb.ə.diː/ | Luke 5:10 |  |  |
-| Pharisees | FAIR-ih-seez | /ˈfær.ɪ.siːz/ | Luke 5:17 |  |  |
-| Alphaeus | al-FEE-uhs | /ælˈfiː.əs/ | Luke 6:15 |  |  |
+| Pharisees | FAIR-ih-seez | /ˈfær.ɪ.siːz/ | Luke 5:17 |  | fine as spelled (0.86) |
+| Alphaeus | al-FEE-uhs | /ælˈfiː.əs/ | Luke 6:15 |  | fine as spelled (1.00) |
 | Iscariot | is-KAIR-ee-uht | /ɪsˈkær.i.ət/ | Luke 6:16 |  |  |
-| Judas | JOO-duhs | /ˈdʒuː.dəs/ | Luke 6:16 |  |  |
+| Judas | JOO-duhs | /ˈdʒuː.dəs/ | Luke 6:16 |  | fine as spelled (0.90) |
 | Nain | NAYN | /neɪn/ | Luke 7:11 |  |  |
-| Pharisee | FAIR-ih-see | /ˈfær.ɪ.siː/ | Luke 7:36 |  |  |
+| Pharisee | FAIR-ih-see | /ˈfær.ɪ.siː/ | Luke 7:36 |  | fine as spelled (0.83) |
 | Magdalene | MAG-duh-leen | /ˈmæɡ.də.liːn/ | Luke 8:2 |  |  |
 | Chuzas | KOO-zuhs | /ˈkuː.zəs/ | Luke 8:3 |  |  |
 | Joanna | joh-AN-uh | /dʒoʊˈæn.ə/ | Luke 8:3 |  |  |
 | Gadarenes | GAD-uh-reenz | /ˈɡæd.ə.riːnz/ | Luke 8:26 |  |  |
 | Jairus | JY-ruhs | /ˈdʒaɪ.rəs/ | Luke 8:41 |  |  |
 | Bethsaida | beth-SAY-ih-duh | /bɛθˈseɪ.ɪ.də/ | Luke 9:10 |  |  |
-| Samaritans | suh-MAIR-ih-tuhnz | /səˈmær.ɪ.tənz/ | Luke 9:52 |  |  |
+| Samaritans | suh-MAIR-ih-tuhnz | /səˈmær.ɪ.tənz/ | Luke 9:52 |  | fine as spelled (0.85) |
 | Sodom | SOD-uhm | /ˈsɒd.əm/ | Luke 10:12 |  | fine as spelled (1.00) |
 | Chorazin | koh-RAY-zin | /koʊˈreɪ.zɪn/ | Luke 10:13 |  |  |
-| Hades | HAY-deez | /ˈheɪ.diːz/ | Luke 10:15 |  |  |
+| Hades | HAY-deez | /ˈheɪ.diːz/ | Luke 10:15 |  | fine as spelled (1.00) |
 | Samaritan | suh-MAIR-ih-tuhn | /səˈmær.ɪ.tən/ | Luke 10:33 |  |  |
 | Martha | MAR-thuh | /ˈmɑːr.θə/ | Luke 10:38 |  |  |
 | Beelzebul | bee-EL-zeh-buhl | /biˈɛl.zə.bʌl/ | Luke 11:15 |  |  |
@@ -1596,196 +1596,236 @@ correctly. Generated from `pronunciations.json` -- edit with the GUI
 | Nineveh | NIN-uh-vuh | /ˈnɪn.ə.və/ | Luke 11:32 |  | fine as spelled (0.83) |
 | Zachariah | zak-uh-RY-uh | /ˌzæk.əˈraɪ.ə/ | Luke 11:51 |  |  |
 | Gehenna | guh-HEN-uh | /ɡəˈhɛn.ə/ | Luke 12:5 |  |  |
-| Galileans | gal-ih-LEE-uhnz | /ˌɡæl.ɪˈliː.ənz/ | Luke 13:1 |  |  |
+| Galileans | gal-ih-LEE-uhnz | /ˌɡæl.ɪˈliː.ənz/ | Luke 13:1 |  | fine as spelled (0.89) |
 | Siloam | sy-LOH-uhm | /saɪˈloʊ.əm/ | Luke 13:4 |  |  |
 | Mammon | MAM-uhn | /ˈmæm.ən/ | Luke 16:13 |  |  |
 | Lazarus | LAZ-uh-ruhs | /ˈlæz.ə.rəs/ | Luke 16:20 |  |  |
 | Zacchaeus | za-KEE-uhs | /zæˈkiː.əs/ | Luke 19:2 |  |  |
 | Bethany | BETH-uh-nee | /ˈbɛθ.ə.ni/ | Luke 19:29 |  |  |
 | Bethsphage | BETH-sfuh-jee | /ˈbɛθ.sfə.dʒiː/ | Luke 19:29 |  |  |
-| Olivet | OL-ih-vet | /ˈɒl.ɪ.vɛt/ | Luke 19:29 |  |  |
-| Sadducees | SAD-joo-seez | /ˈsædʒ.ə.siːz/ | Luke 20:27 |  |  |
+| Olivet | ahlihveht | /ˈɒl.ɪ.vɛt/ | Luke 19:29 | ✅ | overridden (0.92) |
+| Sadducees | SAD-joo-seez | /ˈsædʒ.ə.siːz/ | Luke 20:27 |  | fine as spelled (1.00) |
 | Galilean | gal-ih-LEE-uhn | /ˌɡæl.ɪˈliː.ən/ | Luke 22:59 |  |  |
 | Barabbas | buh-RAB-uhs | /bəˈræb.əs/ | Luke 23:18 |  |  |
 | Arimathaea | air-ih-muh-THEE-uh | /ˌær.ɪ.məˈθiː.ə/ | Luke 23:51 |  |  |
 | Emmaus | eh-MAY-uhs | /ɛˈmeɪ.əs/ | Luke 24:13 |  |  |
 | Cleopas | KLEE-oh-puhs | /ˈkliː.ə.pəs/ | Luke 24:18 |  |  |
 | Nazarene | naz-uh-REEN | /ˌnæz.əˈriːn/ | Luke 24:19 |  |  |
-| Samaria | Samairia |  | Acts 1:8 | ✅ | overridden |
-| Andrew | AN-droo | /ˈæn.druː/ | Acts 1:13 |  |  |
-| Bartholomew | bar-THOL-uh-myoo | /bɑːrˈθɒl.ə.mjuː/ | Acts 1:13 |  |  |
-| Matthew | MATH-yoo | /ˈmæθ.juː/ | Acts 1:13 |  |  |
-| Thomas | TOM-uhs | /ˈtɒm.əs/ | Acts 1:13 |  |  |
-| Barsabbas | Bar-sabbas |  | Acts 1:23 | ✅ | overridden |
-| Justus | JUS-tuhs | /ˈdʒʌs.təs/ | Acts 1:23 |  |  |
-| Matthias | muh-THY-uhs | /məˈθaɪ.əs/ | Acts 1:23 |  |  |
-| Pentecost | PEN-tih-kost | /ˈpɛn.tɪ.kɒst/ | Acts 2:1 |  |  |
-| Asia | AY-zhuh | /ˈeɪ.ʒə/ | Acts 2:9 |  |  |
-| Cappadocia | kap-uh-DOH-shuh | /ˌkæp.əˈdoʊ.ʃə/ | Acts 2:9 |  |  |
-| Elamites | EE-luh-mites | /ˈiː.lə.maɪts/ | Acts 2:9 |  |  |
-| Medes | MEEDZ | /miːdz/ | Acts 2:9 |  |  |
-| Pontus | PON-tuhs | /ˈpɒn.təs/ | Acts 2:9 |  |  |
-| Libya | LIB-ee-uh | /ˈlɪb.i.ə/ | Acts 2:10 |  |  |
-| Pamphylia | pam-FIL-ee-uh | /pæmˈfɪl.i.ə/ | Acts 2:10 |  |  |
-| Rome | ROHM | /roʊm/ | Acts 2:10 |  |  |
-| Alexander | al-ig-ZAN-der | /ˌæl.ɪɡˈzæn.dər/ | Acts 4:6 |  |  |
-| Barnabas | BAR-nuh-buhs | /ˈbɑːr.nə.bəs/ | Acts 4:36 |  |  |
-| Cyprus | SY-pruhs | /ˈsaɪ.prəs/ | Acts 4:36 |  |  |
-| Ananias | an-uh-NY-uhs | /ˌæn.əˈnaɪ.əs/ | Acts 5:1 |  |  |
-| Sapphira | suh-FY-ruh | /səˈfaɪ.rə/ | Acts 5:1 |  |  |
-| Gamaliel | guh-MAY-lee-el | /ɡəˈmeɪ.li.əl/ | Acts 5:34 |  |  |
-| Theudas | THOO-duhs | /ˈθuː.dəs/ | Acts 5:36 |  |  |
-| Hellenists | HEL-uh-nists | /ˈhɛl.ə.nɪsts/ | Acts 6:1 |  |  |
-| Antioch | AN-tee-ok | /ˈæn.ti.ɒk/ | Acts 6:5 |  |  |
-| Nicanor | ny-KAY-nor | /naɪˈkeɪ.nɔːr/ | Acts 6:5 |  |  |
-| Nicolaus | nik-uh-LAY-uhs | /ˌnɪk.əˈleɪ.əs/ | Acts 6:5 |  |  |
-| Parmenas | PAR-muh-nuhs | /ˈpɑːr.mə.nəs/ | Acts 6:5 |  |  |
-| Prochorus | PROK-uh-ruhs | /ˈprɒk.ə.rəs/ | Acts 6:5 |  |  |
-| Stephen | STEE-vuhn | /ˈstiː.vən/ | Acts 6:5 |  |  |
-| Timon | TY-muhn | /ˈtaɪ.mən/ | Acts 6:5 |  |  |
-| Alexandrians | al-ig-ZAN-dree-uhnz | /ˌæl.ɪɡˈzæn.dri.ənz/ | Acts 6:9 |  |  |
-| Cilicia | sih-LISH-uh | /sɪˈlɪʃ.ə/ | Acts 6:9 |  |  |
-| Cyrenians | sy-REE-nee-uhnz | /saɪˈriː.ni.ənz/ | Acts 6:9 |  |  |
-| Libertines | LIB-er-teenz | /ˈlɪb.ər.tiːnz/ | Acts 6:9 |  |  |
-| Chaldaeans | kal-DEE-uhnz | /kælˈdiː.ənz/ | Acts 7:4 |  |  |
-| Hamor | HAY-mor | /ˈheɪ.mɔːr/ | Acts 7:16 |  |  |
-| Egyptians | ee-JIP-shuhnz | /iˈdʒɪp.ʃənz/ | Acts 7:22 |  |  |
-| Sinai | SY-ny | /ˈsaɪ.naɪ/ | Acts 7:30 |  |  |
-| Moloch | MOH-lok | /ˈmoʊ.lɒk/ | Acts 7:43 |  |  |
-| Rephan | REE-fan | /ˈriː.fæn/ | Acts 7:43 |  |  |
+| Judaea | joo-DEE-uh | /dʒuːˈdiː.ə/ | Acts 1:8 |  | fine as spelled (0.80) |
+| Samaria | Samairia | /səˈmɛər.i.ə/ | Acts 1:8 | ✅ | overridden |
+| Andrew | AN-droo | /ˈæn.druː/ | Acts 1:13 |  | fine as spelled (1.00) |
+| Bartholomew | bar-THOL-uh-myoo | /bɑːrˈθɒl.ə.mjuː/ | Acts 1:13 |  | fine as spelled (0.95) |
+| Matthew | MATH-yoo | /ˈmæθ.juː/ | Acts 1:13 |  | fine as spelled (1.00) |
+| Thomas | TOM-uhs | /ˈtɒm.əs/ | Acts 1:13 |  | fine as spelled (1.00) |
+| Zelotes | zi-LOH-teez | /zɪˈloʊ.tiːz/ | Acts 1:13 | ✅ | overridden (0.86) |
+| Aceldama | uh-KEL-duh-muh | /əˈkɛl.də.mə/ | Acts 1:19 |  | fine as spelled (0.88) |
+| Barsabas | BAR-suh-bus | /ˈbɑːr.sə.bəs/ | Acts 1:23 |  | still wrong (0.56) |
+| Barsabbas | Bar-sabbas | /bɑːrˈsæb.əs/ | Acts 1:23 | ✅ | overridden |
+| Justus | JUS-tuhs | /ˈdʒʌs.təs/ | Acts 1:23 |  | fine as spelled (0.83) |
+| Matthias | muh-THY-uhs | /məˈθaɪ.əs/ | Acts 1:23 |  | fine as spelled (1.00) |
+| Pentecost | PEN-tih-kost | /ˈpɛn.tɪ.kɒst/ | Acts 2:1 |  | fine as spelled (1.00) |
+| Galilaeans | gal-ih-LEE-unz | /ˌɡæl.ɪˈliː.ənz/ | Acts 2:7 |  | fine as spelled (0.89) |
+| Asia | AY-zhuh | /ˈeɪ.ʒə/ | Acts 2:9 |  | fine as spelled (1.00) |
+| Cappadocia | kap-uh-DOH-shuh | /ˌkæp.əˈdoʊ.ʃə/ | Acts 2:9 |  | fine as spelled (0.83) |
+| Elamites | EE-luh-mites | /ˈiː.lə.maɪts/ | Acts 2:9 |  | fine as spelled (0.92) |
+| Medes | MEEDZ | /miːdz/ | Acts 2:9 |  | fine as spelled (1.00) |
+| Pontus | PON-tuhs | /ˈpɒn.təs/ | Acts 2:9 |  | suggestion waiting (0.75) |
+| Libya | LIB-ee-uh | /ˈlɪb.i.ə/ | Acts 2:10 |  | fine as spelled (1.00) |
+| Pamphylia | pam-FIL-ee-uh | /pæmˈfɪl.i.ə/ | Acts 2:10 |  | fine as spelled (0.94) |
+| Rome | ROHM | /roʊm/ | Acts 2:10 |  | fine as spelled (1.00) |
+| Alexander | al-ig-ZAN-der | /ˌæl.ɪɡˈzæn.dər/ | Acts 4:6 |  | fine as spelled (1.00) |
+| Barnabas | BAR-nuh-buhs | /ˈbɑːr.nə.bəs/ | Acts 4:36 |  | fine as spelled (1.00) |
+| Cyprus | SY-pruhs | /ˈsaɪ.prəs/ | Acts 4:36 |  | fine as spelled (1.00) |
+| Joses | JOH-seez | /ˈdʒoʊ.siːz/ | Acts 4:36 | ✅ | overridden (1.00) |
+| Ananias | an-uh-NY-uhs | /ˌæn.əˈnaɪ.əs/ | Acts 5:1 |  | fine as spelled (0.93) |
+| Sapphira | suhfeyeruh | /səˈfaɪ.rə/ | Acts 5:1 | ✅ | overridden (0.83) |
+| Gamaliel | guh-MAY-lee-el | /ɡəˈmeɪ.li.əl/ | Acts 5:34 |  | fine as spelled (1.00) |
+| Theudas | thoodas | /ˈθuː.dəs/ | Acts 5:36 | ✅ | overridden (1.00) |
+| Grecians | GREE-shunz | /ˈɡriː.ʃənz/ | Acts 6:1 |  | fine as spelled (1.00) |
+| Hellenists | HEL-uh-nists | /ˈhɛl.ə.nɪsts/ | Acts 6:1 |  | fine as spelled (1.00) |
+| Antioch | AN-tee-ok | /ˈæn.ti.ɒk/ | Acts 6:5 |  | fine as spelled (0.92) |
+| Nicanor | ny-KAY-nor | /naɪˈkeɪ.nɔːr/ | Acts 6:5 |  | fine as spelled (0.86) |
+| Nicolas | NIK-uh-lus | /ˈnɪk.ə.ləs/ | Acts 6:5 |  | fine as spelled (0.93) |
+| Nicolaus | nik-uh-LAY-uhs | /ˌnɪk.əˈleɪ.əs/ | Acts 6:5 |  | fine as spelled (0.88) |
+| Parmenas | PAR-muh-nuhs | /ˈpɑːr.mə.nəs/ | Acts 6:5 |  | still wrong (0.75) |
+| Prochorus | PROK-uh-ruhss | /ˈprɒk.ə.rəs/ | Acts 6:5 | ✅ | overridden (1.00) |
+| Stephen | STEE-vuhn | /ˈstiː.vən/ | Acts 6:5 |  | fine as spelled (1.00) |
+| Timon | TY-muhn | /ˈtaɪ.mən/ | Acts 6:5 |  | fine as spelled (1.00) |
+| Alexandrians | al-ig-ZAN-dree-uhnz | /ˌæl.ɪɡˈzæn.dri.ənz/ | Acts 6:9 |  | fine as spelled (1.00) |
+| Cilicia | sih-LISH-uh | /sɪˈlɪʃ.ə/ | Acts 6:9 |  | fine as spelled (0.83) |
+| Cyrenians | sy-REE-nee-uhnz | /saɪˈriː.ni.ənz/ | Acts 6:9 |  | fine as spelled (0.94) |
+| Libertines | LIB-er-teenz | /ˈlɪb.ər.tiːnz/ | Acts 6:9 |  | fine as spelled (1.00) |
+| Charran | karuhn | /ˈkær.ən/ | Acts 7:2 | ✅ | overridden (0.90) |
+| Chaldaeans | kal-DEE-uhnz | /kælˈdiː.ənz/ | Acts 7:4 |  | fine as spelled (1.00) |
+| Chanaan | KAY-nann | /ˈkeɪ.næn/ | Acts 7:11 | ✅ | overridden (1.00) |
+| Emmor | EHM-awr | /ˈɛm.ɔːr/ | Acts 7:16 | ✅ | overridden (1.00) |
+| Hamor | HAY-mawr | /ˈheɪ.mɔːr/ | Acts 7:16 | ✅ | overridden (1.00) |
+| Sychem | SY-kem | /ˈsaɪ.kɛm/ | Acts 7:16 |  | fine as spelled (0.80) |
+| Egyptians | ee-JIP-shuhnz | /iˈdʒɪp.ʃənz/ | Acts 7:22 |  | fine as spelled (0.88) |
+| Madian | MAY-dee-un | /ˈmeɪ.di.ən/ | Acts 7:29 |  | fine as spelled (0.83) |
+| Sina | SY-nuh | /ˈsaɪ.nə/ | Acts 7:30 |  | still wrong (0.68) |
+| Sinai | SY-ny | /ˈsaɪ.naɪ/ | Acts 7:30 |  | fine as spelled (1.00) |
+| Moloch | MOH-lok | /ˈmoʊ.lɒk/ | Acts 7:43 |  | fine as spelled (0.90) |
+| Remphan | REM-fan | /ˈrɛm.fæn/ | Acts 7:43 |  | fine as spelled (0.83) |
+| Rephan | REE-fann | /ˈriː.fæn/ | Acts 7:43 | ✅ | overridden (1.00) |
 | Gaza | GAH-zuh | /ˈɡɑː.zə/ | Acts 8:26 |  | fine as spelled (0.88) |
-| Candace | KAN-duh-see | /ˈkæn.də.siː/ | Acts 8:27 |  |  |
+| Candace | KAN-duh-see | /ˈkæn.də.siː/ | Acts 8:27 |  | suggestion waiting (0.71) |
 | Ethiopia | ee-thee-OH-pee-uh | /ˌiː.θiˈoʊ.pi.ə/ | Acts 8:27 |  | fine as spelled (1.00) |
-| Azotus | uh-ZOH-tuhs | /əˈzoʊ.təs/ | Acts 8:40 |  |  |
-| Tarsus | TAR-suhs | /ˈtɑːr.səs/ | Acts 9:11 |  |  |
-| Lydda | LID-uh | /ˈlɪd.ə/ | Acts 9:32 |  |  |
-| Aeneas | ih-NEE-uhs | /ɪˈniː.əs/ | Acts 9:33 |  |  |
-| Dorcas | DOR-kuhs | /ˈdɔːr.kəs/ | Acts 9:36 |  |  |
-| Tabitha | TAB-ih-thuh | /ˈtæb.ɪ.θə/ | Acts 9:36 |  |  |
-| Cornelius | kor-NEEL-yuhs | /kɔːrˈniːl.jəs/ | Acts 10:1 |  |  |
+| Esaias | izayuhs | /ɪˈzeɪ.əs/ | Acts 8:28 | ✅ | overridden (1.00) |
+| Azotus | uh-ZOH-tuhss | /əˈzoʊ.təs/ | Acts 8:40 | ✅ | overridden (0.92) |
+| Tarsus | TAR-suhs | /ˈtɑːr.səs/ | Acts 9:11 |  | fine as spelled (0.83) |
+| Lydda | LID-uh | /ˈlɪd.ə/ | Acts 9:32 |  | fine as spelled (0.90) |
+| Aeneas | ih-NEE-uhs | /ɪˈniː.əs/ | Acts 9:33 |  | fine as spelled (1.00) |
+| Saron | SAIRR-on | /ˈsɛər.ɒn/ | Acts 9:35 | ✅ | overridden (1.00) |
+| Dorcas | DOR-kuhs | /ˈdɔːr.kəs/ | Acts 9:36 |  | still wrong (0.75) |
+| Tabitha | TAB-ih-thuh | /ˈtæb.ɪ.θə/ | Acts 9:36 |  | fine as spelled (1.00) |
+| Cornelius | kor-NEEL-yuhs | /kɔːrˈniːl.jəs/ | Acts 10:1 |  | fine as spelled (0.83) |
+| Phenice | fihneyesee | /fɪˈnaɪ.siː/ | Acts 11:19 | ✅ | overridden (0.86) |
 | Agabus | AGga-bus | /ˈæɡ.ə.bəs/ | Acts 11:28 | ✅ | overridden |
-| Claudius | KLAW-dee-uhs | /ˈklɔː.di.əs/ | Acts 11:28 |  |  |
-| Mark | MARK | /mɑːrk/ | Acts 12:12 |  |  |
-| Rhoda | ROH-duh | /ˈroʊ.də/ | Acts 12:13 |  |  |
-| Caesarea | sessa-Rheea |  | Acts 12:19 | ✅ | overridden |
-| Blastus | BLAS-tuhs | /ˈblæs.təs/ | Acts 12:20 |  |  |
-| Cyrene | siereen |  | Acts 13:1 | ✅ | overridden |
-| Lucius | LOO-shuhs | /ˈluː.ʃəs/ | Acts 13:1 |  |  |
-| Manaen | MAN-ay-en | /ˈmæn.eɪ.ɛn/ | Acts 13:1 |  |  |
-| Niger | NY-jer | /ˈnaɪ.dʒər/ | Acts 13:1 |  |  |
-| Seleucia | suh-LOO-shuh | /səˈluː.ʃə/ | Acts 13:4 |  |  |
-| Salamis | Salamiss |  | Acts 13:5 | ✅ | overridden |
+| Claudius | KLAW-dee-uhs | /ˈklɔː.di.əs/ | Acts 11:28 |  | fine as spelled (1.00) |
+| Mark | MARK | /mɑːrk/ | Acts 12:12 |  | fine as spelled (1.00) |
+| Rhoda | ROH-duh | /ˈroʊ.də/ | Acts 12:13 |  | fine as spelled (1.00) |
+| Caesarea | sessa-Rheea | /ˌsɛs.əˈriː.ə/ | Acts 12:19 | ✅ | overridden |
+| Blastus | BLAS-tuhs | /ˈblæs.təs/ | Acts 12:20 |  | still wrong (0.71) |
+| Cyrene | siereen | /saɪˈriːn/ | Acts 13:1 | ✅ | overridden |
+| Lucius | LOO-shuhs | /ˈluː.ʃəs/ | Acts 13:1 |  | fine as spelled (1.00) |
+| Manaen | MAN-ay-en | /ˈmæn.eɪ.ɛn/ | Acts 13:1 |  | still wrong (0.50) |
+| Niger | NY-jer | /ˈnaɪ.dʒər/ | Acts 13:1 |  | fine as spelled (1.00) |
+| Seleucia | suh-LOO-shuh | /səˈluː.ʃə/ | Acts 13:4 |  | fine as spelled (0.86) |
+| Salamis | Salamiss | /ˈsæl.ə.mɪs/ | Acts 13:5 | ✅ | overridden |
+| Bar-jesus | bar-JEE-zus | /bɑːrˈdʒiː.zəs/ | Acts 13:6 |  | fine as spelled (0.94) |
 | Paphos | PAYfose | /ˈpeɪ.fɒs/ | Acts 13:6 | ✅ | overridden |
-| Paulus | PAW-luhs | /ˈpɔː.ləs/ | Acts 13:7 |  |  |
-| Sergius | SUR-jee-uhs | /ˈsɜːr.dʒi.əs/ | Acts 13:7 |  |  |
-| Elymas | EL-ih-muhs | /ˈɛl.ɪ.məs/ | Acts 13:8 |  |  |
-| Paul | PAWL | /pɔːl/ | Acts 13:9 |  |  |
-| Perga | PUR-guh | /ˈpɜːr.ɡə/ | Acts 13:13 |  |  |
-| Pisidia | pih-SID-ee-uh | /pɪˈsɪd.i.ə/ | Acts 13:14 |  |  |
-| Iconium | eye-KOH-nee-uhm | /aɪˈkoʊ.ni.əm/ | Acts 13:51 |  |  |
-| Derbe | DUR-bee | /ˈdɜːr.bi/ | Acts 14:6 |  |  |
-| Lycaonia | lik-ay-OH-nee-uh | /ˌlɪk.eɪˈoʊ.ni.ə/ | Acts 14:6 |  |  |
-| Lystra | LIS-truh | /ˈlɪs.trə/ | Acts 14:6 |  |  |
-| Jupiter | JOO-pih-ter | /ˈdʒuː.pɪ.tər/ | Acts 14:12 |  |  |
-| Attalia | at-uh-LY-uh | /ˌæt.əˈlaɪ.ə/ | Acts 14:25 |  |  |
-| Phoenicia | Phoneesha |  | Acts 15:3 | ✅ | overridden |
-| Silas | SY-luhs | /ˈsaɪ.ləs/ | Acts 15:22 |  |  |
-| Timothy | TIM-uh-thee | /ˈtɪm.ə.θi/ | Acts 16:1 |  |  |
-| Galatia | guh-LAY-shuh | /ɡəˈleɪ.ʃə/ | Acts 16:6 |  |  |
-| Phrygia | FRIJ-ee-uh | /ˈfrɪdʒ.i.ə/ | Acts 16:6 |  |  |
-| Bithynia | bih-THIN-ee-uh | /bɪˈθɪn.i.ə/ | Acts 16:7 |  |  |
-| Mysia | MISH-ee-uh | /ˈmɪʃ.i.ə/ | Acts 16:7 |  |  |
-| Troas | TROH-az | /ˈtroʊ.æz/ | Acts 16:8 |  |  |
-| Macedonia | mas-uh-DOH-nee-uh | /ˌmæs.əˈdoʊ.ni.ə/ | Acts 16:9 |  |  |
-| Neapolis | nee-AP-oh-lis | /niˈæp.ə.lɪs/ | Acts 16:11 |  |  |
-| Samothrace | SAM-oh-thrayss | /ˈsæm.ə.θreɪs/ | Acts 16:11 |  |  |
-| Philippi | fih-LIP-eye | /fɪˈlɪp.aɪ/ | Acts 16:12 |  |  |
-| Lydia | LID-ee-uh | /ˈlɪd.i.ə/ | Acts 16:14 |  |  |
-| Thyatira | thy-uh-TY-ruh | /ˌθaɪ.əˈtaɪ.rə/ | Acts 16:14 |  |  |
-| Amphipolis | am-FIP-oh-lis | /æmˈfɪp.ə.lɪs/ | Acts 17:1 |  |  |
-| Apollonia | ap-uh-LOH-nee-uh | /ˌæp.əˈloʊ.ni.ə/ | Acts 17:1 |  |  |
-| Thessalonica | thes-uh-loh-NY-kuh | /ˌθɛs.ə.loʊˈnaɪ.kə/ | Acts 17:1 |  |  |
-| Jason | JAY-suhn | /ˈdʒeɪ.sən/ | Acts 17:5 |  |  |
-| Beroea | buh-REE-uh | /bəˈriː.ə/ | Acts 17:10 |  |  |
-| Athens | ATH-inz | /ˈæθ.ɪnz/ | Acts 17:15 |  |  |
-| Areopagus | air-ee-OP-uh-guhs | /ˌær.iˈɒp.ə.ɡəs/ | Acts 17:19 |  |  |
-| Athenians | uh-THEE-nee-uhnz | /əˈθiː.ni.ənz/ | Acts 17:21 |  |  |
-| Areopagite | air-ee-OP-uh-jite | /ˌær.iˈɒp.ə.dʒaɪt/ | Acts 17:34 |  |  |
-| Damaris | DAM-uh-ris | /ˈdæm.ə.rɪs/ | Acts 17:34 |  |  |
-| Dionysius | dy-uh-NISH-ee-uhs | /ˌdaɪ.əˈnɪʃ.i.əs/ | Acts 17:34 |  |  |
-| Corinth | KOR-inth | /ˈkɔːr.ɪnθ/ | Acts 18:1 |  |  |
-| Aquila | AK-wih-luh | /ˈæk.wɪ.lə/ | Acts 18:2 |  |  |
-| Italy | IT-uh-lee | /ˈɪt.ə.li/ | Acts 18:2 |  |  |
-| Priscilla | prih-SIL-uh | /prɪˈsɪl.ə/ | Acts 18:2 |  |  |
-| Corinthians | kuh-RIN-thee-uhnz | /kəˈrɪn.θi.ənz/ | Acts 18:8 |  |  |
-| Achaia | uh-KAY-yuh | /əˈkeɪ.ə/ | Acts 18:12 |  |  |
-| Gallio | GAL-ee-oh | /ˈɡæl.i.oʊ/ | Acts 18:12 |  |  |
-| Sosthenes | SOS-thuh-neez | /ˈsɒs.θə.niːz/ | Acts 18:17 |  |  |
-| Cenchreae | sen-KREE-ee | /sɛnˈkriː.iː/ | Acts 18:18 |  |  |
-| Ephesus | EF-uh-suhs | /ˈɛf.ə.səs/ | Acts 18:19 |  |  |
-| Alexandrian | al-ig-ZAN-dree-uhn | /ˌæl.ɪɡˈzæn.dri.ən/ | Acts 18:24 |  |  |
-| Apollos | uh-POL-uhs | /əˈpɒl.əs/ | Acts 18:24 |  |  |
-| Tyrannus | ty-RAN-uhs | /taɪˈræn.əs/ | Acts 19:9 |  |  |
-| Sceva | SEE-vuh | /ˈsiː.və/ | Acts 19:14 |  |  |
-| Erastus | ih-RAS-tuhs | /ɪˈræs.təs/ | Acts 19:22 |  |  |
-| Artemis | AR-tuh-mis | /ˈɑːr.tə.mɪs/ | Acts 19:24 |  |  |
-| Demetrius | dih-MEE-tree-uhs | /dɪˈmiː.tri.əs/ | Acts 19:24 |  |  |
-| Ephesians | ih-FEE-zhuhnz | /ɪˈfiː.ʒənz/ | Acts 19:28 |  |  |
-| Aristarchus | air-is-TAR-kuhs | /ˌær.ɪsˈtɑːr.kəs/ | Acts 19:29 |  |  |
-| Gaius | GAY-uhs | /ˈɡeɪ.əs/ | Acts 19:29 |  |  |
-| Asiarchs | AY-zhee-arks | /ˈeɪ.ʒi.ɑːrks/ | Acts 19:31 |  |  |
-| Zeus | ZOOS | /zuːs/ | Acts 19:35 |  |  |
-| Greece | GREESS | /ɡriːs/ | Acts 20:2 |  |  |
-| Secundus | suh-KUN-duhs | /səˈkʌn.dəs/ | Acts 20:4 |  |  |
-| Thessalonians | thes-uh-LOH-nee-uhnz | /ˌθɛs.əˈloʊ.ni.ənz/ | Acts 20:4 |  |  |
-| Trophimus | TROF-ih-muhs | /ˈtrɒf.ɪ.məs/ | Acts 20:4 |  |  |
-| Tychicus | TIK-ih-kuhs | /ˈtɪk.ɪ.kəs/ | Acts 20:4 |  |  |
-| Eutychus | YOO-tih-kuhs | /ˈjuː.tɪ.kəs/ | Acts 20:9 |  |  |
-| Assos | AS-os | /ˈæs.ɒs/ | Acts 20:13 |  |  |
-| Mitylene | mit-ih-LEE-nee | /ˌmɪt.ɪˈliː.ni/ | Acts 20:14 |  |  |
-| Chios | KY-os | /ˈkaɪ.ɒs/ | Acts 20:15 |  |  |
-| Miletus | my-LEE-tuhs | /maɪˈliː.təs/ | Acts 20:15 |  |  |
-| Samos | SAY-mos | /ˈseɪ.mɒs/ | Acts 20:15 |  |  |
-| Trogyllium | troh-JIL-ee-uhm | /troʊˈdʒɪl.i.əm/ | Acts 20:15 |  |  |
-| Cos | KOS | /kɒs/ | Acts 21:1 |  |  |
-| Patara | PAT-uh-ruh | /ˈpæt.ə.rə/ | Acts 21:1 |  |  |
-| Rhodes | ROHDZ | /roʊdz/ | Acts 21:1 |  |  |
-| Ptolemais | tol-uh-MAY-is | /ˌtɒl.əˈmeɪ.ɪs/ | Acts 21:7 |  |  |
-| Mnason | NAY-suhn | /ˈneɪ.sən/ | Acts 21:16 |  |  |
-| Ephesian | ih-FEE-zhuhn | /ɪˈfiː.ʒən/ | Acts 21:29 |  |  |
-| Felix | FEE-liks | /ˈfiː.lɪks/ | Acts 23:24 |  |  |
-| Lysias | LIS-ee-uhs | /ˈlɪs.i.əs/ | Acts 23:26 |  |  |
-| Antipatris | an-TIP-uh-tris | /ænˈtɪp.ə.trɪs/ | Acts 23:31 |  |  |
-| Tertullus | ter-TUL-uhs | /tərˈtʌl.əs/ | Acts 24:1 |  |  |
-| Nazarenes | naz-uh-REENZ | /ˌnæz.əˈriːnz/ | Acts 24:5 |  |  |
-| Drusilla | droo-SIL-uh | /druːˈsɪl.ə/ | Acts 24:24 |  |  |
-| Festus | FES-tuhs | /ˈfɛs.təs/ | Acts 24:27 |  |  |
-| Porcius | POR-shuhs | /ˈpɔːr.ʃəs/ | Acts 24:27 |  |  |
-| Agrippa | uh-GRIP-uh | /əˈɡrɪp.ə/ | Acts 25:13 |  |  |
-| Bernice | ber-NEE-see | /bərˈniː.siː/ | Acts 25:13 |  |  |
-| Augustan | aw-GUS-tuhn | /ɔːˈɡʌs.tən/ | Acts 27:1 |  |  |
-| Julius | JOOL-yuhs | /ˈdʒuːl.jəs/ | Acts 27:1 |  |  |
-| Adramyttium | ad-ruh-MIT-ee-uhm | /ˌæd.rəˈmɪt.i.əm/ | Acts 27:2 |  |  |
-| Macedonian | mas-uh-DOH-nee-uhn | /ˌmæs.əˈdoʊ.ni.ən/ | Acts 27:2 |  |  |
-| Lycia | LISH-ee-uh | /ˈlɪʃ.i.ə/ | Acts 27:5 |  |  |
-| Myra | MY-ruh | /ˈmaɪ.rə/ | Acts 27:5 |  |  |
-| Alexandria | al-ig-ZAN-dree-uh | /ˌæl.ɪɡˈzæn.dri.ə/ | Acts 27:6 |  |  |
-| Cnidus | NY-duhs | /ˈnaɪ.dəs/ | Acts 27:7 |  |  |
-| Crete | KREET | /kriːt/ | Acts 27:7 |  |  |
-| Salmone | sal-MOH-nee | /sælˈmoʊ.ni/ | Acts 27:7 |  |  |
-| Lasea | luh-SEE-uh | /ləˈsiː.ə/ | Acts 27:8 |  |  |
-| Phoenix | FEE-niks | /ˈfiː.nɪks/ | Acts 27:12 |  |  |
-| Euroclydon | yoo-ROK-lih-don | /jʊˈrɒk.lɪ.dɒn/ | Acts 27:14 |  |  |
-| Clauda | KLAW-duh | /ˈklɔː.də/ | Acts 27:16 |  |  |
-| Syrtis | SUR-tis | /ˈsɜːr.tɪs/ | Acts 27:17 |  |  |
-| Adriatic | ay-dree-AT-ik | /ˌeɪ.driˈæt.ɪk/ | Acts 27:27 |  |  |
-| Malta | MAWL-tuh | /ˈmɔːl.tə/ | Acts 28:1 |  |  |
-| Publius | PUB-lee-uhs | /ˈpʌb.li.əs/ | Acts 28:7 |  |  |
-| Syracuse | SEER-uh-kyooz | /ˈsɪr.ə.kjuːz/ | Acts 28:12 |  |  |
-| Puteoli | pyoo-TEE-oh-ly | /pjuːˈtiː.ə.laɪ/ | Acts 28:13 |  |  |
-| Rhegium | REE-jee-uhm | /ˈriː.dʒi.əm/ | Acts 28:13 |  |  |
-| Appius | AP-ee-uhs | /ˈæp.i.əs/ | Acts 28:15 |  |  |
+| Paulus | PAW-luhs | /ˈpɔː.ləs/ | Acts 13:7 |  | suggestion waiting (0.70) |
+| Sergius | SUR-jee-uhs | /ˈsɜːr.dʒi.əs/ | Acts 13:7 |  | fine as spelled (0.86) |
+| Elymas | ehlihmuhs | /ˈɛl.ɪ.məs/ | Acts 13:8 | ✅ | overridden (0.83) |
+| Paul | PAWL | /pɔːl/ | Acts 13:9 |  | fine as spelled (1.00) |
+| Perga | PUR-guh | /ˈpɜːr.ɡə/ | Acts 13:13 |  | fine as spelled (0.80) |
+| Pisidia | pih-SID-ee-uh | /pɪˈsɪd.i.ə/ | Acts 13:14 |  | fine as spelled (0.93) |
+| Cis | SIS | /sɪs/ | Acts 13:21 |  | fine as spelled (1.00) |
+| Iconium | eye-KOH-nee-uhm | /aɪˈkoʊ.ni.əm/ | Acts 13:51 |  | fine as spelled (1.00) |
+| Derbe | DERR-bee | /ˈdɜːr.bi/ | Acts 14:6 | ✅ | overridden (1.00) |
+| Lycaonia | lik-ay-OH-nee-uh | /ˌlɪk.eɪˈoʊ.ni.ə/ | Acts 14:6 |  | fine as spelled (0.81) |
+| Lystra | LIS-truh | /ˈlɪs.trə/ | Acts 14:6 |  | fine as spelled (0.86) |
+| Jupiter | JOO-pih-ter | /ˈdʒuː.pɪ.tər/ | Acts 14:12 |  | fine as spelled (0.86) |
+| Mercurius | mur-KYOOR-ee-us | /mɜːrˈkjʊər.i.əs/ | Acts 14:12 |  | fine as spelled (0.90) |
+| Attalia | at-uh-LY-uh | /ˌæt.əˈlaɪ.ə/ | Acts 14:25 |  | still wrong (0.46) |
+| Phoenicia | Phoneesha | /fəˈniː.ʃə/ | Acts 15:3 | ✅ | overridden |
+| Silas | SY-luhs | /ˈsaɪ.ləs/ | Acts 15:22 |  | fine as spelled (1.00) |
+| Timotheus | tih-MOH-thee-us | /tɪˈmoʊ.θi.əs/ | Acts 16:1 |  | fine as spelled (0.88) |
+| Timothy | TIM-uh-thee | /ˈtɪm.ə.θi/ | Acts 16:1 |  | fine as spelled (1.00) |
+| Galatia | guh-LAY-shuh | /ɡəˈleɪ.ʃə/ | Acts 16:6 |  | fine as spelled (0.93) |
+| Phrygia | FRIJ-ee-uh | /ˈfrɪdʒ.i.ə/ | Acts 16:6 |  | fine as spelled (1.00) |
+| Bithynia | bih-THIN-ee-uh | /bɪˈθɪn.i.ə/ | Acts 16:7 |  | still wrong (0.71) |
+| Mysia | MISH-ee-uh | /ˈmɪʃ.i.ə/ | Acts 16:7 |  | fine as spelled (1.00) |
+| Troas | TROH-az | /ˈtroʊ.æz/ | Acts 16:8 |  | fine as spelled (0.80) |
+| Macedonia | mas-uh-DOH-nee-uh | /ˌmæs.əˈdoʊ.ni.ə/ | Acts 16:9 |  | fine as spelled (0.94) |
+| Neapolis | nee-AP-oh-lis | /niˈæp.ə.lɪs/ | Acts 16:11 |  | still wrong (0.75) |
+| Samothrace | SAM-oh-thrayss | /ˈsæm.ə.θreɪs/ | Acts 16:11 |  | fine as spelled (0.88) |
+| Samothracia | sam-oh-THRAY-shuh | /ˌsæm.oʊˈθreɪ.ʃə/ | Acts 16:11 |  | still wrong (0.79) |
+| Philippi | fih-LIP-eye | /fɪˈlɪp.aɪ/ | Acts 16:12 |  | fine as spelled (0.83) |
+| Lydia | LID-ee-uh | /ˈlɪd.i.ə/ | Acts 16:14 |  | fine as spelled (1.00) |
+| Thyatira | thy-uh-TY-ruh | /ˌθaɪ.əˈtaɪ.rə/ | Acts 16:14 |  | still wrong (0.64) |
+| Amphipolis | am-FIP-oh-lis | /æmˈfɪp.ə.lɪs/ | Acts 17:1 |  | fine as spelled (0.89) |
+| Apollonia | ap-uh-LOH-nee-uh | /ˌæp.əˈloʊ.ni.ə/ | Acts 17:1 |  | fine as spelled (1.00) |
+| Thessalonica | thes-uh-loh-NY-kuh | /ˌθɛs.ə.loʊˈnaɪ.kə/ | Acts 17:1 |  | fine as spelled (0.80) |
+| Jason | JAY-suhn | /ˈdʒeɪ.sən/ | Acts 17:5 |  | fine as spelled (1.00) |
+| Berea | buh-REE-uh | /bəˈriː.ə/ | Acts 17:10 |  | fine as spelled (1.00) |
+| Beroea | buh-REE-uh | /bəˈriː.ə/ | Acts 17:10 |  | still wrong (0.63) |
+| Athens | ATH-inz | /ˈæθ.ɪnz/ | Acts 17:15 |  | fine as spelled (0.80) |
+| Epicurean | ep-ih-kyoo-REE-un | /ˌɛp.ɪ.kjʊˈriː.ən/ | Acts 17:18 |  | fine as spelled (1.00) |
+| Epicureans | ep-ih-kyoo-REE-unz | /ˌɛp.ɪ.kjʊˈriː.ənz/ | Acts 17:18 |  | fine as spelled (0.95) |
+| Stoic | STOH-ik | /ˈstoʊ.ɪk/ | Acts 17:18 |  | fine as spelled (1.00) |
+| Stoicks | STOH-iks | /ˈstoʊ.ɪks/ | Acts 17:18 |  | fine as spelled (1.00) |
+| Areopagus | air-ee-OP-uh-guhs | /ˌær.iˈɒp.ə.ɡəs/ | Acts 17:19 |  | still wrong (0.78) |
+| Athenians | uh-THEE-nee-uhnz | /əˈθiː.ni.ənz/ | Acts 17:21 |  | fine as spelled (1.00) |
+| Mars | MARZ | /mɑːrz/ | Acts 17:22 |  | fine as spelled (1.00) |
+| Areopagite | air-ee-OP-uh-jite | /ˌær.iˈɒp.ə.dʒaɪt/ | Acts 17:34 |  | fine as spelled (0.89) |
+| Damaris | DAM-uh-ris | /ˈdæm.ə.rɪs/ | Acts 17:34 |  | still wrong (0.71) |
+| Dionysius | dy-uh-NISH-ee-uhs | /ˌdaɪ.əˈnɪʃ.i.əs/ | Acts 17:34 |  | fine as spelled (0.89) |
+| Corinth | KOR-inth | /ˈkɔːr.ɪnθ/ | Acts 18:1 |  | fine as spelled (0.83) |
+| Aquila | AK-wih-luh | /ˈæk.wɪ.lə/ | Acts 18:2 |  | still wrong (0.42) |
+| Italy | IT-uh-lee | /ˈɪt.ə.li/ | Acts 18:2 |  | fine as spelled (0.80) |
+| Priscilla | prih-SIL-uh | /prɪˈsɪl.ə/ | Acts 18:2 |  | fine as spelled (1.00) |
+| Corinthians | kuh-RIN-thee-uhnz | /kəˈrɪn.θi.ənz/ | Acts 18:8 |  | fine as spelled (0.91) |
+| Crispus | KRIS-pus | /ˈkrɪs.pəs/ | Acts 18:8 |  | fine as spelled (1.00) |
+| Achaia | a-KAY-uh | /əˈkeɪ.ə/ | Acts 18:12 | ✅ | overridden (0.90) |
+| Gallio | GAL-ee-oh | /ˈɡæl.i.oʊ/ | Acts 18:12 |  | fine as spelled (0.90) |
+| Sosthenes | SOS-thuh-neez | /ˈsɒs.θə.niːz/ | Acts 18:17 |  | suggestion waiting (0.75) |
+| Cenchrea | SENG-krih-uh | /ˈsɛŋ.krɪ.ə/ | Acts 18:18 |  | still wrong (0.64) |
+| Cenchreae | sehn-KREE-ee | /sɛnˈkriː.iː/ | Acts 18:18 | ✅ | overridden (1.00) |
+| Ephesus | EF-uh-suhs | /ˈɛf.ə.səs/ | Acts 18:19 |  | still wrong (0.67) |
+| Alexandrian | al-ig-ZAN-dree-uhn | /ˌæl.ɪɡˈzæn.dri.ən/ | Acts 18:24 |  | fine as spelled (0.96) |
+| Apollos | uh-POL-uhs | /əˈpɒl.əs/ | Acts 18:24 |  | fine as spelled (0.83) |
+| Tyrannus | ty-RAN-uhs | /taɪˈræn.əs/ | Acts 19:9 |  | fine as spelled (0.86) |
+| Sceva | SEE-vuh | /ˈsiː.və/ | Acts 19:14 |  | fine as spelled (0.90) |
+| Erastus | ih-RAS-tuhs | /ɪˈræs.təs/ | Acts 19:22 |  | fine as spelled (1.00) |
+| Artemis | AR-tuh-mis | /ˈɑːr.tə.mɪs/ | Acts 19:24 |  | fine as spelled (0.86) |
+| Demetrius | dih-MEE-tree-uhs | /dɪˈmiː.tri.əs/ | Acts 19:24 |  | fine as spelled (0.94) |
+| Diana | dy-AN-uh | /daɪˈæn.ə/ | Acts 19:24 |  | fine as spelled (1.00) |
+| Ephesians | ih-FEE-zhuhnz | /ɪˈfiː.ʒənz/ | Acts 19:28 |  | fine as spelled (1.00) |
+| Aristarchus | air-is-TAR-kuhs | /ˌær.ɪsˈtɑːr.kəs/ | Acts 19:29 |  | fine as spelled (0.80) |
+| Gaius | GAY-uhs | /ˈɡeɪ.əs/ | Acts 19:29 |  | fine as spelled (0.88) |
+| Asiarchs | AY-zhee-arks | /ˈeɪ.ʒi.ɑːrks/ | Acts 19:31 |  | still wrong (0.79) |
+| Zeus | ZOOS | /zuːs/ | Acts 19:35 |  | fine as spelled (1.00) |
+| Greece | GREESS | /ɡriːs/ | Acts 20:2 |  | fine as spelled (1.00) |
+| Secundus | suh-KUN-duhs | /səˈkʌn.dəs/ | Acts 20:4 |  | fine as spelled (0.88) |
+| Sopater | SOH-puh-ter | /ˈsoʊ.pə.tər/ | Acts 20:4 |  | suggestion waiting (0.71) |
+| Thessalonians | thes-uh-LOH-nee-uhnz | /ˌθɛs.əˈloʊ.ni.ənz/ | Acts 20:4 |  | fine as spelled (0.91) |
+| Trophimus | TROF-ih-muhs | /ˈtrɒf.ɪ.məs/ | Acts 20:4 |  | fine as spelled (0.88) |
+| Tychicus | TIK-ih-kuhs | /ˈtɪk.ɪ.kəs/ | Acts 20:4 |  | fine as spelled (0.93) |
+| Eutychus | YOO-tih-kuhs | /ˈjuː.tɪ.kəs/ | Acts 20:9 |  | fine as spelled (0.86) |
+| Assos | AS-os | /ˈæs.ɒs/ | Acts 20:13 |  | fine as spelled (1.00) |
+| Mitylene | mit-ih-LEE-nee | /ˌmɪt.ɪˈliː.ni/ | Acts 20:14 |  | still wrong (0.62) |
+| Chios | KY-os | /ˈkaɪ.ɒs/ | Acts 20:15 |  | fine as spelled (1.00) |
+| Miletus | my-LEE-tuhs | /maɪˈliː.təs/ | Acts 20:15 | ✅ | overridden (0.93) |
+| Samos | SAY-mos | /ˈseɪ.mɒs/ | Acts 20:15 |  | fine as spelled (1.00) |
+| Trogyllium | troh-JIL-ee-uhm | /troʊˈdʒɪl.i.əm/ | Acts 20:15 |  | suggestion waiting (0.75) |
+| Coos | KOH-os | /ˈkoʊ.ɒs/ | Acts 21:1 |  | still wrong (0.25) |
+| Cos | KOS | /kɒs/ | Acts 21:1 |  | fine as spelled (0.83) |
+| Patara | PAT-uh-ruh | /ˈpæt.ə.rə/ | Acts 21:1 |  | still wrong (0.69) |
+| Rhodes | ROHDZ | /roʊdz/ | Acts 21:1 |  | fine as spelled (1.00) |
+| Phenicia | fihnihshuh | /fɪˈnɪʃ.ə/ | Acts 21:2 | ✅ | overridden (0.83) |
+| Ptolemais | tol-uh-MAY-is | /ˌtɒl.əˈmeɪ.ɪs/ | Acts 21:7 |  | still wrong (0.75) |
+| Mnason | NAY-suhn | /ˈneɪ.sən/ | Acts 21:16 |  | fine as spelled (1.00) |
+| Ephesian | ih-FEE-zhuhn | /ɪˈfiː.ʒən/ | Acts 21:29 |  | fine as spelled (1.00) |
+| Felix | FEE-liks | /ˈfiː.lɪks/ | Acts 23:24 |  | fine as spelled (1.00) |
+| Lysias | LIS-ee-uhs | /ˈlɪs.i.əs/ | Acts 23:26 |  | fine as spelled (1.00) |
+| Antipatris | an-TIP-uh-tris | /ænˈtɪp.ə.trɪs/ | Acts 23:31 |  | fine as spelled (0.80) |
+| Tertullus | tuhr-TUHL-uhss | /tərˈtʌl.əs/ | Acts 24:1 | ✅ | overridden (0.88) |
+| Nazarenes | naz-uh-REENZ | /ˌnæz.əˈriːnz/ | Acts 24:5 |  | fine as spelled (1.00) |
+| Drusilla | droo-SIL-uh | /druːˈsɪl.ə/ | Acts 24:24 |  | fine as spelled (1.00) |
+| Festus | FES-tuhs | /ˈfɛs.təs/ | Acts 24:27 |  | still wrong (0.75) |
+| Porcius | pawrshas | /ˈpɔːr.ʃəs/ | Acts 24:27 | ✅ | overridden (0.83) |
+| Agrippa | uh-GRIP-uh | /əˈɡrɪp.ə/ | Acts 25:13 |  | fine as spelled (0.93) |
+| Bernice | ber-NEE-see | /bərˈniː.siː/ | Acts 25:13 |  | fine as spelled (0.86) |
+| Augustan | aw-GUS-tuhn | /ɔːˈɡʌs.tən/ | Acts 27:1 |  | still wrong (0.79) |
+| Julius | JOOL-yuhs | /ˈdʒuːl.jəs/ | Acts 27:1 |  | fine as spelled (0.83) |
+| Adramyttium | ad-ruh-MIT-ee-uhm | /ˌæd.rəˈmɪt.i.əm/ | Acts 27:2 |  | fine as spelled (0.90) |
+| Macedonian | mas-uh-DOH-nee-uhn | /ˌmæs.əˈdoʊ.ni.ən/ | Acts 27:2 |  | fine as spelled (1.00) |
+| Lycia | LISH-ee-uh | /ˈlɪʃ.i.ə/ | Acts 27:5 |  | fine as spelled (0.80) |
+| Myra | MY-ruh | /ˈmaɪ.rə/ | Acts 27:5 |  | fine as spelled (1.00) |
+| Alexandria | al-ig-ZAN-dree-uh | /ˌæl.ɪɡˈzæn.dri.ə/ | Acts 27:6 |  | fine as spelled (0.95) |
+| Cnidus | NY-duhs | /ˈnaɪ.dəs/ | Acts 27:7 |  | fine as spelled (1.00) |
+| Crete | KREET | /kriːt/ | Acts 27:7 |  | fine as spelled (0.88) |
+| Salmone | sal-MOH-nee | /sælˈmoʊ.ni/ | Acts 27:7 |  | suggestion waiting (0.71) |
+| Lasea | luh-SEE-uh | /ləˈsiː.ə/ | Acts 27:8 |  | fine as spelled (0.80) |
+| Phoenix | FEE-niks | /ˈfiː.nɪks/ | Acts 27:12 |  | fine as spelled (1.00) |
+| Euroclydon | yoo-ROK-lih-don | /jʊˈrɒk.lɪ.dɒn/ | Acts 27:14 |  | still wrong (0.65) |
+| Clauda | KLAW-duh | /ˈklɔː.də/ | Acts 27:16 |  | fine as spelled (0.92) |
+| Syrtis | SUR-tis | /ˈsɜːr.tɪs/ | Acts 27:17 |  | still wrong (0.67) |
+| Adria | AY-dree-uh | /ˈeɪ.dri.ə/ | Acts 27:27 |  | fine as spelled (0.80) |
+| Adriatic | ay-dree-AT-ik | /ˌeɪ.driˈæt.ɪk/ | Acts 27:27 |  | fine as spelled (0.88) |
+| Malta | MAWL-tuh | /ˈmɔːl.tə/ | Acts 28:1 |  | fine as spelled (0.92) |
+| Melita | MEL-ih-tuh | /ˈmɛl.ɪ.tə/ | Acts 28:1 |  | still wrong (0.50) |
+| Publius | PUB-lee-uhs | /ˈpʌb.li.əs/ | Acts 28:7 |  | suggestion waiting (0.71) |
+| Castor | KAS-ter | /ˈkæs.tər/ | Acts 28:11 |  | suggestion waiting (0.75) |
+| Pollux | POL-uks | /ˈpɒl.əks/ | Acts 28:11 |  | fine as spelled (0.83) |
+| Syracuse | SIHR-a-kyooz | /ˈsɪr.ə.kjuːz/ | Acts 28:12 | ✅ | overridden (0.88) |
+| Puteoli | pyoo-TEE-oh-ly | /pjuːˈtiː.ə.laɪ/ | Acts 28:13 |  | still wrong (0.50) |
+| Rhegium | REE-jee-uhm | /ˈriː.dʒi.əm/ | Acts 28:13 |  | fine as spelled (1.00) |
+| Appii | AP-ee-eye | /ˈæp.i.aɪ/ | Acts 28:15 |  | fine as spelled (1.00) |
+| Appius | AP-ee-uhs | /ˈæp.i.əs/ | Acts 28:15 |  | fine as spelled (1.00) |
 
-**Checked:** 366 unchecked, 635 fine as spelled, 406 overridden, 121 suggestion waiting, 244 still wrong.
+**Checked:** 171 unchecked, 805 fine as spelled, 430 overridden, 131 suggestion waiting, 275 still wrong.
 
-_1772 names — 406 respelled for the voice, 1366 reference-only._
+_1812 names — 430 respelled for the voice, 1382 reference-only._
