@@ -61,9 +61,14 @@ CARRIER = ipa_asr.CARRIER
 FILTERS = (
     "All names",
     "Custom (override) only",
-    "Not yet checked",
+    "Not measured this run",
     "Disagreements only",
     "Missing IPA",
+    # These read the status saved in pronunciations.json rather than this run's
+    # cache, so a sweep can skip whole books that are already settled.
+    "Never verified",
+    "Marked still wrong",
+    "Marked fine as spelled",
 )
 
 
@@ -208,8 +213,14 @@ class App:
             r = self._result_for(name)
             if mode == "Custom (override) only" and not info.get("override"):
                 continue
-            if mode == "Not yet checked" and r is not None:
+            if mode == "Not measured this run" and r is not None:
                 continue
+            if mode in ("Never verified", "Marked still wrong", "Marked fine as spelled"):
+                want = {"Never verified": pronunciation.STATUS_UNCHECKED,
+                        "Marked still wrong": pronunciation.STATUS_UNFIXED,
+                        "Marked fine as spelled": pronunciation.STATUS_OK}[mode]
+                if pronunciation.status_of(info) != want:
+                    continue
             # An unmeasured name (score None) is not a disagreement.
             if mode == "Disagreements only" and (
                     r is None or r["score"] is None or r["score"] >= WARN_AT):
@@ -342,6 +353,9 @@ class App:
 
     def _apply_result(self, name, result, i):
         self.results[name] = result
+        # A measurement is unsaved work: mark dirty so closing offers to keep the
+        # verdicts rather than discarding a sweep that took an hour.
+        self._mark_dirty()
         score = result["score"]
         if self.tree.exists(name):
             self.tree.item(name, values=(name, result["spoken"],
@@ -437,7 +451,33 @@ class App:
             self.dirty = True
             self.root.title("Pronunciation Verifier  *unsaved*")
 
+    def _record_verdicts(self):
+        """Fold this session's measurements into each entry's status.
+
+        A sweep is only worth running if its conclusion is kept: without this,
+        "checked and fine" would be indistinguishable from "never opened" the
+        moment the window closes.
+        """
+        n = 0
+        for name, r in self.results.items():
+            info = self.names.get(name)
+            if info is None or self._result_for(name) is None:
+                continue           # stale result: the spelling or voice changed
+            score = r.get("score")
+            if info.get("override"):
+                status = pronunciation.STATUS_FIXED
+            elif score is None:
+                continue           # could not be measured; leave the verdict alone
+            elif score >= OK_AT:
+                status = pronunciation.STATUS_OK
+            else:
+                status = pronunciation.STATUS_UNFIXED
+            pronunciation.set_status(info, status, score)
+            n += 1
+        return n
+
     def save(self):
+        recorded = self._record_verdicts()
         try:
             pronunciation.save_names(self.names)
         except Exception as e:  # noqa: BLE001
@@ -447,7 +487,7 @@ class App:
         self.root.title("Pronunciation Verifier")
         self._save_cache()
         self.status_var.set(f"Saved {len(self.names)} names to pronunciations.json "
-                            f"+ PRONUNCIATIONS.md.")
+                            f"+ PRONUNCIATIONS.md — recorded {recorded} verdict(s).")
 
     def _on_close(self):
         if self.running:

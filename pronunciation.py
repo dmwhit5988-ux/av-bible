@@ -7,7 +7,8 @@ the name phonetically in the *text sent to the voice* while leaving the on-scree
 text untouched.
 
 The master list lives in ``pronunciations.json`` -- a dict keyed by the exact
-spelling as it appears in scripture, each entry ``{say, ipa?, ref, override}``:
+spelling as it appears in scripture, each entry
+``{say, ipa?, ref, override, status?, score?}``:
 
     say       the pronunciation, both shown to humans and (lowercased) fed to the
               voice when ``override`` is true. Tune this by ear -- whatever sounds
@@ -15,8 +16,23 @@ spelling as it appears in scripture, each entry ``{say, ipa?, ref, override}``:
               "sheelah", "kaldeez").
     ipa       optional formal reference pronunciation.
     ref       first place it appears (Book chapter:verse), for ordering.
-    override  true = respell it before synthesis; false = reference only (the
-              voice already says it correctly).
+    override  true = respell it before synthesis; false = speak it as spelled.
+    status    what checking the audio concluded -- see below. Absent means the
+              name has never been checked.
+    score     the agreement measured when it was last checked, 0-1.
+
+``override`` and ``status`` answer different questions, which is why both exist.
+``override`` is machinery: it alone decides whether ``respell`` substitutes.
+``status`` is a record of what was found, so that "the voice already says this
+correctly" is distinguishable from "nobody has ever listened" -- both of which
+would otherwise look identical as ``override: false``:
+
+    ok         checked; the plain spelling is read correctly, no override needed
+    fixed      checked; an override is in place and produces the right sound
+    suggested  checked; a better spelling is known but was not applied, because
+               the plain reading was close enough that the disagreement may be
+               the transcriber's error rather than the voice's -- decide by ear
+    unfixed    checked; the plain spelling is wrong and no respelling has worked
 
 ``respell(text)`` swaps every whole-word occurrence of an ``override`` name for a
 lowercased ``say``. It's called from ``tts_engine.synthesize`` so desktop
@@ -41,13 +57,63 @@ README = (
     "Master pronunciation list for Bible proper nouns, used to help the neural "
     "TTS. 'say' is tuned by ear -- whatever sounds right spoken is stored, and "
     "(lowercased) is what the voice is fed when 'override' is true; on-screen "
-    "text is never changed. 'ipa' is an optional formal reference. Common names "
-    "the voice already reads correctly are kept with override:false for "
-    "reference only. Keys are the exact spelling as it appears in the World "
-    "English Bible (WEB); add translation-specific spellings (e.g. KJV "
-    "'Mahalaleel') as extra keys. Edit with the GUI: python pronunciation_tool.py "
-    "(it plays names back and rewrites this file + PRONUNCIATIONS.md)."
+    "text is never changed. 'ipa' is an optional formal reference. Keys are the "
+    "exact spelling as it appears in the World English Bible (WEB); add "
+    "translation-specific spellings (e.g. KJV 'Mahalaleel') as extra keys. "
+    "'status' records what checking the audio concluded -- ok (reads correctly "
+    "as spelled), fixed (override in place and working), suggested (a better "
+    "spelling is known but unapplied, decide by ear), unfixed (wrong, nothing "
+    "found yet); absent means never checked, which is NOT the same as ok. "
+    "'score' is the agreement measured at that check, 0-1. Edit with the GUI: "
+    "python pronunciation_tool.py (it plays names back and rewrites this file + "
+    "PRONUNCIATIONS.md); check against real audio with python "
+    "pronunciation_check.py."
 )
+
+# Verification verdicts. The empty string is "never checked" and is stored by
+# omitting the key entirely, so the file stays clean for untouched entries.
+STATUS_UNCHECKED = ""
+STATUS_OK = "ok"
+STATUS_FIXED = "fixed"
+STATUS_SUGGESTED = "suggested"
+STATUS_UNFIXED = "unfixed"
+
+STATUS_ORDER = (STATUS_UNCHECKED, STATUS_OK, STATUS_FIXED, STATUS_SUGGESTED,
+                STATUS_UNFIXED)
+STATUS_LABELS = {
+    STATUS_UNCHECKED: "unchecked",
+    STATUS_OK: "fine as spelled",
+    STATUS_FIXED: "overridden",
+    STATUS_SUGGESTED: "suggestion waiting",
+    STATUS_UNFIXED: "still wrong",
+}
+
+
+def status_of(info: dict) -> str:
+    """The verdict for one entry, falling back for entries predating the field.
+
+    An override with no recorded status must have been tuned by hand at some
+    point, so it reads as ``fixed`` rather than as unchecked.
+    """
+    info = info or {}
+    s = info.get("status", "")
+    if s in STATUS_LABELS:
+        return s
+    return STATUS_FIXED if info.get("override") else STATUS_UNCHECKED
+
+
+def set_status(info: dict, status: str, score=None) -> dict:
+    """Record a verdict on ``info`` in place; ``STATUS_UNCHECKED`` clears it."""
+    if status == STATUS_UNCHECKED:
+        info.pop("status", None)
+        info.pop("score", None)
+    else:
+        info["status"] = status
+        if score is None:
+            info.pop("score", None)
+        else:
+            info["score"] = round(float(score), 3)
+    return info
 
 _names = None          # dict: name -> {say, ipa?, ref, override}
 _pattern = None        # compiled regex over the override names, or None
@@ -130,8 +196,21 @@ def _ref_key(ref: str):
     return (_BOOK_INDEX.get(m.group(1), 998), int(m.group(2)), int(m.group(3)))
 
 
+_KEY_ORDER = ("say", "ipa", "ref", "override", "status", "score")
+
+
+def _tidy(info: dict) -> dict:
+    """One entry with keys in a stable order and empty verdicts omitted."""
+    out = {k: info[k] for k in _KEY_ORDER if k in info and info[k] not in ("", None)}
+    out.setdefault("override", bool(info.get("override")))
+    for k, v in info.items():          # keep anything unrecognised rather than drop it
+        out.setdefault(k, v)
+    return out
+
+
 def _sorted_names(names: dict) -> dict:
-    return dict(sorted(names.items(), key=lambda kv: (_ref_key(kv[1].get("ref", "")), kv[0])))
+    ordered = sorted(names.items(), key=lambda kv: (_ref_key(kv[1].get("ref", "")), kv[0]))
+    return {k: _tidy(v) for k, v in ordered}
 
 
 def save_names(names: dict) -> None:
@@ -159,17 +238,29 @@ def write_markdown(names: dict = None) -> str:
         "",
         "- **Say it** — the pronunciation fed to the voice (tuned by ear).",
         "- **TTS** — ✅ means the audio pipeline substitutes this spelling before",
-        "  synthesis; blank means the voice already says it correctly (reference only).",
+        "  synthesis; blank means the name is spoken exactly as spelled.",
+        "- **Checked** — what listening to the real audio concluded. Blank means",
+        "  nobody has checked it yet, which is not the same as it being right.",
         "",
-        "| Name | Say it | IPA | First appears | TTS |",
-        "| --- | --- | --- | --- | --- |",
+        "| Name | Say it | IPA | First appears | TTS | Checked |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
     for name, info in rows:
         tts = "✅" if info.get("override") else ""
+        st = status_of(info)
+        checked = STATUS_LABELS[st] if st else ""
+        if info.get("score") is not None and st:
+            checked += f" ({info['score']:.2f})"
         lines.append(
             f"| {name} | {info.get('say', '')} | {info.get('ipa', '')} "
-            f"| {info.get('ref', '')} | {tts} |"
+            f"| {info.get('ref', '')} | {tts} | {checked} |"
         )
+    lines.append("")
+    counts = {}
+    for _, i in rows:
+        counts[status_of(i)] = counts.get(status_of(i), 0) + 1
+    lines.append("**Checked:** " + ", ".join(
+        f"{counts.get(s, 0)} {STATUS_LABELS[s]}" for s in STATUS_ORDER) + ".")
     lines.append("")
     n_over = sum(1 for _, i in rows if i.get("override"))
     lines.append(

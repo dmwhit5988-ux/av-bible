@@ -6,7 +6,15 @@ are already customized, and lets you:
   * hear the name as the neural voice says it now  (▶ Name)
   * type your own "Say it" spelling and hear it     (▶ Say / Enter)
   * tick "Custom" when a name needs the override
+  * click "✓ Fine" when the plain spelling is already read correctly
   * Save -> writes pronunciations.json AND PRONUNCIATIONS.md
+
+The "Checked" column is the point of "✓ Fine": a name you have listened to and
+approved used to be stored exactly like one nobody had ever opened, both being
+merely ``override: false``. Recording the verdict separates the two, so the
+"Unchecked only" filter shows real work rather than the whole book. Ticking
+Custom records "overridden"; the Verifier (``pronunciation_check.py``) fills in
+the same field from measured audio.
 
 Names are keyed by spelling, so the same name across chapters is one shared
 entry: tune "Nahor" in Genesis 11 and it's already tuned when it turns up in
@@ -38,16 +46,42 @@ from passages import fetch_passage, PassageError, TRANSLATIONS, TRANSLATION_LABE
 RATE = 0
 
 
-class Row:
-    __slots__ = ("name", "occ", "default_ref", "say_var", "override_var", "status")
+# How each verdict is shown. Unchecked is deliberately the attention-getting
+# colour: a name nobody has listened to is the one that needs work, and the
+# whole point of the status field is that it stops looking like "fine".
+STATUS_COLORS = {
+    pronunciation.STATUS_UNCHECKED: "#e8890c",   # orange
+    pronunciation.STATUS_OK:        "#2e9e44",   # green
+    pronunciation.STATUS_FIXED:     "#2f6fdd",   # blue
+    pronunciation.STATUS_SUGGESTED: "#b58900",   # amber
+    pronunciation.STATUS_UNFIXED:   "#c0392b",   # red
+}
 
-    def __init__(self, name, occ, default_ref, say, override):
+FILTERS = (
+    "All names",
+    "Unchecked only",
+    "Fine as spelled",
+    "Overridden",
+    "Suggestions waiting",
+    "Still wrong",
+    "Not in the list yet",
+)
+
+
+class Row:
+    __slots__ = ("name", "occ", "default_ref", "say_var", "override_var",
+                 "status_var", "score", "dot", "label")
+
+    def __init__(self, name, occ, default_ref, say, override, status, score=None):
         self.name = name
         self.occ = occ
         self.default_ref = default_ref
         self.say_var = tk.StringVar(value=say)
         self.override_var = tk.BooleanVar(value=override)
-        self.status = None  # the status label widget, set when built
+        self.status_var = tk.StringVar(value=status)
+        self.score = score
+        self.dot = None    # the coloured dot widget, set when built
+        self.label = None  # the verdict text widget, set when built
 
 
 class App:
@@ -117,9 +151,12 @@ class App:
         ttk.Combobox(bar, textvariable=self.voice_var, width=22, state="readonly",
                      values=tts_engine.EDGE_VOICES).pack(side="left", padx=(4, 10))
 
-        self.filter_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(bar, text="Only new names", variable=self.filter_var,
-                        command=self._build_rows).pack(side="left")
+        ttk.Label(bar, text="   Show:").pack(side="left")
+        self.filter_var = tk.StringVar(value=FILTERS[0])
+        fcb = ttk.Combobox(bar, textvariable=self.filter_var, width=20,
+                           state="readonly", values=FILTERS)
+        fcb.pack(side="left", padx=(4, 0))
+        fcb.bind("<<ComboboxSelected>>", lambda e: self._build_rows())
 
     # ----- scrollable list ---------------------------------------------
     def _build_list(self):
@@ -149,8 +186,12 @@ class App:
         ttk.Label(bar, textvariable=self.status_var).pack(side="left")
         self.save_btn = ttk.Button(bar, text="Save  (JSON + .md)", command=self.save)
         self.save_btn.pack(side="right")
-        legend = "●new  ●custom  ●default"
-        ttk.Label(bar, text=legend, foreground="#888").pack(side="right", padx=12)
+        legend = ttk.Frame(bar)
+        legend.pack(side="right", padx=12)
+        for st in pronunciation.STATUS_ORDER:
+            tk.Label(legend, text="●", foreground=STATUS_COLORS[st]).pack(side="left")
+            tk.Label(legend, text=pronunciation.STATUS_LABELS[st],
+                     foreground="#888").pack(side="left", padx=(0, 8))
 
     # ----- data flow ----------------------------------------------------
     def _on_book_change(self):
@@ -179,27 +220,29 @@ class App:
             return
 
         found = pronunciation.scan_proper_nouns(self.cur_verses, known=set(self.names))
-        hdr = ("", "Name", "Seen in", "IPA", "Custom", "Say it", "", "")
+        hdr = ("", "Name", "Seen in", "IPA", "Checked", "Custom", "Say it", "", "", "")
         for c, text in enumerate(hdr):
             ttk.Label(self.inner, text=text, font=("Segoe UI", 9, "bold")).grid(
                 row=0, column=c, sticky="w", padx=4, pady=(2, 6))
 
+        mode = self.filter_var.get()
         r = 1
         for name, occ in found:
             existing = self.names.get(name)
-            if self.filter_var.get() and existing is not None:
+            status = pronunciation.status_of(existing)
+            if not self._passes(mode, existing, status):
                 continue
             say = existing["say"] if existing else name
             override = bool(existing.get("override")) if existing else False
             default_ref = f"{self.cur_book} {self.cur_ch}:{occ[0]}"
-            row = Row(name, occ, default_ref, say, override)
+            row = Row(name, occ, default_ref, say, override, status,
+                      (existing or {}).get("score"))
             row.say_var.trace_add("write", lambda *a: self._mark_dirty())
             row.override_var.trace_add("write", lambda *a: self._mark_dirty())
             self.rows.append(row)
 
-            row.status = tk.Label(self.inner, text="●", width=2)
-            row.status.grid(row=r, column=0)
-            self._paint_status(row)
+            row.dot = tk.Label(self.inner, text="●", width=2)
+            row.dot.grid(row=r, column=0)
 
             ttk.Label(self.inner, text=name, font=("Segoe UI", 10, "bold")).grid(
                 row=r, column=1, sticky="w", padx=4)
@@ -209,36 +252,84 @@ class App:
             ipa = existing.get("ipa", "") if existing else ""
             ttk.Label(self.inner, text=ipa, foreground="#888").grid(
                 row=r, column=3, sticky="w", padx=4)
+            row.label = tk.Label(self.inner, anchor="w", width=17)
+            row.label.grid(row=r, column=4, sticky="w", padx=4)
             ttk.Checkbutton(self.inner, variable=row.override_var,
-                            command=lambda rw=row: self._paint_status(rw)).grid(row=r, column=4)
+                            command=lambda rw=row: self._on_override(rw)).grid(row=r, column=5)
             ent = ttk.Entry(self.inner, textvariable=row.say_var, width=22)
-            ent.grid(row=r, column=5, sticky="w", padx=4, pady=1)
+            ent.grid(row=r, column=6, sticky="w", padx=4, pady=1)
             ent.bind("<Return>", lambda e, rw=row: self._play(rw.say_var.get().lower(),
                                                               rw.say_var.get()))
             ttk.Button(self.inner, text="▶ Say", width=6,
                        command=lambda rw=row: self._play(rw.say_var.get().lower(),
                                                          rw.say_var.get())).grid(
-                row=r, column=6, padx=2)
+                row=r, column=7, padx=2)
             ttk.Button(self.inner, text="▶ Name", width=7,
                        command=lambda rw=row: self._play(rw.name, rw.name)).grid(
-                row=r, column=7, padx=(2, 6))
+                row=r, column=8, padx=(2, 2))
+            ttk.Button(self.inner, text="✓ Fine", width=7,
+                       command=lambda rw=row: self._mark_fine(rw)).grid(
+                row=r, column=9, padx=(2, 6))
+            self._paint_status(row)
             r += 1
 
         if not keep_status:
-            shown = len(self.rows)
+            counts = {}
+            for rw in self.rows:
+                counts[rw.status_var.get()] = counts.get(rw.status_var.get(), 0) + 1
+            summary = ", ".join(
+                f"{counts[s]} {pronunciation.STATUS_LABELS[s]}"
+                for s in pronunciation.STATUS_ORDER if counts.get(s))
             self.status_var.set(
                 f"{self.cur_book} {self.cur_ch} ({self.trans_var.get()}): "
-                f"{shown} name(s) shown"
-                + ("  (filtered to new)" if self.filter_var.get() else ""))
+                f"{len(self.rows)} shown" + (f" — {summary}" if summary else ""))
         self.canvas.yview_moveto(0)
 
+    def _passes(self, mode, existing, status):
+        if mode == "All names":
+            return True
+        if mode == "Not in the list yet":
+            return existing is None
+        return status == {
+            "Unchecked only": pronunciation.STATUS_UNCHECKED,
+            "Fine as spelled": pronunciation.STATUS_OK,
+            "Overridden": pronunciation.STATUS_FIXED,
+            "Suggestions waiting": pronunciation.STATUS_SUGGESTED,
+            "Still wrong": pronunciation.STATUS_UNFIXED,
+        }.get(mode)
+
     def _paint_status(self, row):
-        if row.name not in self.names and not row.override_var.get():
-            row.status.configure(foreground="#e8890c")   # new / undecided
-        elif row.override_var.get():
-            row.status.configure(foreground="#2e9e44")   # custom pronunciation
-        else:
-            row.status.configure(foreground="#bbbbbb")   # reference-only / default
+        st = row.status_var.get()
+        text = pronunciation.STATUS_LABELS.get(st, st)
+        if st and row.score is not None:
+            text += f" {row.score:.2f}"
+        colour = STATUS_COLORS.get(st, "#888888")
+        row.dot.configure(foreground=colour)
+        row.label.configure(text=text, foreground=colour)
+
+    def _on_override(self, row):
+        """Ticking Custom is itself a verdict: this name needs a respelling."""
+        row.status_var.set(pronunciation.STATUS_FIXED if row.override_var.get()
+                           else pronunciation.STATUS_UNCHECKED)
+        row.score = None
+        self._paint_status(row)
+
+    def _mark_fine(self, row):
+        """Record that the plain spelling is read correctly -- or undo that.
+
+        This is the verdict that was previously impossible to express: without
+        it, a name you have listened to and approved is stored exactly like one
+        nobody has ever opened.
+        """
+        now = row.status_var.get()
+        row.status_var.set(pronunciation.STATUS_UNCHECKED
+                           if now == pronunciation.STATUS_OK
+                           else pronunciation.STATUS_OK)
+        if row.status_var.get() == pronunciation.STATUS_OK:
+            row.override_var.set(False)
+        row.score = None          # a human verdict, not a measured one
+        self._paint_status(row)
+        self._mark_dirty()
 
     # ----- edits / persistence -----------------------------------------
     def _mark_dirty(self):
@@ -252,16 +343,27 @@ class App:
             name = row.name
             say = row.say_var.get().strip()
             existing = self.names.get(name)
+            status = row.status_var.get()
             if row.override_var.get():
                 entry = dict(existing) if existing else {}
                 entry["say"] = say or name
                 entry["ipa"] = entry.get("ipa", "")
                 entry["ref"] = entry.get("ref") or row.default_ref
                 entry["override"] = True
+                pronunciation.set_status(entry, status or pronunciation.STATUS_FIXED,
+                                         row.score)
                 self.names[name] = entry
             elif existing is not None:
                 existing["say"] = say or existing.get("say", name)
                 existing["override"] = False
+                pronunciation.set_status(existing, status, row.score)
+            elif status:
+                # A verdict on a name not yet in the list is worth keeping --
+                # otherwise marking a new name "fine" would silently vanish.
+                entry = {"say": say or name, "ipa": "", "ref": row.default_ref,
+                         "override": False}
+                pronunciation.set_status(entry, status, row.score)
+                self.names[name] = entry
 
     def save(self):
         self._commit_rows()
@@ -272,11 +374,16 @@ class App:
             return
         self.dirty = False
         self.root.title("Pronunciation Studio")
-        n_over = sum(1 for v in self.names.values() if v.get("override"))
+        counts = {}
+        for v in self.names.values():
+            st = pronunciation.status_of(v)
+            counts[st] = counts.get(st, 0) + 1
+        summary = ", ".join(f"{counts.get(s, 0)} {pronunciation.STATUS_LABELS[s]}"
+                            for s in pronunciation.STATUS_ORDER)
         self.status_var.set(
-            f"Saved {len(self.names)} names ({n_over} custom) to "
-            f"pronunciations.json + PRONUNCIATIONS.md.  The desktop app will "
-            f"re-render changed verses automatically on next play.")
+            f"Saved {len(self.names)} names to pronunciations.json + "
+            f"PRONUNCIATIONS.md — {summary}.  The desktop app will re-render "
+            f"changed verses automatically on next play.")
         self._build_rows(keep_status=True)  # refresh status dots, keep save message
 
     # ----- playback -----------------------------------------------------
