@@ -1175,12 +1175,12 @@
     },
     "Zoar": {
       "say": "Zoar",
-      "ipa": "/ˈzoʊr/",
+      "ipa": "/ˈzəʊ.ɑː/",
       "ref": "Genesis 13:10",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.667,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Hebron": {
       "say": "HEE-bruhn",
@@ -1192,21 +1192,21 @@
     },
     "Mamre": {
       "say": "Mamre",
-      "ipa": "/ˈmæm.riː/",
+      "ipa": "/ˈmæmri/",
       "ref": "Genesis 13:18",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.6,
-      "ipa_src": "generated"
+      "ipa_src": "wikipedia"
     },
     "Amraphel": {
       "say": "Amraphel",
-      "ipa": "/ˈæm.rə.fəl/",
+      "ipa": "/ˈæmrəˌfɛl/",
       "ref": "Genesis 14:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.598,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.732,
+      "ipa_src": "wikipedia"
     },
     "Arioch": {
       "say": "Arioch",
@@ -1219,12 +1219,12 @@
     },
     "Chedorlaomer": {
       "say": "Chedorlaomer",
-      "ipa": "/kə.dərˈleɪ.ə.mər/",
+      "ipa": "/ˌkɛdərˈleɪəmər/",
       "ref": "Genesis 14:1",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.727,
-      "ipa_src": "generated"
+      "ipa_src": "wikipedia"
     },
     "Ellasar": {
       "say": "Ellasar",
@@ -1413,12 +1413,12 @@
     },
     "Kadesh": {
       "say": "Kadesh",
-      "ipa": "/ˈkeɪ.dəʃ/",
+      "ipa": "/ˈkeɪˌdɛʃ/",
       "ref": "Genesis 14:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.8,
+      "ipa_src": "wiktionary"
     },
     "Mishpat": {
       "say": "Mishpat",
@@ -1455,12 +1455,12 @@
     },
     "Eshcol": {
       "say": "Eshcol",
-      "ipa": "/ˈiː.ʃsəl/",
+      "ipa": "/ˈɛʃˌkɒl/",
       "ref": "Genesis 14:13",
       "override": false,
-      "status": "unsure",
-      "score": 0.4,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wikipedia"
     },
     "Hebrew": {
       "say": "Hebrew",
@@ -2126,12 +2126,12 @@
     },
     "Elon": {
       "say": "Elon",
-      "ipa": "/ˈiː.lən/",
+      "ipa": "/ˈiːlɔːn/",
       "ref": "Genesis 26:34",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Judith": {
       "say": "Judith",
@@ -2718,12 +2718,12 @@
     },
     "Akan": {
       "say": "Akan",
-      "ipa": "/ˈeɪ.kən/",
+      "ipa": "/ˈækæn/",
       "ref": "Genesis 36:27",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.5,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Bilhan": {
       "say": "BIL-han",
@@ -2981,21 +2981,21 @@
     },
     "Sheol": {
       "say": "Sheol",
-      "ipa": "/ˈʃiː.əl/",
+      "ipa": "/ˈʃi.oʊl/",
       "ref": "Genesis 37:35",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.75,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Potiphar": {
       "say": "Potiphar",
-      "ipa": "/ˈpoʊ.ti.fər/",
+      "ipa": "/ˈpɒt.ɪ.fɑː/",
       "ref": "Genesis 37:36",
       "override": false,
-      "status": "unsure",
-      "score": 0.357,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.69,
+      "ipa_src": "wikipedia"
     },
     "Adullamite": {
       "say": "Adullamite",
@@ -3085,12 +3085,12 @@
     },
     "Asenath": {
       "say": "Asenath",
-      "ipa": "/ˈeɪ.sə.nəθ/",
+      "ipa": "/ˈæsɪnæθ/",
       "ref": "Genesis 41:45",
       "override": false,
-      "status": "unsure",
-      "score": 0.333,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.5,
+      "ipa_src": "wikipedia"
     },
     "Potiphera": {
       "say": "Potiphera",
@@ -3539,12 +3539,12 @@
     },
     "Zipporah": {
       "say": "Zipporah",
-      "ipa": "/ˈzɪp.pə.rəh/",
+      "ipa": "/ˈzɪpəɹə/",
       "ref": "Exodus 2:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.833,
+      "ipa_src": "wikipedia"
     },
     "Gershom": {
       "say": "GUR-shuhm",
@@ -3670,12 +3670,12 @@
     },
     "Jochebed": {
       "say": "Jochebed",
-      "ipa": "/ˈdʒoʊ.kə.bəd/",
+      "ipa": "/ˈjɒkɪbɛd/",
       "ref": "Exodus 6:20",
       "override": false,
-      "status": "unsure",
-      "score": 0.571,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.857,
+      "ipa_src": "wikipedia"
     },
     "Nepheg": {
       "say": "NEE-feg",
@@ -3900,12 +3900,12 @@
     },
     "Marah": {
       "say": "Marah",
-      "ipa": "/ˈmeɪ.rəh/",
+      "ipa": "/ˈmɑːɹə/",
       "ref": "Exodus 15:23",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Elim": {
       "say": "Elim",
@@ -4635,21 +4635,21 @@
     },
     "Anak": {
       "say": "Anak",
-      "ipa": "/ˈeɪ.nək/",
+      "ipa": "/ˈeɪnæk/",
       "ref": "Numbers 13:22",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.5,
-      "ipa_src": "generated"
+      "ipa_src": "wikipedia"
     },
     "Sheshai": {
       "say": "Sheshai",
-      "ipa": "/ˈʃiː.ʃeɪ/",
+      "ipa": "/ˈʃiːˌʃaɪ/",
       "ref": "Numbers 13:22",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.75,
+      "ipa_src": "wikipedia"
     },
     "Talmai": {
       "say": "TAL-my",
@@ -4933,12 +4933,12 @@
     },
     "Balaam": {
       "say": "Balaam",
-      "ipa": "/ˈbeɪ.lə.əm/",
+      "ipa": "/ˈbeɪləm/",
       "ref": "Numbers 22:5",
       "override": false,
-      "status": "unsure",
-      "score": 0.333,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.4,
+      "ipa_src": "wikipedia"
     },
     "Pethor": {
       "say": "Pethor",
@@ -4978,12 +4978,12 @@
     },
     "Agag": {
       "say": "Agag",
-      "ipa": "/ˈeɪ.ɡəɡ/",
+      "ipa": "/ˈeɪɡæɡ/",
       "ref": "Numbers 24:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.625,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.875,
+      "ipa_src": "wikipedia"
     },
     "Kenite": {
       "say": "Kenite",
@@ -6415,12 +6415,12 @@
     },
     "Zamzummim": {
       "say": "Zamzummim",
-      "ipa": "/ˈzæm.zəm.mɪm/",
+      "ipa": "/ˈzam.zʌmˌmɪm/",
       "ref": "Deuteronomy 2:20",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.688,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Avvim": {
       "say": "Avvim",
@@ -6542,12 +6542,12 @@
     },
     "Sion": {
       "say": "Sion",
-      "ipa": "/ˈsi.ən/",
+      "ipa": "/ˈsaɪ.ən/",
       "ref": "Deuteronomy 4:48",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.25,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Girgashite": {
       "say": "GUR-guh-shite",
@@ -6604,12 +6604,12 @@
     },
     "Edomite": {
       "say": "Edomite",
-      "ipa": "/əˈdoʊ.mi.tiː/",
+      "ipa": "/ˈiː.dəˌmaɪt/",
       "ref": "Deuteronomy 23:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.429,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Jeshurun": {
       "say": "Jeshurun",
@@ -8240,12 +8240,12 @@
     },
     "Shunem": {
       "say": "Shunem",
-      "ipa": "/ˈʃjuː.nəm/",
+      "ipa": "/ˈʃu.nəm/",
       "ref": "Joshua 19:18",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.9,
+      "ipa_src": "wiktionary"
     },
     "Anaharath": {
       "say": "Anaharath",
@@ -8702,12 +8702,12 @@
     },
     "Ashkelon": {
       "say": "Ashkelon",
-      "ipa": "/ˈeɪ.ʃkə.lən/",
+      "ipa": "/ˈæʃkəlɒn/",
       "ref": "Judges 1:18",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Kitron": {
       "say": "Kitron",
@@ -8828,12 +8828,12 @@
     },
     "Benjamite": {
       "say": "Benjamite",
-      "ipa": "/bənˈdʒeɪ.mi.tiː/",
+      "ipa": "/ˈbɛn.d͡ʒəˌmaɪt/",
       "ref": "Judges 3:15",
       "override": false,
-      "status": "unsure",
-      "score": 0.556,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Ehud": {
       "say": "eehud",
@@ -8935,12 +8935,12 @@
     },
     "Jael": {
       "say": "Jael",
-      "ipa": "/ˈdʒeɪ.əl/",
+      "ipa": "/ˈdʒeɪəl/",
       "ref": "Judges 4:17",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.75,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Meroz": {
       "say": "Meroz",
@@ -9282,12 +9282,12 @@
     },
     "Ephraimite": {
       "say": "Ephraimite",
-      "ipa": "/əˈfreɪ.mi.tiː/",
+      "ipa": "/ˈi.fɹi.əˌmaɪt/",
       "ref": "Judges 12:5",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.75,
+      "ipa_src": "wiktionary"
     },
     "Ephraimites": {
       "say": "Ephraimites",
@@ -9309,12 +9309,12 @@
     },
     "Zebulunite": {
       "say": "Zebulunite",
-      "ipa": "/zə.bəˈljuː.ni.tiː/",
+      "ipa": "/ˈzɛ.bjʊ.ləˌnaɪt/",
       "ref": "Judges 12:11",
       "override": false,
-      "status": "unsure",
-      "score": 0.409,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.95,
+      "ipa_src": "wiktionary"
     },
     "Hillel": {
       "say": "Hillel",
@@ -9380,12 +9380,12 @@
     },
     "Lehi": {
       "say": "Lehi",
-      "ipa": "/ˈliː.hə/",
+      "ipa": "/ˈliːhaɪ/",
       "ref": "Judges 15:9",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Hakkore": {
       "say": "Hakkore",
@@ -9675,12 +9675,12 @@
     },
     "Ichabod": {
       "say": "Ichabod",
-      "ipa": "/ˈi.kə.bəd/",
+      "ipa": "/ˈɪkəbɒd/",
       "ref": "1 Samuel 4:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Abinadab": {
       "say": "uh-BIN-uh-dab",
@@ -10429,12 +10429,12 @@
     },
     "Mephibosheth": {
       "say": "Mephibosheth",
-      "ipa": "/məˈfi.bə.ʃəθ/",
+      "ipa": "/məˈfɪb.əˌʃɛθ/",
       "ref": "2 Samuel 4:4",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.556,
+      "ipa_src": "wiktionary"
     },
     "Nathan": {
       "say": "NAY-thuhn",
@@ -10658,12 +10658,12 @@
     },
     "Uriah": {
       "say": "Uriah",
-      "ipa": "/əˈri.əh/",
+      "ipa": "/jʊəˈɹaɪə/",
       "ref": "2 Samuel 11:3",
       "override": false,
-      "status": "unsure",
-      "score": 0.2,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Jerubbesheth": {
       "say": "Jerubbesheth",
@@ -10676,12 +10676,12 @@
     },
     "Jedidiah": {
       "say": "Jedidiah",
-      "ipa": "/dʒə.diˈdi.əh/",
+      "ipa": "/ˌd͡ʒɛdɪˈdaɪə/",
       "ref": "2 Samuel 12:25",
       "override": false,
-      "status": "unsure",
-      "score": 0.375,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.714,
+      "ipa_src": "wiktionary"
     },
     "Jonadab": {
       "say": "Jonadab",
@@ -11091,12 +11091,12 @@
     },
     "Gadite": {
       "say": "Gadite",
-      "ipa": "/ˈɡeɪ.di.tiː/",
+      "ipa": "/ˈɡæ.daɪt/",
       "ref": "2 Samuel 23:36",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Hodshi": {
       "say": "Hodshi",
@@ -11136,12 +11136,12 @@
     },
     "Abishag": {
       "say": "Abishag",
-      "ipa": "/ˈeɪ.bi.ʃəɡ/",
+      "ipa": "/ˈæbɪʃæg/",
       "ref": "1 Kings 1:3",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.667,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Shunammite": {
       "say": "Shunammite",
@@ -11198,12 +11198,12 @@
     },
     "Adoniram": {
       "say": "Adoniram",
-      "ipa": "/əˈdoʊ.ni.rəm/",
+      "ipa": "/ædəˈnaɪrəm/",
       "ref": "1 Kings 4:6",
       "override": false,
-      "status": "unsure",
-      "score": 0.625,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Deker": {
       "say": "Deker",
@@ -11382,12 +11382,12 @@
     },
     "Tahpenes": {
       "say": "Tahpenes",
-      "ipa": "/ˈteɪ.pə.nəs/",
+      "ipa": "/ˈtɑːpəniːz/",
       "ref": "1 Kings 11:19",
       "override": false,
-      "status": "unsure",
-      "score": 0.571,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Genubath": {
       "say": "Genubath",
@@ -11563,12 +11563,12 @@
     },
     "Jezebel": {
       "say": "Jezebel",
-      "ipa": "/ˈdʒiː.zə.bəl/",
+      "ipa": "/ˈd͡ʒɛzəˌbɛl/",
       "ref": "1 Kings 16:31",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Bethelite": {
       "say": "Bethelite",
@@ -11641,12 +11641,12 @@
     },
     "Naboth": {
       "say": "Naboth",
-      "ipa": "/ˈneɪ.bəθ/",
+      "ipa": "/ˈneɪbɒθ/",
       "ref": "1 Kings 21:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.7,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.9,
+      "ipa_src": "wiktionary"
     },
     "Imlah": {
       "say": "Imlah",
@@ -11876,12 +11876,12 @@
     },
     "Amittai": {
       "say": "Amittai",
-      "ipa": "/ˈeɪ.mɪt.teɪ/",
+      "ipa": "/əˈmɪt.aɪ/",
       "ref": "2 Kings 14:25",
       "override": false,
-      "status": "unsure",
-      "score": 0.4,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.8,
+      "ipa_src": "wiktionary"
     },
     "Zechariah": {
       "say": "zek-uh-RY-uh",
@@ -11944,12 +11944,12 @@
     },
     "Pekahiah": {
       "say": "Pekahiah",
-      "ipa": "/pə.kəˈhi.əh/",
+      "ipa": "/ˌpɛkəˈhaɪə/",
       "ref": "2 Kings 15:22",
       "override": false,
-      "status": "unsure",
-      "score": 0.625,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.938,
+      "ipa_src": "wiktionary"
     },
     "Arieh": {
       "say": "Arieh",
@@ -11989,12 +11989,12 @@
     },
     "Rezin": {
       "say": "Rezin",
-      "ipa": "/ˈriː.zɪn/",
+      "ipa": "/rəˌziːn/",
       "ref": "2 Kings 15:37",
       "override": false,
-      "status": "unsure",
-      "score": 0.7,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.6,
+      "ipa_src": "wiktionary"
     },
     "Ahaz": {
       "say": "AY-haz",
@@ -12181,12 +12181,12 @@
     },
     "Nehushtan": {
       "say": "Nehushtan",
-      "ipa": "/ˈniː.hə.ʃtən/",
+      "ipa": "/nəˈhʊʃtən/",
       "ref": "2 Kings 18:4",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.875,
+      "ipa_src": "wiktionary"
     },
     "Shalmaneser": {
       "say": "Shalmaneser",
@@ -12376,12 +12376,12 @@
     },
     "Hephzibah": {
       "say": "Hephzibah",
-      "ipa": "/ˈhiː.fzi.bəh/",
+      "ipa": "/ˈhɛpzɪbə/",
       "ref": "2 Kings 21:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.438,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.375,
+      "ipa_src": "wiktionary"
     },
     "Uzza": {
       "say": "UZ-uh",
@@ -12582,12 +12582,12 @@
     },
     "Chaldean": {
       "say": "Chaldean",
-      "ipa": "/ˈkæl.diːn/",
+      "ipa": "/kælˈdi.ən/",
       "ref": "2 Kings 25:5",
       "override": false,
-      "status": "unsure",
-      "score": 0.786,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.929,
+      "ipa_src": "wiktionary"
     },
     "Nebuzaradan": {
       "say": "Nebuzaradan",
@@ -20335,12 +20335,12 @@
     },
     "Michmas": {
       "say": "Michmas",
-      "ipa": "/ˈmi.kməs/",
+      "ipa": "/ˈmɪkmæʃ/",
       "ref": "Ezra 2:27",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.5,
+      "ipa_src": "wiktionary"
     },
     "Magbish": {
       "say": "Magbish",
@@ -20812,12 +20812,12 @@
     },
     "Artaxerxes": {
       "say": "Artaxerxes",
-      "ipa": "/ərˈteɪ.ksər.ksəs/",
+      "ipa": "/ˌɑːtə(ɡ)ˈzɜːksiːz/",
       "ref": "Ezra 4:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.333,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.583,
+      "ipa_src": "wiktionary"
     },
     "Bishlam": {
       "say": "Bishlam",
@@ -20929,12 +20929,12 @@
     },
     "Haggai": {
       "say": "Haggai",
-      "ipa": "/ˈhæɡ.ɡeɪ/",
+      "ipa": "/ˈhæɡaɪ/",
       "ref": "Ezra 5:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.8,
+      "ipa_src": "wikipedia"
     },
     "Shetharbozenai": {
       "say": "Shetharbozenai",
@@ -21307,12 +21307,12 @@
     },
     "Shushan": {
       "say": "Shushan",
-      "ipa": "/ˈʃjuː.ʃən/",
+      "ipa": "/ˈˈʃuːˌʃɑn/",
       "ref": "Nehemiah 1:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.8,
+      "ipa_src": "wiktionary"
     },
     "Nisan": {
       "say": "Nisan",
@@ -22360,12 +22360,12 @@
     },
     "Hadassah": {
       "say": "Hadassah",
-      "ipa": "/ˈheɪ.dəs.səh/",
+      "ipa": "/həˈdæsə/",
       "ref": "Esther 2:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.536,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.729,
+      "ipa_src": "wiktionary"
     },
     "Shaashgaz": {
       "say": "Shaashgaz",
@@ -22657,12 +22657,12 @@
     },
     "Abaddon": {
       "say": "Abaddon",
-      "ipa": "/ˈeɪ.bəd.dən/",
+      "ipa": "/əˈbæ.dn̩/",
       "ref": "Job 26:6",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.833,
+      "ipa_src": "wiktionary"
     },
     "Barachel": {
       "say": "barakel",
@@ -22792,12 +22792,12 @@
     },
     "Lemuel": {
       "say": "Lemuel",
-      "ipa": "/ˈliː.mə.əl/",
+      "ipa": "/ˈlɛm.jə(wə)l/",
       "ref": "Proverbs 31:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.619,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.55,
+      "ipa_src": "wiktionary"
     },
     "Creator": {
       "say": "Creator",
@@ -23287,12 +23287,12 @@
     },
     "Rechabites": {
       "say": "Rechabites",
-      "ipa": "/rəˈkeɪ.bi.təs/",
+      "ipa": "/ˈrɛkəbaɪts/",
       "ref": "Jeremiah 35:2",
       "override": false,
-      "status": "unsure",
-      "score": 0.556,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Habazziniah": {
       "say": "Habazziniah",
@@ -23791,12 +23791,12 @@
     },
     "Meshach": {
       "say": "Meshach",
-      "ipa": "/ˈmiː.ʃək/",
+      "ipa": "/ˈmi.ʃæk/",
       "ref": "Daniel 1:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.7,
+      "ipa_src": "wiktionary"
     },
     "Shadrach": {
       "say": "Shadrach",
@@ -23854,12 +23854,12 @@
     },
     "Mede": {
       "say": "Mede",
-      "ipa": "/ˈmiː.diː/",
+      "ipa": "/miːd/",
       "ref": "Daniel 5:31",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Ulai": {
       "say": "Ulai",
@@ -23980,12 +23980,12 @@
     },
     "Sepharad": {
       "say": "Sepharad",
-      "ipa": "/ˈsiː.fə.rəd/",
+      "ipa": "/ˈsɛfəræd/",
       "ref": "Obadiah 1:20",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.857,
+      "ipa_src": "wiktionary"
     },
     "Shaphir": {
       "say": "Shaphir",
@@ -24043,12 +24043,12 @@
     },
     "Habakkuk": {
       "say": "Habakkuk",
-      "ipa": "/ˈheɪ.bək.kək/",
+      "ipa": "/həˈbæk.ək/",
       "ref": "Habakkuk 1:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.786,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.643,
+      "ipa_src": "wiktionary"
     },
     "Maktesh": {
       "say": "Maktesh",
@@ -24115,12 +24115,12 @@
     },
     "Malachi": {
       "say": "Malachi",
-      "ipa": "/ˈmeɪ.lə.kə/",
+      "ipa": "/ˈmæləkaɪ/",
       "ref": "Malachi 1:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.583,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.833,
+      "ipa_src": "wiktionary"
     },
     "Jechoniah": {
       "say": "Jechoniah",
@@ -24178,12 +24178,12 @@
     },
     "Archelaus": {
       "say": "Archelaus",
-      "ipa": "/ˈær.kə.lɔːs/",
+      "ipa": "/ˌɑɹ.kəˈleɪ.əs/",
       "ref": "Matthew 2:22",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.75,
+      "ipa_src": "wiktionary"
     },
     "Baptizer": {
       "say": "Baptizer",
@@ -24214,12 +24214,12 @@
     },
     "Thaddaeus": {
       "say": "Thaddaeus",
-      "ipa": "/ˈθæd.də.juːs/",
+      "ipa": "/ˈθædiːəs/",
       "ref": "Matthew 10:3",
       "override": false,
-      "status": "unsure",
-      "score": 0.286,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.333,
+      "ipa_src": "wiktionary"
     },
     "Magdala": {
       "say": "Magdala",
@@ -24277,12 +24277,12 @@
     },
     "Gethsemane": {
       "say": "Gethsemane",
-      "ipa": "/ɡəˈθsiː.mə.niː/",
+      "ipa": "/ɡɛθˈsɛməni/",
       "ref": "Matthew 26:36",
       "override": false,
-      "status": "unsure",
-      "score": 0.444,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.667,
+      "ipa_src": "wiktionary"
     },
     "Praetorium": {
       "say": "Praetorium",
@@ -24385,12 +24385,12 @@
     },
     "Timaeus": {
       "say": "Timaeus",
-      "ipa": "/ˈti.mə.juːs/",
+      "ipa": "/taɪˈmiːəs/",
       "ref": "Mark 10:46",
       "override": false,
-      "status": "unsure",
-      "score": 0.286,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.667,
+      "ipa_src": "wiktionary"
     },
     "Rufus": {
       "say": "Rufus",
@@ -24412,12 +24412,12 @@
     },
     "Eloi": {
       "say": "Eloi",
-      "ipa": "/ˈiː.lɔɪ/",
+      "ipa": "/ˈiːlɔɪ/",
       "ref": "Mark 15:34",
       "override": false,
-      "status": "unsure",
+      "status": "unfixed",
       "score": 0.292,
-      "ipa_src": "generated"
+      "ipa_src": "wiktionary"
     },
     "Salome": {
       "say": "Salome",
@@ -25292,12 +25292,12 @@
     },
     "Nicodemus": {
       "say": "Nicodemus",
-      "ipa": "/niˈsoʊ.də.məs/",
+      "ipa": "/nɪkəˈdiːməs/",
       "ref": "John 3:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.944,
+      "ipa_src": "wiktionary"
     },
     "Salim": {
       "say": "Salim",
@@ -25319,12 +25319,12 @@
     },
     "Tiberias": {
       "say": "Tiberias",
-      "ipa": "/tiˈbiː.ri.əs/",
+      "ipa": "/taɪˈbɪəɹi.æs/",
       "ref": "John 6:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.875,
+      "ipa_src": "wiktionary"
     },
     "Dispersion": {
       "say": "Dispersion",
@@ -27311,12 +27311,12 @@
     },
     "Andronicus": {
       "say": "Andronicus",
-      "ipa": "/ənˈdroʊ.ni.səs/",
+      "ipa": "/ˌændɹəˈnaɪkəs/",
       "ref": "Romans 16:7",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.8,
+      "ipa_src": "wiktionary"
     },
     "Junia": {
       "say": "Junia",
@@ -27356,12 +27356,12 @@
     },
     "Apelles": {
       "say": "Apelles",
-      "ipa": "/ˈeɪ.pəl.ləs/",
+      "ipa": "/əˈpɛliːz/",
       "ref": "Romans 16:10",
       "override": false,
-      "status": "unsure",
-      "score": 0.333,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Aristobulus": {
       "say": "Aristobulus",
@@ -27473,12 +27473,12 @@
     },
     "Nereus": {
       "say": "Nereus",
-      "ipa": "/ˈniː.rjuːs/",
+      "ipa": "/ˈnɪəriəs/",
       "ref": "Romans 16:15",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Olympas": {
       "say": "Olympas",
@@ -27608,12 +27608,12 @@
     },
     "Galatians": {
       "say": "Galatians",
-      "ipa": "/ɡəˈleɪ.ti.əns/",
+      "ipa": "/ɡəˈleɪʃənz/",
       "ref": "Galatians 3:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.556,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.875,
+      "ipa_src": "wiktionary"
     },
     "Epaphroditus": {
       "say": "Epaphroditus",
@@ -27653,21 +27653,21 @@
     },
     "Philippians": {
       "say": "Philippians",
-      "ipa": "/fiˈlɪp.pi.əns/",
+      "ipa": "/fəˈlɪpiənz/",
       "ref": "Philippians 4:15",
       "override": false,
-      "status": "unsure",
-      "score": 0.778,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.889,
+      "ipa_src": "wiktionary"
     },
     "Colossae": {
       "say": "Colossae",
-      "ipa": "/səˈlɒs.sə.iː/",
+      "ipa": "/kəˈlɒsi/",
       "ref": "Colossians 1:2",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Epaphras": {
       "say": "Epaphras",
@@ -27680,12 +27680,12 @@
     },
     "Laodicea": {
       "say": "Laodicea",
-      "ipa": "/ləˈoʊ.di.siː/",
+      "ipa": "/ˌleɪ.ədɪˈsiːə/",
       "ref": "Colossians 2:1",
       "override": false,
-      "status": "unsure",
-      "score": 0.472,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.708,
+      "ipa_src": "wiktionary"
     },
     "Deity": {
       "say": "Deity",
@@ -27851,12 +27851,12 @@
     },
     "Dalmatia": {
       "say": "Dalmatia",
-      "ipa": "/dəlˈmeɪ.ti.ə/",
+      "ipa": "/dælˈmeɪʃə/",
       "ref": "2 Timothy 4:10",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.857,
+      "ipa_src": "wiktionary"
     },
     "Luke": {
       "say": "Luke",
@@ -27977,21 +27977,21 @@
     },
     "Tartarus": {
       "say": "Tartarus",
-      "ipa": "/ˈtær.tə.rəs/",
+      "ipa": "/ˈtɑː(r)tərəs/",
       "ref": "2 Peter 2:4",
       "override": false,
-      "status": "unsure",
-      "score": 0.688,
-      "ipa_src": "generated"
+      "status": "unfixed",
+      "score": 0.65,
+      "ipa_src": "wiktionary"
     },
     "Antichrist": {
       "say": "Antichrist",
-      "ipa": "/ˈæn.ti.krɪst/",
+      "ipa": "/ˈantiˌkɹaɪst/",
       "ref": "1 John 2:18",
       "override": false,
-      "status": "unsure",
-      "score": 0.778,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 0.889,
+      "ipa_src": "wiktionary"
     },
     "Diotrephes": {
       "say": "Diotrephes",
@@ -28031,12 +28031,12 @@
     },
     "Pergamum": {
       "say": "Pergamum",
-      "ipa": "/ˈpɛr.ɡə.məm/",
+      "ipa": "/ˈpɜːɡəməm/",
       "ref": "Revelation 1:11",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
-      "ipa_src": "generated"
+      "status": "ok",
+      "score": 1.0,
+      "ipa_src": "wiktionary"
     },
     "Philadelphia": {
       "say": "Philadelphia",

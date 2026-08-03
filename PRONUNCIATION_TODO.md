@@ -5,11 +5,11 @@ Every proper noun in the WEB text has now been checked against real audio. The l
 | Verdict | Names |
 | --- | --- |
 | unchecked | 0 |
-| fine as spelled | 1303 |
+| fine as spelled | 1345 |
 | overridden | 516 |
 | suggestion waiting | 133 |
-| still wrong | 384 |
-| unsure (guessed IPA) | 991 |
+| still wrong | 417 |
+| unsure (guessed IPA) | 916 |
 
 ## How much to trust each of these
 
@@ -19,7 +19,7 @@ The reference each name is judged against is not equally solid, and the file rec
 | --- | --- | --- |
 | curated | 1830 | already in your list, or authored by hand |
 | cmudict | 232 | from the CMU Pronouncing Dictionary |
-| generated | 1265 | a rule-based guess — see below |
+| generated | 1190 | a rule-based guess — see below |
 
 **The generated guesses are weaker than the voice they judge.** Measured against the 1570 references that predate this work, the generator agrees 0.72 of the time; the neural voice manages 0.77 against those same references. So where a guessed reference and the voice disagree, the guess is the more likely culprit. Those names are marked **unsure** rather than wrong, and no override was ever applied on a guess alone.
 
@@ -30,8 +30,10 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | Name | Reference | Voice says | Score |
 | --- | --- | --- | --- |
 | **Puah** | /ˈpjuː.ə/ | `` | 0.25 |
+| **Sion** | /ˈsaɪ.ən/ | `ʃaʊn / ʃaʊn` | 0.25 |
 | **Coos** | /ˈkoʊ.ɒs/ | `` | 0.25 |
 | **Shallecheth** | /ˈʃæl.ə.kɛθ/ | `` | 0.29 |
+| **Eloi** | /ˈiːlɔɪ/ | `ɐloɪ / ɐloʊ` | 0.29 |
 | **Beer** | /bˈɪr/ | `bi / bi` | 0.33 |
 | **Roi** | /rˈɔɪ/ | `ɹoɪ / ɹoɪ` | 0.33 |
 | **Ain** | /ˈeɪ.ɪn/ | `` | 0.33 |
@@ -39,12 +41,15 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Bathshua** | /bæθˈʃuː.ə/ | `` | 0.33 |
 | **Ahi** | /ˈeɪ.haɪ/ | `` | 0.33 |
 | **Tokhath** | /ˈtɒk.hæθ/ | `toʊkeɪð / toʊkeɪð` | 0.33 |
+| **Thaddaeus** | /ˈθædiːəs/ | `ðæɾɪz / ðæɾɪz` | 0.33 |
 | **Jediael** | /dʒəˈdaɪ.eɪ.ɛl/ | `` | 0.36 |
+| **Hephzibah** | /ˈhɛpzɪbə/ | `hæfsəbəl / hævfsəbɐ` | 0.38 |
 | **Amal** | /ˈeɪ.mæl/ | `` | 0.38 |
 | **Beri** | /ˈbɪər.aɪ/ | `` | 0.38 |
 | **Shephuphan** | /ʃəˈfjuː.fæn/ | `` | 0.38 |
 | **Hadar** | /hˈædɚ/ | `hɐdɔ / hɐdɔ` | 0.40 |
 | **Goshen** | /ɡˈoʊʃɪn/ | `is / ɡoʊʃən` | 0.40 |
+| **Balaam** | /ˈbeɪləm/ | `wɐlɑm / vɐlɑm` | 0.40 |
 | **Barak** | /bˈɑrək/ | `ɹɑk / ɐɹɑk` | 0.40 |
 | **Hillel** | /hɪlˈɛl/ | `hɐloʊ / hɐloʊ` | 0.40 |
 | **Kir** | /kˈɪr/ | `keɪaɪɔɹ / keɪaɪɔɹ` | 0.40 |
@@ -70,9 +75,12 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Eliada** | /ɪˈlaɪ.ə.də/ | `` | 0.46 |
 | **Phanuel** | /fəˈnjuː.ɛl/ | `vænjuwəl / fænuwəl` | 0.46 |
 | **Attalia** | /ˌæt.əˈlaɪ.ə/ | `` | 0.46 |
+| **Akan** | /ˈækæn/ | `ɐkeɪn / ɐkeɪn` | 0.50 |
 | **Canaanite** | /kˈeɪnənaɪt/ | `hisɛ / keɪnənaɪt` | 0.50 |
+| **Asenath** | /ˈæsɪnæθ/ | `ɐsɛnæf / ɐsɛnæf` | 0.50 |
 | **Guni** | /ˈɡjuː.naɪ/ | `` | 0.50 |
 | **Igal** | /ˈaɪ.ɡæl/ | `` | 0.50 |
+| **Anak** | /ˈeɪnæk/ | `ænɪk / ænɪk` | 0.50 |
 | **Arad** | /ˈɛər.æd/ | `` | 0.50 |
 | **Aven** | /ɑvˈeɪn/ | `eɪvən / eɪvən` | 0.50 |
 | **Shual** | /ˈʃuː.əl/ | `` | 0.50 |
@@ -104,6 +112,7 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Tebaliah** | /ˌtɛb.əˈlaɪ.ə/ | `` | 0.50 |
 | **Jehuel** | /dʒəˈhjuː.ɛl/ | `dʒihʊl / dʒihwəl` | 0.50 |
 | **Miniamin** | /mɪˈnaɪ.ə.mɪn/ | `mɛnimin / mɛniæmən` | 0.50 |
+| **Michmas** | /ˈmɪkmæʃ/ | `maɪkmɪs / maɪkmɪs` | 0.50 |
 | **Ahasuerus** | /əhæʃəwˈɛrəs/ | `ɐhæzjuɹɪs / ɐhæzjuɚɹɪs` | 0.50 |
 | **Negev** | /nˈɛɡɛv/ | `nɛdʒəf / nɛdʒəv` | 0.50 |
 | **Aramaic** | /ɑrɑmˈɛjɪk/ | `ɛɹəmeɪɪk / ɛɹəmeɪɪk` | 0.50 |
@@ -123,6 +132,8 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Oren** | /ˈɔːr.ɛn/ | `` | 0.55 |
 | **Aher** | /ˈeɪ.hər/ | `` | 0.55 |
 | **Jesiah** | /dʒɪˈsaɪ.ə/ | `` | 0.55 |
+| **Lemuel** | /ˈlɛm.jə(wə)l/ | `lɛmuəl / lɛmjuəl` | 0.55 |
+| **Mephibosheth** | /məˈfɪb.əˌʃɛθ/ | `mɛfəboʊʃɛf / mɛfəboʊʃæθ` | 0.56 |
 | **Jehudijah** | /ˌdʒɛ.hjuːˈdaɪ.dʒə/ | `` | 0.56 |
 | **Kirjathaim** | /ˌkɜːr.dʒəˈθeɪ.ɪm/ | `` | 0.56 |
 | **Meshelemiah** | /məˌʃɛl.əˈmaɪ.ə/ | `` | 0.56 |
@@ -161,12 +172,15 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Mahalah** | /ˈmæh.ə.lə/ | `` | 0.58 |
 | **Eleadah** | /ˌɛl.iˈeɪ.də/ | `` | 0.58 |
 | **Shimeam** | /ˈʃɪm.i.æm/ | `` | 0.58 |
+| **Artaxerxes** | /ˌɑːtə(ɡ)ˈzɜːksiːz/ | `ɑɹɾəzɜksiz / ɑɹɾəzɜksiz` | 0.58 |
 | **Anthothijah** | /ˌæn.θoʊˈθaɪ.dʒə/ | `` | 0.59 |
 | **Immanuel** | /ˈɪmənʊl/ | `ɪmænuwɛl / ɪmænjuwɛl` | 0.59 |
+| **Mamre** | /ˈmæmri/ | `meɪmɹɐ / meɪmɹɐ` | 0.60 |
 | **Dothan** | /dˈɑθən/ | `doʊθɪn / dʒoʊθən` | 0.60 |
 | **Hormah** | /ˈhɔːr.mə/ | `` | 0.60 |
 | **Balak** | /bɑlək/ | `bælɪk / bælɪk` | 0.60 |
 | **Racal** | /rˈækəl/ | `ɹeɪsəl / ɹeɪsəl` | 0.60 |
+| **Rezin** | /rəˌziːn/ | `ɹɛzɪn / ɹɛzən` | 0.60 |
 | **Bunah** | /ˈbjuː.nə/ | `` | 0.60 |
 | **Eker** | /ˈiː.kər/ | `` | 0.60 |
 | **Ephlal** | /ˈɛf.læl/ | `` | 0.60 |
@@ -204,33 +218,19 @@ Judged against a curated or CMUdict reference, so the disagreement is real. No r
 | **Beroea** | /bəˈriː.ə/ | `` | 0.63 |
 | **Caleb-ephratah** | /ˌkeɪ.lɛbˈɛf.rə.tɑː/ | `` | 0.64 |
 | **Menahem** | /mənˈɑhəm/ | `menɐhʊm / menəhəm` | 0.64 |
+| **Habakkuk** | /həˈbæk.ək/ | `hæbəkɑk / hæbəkʌk` | 0.64 |
 | **Thyatira** | /ˌθaɪ.əˈtaɪ.rə/ | `` | 0.64 |
 | **Cenchrea** | /ˈsɛŋ.krɪ.ə/ | `` | 0.64 |
 | **Jethro** | /dʒˈɛθroʊ/ | `dʒɛfɚɹə / dʒɛfɹoʊ` | 0.65 |
 | **Euroclydon** | /jʊˈrɒk.lɪ.dɒn/ | `` | 0.65 |
+| **Tartarus** | /ˈtɑː(r)tərəs/ | `tɑɹɾɚɹəs / tɑɹɾɚɹɪs` | 0.65 |
 | **Gath-rimmon** | /ɡæθˈrɪm.ɒn/ | `` | 0.65 |
 | **Cush** | /kʌʃ/ | `` | 0.67 |
 | **Cain** | /keɪn/ | `` | 0.67 |
 | **Seth** | /sɛθ/ | `` | 0.67 |
 | **Ham** | /hæm/ | `` | 0.67 |
-| **Put** | /pʌt/ | `` | 0.67 |
-| **Zeboim** | /zɪˈboʊ.ɪm/ | `` | 0.67 |
-| **Hul** | /hʌl/ | `` | 0.67 |
-| **Dan** | /dæn/ | `` | 0.67 |
-| **Almighty** | /ɔlmˈaɪtiː/ | `ɔmaɪɾi / ɔmaɪɾi` | 0.67 |
-| **Kiriath** | /ˈkɪr.i.æθ/ | `` | 0.67 |
-| **Luz** | /lˈəz/ | `luz / luz` | 0.67 |
-| **Benoni** | /bɛnˈoʊniː/ | `bənoʊnaɪ / bənoʊnaɪ` | 0.67 |
-| **Oholibamah** | /oʊˌhɒl.ɪˈbɑː.mə/ | `` | 0.67 |
-| **Aiah** | /eɪˈaɪ.ə/ | `` | 0.67 |
-| **Husham** | /ˈhjuː.ʃəm/ | `` | 0.67 |
-| **Abihu** | /əˈbaɪ.hjuː/ | `` | 0.67 |
-| **Hur** | /hɜːr/ | `` | 0.67 |
-| **Ar** | /ˈɑr/ | `eɪɔɹ / eɪɑɹ` | 0.67 |
-| **Asriel** | /ˈæs.ri.ɛl/ | `` | 0.67 |
-| **Dor** | /dɔːr/ | `` | 0.67 |
 
-_…and 184 more; filter to "Still wrong" in the Pronunciation Studio for the full set._
+_…and 217 more; filter to "Still wrong" in the Pronunciation Studio for the full set._
 
 ## Suggestions waiting
 
@@ -321,7 +321,7 @@ A better spelling is known but was not applied, because the plain reading was cl
 
 ## Unsure — needs an ear, not another sweep
 
-991 names whose only reference is a rule-based guess. A low score here is as likely to mean the guess is wrong as the voice. The worst are listed; the Studio's "Unsure (guessed IPA)" filter shows them all.
+916 names whose only reference is a rule-based guess. A low score here is as likely to mean the guess is wrong as the voice. The worst are listed; the Studio's "Unsure (guessed IPA)" filter shows them all.
 
 | Name | Guessed reference | Voice says | Score |
 | --- | --- | --- | --- |
@@ -338,11 +338,9 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Giloh | /ˈɡi.ləh/ | `dʒaɪloʊ / dʒaɪloʊ` | 0.20 |
 | Cabul | /ˈseɪ.bəl/ | `kɐbu / kəboʊ` | 0.20 |
 | Ithlah | /ˈi.θləh/ | `ɪfloʊ / ɪflaɪ` | 0.20 |
-| Uriah | /əˈri.əh/ | `juɹaɪɐ / juɹaɪɐ` | 0.20 |
 | Necoh | /ˈniː.səh/ | `nɛkoʊ / nɛkoʊ` | 0.20 |
 | Uphaz | /ˈjuː.fəz/ | `ʌphæz / ʌphæz` | 0.20 |
 | Pau | /ˈpɔː/ | `paʊ / haʊ` | 0.25 |
-| Sion | /ˈsi.ən/ | `ʃaʊn / ʃaʊn` | 0.25 |
 | Giah | /ˈɡi.əh/ | `dʒaɪɚ / dʒaɪɐ` | 0.25 |
 | Arieh | /ˈeɪ.raɪh/ | `ɑɹɹiɐ / ɑɹɹiɐ` | 0.25 |
 | Bezai | /ˈbiː.zeɪ/ | `vɛzaɪ / vɛzaɪ` | 0.25 |
@@ -361,10 +359,7 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Paltite | /ˈpæl.ti.tiː/ | `pɑldaɪd / pɑldaɪd` | 0.29 |
 | Jedidah | /ˈdʒiː.di.dəh/ | `dʒɛɾədɐ / s` | 0.29 |
 | Agagite | /əˈɡeɪ.ɡi.tiː/ | `æɡədʒaɪt / æɡədʒaɪt` | 0.29 |
-| Thaddaeus | /ˈθæd.də.juːs/ | `ðæɾɪz / ðæɾɪz` | 0.29 |
-| Timaeus | /ˈti.mə.juːs/ | `tɪmiəz / tɪmiəz` | 0.29 |
 | Hattaavah | /hətˈteɪ.ə.vəh/ | `hædɐvɑvɚ / hædɐvɑvɐ` | 0.29 |
-| Eloi | /ˈiː.lɔɪ/ | `ɐloɪ / ɐloʊ` | 0.29 |
 | Betah | /ˈbiː.təh/ | `beɪɾɚ / veɪtɑ` | 0.30 |
 | Paarai | /ˈpeɪ.ə.reɪ/ | `hisɛd / pɚɹaɪ` | 0.30 |
 | Calno | /ˈsæl.nə/ | `kaʊnoʊ / kɔlnoʊ` | 0.30 |
@@ -373,13 +368,11 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Boanerges | /ˈboʊ.nər.ɡəs/ | `vɔnɜɡz / vɔlnɜɡz` | 0.31 |
 | Ithiel | /ˈi.θaɪl/ | `ɪθioʊ / ɪθiəl` | 0.33 |
 | Nicolaitans | /niˈsoʊ.leɪ.təns/ | `nɪkəllaɪɾænz / nɪkəllaɪɾænts` | 0.33 |
-| Asenath | /ˈeɪ.sə.nəθ/ | `ɐsɛnæf / ɐsɛnæf` | 0.33 |
 | Eri | /ˈiː.rə/ | `eɪɹi / ɛɹi` | 0.33 |
 | Ehi | /ˈiː.hə/ | `ɐhaɪ / eɪhaɪ` | 0.33 |
 | Mishael | /ˈmi.ʃə.əl/ | `mɪsheɪl / mɪsheɪl` | 0.33 |
 | Pagiel | /ˈpeɪ.ɡaɪl/ | `pædʒiəl / pædʒiəl` | 0.33 |
 | Gemalli | /ˈɡiː.məl.lə/ | `dʒəmælaɪ / dʒəmælaɪ` | 0.33 |
-| Balaam | /ˈbeɪ.lə.əm/ | `wɐlɑm / vɐlɑm` | 0.33 |
 | Huzoth | /ˈhjuː.zəθ/ | `hiwzɑf / hiwzɑf` | 0.33 |
 | Ashbelites | /əˈʃbiː.li.təs/ | `æʃbɪlɪɾiz / æʃbɪlɪɾiz` | 0.33 |
 | Hupham | /ˈhjuː.fəm/ | `hʌphɛm / hʌphɛm` | 0.33 |
@@ -392,13 +385,10 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Ahasbai | /ˈeɪ.həs.beɪ/ | `ɐhæzbaɪ / ɐhæzbaɪ` | 0.33 |
 | Cuth | /ˈsʌθ/ | `kʊθ / kʊθ` | 0.33 |
 | Abi | /ˈeɪ.bə/ | `ɑbi / ɑbi` | 0.33 |
-| Artaxerxes | /ərˈteɪ.ksər.ksəs/ | `ɑɹɾəzɜksiz / ɑɹɾəzɜksiz` | 0.33 |
 | Maai | /ˈmeɪ.eɪ/ | `maɪ / maɪ` | 0.33 |
 | Harsith | /ˈhær.sɪθ/ | `hɜsif / hɜsif` | 0.33 |
 | Baalis | /ˈbeɪ.ə.lɪs/ | `bɑliz / bɑliz` | 0.33 |
-| Apelles | /ˈeɪ.pəl.ləs/ | `ɐpɛliz / ɐpɛliz` | 0.33 |
 | Bartimaeus | /bərˈti.mə.juːs/ | `bɑɹdəmiəs / ɑɹdəmiəs` | 0.35 |
-| Potiphar | /ˈpoʊ.ti.fər/ | `pɑdɐfɔ / pɑdᵻfɔɹ` | 0.36 |
 | Cushite | /ˈsjuː.ʃi.tiː/ | `kuʃaɪt / kuʃaɪd` | 0.36 |
 | Secacah | /ˈsiː.sə.səh/ | `sɛkɪkɚ / sɛkəkɐ` | 0.36 |
 | Ararite | /əˈreɪ.ri.tiː/ | `ɛɹɹaɪt / ɛɹɚɹaɪt` | 0.36 |
@@ -409,7 +399,6 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Anath | /ˈeɪ.nəθ/ | `ɐnæf / ɐnæθ` | 0.38 |
 | Ephrathite | /əˈfreɪ.θi.tiː/ | `ɛfɹᵻfaɪt / ɛfɹɚθaɪt` | 0.38 |
 | Athach | /ˈeɪ.θək/ | `æfɪk / æθɪk` | 0.38 |
-| Jedidiah | /dʒə.diˈdi.əh/ | `dʒɛddaɪɐ / dʒɛddaɪɐ` | 0.38 |
 | Basshebeth | /ˈbæs.ʃə.bəθ/ | `veɪshibɪθ / veɪshibɪθ` | 0.38 |
 | Hasupha | /ˈheɪ.sə.fə/ | `hæʒəkə / hæʒɪkvɚ` | 0.38 |
 | Bavvai | /ˈbæv.veɪ/ | `bəvaɪ / əvaɪ` | 0.38 |
@@ -421,10 +410,21 @@ A better spelling is known but was not applied, because the plain reading was cl
 | Decapolis | /dəˈseɪ.pə.lɪs/ | `dɛkəpoʊləs / dʒɛkəpoʊləs` | 0.39 |
 | Moreh | /ˈmoʊ.rəh/ | `mɔɹ / mɔɹ` | 0.40 |
 | Birsha | /ˈbɪr.ʃə/ | `bɜʃɑ / bɜʃɑ` | 0.40 |
-| Eshcol | /ˈiː.ʃsəl/ | `ɛʃkɑl / ɛʃkɔl` | 0.40 |
 | Phicol | /ˈfi.səl/ | `faɪkɑl / vaɪkəl` | 0.40 |
 | Elohe | /ˈiː.lə.hiː/ | `iloʊ / iloʊ` | 0.40 |
 | Bacuth | /ˈbeɪ.səθ/ | `bəkʊθ / bəkʊθ` | 0.40 |
+| Areli | /ˈeɪ.rə.lə/ | `ɐɹɛli / ɚɹɛli` | 0.40 |
+| Arodi | /ˈeɪ.rə.də/ | `ɐɹoʊdi / ɹoʊdi` | 0.40 |
+| Geuel | /ˈɡjuː.əl/ | `ɡoʊl / ɡu` | 0.40 |
+| Sihon | /ˈsi.hən/ | `saɪn / saɪn` | 0.40 |
+| Nemuelites | /nə.məˈiː.li.təs/ | `nɛmjuəllaɪts / nɛmjuəllaɪts` | 0.40 |
+| Maacathites | /mə.əˈseɪ.θi.təs/ | `mækəθaɪts / mækəθaɪts` | 0.40 |
+| Zaphon | /ˈzeɪ.fən/ | `zæpɑn / zæpɔn` | 0.40 |
+| Ashnah | /ˈeɪ.ʃnəh/ | `æʃnɑ / æʃnɑ` | 0.40 |
+| Socoh | /ˈsoʊ.səh/ | `soʊkoʊ / soʊkoʊ` | 0.40 |
+| Sannah | /ˈsæn.nəh/ | `seɪnɑ / sɛnɑ` | 0.40 |
+| Ammoni | /ˈæm.mə.nə/ | `ɐmoʊni / ɐmoʊni` | 0.40 |
+| Seneh | /ˈsiː.nəh/ | `seɪneɪ / seɪneɪ` | 0.40 |
 
 ## Structural faults found and fixed
 
