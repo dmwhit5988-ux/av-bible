@@ -55,6 +55,7 @@ STATUS_COLORS = {
     pronunciation.STATUS_FIXED:     "#2f6fdd",   # blue
     pronunciation.STATUS_SUGGESTED: "#b58900",   # amber
     pronunciation.STATUS_UNFIXED:   "#c0392b",   # red
+    pronunciation.STATUS_UNSURE:    "#8e44ad",   # purple
 }
 
 FILTERS = (
@@ -64,6 +65,7 @@ FILTERS = (
     "Overridden",
     "Suggestions waiting",
     "Still wrong",
+    "Unsure (guessed IPA)",
     "Not in the list yet",
 )
 
@@ -296,6 +298,7 @@ class App:
             "Overridden": pronunciation.STATUS_FIXED,
             "Suggestions waiting": pronunciation.STATUS_SUGGESTED,
             "Still wrong": pronunciation.STATUS_UNFIXED,
+            "Unsure (guessed IPA)": pronunciation.STATUS_UNSURE,
         }.get(mode)
 
     def _paint_status(self, row):

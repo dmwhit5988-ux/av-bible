@@ -33,6 +33,11 @@ would otherwise look identical as ``override: false``:
                the plain reading was close enough that the disagreement may be
                the transcriber's error rather than the voice's -- decide by ear
     unfixed    checked; the plain spelling is wrong and no respelling has worked
+    unsure     checked, but only against a GENERATED reference (ipa_src), so a
+               disagreement may equally be the reference's fault. Measured, the
+               generator agrees with curated references 0.72 of the time while
+               the voice itself manages 0.77 -- it is the weaker of the two, so
+               it cannot convict the voice. Needs an ear, not another sweep.
 
 ``respell(text)`` swaps every whole-word occurrence of an ``override`` name for a
 lowercased ``say``. It's called from ``tts_engine.synthesize`` so desktop
@@ -77,15 +82,17 @@ STATUS_OK = "ok"
 STATUS_FIXED = "fixed"
 STATUS_SUGGESTED = "suggested"
 STATUS_UNFIXED = "unfixed"
+STATUS_UNSURE = "unsure"
 
 STATUS_ORDER = (STATUS_UNCHECKED, STATUS_OK, STATUS_FIXED, STATUS_SUGGESTED,
-                STATUS_UNFIXED)
+                STATUS_UNFIXED, STATUS_UNSURE)
 STATUS_LABELS = {
     STATUS_UNCHECKED: "unchecked",
     STATUS_OK: "fine as spelled",
     STATUS_FIXED: "overridden",
     STATUS_SUGGESTED: "suggestion waiting",
     STATUS_UNFIXED: "still wrong",
+    STATUS_UNSURE: "unsure (guessed IPA)",
 }
 
 
