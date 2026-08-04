@@ -7909,7 +7909,7 @@
       "ipa_src": "generated"
     },
     "Naarah": {
-      "say": "NAY-a-ruh",
+      "say": "NAY-yuh-rer",
       "ipa": "/ˈneɪ.ə.rə/",
       "ref": "Joshua 16:7",
       "override": true,
@@ -12775,7 +12775,7 @@
       "score": 0.857
     },
     "Jaalam": {
-      "say": "JAY-a-lam",
+      "say": "JAYuh-lam",
       "ipa": "/ˈdʒeɪ.ə.læm/",
       "ref": "1 Chronicles 1:35",
       "override": true,
@@ -13624,12 +13624,12 @@
       "score": 1.0
     },
     "Maachah": {
-      "say": "MAY-a-kuh",
+      "say": "MAY-yuh-ker",
       "ipa": "/ˈmeɪ.ə.kə/",
       "ref": "1 Chronicles 3:2",
       "override": true,
       "status": "fixed",
-      "score": 0.817
+      "score": 1.0
     },
     "Bath-shua": {
       "say": "bath-SHOO-uh",
@@ -15121,12 +15121,12 @@
       "score": 0.75
     },
     "Amariah": {
-      "say": "am-a-REYE-uh",
+      "say": "am-muh-REYE-uh",
       "ipa": "/ˌæm.əˈraɪ.ə/",
       "ref": "1 Chronicles 6:7",
       "override": true,
       "status": "fixed",
-      "score": 0.833
+      "score": 1.0
     },
     "Jehozadak": {
       "say": "juh-HOZ-uh-dak",
@@ -16129,7 +16129,7 @@
       "score": 0.733
     },
     "Baara": {
-      "say": "BAY-a-ruh",
+      "say": "BAY-uh-rah",
       "ipa": "/ˈbeɪ.ə.rə/",
       "ref": "1 Chronicles 8:8",
       "override": true,
@@ -17537,7 +17537,7 @@
       "score": 0.714
     },
     "Berachah": {
-      "say": "BEHR-a-kuh",
+      "say": "BEHR-uh-kah",
       "ipa": "/ˈbɛr.ə.kə/",
       "ref": "1 Chronicles 12:3",
       "override": true,
@@ -19442,12 +19442,12 @@
       "score": 0.812
     },
     "Ephron": {
-      "say": "EE-fron",
+      "say": "eefrawn",
       "ipa": "/ˈiː.frɒn/",
       "ref": "2 Chronicles 13:19",
       "override": true,
       "status": "fixed",
-      "score": 0.917
+      "score": 1.0
     },
     "Jeshanah": {
       "say": "JESH-uh-nuh",
@@ -19691,7 +19691,7 @@
       "score": 1.0
     },
     "Beracah": {
-      "say": "BEHR-a-kuh",
+      "say": "BEHR-uh-kah",
       "ipa": "/ˈbɛr.ə.kə/",
       "ref": "2 Chronicles 20:26",
       "override": true,
@@ -19739,12 +19739,12 @@
       "score": 0.8
     },
     "Jehoshabeath": {
-      "say": "jee-hoh-SHAB-ee-athh",
+      "say": "jee-hoh-SHAB-yee-athh",
       "ipa": "/ˌdʒiː.hoʊˈʃæb.i.æθ/",
       "ref": "2 Chronicles 22:11",
       "override": true,
       "status": "fixed",
-      "score": 0.905
+      "score": 1.0
     },
     "Elishaphat": {
       "say": "ih-LISH-uh-fat",
@@ -25019,12 +25019,12 @@
       "score": 0.8
     },
     "Bethsaida": {
-      "say": "behth-SAY-i-duh",
+      "say": "behth-SAY-yih-dah",
       "ipa": "/bɛθˈseɪ.ɪ.də/",
       "ref": "Luke 9:10",
       "override": true,
       "status": "fixed",
-      "score": 0.826
+      "score": 0.875
     },
     "Samaritans": {
       "say": "suh-MAIR-ih-tuhnz",
@@ -26622,12 +26622,12 @@
       "score": 1.0
     },
     "Achaia": {
-      "say": "a-KAY-uh",
+      "say": "uh-KAY-uh",
       "ipa": "/əˈkeɪ.ə/",
       "ref": "Acts 18:12",
       "override": true,
       "status": "fixed",
-      "score": 0.9
+      "score": 0.875
     },
     "Gallio": {
       "say": "GAL-ee-oh",
@@ -27234,7 +27234,7 @@
       "ipa_src": "cmudict"
     },
     "Syracuse": {
-      "say": "SIHR-a-kyooz",
+      "say": "SIHR-uh-kewz",
       "ipa": "/ˈsɪr.ə.kjuːz/",
       "ref": "Acts 28:12",
       "override": true,

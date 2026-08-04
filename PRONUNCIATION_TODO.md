@@ -414,25 +414,13 @@ A better spelling is recorded in `say` but not applied (`override:false`) — it
 
 ## Overrides that still carry a pure-vowel hyphen segment
 
-Pre-existing hand-tuned spellings the automated repair did not touch. The scorer cannot judge these — only the ear can.
+The scorer cannot judge these — only the ear can. `isbe_repair_legacy.py` cleared 12 of the original 15; what is left is there because no alternative measured as well, and in two cases for a reason worth knowing: the letter's own name is the target sound ("E" *is* /iː/), so the letter-by-letter reading costs naturalness rather than accuracy. Eliphelehu is the real casualty — its leading `i-` is read "eye" where the reference says /ɪ/, and every trap-free alternative traded that error for muddled middle vowels.
 
-| Name | Say |
-| --- | --- |
-| Achaia | `a-KAY-uh` |
-| Amariah | `am-a-REYE-uh` |
-| Baara | `BAY-a-ruh` |
-| Beracah | `BEHR-a-kuh` |
-| Berachah | `BEHR-a-kuh` |
-| Bethsaida | `behth-SAY-i-duh` |
-| Cenchreae | `sehn-KREE-ee` |
-| Eliel | `EE-lee-ehll` |
-| Eliphelehu | `i-lihf-uh-LEE-hoo` |
-| Ephron | `EE-fron` |
-| Jaalam | `JAY-a-lam` |
-| Jehoshabeath | `jee-hoh-SHAB-ee-athh` |
-| Maachah | `MAY-a-kuh` |
-| Naarah | `NAY-a-ruh` |
-| Syracuse | `SIHR-a-kyooz` |
+| Name | Say | Reference | Voice says |
+| --- | --- | --- | --- |
+| Cenchreae | `sehn-KREE-ee` | /sɛnˈkriː.iː/ | `sɛnkɹii / sɛnkɹii` |
+| Eliel | `EE-lee-ehll` | /ˈiː.li.ɛl/ | `iliɛl / iliɛl` |
+| Eliphelehu | `i-lihf-uh-LEE-hoo` | /ɪˌlɪf.əˈliː.huː/ | `aɪlɪfəllihu / aɪlɪfəllihu` |
 
 ## Unsure — 162 names still on a generated guess
 
