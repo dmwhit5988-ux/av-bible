@@ -1,478 +1,443 @@
 # Pronunciation to-do — whole canon
 
-Every proper noun in the WEB text has now been checked against real audio. The list holds 3327 names; this file is what checking could **not** settle.
+Every proper noun in the WEB text has been checked against real audio. The list holds 3327 names; this file is what checking could **not** settle.
 
 | Verdict | Names |
 | --- | --- |
 | unchecked | 0 |
-| fine as spelled | 1345 |
-| overridden | 516 |
-| suggestion waiting | 133 |
-| still wrong | 417 |
-| unsure (guessed IPA) | 916 |
+| fine as spelled | 1501 |
+| overridden | 859 |
+| suggestion waiting | 170 |
+| still wrong | 635 |
+| unsure (guessed IPA) | 162 |
 
-## How much to trust each of these
+## Where the references come from
 
-The reference each name is judged against is not equally solid, and the file records which is which in `ipa_src`:
+| Reference | Names |
+| --- | --- |
+| curated | 1821 |
+| ISBE (1915) | 975 |
+| CMUdict | 232 |
+| Wiktionary | 62 |
+| Wikipedia | 13 |
+| generated guess | 224 |
 
-| Reference | Names | Meaning |
-| --- | --- | --- |
-| curated | 1830 | already in your list, or authored by hand |
-| cmudict | 232 | from the CMU Pronouncing Dictionary |
-| generated | 1190 | a rule-based guess — see below |
+The ISBE references were harvested from the International Standard Bible Encyclopedia (1915, public domain) — headword respellings like `a-da-li'-a`, converted to IPA (`isbe_harvest.py` → `isbe_to_ipa.py` → `isbe_apply.py`). Measured against 150 curated references the conversion agrees 0.91 — well above the 0.72 rule-generator it replaced, so these are real references, judged accordingly (ok / still wrong, not unsure).
 
-**The generated guesses are weaker than the voice they judge.** Measured against the 1570 references that predate this work, the generator agrees 0.72 of the time; the neural voice manages 0.77 against those same references. So where a guessed reference and the voice disagree, the guess is the more likely culprit. Those names are marked **unsure** rather than wrong, and no override was ever applied on a guess alone.
+**Known acoustic blind spot:** a hyphenated pure-vowel segment in a respelling (`ee-mim`, `el-a-sar`) is read out letter-by-letter but transcribes as a clean long vowel, so a score alone cannot clear such a spelling. `isbe_sweep.py`/`isbe_repair.py` refuse to emit them; older hand-tuned overrides that still carry one are listed at the bottom for the ear.
 
 ## Still wrong — worth acting on
 
-Judged against a curated or CMUdict reference, so the disagreement is real. No respelling tried has fixed these.
+Judged against a sourced reference; no tested respelling fixed them.
 
-| Name | Reference | Voice says | Score |
-| --- | --- | --- | --- |
-| **Puah** | /ˈpjuː.ə/ | `` | 0.25 |
-| **Sion** | /ˈsaɪ.ən/ | `ʃaʊn / ʃaʊn` | 0.25 |
-| **Coos** | /ˈkoʊ.ɒs/ | `` | 0.25 |
-| **Shallecheth** | /ˈʃæl.ə.kɛθ/ | `` | 0.29 |
-| **Eloi** | /ˈiːlɔɪ/ | `ɐloɪ / ɐloʊ` | 0.29 |
-| **Beer** | /bˈɪr/ | `bi / bi` | 0.33 |
-| **Roi** | /rˈɔɪ/ | `ɹoɪ / ɹoɪ` | 0.33 |
-| **Ain** | /ˈeɪ.ɪn/ | `` | 0.33 |
-| **Pul** | /pʌl/ | `` | 0.33 |
-| **Bathshua** | /bæθˈʃuː.ə/ | `` | 0.33 |
-| **Ahi** | /ˈeɪ.haɪ/ | `` | 0.33 |
-| **Tokhath** | /ˈtɒk.hæθ/ | `toʊkeɪð / toʊkeɪð` | 0.33 |
-| **Thaddaeus** | /ˈθædiːəs/ | `ðæɾɪz / ðæɾɪz` | 0.33 |
-| **Jediael** | /dʒəˈdaɪ.eɪ.ɛl/ | `` | 0.36 |
-| **Hephzibah** | /ˈhɛpzɪbə/ | `hæfsəbəl / hævfsəbɐ` | 0.38 |
-| **Amal** | /ˈeɪ.mæl/ | `` | 0.38 |
-| **Beri** | /ˈbɪər.aɪ/ | `` | 0.38 |
-| **Shephuphan** | /ʃəˈfjuː.fæn/ | `` | 0.38 |
-| **Hadar** | /hˈædɚ/ | `hɐdɔ / hɐdɔ` | 0.40 |
-| **Goshen** | /ɡˈoʊʃɪn/ | `is / ɡoʊʃən` | 0.40 |
-| **Balaam** | /ˈbeɪləm/ | `wɐlɑm / vɐlɑm` | 0.40 |
-| **Barak** | /bˈɑrək/ | `ɹɑk / ɐɹɑk` | 0.40 |
-| **Hillel** | /hɪlˈɛl/ | `hɐloʊ / hɐloʊ` | 0.40 |
-| **Kir** | /kˈɪr/ | `keɪaɪɔɹ / keɪaɪɔɹ` | 0.40 |
-| **Igeal** | /ˈɪɡ.i.əl/ | `` | 0.40 |
-| **Asiel** | /ˈeɪ.si.ɛl/ | `` | 0.40 |
-| **Jeiel** | /dʒəˈaɪ.əl/ | `` | 0.40 |
-| **Isuah** | /ˈɪs.ju.ə/ | `` | 0.40 |
-| **Baasha** | /ˈbeɪ.ə.ʃə/ | `bɑʃɑ / bɑʃɑ` | 0.40 |
-| **Cephas** | /sˈɛfəz/ | `sifæs / sifæs` | 0.40 |
-| **Melchizedek** | /mɛkˈiːzɛdɛk/ | `i / mɛlkɪzədɛk` | 0.41 |
-| **Shimeath** | /ˈʃɪm.i.æθ/ | `ʃaɪmɪð / ʃaɪmɪθ` | 0.42 |
-| **Aquila** | /ˈæk.wɪ.lə/ | `` | 0.42 |
-| **Ithrites** | /ˈɪθ.raɪts/ | `` | 0.43 |
-| **Chenaniah** | /ˌkɛn.əˈnaɪ.ə/ | `` | 0.43 |
-| **Giddalti** | /ɡɪˈdæl.taɪ/ | `` | 0.43 |
-| **Eliakim** | /ɪˈlaɪ.ə.kɪm/ | `ɛliɑkim / ɛliɑkim` | 0.43 |
-| **Jesimiel** | /dʒəˈsɪm.i.ɛl/ | `` | 0.44 |
-| **Pas-dammim** | /pæsˈdæm.ɪm/ | `` | 0.44 |
-| **Anetothite** | /əˈnɛt.ə.θaɪt/ | `` | 0.44 |
-| **Mattathias** | /ˌmæt.əˈθaɪ.əs/ | `mətæfi / mətæθiəs` | 0.44 |
-| **Baal-hanan** | /ˌbeɪ.əlˈheɪ.næn/ | `` | 0.44 |
-| **Jehaleleel** | /dʒɪˈhæl.ɪ.liːl/ | `` | 0.44 |
-| **Eliada** | /ɪˈlaɪ.ə.də/ | `` | 0.46 |
-| **Phanuel** | /fəˈnjuː.ɛl/ | `vænjuwəl / fænuwəl` | 0.46 |
-| **Attalia** | /ˌæt.əˈlaɪ.ə/ | `` | 0.46 |
-| **Akan** | /ˈækæn/ | `ɐkeɪn / ɐkeɪn` | 0.50 |
-| **Canaanite** | /kˈeɪnənaɪt/ | `hisɛ / keɪnənaɪt` | 0.50 |
-| **Asenath** | /ˈæsɪnæθ/ | `ɐsɛnæf / ɐsɛnæf` | 0.50 |
-| **Guni** | /ˈɡjuː.naɪ/ | `` | 0.50 |
-| **Igal** | /ˈaɪ.ɡæl/ | `` | 0.50 |
-| **Anak** | /ˈeɪnæk/ | `ænɪk / ænɪk` | 0.50 |
-| **Arad** | /ˈɛər.æd/ | `` | 0.50 |
-| **Aven** | /ɑvˈeɪn/ | `eɪvən / eɪvən` | 0.50 |
-| **Shual** | /ˈʃuː.əl/ | `` | 0.50 |
-| **Ashan** | /ˈeɪ.ʃæn/ | `` | 0.50 |
-| **Ahimaaz** | /əˈhɪm.eɪ.æz/ | `` | 0.50 |
-| **Ahinoam** | /əˈhɪn.oʊ.æm/ | `` | 0.50 |
-| **Ner** | /nɜːr/ | `` | 0.50 |
-| **Gai** | /ɡˈeɪ/ | `ɡaɪ / ɡaɪ` | 0.50 |
-| **Asaph** | /ˈeɪ.sæf/ | `` | 0.50 |
-| **Asaiah** | /əˈseɪ.jə/ | `` | 0.50 |
-| **Ephratah** | /ˈɛf.rə.tɑː/ | `` | 0.50 |
-| **Kirjath-jearim** | /ˌkɜːr.dʒæθˈdʒiː.ə.rɪm/ | `` | 0.50 |
-| **Bath-shua** | /bæθˈʃuː.ə/ | `` | 0.50 |
-| **Naam** | /ˈneɪ.æm/ | `` | 0.50 |
-| **Asareel** | /əˈsær.i.ɛl/ | `` | 0.50 |
-| **Bithiah** | /bɪˈθaɪ.ə/ | `` | 0.50 |
-| **Biri** | /ˈbɪr.aɪ/ | `` | 0.50 |
-| **Azaz** | /ˈeɪ.zæz/ | `` | 0.50 |
-| **Huri** | /ˈhjʊər.aɪ/ | `` | 0.50 |
-| **Anem** | /ˈeɪ.nɛm/ | `` | 0.50 |
-| **Hasenuah** | /ˌhæs.ɪˈnjuː.ə/ | `` | 0.50 |
-| **Kore** | /ˈkɔːr.i/ | `` | 0.50 |
-| **Eliphal** | /ɪˈlaɪ.fæl/ | `` | 0.50 |
-| **Hothan** | /ˈhoʊ.θæn/ | `` | 0.50 |
-| **Elihu** | /ɪˈlaɪ.hjuː/ | `` | 0.50 |
-| **Pelethites** | /ˈpɛl.ə.θaɪts/ | `` | 0.50 |
-| **Bukkiah** | /bəˈkaɪ.ə/ | `` | 0.50 |
-| **Peulthai** | /piːˈʌl.θaɪ/ | `` | 0.50 |
-| **Tebaliah** | /ˌtɛb.əˈlaɪ.ə/ | `` | 0.50 |
-| **Jehuel** | /dʒəˈhjuː.ɛl/ | `dʒihʊl / dʒihwəl` | 0.50 |
-| **Miniamin** | /mɪˈnaɪ.ə.mɪn/ | `mɛnimin / mɛniæmən` | 0.50 |
-| **Michmas** | /ˈmɪkmæʃ/ | `maɪkmɪs / maɪkmɪs` | 0.50 |
-| **Ahasuerus** | /əhæʃəwˈɛrəs/ | `ɐhæzjuɹɪs / ɐhæzjuɚɹɪs` | 0.50 |
-| **Negev** | /nˈɛɡɛv/ | `nɛdʒəf / nɛdʒəv` | 0.50 |
-| **Aramaic** | /ɑrɑmˈɛjɪk/ | `ɛɹəmeɪɪk / ɛɹəmeɪɪk` | 0.50 |
-| **Ezekiel** | /ˈɛzɪkiːl/ | `ɪzikɪəl / ɪzikiəl` | 0.50 |
-| **Dura** | /dˈʊrə/ | `dʒɚɹə / dʒɚɹə` | 0.50 |
-| **Salome** | /səlˈoʊmiː/ | `sɑləmeɪ / sɑləmeɪ` | 0.50 |
-| **Semein** | /ˈsɛm.i.ɪn/ | `səmeɪn / səmeɪn` | 0.50 |
-| **Bethsphage** | /ˈbɛθ.sfə.dʒiː/ | `vɛθsɪdʒ / vɛθsɪdʒ` | 0.50 |
-| **Cleopas** | /ˈkliː.ə.pəs/ | `klioʊpɑ / plioʊpɑ` | 0.50 |
-| **Nathanael** | /nˈæθəneɪl/ | `nəθænjəl / nəθænjəl` | 0.50 |
-| **Manaen** | /ˈmæn.eɪ.ɛn/ | `` | 0.50 |
-| **Melita** | /ˈmɛl.ɪ.tə/ | `` | 0.50 |
-| **Puteoli** | /pjuːˈtiː.ə.laɪ/ | `` | 0.50 |
-| **Eunice** | /jˈuːnəs/ | `is / junɪs` | 0.50 |
-| **Haniel** | /ˈhæn.i.ɛl/ | `` | 0.54 |
-| **Jashubilehem** | /dʒəˌʃuː.bɪˈliː.hɛm/ | `` | 0.55 |
-| **Oren** | /ˈɔːr.ɛn/ | `` | 0.55 |
-| **Aher** | /ˈeɪ.hər/ | `` | 0.55 |
-| **Jesiah** | /dʒɪˈsaɪ.ə/ | `` | 0.55 |
-| **Lemuel** | /ˈlɛm.jə(wə)l/ | `lɛmuəl / lɛmjuəl` | 0.55 |
-| **Mephibosheth** | /məˈfɪb.əˌʃɛθ/ | `mɛfəboʊʃɛf / mɛfəboʊʃæθ` | 0.56 |
-| **Jehudijah** | /ˌdʒɛ.hjuːˈdaɪ.dʒə/ | `` | 0.56 |
-| **Kirjathaim** | /ˌkɜːr.dʒəˈθeɪ.ɪm/ | `` | 0.56 |
-| **Meshelemiah** | /məˌʃɛl.əˈmaɪ.ə/ | `` | 0.56 |
-| **Eliehoenai** | /ɪˌlaɪ.ə.hoʊˈiː.naɪ/ | `` | 0.56 |
-| **Moabitess** | /ˈmoʊ.ə.baɪ.tɛs/ | `moʊlʊbaɪɾəs / mʌləbaɪɾəs` | 0.56 |
-| **Bezaleel** | /bɪˈzæl.i.ɛl/ | `` | 0.56 |
-| **Jaareshiah** | /ˌdʒeɪ.ə.rəˈʃaɪ.ə/ | `` | 0.56 |
-| **Nethaneel** | /nɪˈθæn.i.ɛl/ | `` | 0.56 |
-| **Ramathite** | /ˈreɪ.mə.θaɪt/ | `` | 0.56 |
-| **Barsabas** | /ˈbɑːr.sə.bəs/ | `` | 0.56 |
-| **Abimael** | /əˈbɪm.eɪ.ɛl/ | `` | 0.57 |
-| **Abihail** | /ˌæb.ɪˈheɪ.ɪl/ | `` | 0.57 |
-| **Penuel** | /pəˈnjuː.əl/ | `` | 0.57 |
-| **Mattaniah** | /ˌmæt.əˈnaɪ.ə/ | `` | 0.57 |
-| **Eliashib** | /ɪˈlaɪ.ə.ʃɪb/ | `` | 0.57 |
-| **Ahuzam** | /əˈhjuː.zæm/ | `` | 0.57 |
-| **Josibiah** | /ˌdʒɒs.ɪˈbaɪ.ə/ | `` | 0.57 |
-| **Azareel** | /əˈzær.i.ɛl/ | `` | 0.57 |
-| **Danites** | /ˈdæn.aɪts/ | `` | 0.57 |
-| **Perazim** | /pəˈreɪ.zɪm/ | `` | 0.57 |
-| **Elipheleh** | /ɪˈlɪf.ɪ.lɛ/ | `` | 0.57 |
-| **Gedaliah** | /ˌɡɛd.əˈlaɪ.ə/ | `` | 0.57 |
-| **Jathniel** | /ˈdʒæθ.ni.ɛl/ | `` | 0.57 |
-| **Peullethai** | /piˈʌl.ə.θaɪ/ | `` | 0.57 |
-| **Shelemiah** | /ˌʃɛl.əˈmaɪ.ə/ | `` | 0.57 |
-| **Jechiliah** | /ˌdʒɛk.ɪˈlaɪ.ə/ | `dʒɐtʃɪlɐ / dʒɐtʃɪliɐ` | 0.57 |
-| **Conaniah** | /ˌkɒn.əˈnaɪ.ə/ | `kəneɪniɐ / koʊneɪniɐ` | 0.57 |
-| **Tertius** | /tˈɚtiːɪs/ | `tɜʃiəs / tɜʃiəs` | 0.57 |
-| **Artemas** | /ˈɑrtɪməz/ | `ɑɹɾəməs / ɑɹdəməs` | 0.57 |
-| **Annas** | /ˈæn.əs/ | `` | 0.57 |
-| **Hanniel** | /ˈhæn.i.ɛl/ | `` | 0.58 |
-| **Aijalon** | /ˈædʒ.ə.lɒn/ | `` | 0.58 |
-| **Taanach** | /ˈteɪ.ə.næk/ | `` | 0.58 |
-| **Benaiah** | /bəˈneɪ.jə/ | `` | 0.58 |
-| **Jezoar** | /dʒɪˈzoʊ.ɑːr/ | `` | 0.58 |
-| **Mahalah** | /ˈmæh.ə.lə/ | `` | 0.58 |
-| **Eleadah** | /ˌɛl.iˈeɪ.də/ | `` | 0.58 |
-| **Shimeam** | /ˈʃɪm.i.æm/ | `` | 0.58 |
-| **Artaxerxes** | /ˌɑːtə(ɡ)ˈzɜːksiːz/ | `ɑɹɾəzɜksiz / ɑɹɾəzɜksiz` | 0.58 |
-| **Anthothijah** | /ˌæn.θoʊˈθaɪ.dʒə/ | `` | 0.59 |
-| **Immanuel** | /ˈɪmənʊl/ | `ɪmænuwɛl / ɪmænjuwɛl` | 0.59 |
-| **Mamre** | /ˈmæmri/ | `meɪmɹɐ / meɪmɹɐ` | 0.60 |
-| **Dothan** | /dˈɑθən/ | `doʊθɪn / dʒoʊθən` | 0.60 |
-| **Hormah** | /ˈhɔːr.mə/ | `` | 0.60 |
-| **Balak** | /bɑlək/ | `bælɪk / bælɪk` | 0.60 |
-| **Racal** | /rˈækəl/ | `ɹeɪsəl / ɹeɪsəl` | 0.60 |
-| **Rezin** | /rəˌziːn/ | `ɹɛzɪn / ɹɛzən` | 0.60 |
-| **Bunah** | /ˈbjuː.nə/ | `` | 0.60 |
-| **Eker** | /ˈiː.kər/ | `` | 0.60 |
-| **Ephlal** | /ˈɛf.læl/ | `` | 0.60 |
-| **Reaiah** | /riˈeɪ.jə/ | `` | 0.60 |
-| **Adiel** | /ˈeɪ.di.ɛl/ | `` | 0.60 |
-| **Ishuai** | /ˈɪʃ.ju.aɪ/ | `` | 0.60 |
-| **Maasai** | /ˈmeɪ.ə.saɪ/ | `` | 0.60 |
-| **Tobadonijah** | /ˌtɒb.æd.oʊˈnaɪ.dʒə/ | `toʊbədɑnɪdʒə / toʊbədɑnɪdʒɐ` | 0.60 |
-| **Hosea** | /hoʊsˈiːə/ | `hoʊzeɪɐ / hoʊzeɪɐ` | 0.60 |
-| **Salim** | /sˈælɪm/ | `səlim / səlim` | 0.60 |
-| **Deity** | /dˈiːətiː/ | `diɪɾi / diɪɾi` | 0.60 |
-| **Mattithiah** | /ˌmæt.ɪˈθaɪ.ə/ | `` | 0.61 |
-| **Hammolecheth** | /hæˈmɒl.ə.kɛθ/ | `` | 0.61 |
-| **Hammoleketh** | /həˈmɒl.ɪ.kɛθ/ | `` | 0.61 |
-| **Gennesaret** | /ɡəˈnɛs.ə.rɛt/ | `dʒɛnəsɚɹɛt / dʒɛnɪsɚɹɛd` | 0.61 |
-| **Shuthelah** | /ʃuːˈθiː.lə/ | `` | 0.62 |
-| **Adalia** | /ɑdˈɑliːə/ | `ɐdeɪliɐl / ɐdeɪliɐ` | 0.62 |
-| **Assir** | /ˈæs.ər/ | `` | 0.62 |
-| **YAHWEH** | /jˈɑwɛ/ | `jaʊweɪ / jɑweɪ` | 0.62 |
-| **Shean** | /ˈʃiː.æn/ | `` | 0.62 |
-| **Eglah** | /ˈɛɡ.lə/ | `` | 0.62 |
-| **Caphthorim** | /ˈkæf.θɔː.rɪm/ | `` | 0.62 |
-| **Aliah** | /əˈlaɪ.ə/ | `` | 0.62 |
-| **Shimeathites** | /ˈʃɪm.i.ə.θaɪts/ | `` | 0.62 |
-| **Ziza** | /ˈzaɪ.zə/ | `` | 0.62 |
-| **Amzi** | /ˈæm.zaɪ/ | `` | 0.62 |
-| **Uzzen-sherah** | /ˌʌz.ɛnˈʃɪər.ə/ | `` | 0.62 |
-| **Anathothite** | /ˈæn.ə.θɒθ.aɪt/ | `` | 0.62 |
-| **Shiza** | /ˈʃaɪ.zə/ | `` | 0.62 |
-| **Aram-maacah** | /ˌɛər.əm ˈmeɪ.ə.kə/ | `` | 0.62 |
-| **Eloth** | /ˈiː.lɒθ/ | `ɐlɑf / ɐlɑθ` | 0.62 |
-| **Cana** | /kˈænə/ | `tɑnə / kɑnɐ` | 0.62 |
-| **Mitylene** | /ˌmɪt.ɪˈliː.ni/ | `` | 0.62 |
-| **Orion** | /oʊrˈaɪən/ | `ɚɹaɪn / wɜɹaɪən` | 0.63 |
-| **Beroea** | /bəˈriː.ə/ | `` | 0.63 |
-| **Caleb-ephratah** | /ˌkeɪ.lɛbˈɛf.rə.tɑː/ | `` | 0.64 |
-| **Menahem** | /mənˈɑhəm/ | `menɐhʊm / menəhəm` | 0.64 |
-| **Habakkuk** | /həˈbæk.ək/ | `hæbəkɑk / hæbəkʌk` | 0.64 |
-| **Thyatira** | /ˌθaɪ.əˈtaɪ.rə/ | `` | 0.64 |
-| **Cenchrea** | /ˈsɛŋ.krɪ.ə/ | `` | 0.64 |
-| **Jethro** | /dʒˈɛθroʊ/ | `dʒɛfɚɹə / dʒɛfɹoʊ` | 0.65 |
-| **Euroclydon** | /jʊˈrɒk.lɪ.dɒn/ | `` | 0.65 |
-| **Tartarus** | /ˈtɑː(r)tərəs/ | `tɑɹɾɚɹəs / tɑɹɾɚɹɪs` | 0.65 |
-| **Gath-rimmon** | /ɡæθˈrɪm.ɒn/ | `` | 0.65 |
-| **Cush** | /kʌʃ/ | `` | 0.67 |
-| **Cain** | /keɪn/ | `` | 0.67 |
-| **Seth** | /sɛθ/ | `` | 0.67 |
-| **Ham** | /hæm/ | `` | 0.67 |
+| Name | Reference | Source | Voice says | Score |
+| --- | --- | --- | --- | --- |
+| **Pau** | /ˈpɔː/ | ISBE (1915) | `paʊ / haʊ` | 0.25 |
+| **Puah** | /ˈpjuː.ə/ | curated | `` | 0.25 |
+| **Sion** | /ˈsaɪ.ən/ | Wiktionary | `` | 0.25 |
+| **Coos** | /ˈkoʊ.ɒs/ | curated | `` | 0.25 |
+| **Shallecheth** | /ˈʃæl.ə.kɛθ/ | curated | `` | 0.29 |
+| **Eloi** | /ˈiːlɔɪ/ | Wiktionary | `` | 0.29 |
+| **Beer** | /bˈɪr/ | CMUdict | `` | 0.33 |
+| **Roi** | /rˈɔɪ/ | CMUdict | `` | 0.33 |
+| **Ain** | /ˈeɪ.ɪn/ | curated | `` | 0.33 |
+| **Pul** | /pʌl/ | curated | `` | 0.33 |
+| **Bathshua** | /bæθˈʃuː.ə/ | curated | `` | 0.33 |
+| **Ahi** | /ˈeɪ.haɪ/ | curated | `` | 0.33 |
+| **Tokhath** | /ˈtɒk.hæθ/ | curated | `` | 0.33 |
+| **Thaddaeus** | /ˈθædiːəs/ | Wiktionary | `` | 0.33 |
+| **Jediael** | /dʒəˈdaɪ.eɪ.ɛl/ | curated | `` | 0.36 |
+| **Hephzibah** | /ˈhɛpzɪbə/ | Wiktionary | `` | 0.38 |
+| **Amal** | /ˈeɪ.mæl/ | curated | `` | 0.38 |
+| **Beri** | /ˈbɪər.aɪ/ | curated | `` | 0.38 |
+| **Shephuphan** | /ʃəˈfjuː.fæn/ | curated | `` | 0.38 |
+| **Hadar** | /hˈædɚ/ | CMUdict | `` | 0.40 |
+| **Goshen** | /ɡˈoʊʃɪn/ | CMUdict | `` | 0.40 |
+| **Balaam** | /ˈbeɪləm/ | Wikipedia | `` | 0.40 |
+| **Barak** | /bˈɑrək/ | CMUdict | `` | 0.40 |
+| **Hillel** | /hɪlˈɛl/ | CMUdict | `` | 0.40 |
+| **Paarai** | /ˈpeɪ.ə.raɪ/ | ISBE (1915) | `hisɛd / pɚɹaɪ` | 0.40 |
+| **Kir** | /kˈɪr/ | CMUdict | `` | 0.40 |
+| **Igeal** | /ˈɪɡ.i.əl/ | curated | `` | 0.40 |
+| **Asiel** | /ˈeɪ.si.ɛl/ | curated | `` | 0.40 |
+| **Jeiel** | /dʒəˈaɪ.əl/ | curated | `` | 0.40 |
+| **Isuah** | /ˈɪs.ju.ə/ | curated | `` | 0.40 |
+| **Baasha** | /ˈbeɪ.ə.ʃə/ | curated | `` | 0.40 |
+| **Cephas** | /sˈɛfəz/ | CMUdict | `` | 0.40 |
+| **Melchizedek** | /mɛkˈiːzɛdɛk/ | CMUdict | `` | 0.41 |
+| **Shimeath** | /ˈʃɪm.i.æθ/ | curated | `` | 0.42 |
+| **Pathros** | /ˈpæθ.rɒs/ | ISBE (1915) | `hæfɹoʊs / hæfɹoʊz` | 0.42 |
+| **Aquila** | /ˈæk.wɪ.lə/ | curated | `` | 0.42 |
+| **Ithrites** | /ˈɪθ.raɪts/ | curated | `` | 0.43 |
+| **Chenaniah** | /ˌkɛn.əˈnaɪ.ə/ | curated | `` | 0.43 |
+| **Giddalti** | /ɡɪˈdæl.taɪ/ | curated | `` | 0.43 |
+| **Eliakim** | /ɪˈlaɪ.ə.kɪm/ | curated | `` | 0.43 |
+| **Jesimiel** | /dʒəˈsɪm.i.ɛl/ | curated | `` | 0.44 |
+| **Pas-dammim** | /pæsˈdæm.ɪm/ | curated | `` | 0.44 |
+| **Anetothite** | /əˈnɛt.ə.θaɪt/ | curated | `` | 0.44 |
+| **Mattathias** | /ˌmæt.əˈθaɪ.əs/ | curated | `` | 0.44 |
+| **Baal-hanan** | /ˌbeɪ.əlˈheɪ.næn/ | curated | `` | 0.44 |
+| **Jehaleleel** | /dʒɪˈhæl.ɪ.liːl/ | curated | `` | 0.44 |
+| **Eliada** | /ɪˈlaɪ.ə.də/ | curated | `` | 0.46 |
+| **Phanuel** | /fəˈnjuː.ɛl/ | curated | `` | 0.46 |
+| **Attalia** | /ˌæt.əˈlaɪ.ə/ | curated | `` | 0.46 |
+| **Akan** | /ˈækæn/ | Wiktionary | `` | 0.50 |
+| **Canaanite** | /kˈeɪnənaɪt/ | CMUdict | `` | 0.50 |
+| **Asenath** | /ˈæsɪnæθ/ | Wikipedia | `` | 0.50 |
+| **Guni** | /ˈɡjuː.naɪ/ | curated | `` | 0.50 |
+| **Igal** | /ˈaɪ.ɡæl/ | curated | `` | 0.50 |
+| **Anak** | /ˈeɪnæk/ | Wikipedia | `` | 0.50 |
+| **Arad** | /ˈɛər.æd/ | curated | `` | 0.50 |
+| **Zalmonah** | /zæl.ˈmɒneɪ/ | ISBE (1915) | `zɐlmoʊnɐ / zoʊmoʊnɐ` | 0.50 |
+| **Aven** | /ɑvˈeɪn/ | CMUdict | `` | 0.50 |
+| **Shual** | /ˈʃuː.əl/ | curated | `` | 0.50 |
+| **Ashan** | /ˈeɪ.ʃæn/ | curated | `` | 0.50 |
+| **Balah** | /ˈbæleɪ/ | ISBE (1915) | `bɑlɐ / bɑlɐ` | 0.50 |
+| **Ithlah** | /ˈɪθ.lə/ | ISBE (1915) | `ɪfloʊ / ɪflaɪ` | 0.50 |
+| **Shittah** | /ˈʃɪteɪ/ | ISBE (1915) | `ʃɪɾɐ / ʃɪdɐ` | 0.50 |
+| **Ahimaaz** | /əˈhɪm.eɪ.æz/ | curated | `` | 0.50 |
+| **Ahinoam** | /əˈhɪn.oʊ.æm/ | curated | `` | 0.50 |
+| **Ner** | /nɜːr/ | curated | `` | 0.50 |
+| **Gai** | /ɡˈeɪ/ | CMUdict | `` | 0.50 |
+| **Asaph** | /ˈeɪ.sæf/ | curated | `` | 0.50 |
+| **Asaiah** | /əˈseɪ.jə/ | curated | `` | 0.50 |
+| **Ephratah** | /ˈɛf.rə.tɑː/ | curated | `` | 0.50 |
+| **Kirjath-jearim** | /ˌkɜːr.dʒæθˈdʒiː.ə.rɪm/ | curated | `` | 0.50 |
+| **Bath-shua** | /bæθˈʃuː.ə/ | curated | `` | 0.50 |
+| **Naam** | /ˈneɪ.æm/ | curated | `` | 0.50 |
+| **Asareel** | /əˈsær.i.ɛl/ | curated | `` | 0.50 |
+| **Bithiah** | /bɪˈθaɪ.ə/ | curated | `` | 0.50 |
+| **Biri** | /ˈbɪr.aɪ/ | curated | `` | 0.50 |
+| **Azaz** | /ˈeɪ.zæz/ | curated | `` | 0.50 |
+| **Huri** | /ˈhjʊər.aɪ/ | curated | `` | 0.50 |
+| **Anem** | /ˈeɪ.nɛm/ | curated | `` | 0.50 |
+| **Hasenuah** | /ˌhæs.ɪˈnjuː.ə/ | curated | `` | 0.50 |
+| **Kore** | /ˈkɔːr.i/ | curated | `` | 0.50 |
+| **Eliphal** | /ɪˈlaɪ.fæl/ | curated | `` | 0.50 |
+| **Hothan** | /ˈhoʊ.θæn/ | curated | `` | 0.50 |
+| **Elihu** | /ɪˈlaɪ.hjuː/ | curated | `` | 0.50 |
+| **Pelethites** | /ˈpɛl.ə.θaɪts/ | curated | `` | 0.50 |
+| **Bukkiah** | /bəˈkaɪ.ə/ | curated | `` | 0.50 |
+| **Peulthai** | /piːˈʌl.θaɪ/ | curated | `` | 0.50 |
+| **Tebaliah** | /ˌtɛb.əˈlaɪ.ə/ | curated | `` | 0.50 |
+| **Jehuel** | /dʒəˈhjuː.ɛl/ | curated | `` | 0.50 |
+| **Miniamin** | /mɪˈnaɪ.ə.mɪn/ | curated | `` | 0.50 |
+| **Michmas** | /ˈmɪkmæʃ/ | Wiktionary | `` | 0.50 |
+| **Ahasuerus** | /əhæʃəwˈɛrəs/ | CMUdict | `` | 0.50 |
+| **Kelaiah** | /ki.ˈleɪ.jə/ | ISBE (1915) | `kɐlaɪɐ / kəlaɪɐ` | 0.50 |
+| **Raamiah** | /rə.ə.ˈmaɪ.ə/ | ISBE (1915) | `ɹeɪmiɐ / ɹeɪmiɐ` | 0.50 |
+| **Joiada** | /ˈdʒɔɪ.ə.də/ | ISBE (1915) | `dʒɚɹɑdə / dʒoɪɑdɐ` | 0.50 |
+| **Negev** | /nˈɛɡɛv/ | CMUdict | `` | 0.50 |
+| **Aramaic** | /ɑrɑmˈɛjɪk/ | CMUdict | `` | 0.50 |
+| **Ezekiel** | /ˈɛzɪkiːl/ | CMUdict | `` | 0.50 |
+| **Dura** | /dˈʊrə/ | CMUdict | `` | 0.50 |
+| **Shalman** | /ˈʃæl.mæn/ | ISBE (1915) | `ʃɑmən / ʃɑmən` | 0.50 |
+| **Salome** | /səlˈoʊmiː/ | CMUdict | `` | 0.50 |
+| **Semein** | /ˈsɛm.i.ɪn/ | curated | `` | 0.50 |
+| **Bethsphage** | /ˈbɛθ.sfə.dʒiː/ | curated | `` | 0.50 |
+| **Cleopas** | /ˈkliː.ə.pəs/ | curated | `` | 0.50 |
+| **Nathanael** | /nˈæθəneɪl/ | CMUdict | `` | 0.50 |
+| **Manaen** | /ˈmæn.eɪ.ɛn/ | curated | `` | 0.50 |
+| **Melita** | /ˈmɛl.ɪ.tə/ | curated | `` | 0.50 |
+| **Puteoli** | /pjuːˈtiː.ə.laɪ/ | curated | `` | 0.50 |
+| **Eunice** | /jˈuːnəs/ | CMUdict | `` | 0.50 |
+| **Haniel** | /ˈhæn.i.ɛl/ | curated | `` | 0.54 |
+| **Jashubilehem** | /dʒəˌʃuː.bɪˈliː.hɛm/ | curated | `` | 0.55 |
+| **Oren** | /ˈɔːr.ɛn/ | curated | `` | 0.55 |
+| **Aher** | /ˈeɪ.hər/ | curated | `` | 0.55 |
+| **Jesiah** | /dʒɪˈsaɪ.ə/ | curated | `` | 0.55 |
+| **Lemuel** | /ˈlɛm.jə(wə)l/ | Wiktionary | `` | 0.55 |
+| **Zurishaddai** | /zjʊ.ri.ˈʃæd.aɪ/ | ISBE (1915) | `zɚɹɪʃɑdaɪ / zɚɹɪʃɑdaɪ` | 0.56 |
+| **Mephibosheth** | /məˈfɪb.əˌʃɛθ/ | Wiktionary | `` | 0.56 |
+| **Jehudijah** | /ˌdʒɛ.hjuːˈdaɪ.dʒə/ | curated | `` | 0.56 |
+| **Kirjathaim** | /ˌkɜːr.dʒəˈθeɪ.ɪm/ | curated | `` | 0.56 |
+| **Meshelemiah** | /məˌʃɛl.əˈmaɪ.ə/ | curated | `` | 0.56 |
+| **Eliehoenai** | /ɪˌlaɪ.ə.hoʊˈiː.naɪ/ | curated | `` | 0.56 |
+| **Moabitess** | /ˈmoʊ.ə.baɪ.tɛs/ | curated | `` | 0.56 |
+| **Bezaleel** | /bɪˈzæl.i.ɛl/ | curated | `` | 0.56 |
+| **Jaareshiah** | /ˌdʒeɪ.ə.rəˈʃaɪ.ə/ | curated | `` | 0.56 |
+| **Nethaneel** | /nɪˈθæn.i.ɛl/ | curated | `` | 0.56 |
+| **Ramathite** | /ˈreɪ.mə.θaɪt/ | curated | `` | 0.56 |
+| **Barsabas** | /ˈbɑːr.sə.bəs/ | curated | `` | 0.56 |
+| **Abimael** | /əˈbɪm.eɪ.ɛl/ | curated | `` | 0.57 |
+| **Abihail** | /ˌæb.ɪˈheɪ.ɪl/ | curated | `` | 0.57 |
+| **Penuel** | /pəˈnjuː.əl/ | curated | `` | 0.57 |
+| **Mattaniah** | /ˌmæt.əˈnaɪ.ə/ | curated | `` | 0.57 |
+| **Eliashib** | /ɪˈlaɪ.ə.ʃɪb/ | curated | `` | 0.57 |
+| **Ahuzam** | /əˈhjuː.zæm/ | curated | `` | 0.57 |
+| **Josibiah** | /ˌdʒɒs.ɪˈbaɪ.ə/ | curated | `` | 0.57 |
+| **Azareel** | /əˈzær.i.ɛl/ | curated | `` | 0.57 |
+| **Danites** | /ˈdæn.aɪts/ | curated | `` | 0.57 |
+| **Perazim** | /pəˈreɪ.zɪm/ | curated | `` | 0.57 |
+| **Elipheleh** | /ɪˈlɪf.ɪ.lɛ/ | curated | `` | 0.57 |
+| **Gedaliah** | /ˌɡɛd.əˈlaɪ.ə/ | curated | `` | 0.57 |
+| **Jathniel** | /ˈdʒæθ.ni.ɛl/ | curated | `` | 0.57 |
+| **Peullethai** | /piˈʌl.ə.θaɪ/ | curated | `` | 0.57 |
+| **Shelemiah** | /ˌʃɛl.əˈmaɪ.ə/ | curated | `` | 0.57 |
+| **Jechiliah** | /ˌdʒɛk.ɪˈlaɪ.ə/ | curated | `` | 0.57 |
+| **Conaniah** | /ˌkɒn.əˈnaɪ.ə/ | curated | `` | 0.57 |
+| **Hakupha** | /hə.ˈkjuː.fə/ | ISBE (1915) | `ɐkoʊfɚ / hɐkoʊfɐ` | 0.57 |
+| **Josiphiah** | /dʒɒs.i.ˈfaɪ.ə/ | ISBE (1915) | `dʒoʊsɪfiɐ / dʒoʊsɪfiɐ` | 0.57 |
+| **Mattenai** | /mæt.i.ˈneɪ.aɪ/ | ISBE (1915) | `mædənaɪ / mæɾənaɪ` | 0.57 |
+| **Pethuel** | /pi.ˈθjuː.ɛl/ | ISBE (1915) | `pɛθjuəl / hɛθjwəl` | 0.57 |
+| **Tertius** | /tˈɚtiːɪs/ | CMUdict | `` | 0.57 |
+| **Artemas** | /ˈɑrtɪməz/ | CMUdict | `` | 0.57 |
+| **Annas** | /ˈæn.əs/ | curated | `` | 0.57 |
+| **Leummim** | /li.ˈʌm.ɪm/ | ISBE (1915) | `lʊməm / lʌməm` | 0.58 |
+| **Hanniel** | /ˈhæn.i.ɛl/ | curated | `` | 0.58 |
+| **Aijalon** | /ˈædʒ.ə.lɒn/ | curated | `` | 0.58 |
+| **Taanach** | /ˈteɪ.ə.næk/ | curated | `` | 0.58 |
+| **Benaiah** | /bəˈneɪ.jə/ | curated | `` | 0.58 |
+| **Jezoar** | /dʒɪˈzoʊ.ɑːr/ | curated | `` | 0.58 |
+| **Mahalah** | /ˈmæh.ə.lə/ | curated | `` | 0.58 |
+| **Eleadah** | /ˌɛl.iˈeɪ.də/ | curated | `` | 0.58 |
+| **Shimeam** | /ˈʃɪm.i.æm/ | curated | `` | 0.58 |
+| **Artaxerxes** | /ˌɑːtə(ɡ)ˈzɜːksiːz/ | Wiktionary | `` | 0.58 |
+| **Abdeel** | /ˈæb.di.ɛl/ | ISBE (1915) | `ɐbdi / æbdi` | 0.58 |
+| **Matthan** | /ˈmæt.θæn/ | ISBE (1915) | `mæðən / mæθɪn` | 0.58 |
+| **Anthothijah** | /ˌæn.θoʊˈθaɪ.dʒə/ | curated | `` | 0.59 |
+| **Immanuel** | /ˈɪmənʊl/ | CMUdict | `` | 0.59 |
+| **Bigthana** | /ˈbɪg.θæn/ | ISBE (1915) | `bɪɡθeɪnɚ / bɪɡfeɪnɐ` | 0.60 |
+| **Mamre** | /ˈmæmri/ | Wikipedia | `` | 0.60 |
+| **Goiim** | /ˈgɔɪ.jɪm/ | ISBE (1915) | `ɡoʊɪm / ɡoʊɪm` | 0.60 |
+| **Dothan** | /dˈɑθən/ | CMUdict | `` | 0.60 |
+| **Enaim** | /i.ˈneɪ.ɪm/ | ISBE (1915) | `ɐneɪm / ɐneɪm` | 0.60 |
+| **Zuar** | /ˈzjuːɑːr/ | ISBE (1915) | `zuɚ / zuɚ` | 0.60 |
+| **Hormah** | /ˈhɔːr.mə/ | curated | `` | 0.60 |
+| **Balak** | /bɑlək/ | CMUdict | `` | 0.60 |
+| **Keziz** | /ˈkiː.zɪz/ | ISBE (1915) | `kɐziz / kɐziz` | 0.60 |
+| **Naioth** | /ˈneɪ.jɒθ/ | ISBE (1915) | `neɪəθ / neɪɪθ` | 0.60 |
+| **Racal** | /rˈækəl/ | CMUdict | `` | 0.60 |
+| **Rezin** | /rəˌziːn/ | Wiktionary | `` | 0.60 |
+| **Jotbah** | /ˈdʒɒt.bə/ | ISBE (1915) | `dʒɑbɑ / dʒɑbɑ` | 0.60 |
+| **Bunah** | /ˈbjuː.nə/ | curated | `` | 0.60 |
+| **Eker** | /ˈiː.kər/ | curated | `` | 0.60 |
+| **Ephlal** | /ˈɛf.læl/ | curated | `` | 0.60 |
+| **Reaiah** | /riˈeɪ.jə/ | curated | `` | 0.60 |
+| **Adiel** | /ˈeɪ.di.ɛl/ | curated | `` | 0.60 |
+| **Ishuai** | /ˈɪʃ.ju.aɪ/ | curated | `` | 0.60 |
+| **Maasai** | /ˈmeɪ.ə.saɪ/ | curated | `` | 0.60 |
+| **Tobadonijah** | /ˌtɒb.æd.oʊˈnaɪ.dʒə/ | curated | `` | 0.60 |
+| **Zattu** | /ˈzætjʊ/ | ISBE (1915) | `zæɾᵻ / zætu` | 0.60 |
+| **Athlai** | /ˈæθ.lə.aɪ/ | ISBE (1915) | `æflaɪ / æflaɪ` | 0.60 |
+| **Anaiah** | /æn.ə.ˈaɪ.ə/ | ISBE (1915) | `ɐnaɪɐ / ɐnaɪɐ` | 0.60 |
+| **Laishah** | /lə.ˈaɪ.ʃə/ | ISBE (1915) | `laɪʃɑ / laɪʃɑ` | 0.60 |
+| **Neriah** | /ni.ˈraɪ.ə/ | ISBE (1915) | `nɪɹiɐ / nɪɹiə` | 0.60 |
+| **Tammuz** | /ˈtæm.ʌz/ | ISBE (1915) | `tɑməs / tɑməs` | 0.60 |
+| **Gebal** | /ˈgiː.bæl/ | ISBE (1915) | `dʒibəl / dʒibəl` | 0.60 |
+| **Hosea** | /hoʊsˈiːə/ | CMUdict | `` | 0.60 |
+| **Salim** | /sˈælɪm/ | CMUdict | `` | 0.60 |
+| **Deity** | /dˈiːətiː/ | CMUdict | `` | 0.60 |
+| **Laodiceans** | /lə.ɒd.i.ˈsiː.ænz/ | ISBE (1915) | `leɪaʊɾəsiənz / leɪaʊɾəsiənz` | 0.60 |
+| **Mattithiah** | /ˌmæt.ɪˈθaɪ.ə/ | curated | `` | 0.61 |
+| **Hammolecheth** | /hæˈmɒl.ə.kɛθ/ | curated | `` | 0.61 |
+| **Hammoleketh** | /həˈmɒl.ɪ.kɛθ/ | curated | `` | 0.61 |
 
-_…and 217 more; filter to "Still wrong" in the Pronunciation Studio for the full set._
+_…and 435 more; filter to "Still wrong" in the Pronunciation Studio for the full set._
 
 ## Suggestions waiting
 
-A better spelling is known but was not applied, because the plain reading was close enough that the disagreement may be the transcriber's error.
+A better spelling is recorded in `say` but not applied (`override:false`) — it beat the plain reading without clearing the adoption bar, or a repair could not hold its score. These want an ear in the Studio.
 
-| Name | Reference | Voice says | Score |
-| --- | --- | --- | --- |
-| Jarha | /ˈdʒɑːr.hə/ | `` | 0.40 |
-| Kenites | /ˈkiː.naɪts/ | `` | 0.60 |
-| Tekoa | /təˈkoʊ.ə/ | `` | 0.60 |
-| Molid | /ˈmoʊ.lɪd/ | `` | 0.60 |
-| Jaaziel | /dʒeɪˈeɪ.zi.ɛl/ | `` | 0.64 |
-| Heman | /ˈhiː.mən/ | `` | 0.67 |
-| Eldaah | /ɛlˈdeɪ.ə/ | `` | 0.70 |
-| Ashbel | /ˈæʃ.bɛl/ | `` | 0.70 |
-| Bedan | /ˈbiː.dæn/ | `` | 0.70 |
-| Adaiah | /əˈdeɪ.jə/ | `` | 0.70 |
-| Melech | /ˈmiː.lɛk/ | `` | 0.70 |
-| Zidon | /ˈzaɪ.dɒn/ | `` | 0.70 |
-| Pharez | /ˈfɛər.ɛz/ | `` | 0.70 |
-| Mashal | /ˈmeɪ.ʃæl/ | `` | 0.70 |
-| Ashvath | /ˈæʃ.væθ/ | `` | 0.70 |
-| Jakim | /ˈdʒeɪ.kɪm/ | `` | 0.70 |
-| Tarea | /təˈriː.ə/ | `` | 0.70 |
-| Galal | /ˈɡeɪ.læl/ | `` | 0.70 |
-| Tizite | /ˈtaɪ.zaɪt/ | `` | 0.70 |
-| Lubim | /ˈluː.bɪm/ | `lʊbəm / lɪbəm` | 0.70 |
-| Jonan | /ˈdʒoʊ.næn/ | `dʒoʊnɪn / dʒoʊnɪ` | 0.70 |
-| Paulus | /ˈpɔː.ləs/ | `` | 0.70 |
-| Rimmono | /rɪˈmoʊ.noʊ/ | `` | 0.70 |
-| Esau | /ˈiː.sɔː/ | `` | 0.71 |
-| Malchiel | /ˈmæl.ki.ɛl/ | `` | 0.71 |
-| Phinehas | /ˈfɪn.i.əs/ | `` | 0.71 |
-| Shelomith | /ʃəˈloʊ.mɪθ/ | `` | 0.71 |
-| Jokmeam | /ˈdʒɒk.mi.æm/ | `` | 0.71 |
-| Johanan | /dʒoʊˈheɪ.næn/ | `` | 0.71 |
-| Machbenah | /mækˈbiː.nə/ | `` | 0.71 |
-| Joshibiah | /ˌdʒɒʃ.ɪˈbaɪ.ə/ | `` | 0.71 |
-| Jeaterai | /dʒiːˈæt.ə.raɪ/ | `` | 0.71 |
-| Baaseiah | /ˌbeɪ.əˈsiː.jə/ | `` | 0.71 |
-| Birzaith | /bərˈzeɪ.ɪθ/ | `` | 0.71 |
-| Ahiezer | /ˌeɪ.haɪˈiː.zər/ | `` | 0.71 |
-| Haruphite | /həˈruː.faɪt/ | `` | 0.71 |
-| Machbanai | /ˈmæk.bə.naɪ/ | `` | 0.71 |
-| Rehabiah | /ˌriː.həˈbaɪ.ə/ | `` | 0.71 |
-| Asuppim | /əˈsʌp.ɪm/ | `` | 0.71 |
-| Abilene | /ˌæb.ɪˈliː.ni/ | `æbəllin / æbəllin` | 0.71 |
-| Candace | /ˈkæn.də.siː/ | `` | 0.71 |
-| Sopater | /ˈsoʊ.pə.tər/ | `` | 0.71 |
-| Salmone | /sælˈmoʊ.ni/ | `` | 0.71 |
-| Publius | /ˈpʌb.li.əs/ | `` | 0.71 |
-| Hazar-shual | /ˌheɪ.zɑːrˈʃuː.əl/ | `` | 0.72 |
-| Mecherathite | /məˈkɛr.ə.θaɪt/ | `` | 0.72 |
-| Dalaiah | /dəˈleɪ.ə/ | `` | 0.73 |
-| Shimri | /ˈʃɪm.raɪ/ | `` | 0.73 |
-| Hilen | /ˈhaɪ.lɛn/ | `` | 0.73 |
-| Ahiah | /əˈhaɪ.ə/ | `` | 0.73 |
-| Ismaiah | /ɪzˈmaɪ.ə/ | `` | 0.73 |
-| Kushaiah | /kuːˈʃaɪ.ə/ | `` | 0.73 |
-| Ornan | /ˈɔːr.næn/ | `` | 0.73 |
-| Beth-rapha | /bɛθˈreɪ.fə/ | `` | 0.74 |
-| Epher | /ˈiː.fər/ | `` | 0.75 |
-| Eder | /ˈiː.dər/ | `` | 0.75 |
-| Ezer | /ˈiː.zər/ | `` | 0.75 |
-| Gera | /ˈɡɪər.ə/ | `` | 0.75 |
-| Mahli | /ˈmɑː.laɪ/ | `` | 0.75 |
-| Meon | /ˈmiː.ɒn/ | `` | 0.75 |
-| Addar | /ˈæd.ɑːr/ | `` | 0.75 |
-| Ezem | /ˈiː.zɛm/ | `` | 0.75 |
-| Joash | /ˈdʒoʊ.æʃ/ | `` | 0.75 |
-| Ithream | /ˈɪθ.ri.æm/ | `` | 0.75 |
-| Eliphelet | /ɪˈlɪf.ə.lɛt/ | `` | 0.75 |
-| Ezar | /ˈiː.zɑːr/ | `` | 0.75 |
-| Ashur | /ˈæʃ.ər/ | `` | 0.75 |
-| Ataroth | /ˈæt.ə.rɒθ/ | `` | 0.75 |
-| Shealtiel | /ʃiˈæl.ti.ɛl/ | `` | 0.75 |
-| Hoshama | /ˈhɒʃ.ə.mə/ | `` | 0.75 |
-| Malchiram | /mælˈkaɪ.rəm/ | `` | 0.75 |
-| Rephaiah | /rəˈfeɪ.jə/ | `` | 0.75 |
-| Rapha | /ˈreɪ.fə/ | `` | 0.75 |
-| Socho | /ˈsoʊ.koʊ/ | `` | 0.75 |
-| Jeshohaiah | /ˌdʒɛʃ.oʊˈheɪ.jə/ | `` | 0.75 |
-| Tilgath-pilneser | /ˌtɪl.ɡæθ.pɪlˈniː.zər/ | `` | 0.75 |
-| Jorai | /ˈdʒɔːr.aɪ/ | `` | 0.75 |
-| Jeshishai | /dʒəˈʃɪʃ.aɪ/ | `` | 0.75 |
-| Meraioth | /məˈreɪ.ɒθ/ | `` | 0.75 |
-| Zerahiah | /ˌzɛr.əˈhaɪ.ə/ | `` | 0.75 |
+| Name | Reference | Source | Voice says | Score |
+| --- | --- | --- | --- | --- |
+| **Aiath** | /ˈeɪ.jæθ/ | ISBE (1915) | `aɪɐv / aɪɪð` | 0.00 |
+| **Aretas** | /ˈɑːr.i.tæs/ | ISBE (1915) | `ɚɹɛdəz / ɚɹɛdᵻz` | 0.17 |
+| **Ahzai** | /ˈeɪ.zaɪ/ | ISBE (1915) | `aʊsaɪ / aʊtsaɪ` | 0.29 |
+| **Gehazi** | /gi.ˈheɪ.zaɪ/ | ISBE (1915) | `ɡɐhɑsi / ɡɐhɑtsi` | 0.31 |
+| **Eri** | /ˈiː.raɪ/ | ISBE (1915) | `eɪɹi / ɛɹi` | 0.33 |
+| **Evi** | /ˈiː.vaɪ/ | ISBE (1915) | `ɛvi / ɛvi` | 0.33 |
+| **Jedidah** | /dʒi.ˈdaɪ.də/ | ISBE (1915) | `dʒɛɾədɐ / s` | 0.33 |
+| **Onesimus** | /oʊ.ˈnɛs.i.mʌs/ | ISBE (1915) | `wʌnzaɪməs / wʌnzaɪməs` | 0.38 |
+| **Geuel** | /ˈgjuː.ɛl/ | ISBE (1915) | `ɡoʊl / ɡu` | 0.40 |
+| **Jarha** | /ˈdʒɑːr.hə/ | curated | `` | 0.40 |
+| **Hobaiah** | /hə.ˈbeɪ.jə/ | ISBE (1915) | `hoʊbaɪɚ / hoʊbaɪɐ` | 0.42 |
+| **Shuthelahites** | /ˈʃuː.θi.lə/ | ISBE (1915) | `ʃəfilɐhaɪts / ʃɪθilɐhaɪts` | 0.45 |
+| **Jaddua** | /ˈdʒædjʊ.ə/ | ISBE (1915) | `dʒædʒuəl / dʒædʒuɐ` | 0.46 |
+| **Bichri** | /ˈbɪk.raɪ/ | ISBE (1915) | `baɪkɹi / waɪkɹii` | 0.47 |
+| **Epaphroditus** | /i.pæf.roʊ.ˈdaɪ.tʌs/ | ISBE (1915) | `ɛpᵻfɹɑdᵻdəs / ɛpɚfɹɑdᵻdɪs` | 0.48 |
+| **Pethor** | /ˈpiː.θɔːr/ | ISBE (1915) | `pɛθɚ / hɛθɚ` | 0.50 |
+| **Idalah** | /ˈɪd.ə.lə/ | ISBE (1915) | `ɐdɑlɚ / aɪdɑlɚ` | 0.50 |
+| **Jerubbaal** | /dʒərjʊ.ˈbeɪ.æl/ | ISBE (1915) | `dɚɹʌbəl / dʒɚɹʌbəl` | 0.50 |
+| **Arieh** | /ˈeɪ.ri.i/ | ISBE (1915) | `ɑɹɹiɐ / ɑɹɹiɐ` | 0.50 |
+| **Netophah** | /ni.ˈtoʊ.fə/ | ISBE (1915) | `nɛdəfə / nɛdəfɐ` | 0.50 |
+| **Mattattah** | /ˈmæt.ə.tə/ | ISBE (1915) | `mətæɾɐ / mɪtædɐ` | 0.50 |
+| **Jaasu** | /ˈdʒeɪ.əsjʊ/ | ISBE (1915) | `dʒɑsu / dʒɑsu` | 0.50 |
+| **Meraiah** | /mi.ˈreɪ.jə/ | ISBE (1915) | `mɚɹaɪɐ / mɚɹaɪɐ` | 0.50 |
+| **Agagite** | /ˈeɪ.gæg.aɪt/ | ISBE (1915) | `æɡədʒaɪt / æɡədʒaɪt` | 0.50 |
+| **Eglaim** | /ˈɛg.lə.ɪm/ | ISBE (1915) | `ɐɡleɪm / ɪɡleɪm` | 0.50 |
+| **Jehucal** | /dʒi.ˈhjuː.kæl/ | ISBE (1915) | `dʒəhɔkol / dʒəhoʊkəl` | 0.50 |
+| **Sivan** | /si.ˈvæn/ | ISBE (1915) | `sɚvɑn / səvɑn` | 0.55 |
+| **Kenites** | /ˈkiː.naɪts/ | curated | `` | 0.60 |
+| **Beeri** | /bi.ˈiː.raɪ/ | ISBE (1915) | `biɹi / bɪɹi` | 0.60 |
+| **Tekoa** | /təˈkoʊ.ə/ | curated | `` | 0.60 |
+| **Abanah** | /ˈæb.ə.nə/ | ISBE (1915) | `ɐbænɚ / ɐbænɚ` | 0.60 |
+| **Molid** | /ˈmoʊ.lɪd/ | curated | `` | 0.60 |
+| **Jaaziel** | /dʒeɪˈeɪ.zi.ɛl/ | curated | `` | 0.64 |
+| **Heman** | /ˈhiː.mən/ | curated | `` | 0.67 |
+| **Eldaah** | /ɛlˈdeɪ.ə/ | curated | `` | 0.70 |
+| **Ashbel** | /ˈæʃ.bɛl/ | curated | `` | 0.70 |
+| **Bedan** | /ˈbiː.dæn/ | curated | `` | 0.70 |
+| **Adaiah** | /əˈdeɪ.jə/ | curated | `` | 0.70 |
+| **Melech** | /ˈmiː.lɛk/ | curated | `` | 0.70 |
+| **Zidon** | /ˈzaɪ.dɒn/ | curated | `` | 0.70 |
+| **Pharez** | /ˈfɛər.ɛz/ | curated | `` | 0.70 |
+| **Mashal** | /ˈmeɪ.ʃæl/ | curated | `` | 0.70 |
+| **Ashvath** | /ˈæʃ.væθ/ | curated | `` | 0.70 |
+| **Jakim** | /ˈdʒeɪ.kɪm/ | curated | `` | 0.70 |
+| **Tarea** | /təˈriː.ə/ | curated | `` | 0.70 |
+| **Galal** | /ˈɡeɪ.læl/ | curated | `` | 0.70 |
+| **Tizite** | /ˈtaɪ.zaɪt/ | curated | `` | 0.70 |
+| **Lubim** | /ˈluː.bɪm/ | curated | `` | 0.70 |
+| **Jonan** | /ˈdʒoʊ.næn/ | curated | `` | 0.70 |
+| **Paulus** | /ˈpɔː.ləs/ | curated | `` | 0.70 |
+| **Rimmono** | /rɪˈmoʊ.noʊ/ | curated | `` | 0.70 |
+| **Esau** | /ˈiː.sɔː/ | curated | `` | 0.71 |
+| **Malchiel** | /ˈmæl.ki.ɛl/ | curated | `` | 0.71 |
+| **Phinehas** | /ˈfɪn.i.əs/ | curated | `` | 0.71 |
+| **Shelomith** | /ʃəˈloʊ.mɪθ/ | curated | `` | 0.71 |
+| **Jokmeam** | /ˈdʒɒk.mi.æm/ | curated | `` | 0.71 |
+| **Johanan** | /dʒoʊˈheɪ.næn/ | curated | `` | 0.71 |
+| **Machbenah** | /mækˈbiː.nə/ | curated | `` | 0.71 |
+| **Joshibiah** | /ˌdʒɒʃ.ɪˈbaɪ.ə/ | curated | `` | 0.71 |
+| **Jeaterai** | /dʒiːˈæt.ə.raɪ/ | curated | `` | 0.71 |
+| **Baaseiah** | /ˌbeɪ.əˈsiː.jə/ | curated | `` | 0.71 |
+| **Birzaith** | /bərˈzeɪ.ɪθ/ | curated | `` | 0.71 |
+| **Ahiezer** | /ˌeɪ.haɪˈiː.zər/ | curated | `` | 0.71 |
+| **Haruphite** | /həˈruː.faɪt/ | curated | `` | 0.71 |
+| **Machbanai** | /ˈmæk.bə.naɪ/ | curated | `` | 0.71 |
+| **Rehabiah** | /ˌriː.həˈbaɪ.ə/ | curated | `` | 0.71 |
+| **Asuppim** | /əˈsʌp.ɪm/ | curated | `` | 0.71 |
+| **Abilene** | /ˌæb.ɪˈliː.ni/ | curated | `` | 0.71 |
+| **Candace** | /ˈkæn.də.siː/ | curated | `` | 0.71 |
+| **Sopater** | /ˈsoʊ.pə.tər/ | curated | `` | 0.71 |
+| **Salmone** | /sælˈmoʊ.ni/ | curated | `` | 0.71 |
+| **Publius** | /ˈpʌb.li.əs/ | curated | `` | 0.71 |
+| **Hazar-shual** | /ˌheɪ.zɑːrˈʃuː.əl/ | curated | `` | 0.72 |
+| **Mecherathite** | /məˈkɛr.ə.θaɪt/ | curated | `` | 0.72 |
+| **Dalaiah** | /dəˈleɪ.ə/ | curated | `` | 0.73 |
+| **Shimri** | /ˈʃɪm.raɪ/ | curated | `` | 0.73 |
+| **Hilen** | /ˈhaɪ.lɛn/ | curated | `` | 0.73 |
+| **Ahiah** | /əˈhaɪ.ə/ | curated | `` | 0.73 |
+| **Ismaiah** | /ɪzˈmaɪ.ə/ | curated | `` | 0.73 |
+| **Kushaiah** | /kuːˈʃaɪ.ə/ | curated | `` | 0.73 |
+| **Ornan** | /ˈɔːr.næn/ | curated | `` | 0.73 |
+| **Beth-rapha** | /bɛθˈreɪ.fə/ | curated | `` | 0.74 |
+| **Epher** | /ˈiː.fər/ | curated | `` | 0.75 |
+| **Eder** | /ˈiː.dər/ | curated | `` | 0.75 |
+| **Ezer** | /ˈiː.zər/ | curated | `` | 0.75 |
+| **Gera** | /ˈɡɪər.ə/ | curated | `` | 0.75 |
+| **Mahli** | /ˈmɑː.laɪ/ | curated | `` | 0.75 |
+| **Gaddi** | /ˈgæd.aɪ/ | ISBE (1915) | `` | 0.75 |
+| **Eran** | /ˈiː.ræn/ | ISBE (1915) | `` | 0.75 |
+| **Meon** | /ˈmiː.ɒn/ | curated | `` | 0.75 |
+| **Addar** | /ˈæd.ɑːr/ | curated | `` | 0.75 |
+| **Ezem** | /ˈiː.zɛm/ | curated | `` | 0.75 |
+| **Joash** | /ˈdʒoʊ.æʃ/ | curated | `` | 0.75 |
+| **Ithream** | /ˈɪθ.ri.æm/ | curated | `` | 0.75 |
+| **Eliphelet** | /ɪˈlɪf.ə.lɛt/ | curated | `` | 0.75 |
+| **Jaare-Oregim** | /ˈdʒeɪ.ə.ri.ɔːr.i.dʒɪm/ | ISBE (1915) | `` | 0.75 |
+| **Ezar** | /ˈiː.zɑːr/ | curated | `` | 0.75 |
+| **Ashur** | /ˈæʃ.ər/ | curated | `` | 0.75 |
+| **Ataroth** | /ˈæt.ə.rɒθ/ | curated | `` | 0.75 |
+| **Shealtiel** | /ʃiˈæl.ti.ɛl/ | curated | `` | 0.75 |
+| **Hoshama** | /ˈhɒʃ.ə.mə/ | curated | `` | 0.75 |
+| **Malchiram** | /mælˈkaɪ.rəm/ | curated | `` | 0.75 |
+| **Rephaiah** | /rəˈfeɪ.jə/ | curated | `` | 0.75 |
+| **Rapha** | /ˈreɪ.fə/ | curated | `` | 0.75 |
+| **Socho** | /ˈsoʊ.koʊ/ | curated | `` | 0.75 |
+| **Jeshohaiah** | /ˌdʒɛʃ.oʊˈheɪ.jə/ | curated | `` | 0.75 |
+| **Tilgath-pilneser** | /ˌtɪl.ɡæθ.pɪlˈniː.zər/ | curated | `` | 0.75 |
+| **Jorai** | /ˈdʒɔːr.aɪ/ | curated | `` | 0.75 |
+| **Jeshishai** | /dʒəˈʃɪʃ.aɪ/ | curated | `` | 0.75 |
+| **Meraioth** | /məˈreɪ.ɒθ/ | curated | `` | 0.75 |
+| **Zerahiah** | /ˌzɛr.əˈhaɪ.ə/ | curated | `` | 0.75 |
+| **Hukok** | /ˈhjuː.kɒk/ | curated | `` | 0.75 |
+| **Jahziel** | /ˈdʒɑː.zi.ɛl/ | curated | `` | 0.75 |
+| **Aramitess** | /ˈɛər.əm.aɪ.tɛs/ | curated | `` | 0.75 |
+| **Japhlet** | /ˈdʒæf.lɛt/ | curated | `` | 0.75 |
+| **Nohah** | /ˈnoʊ.hə/ | curated | `` | 0.75 |
+| **Shaharaim** | /ˌʃeɪ.həˈreɪ.ɪm/ | curated | `` | 0.75 |
+| **Elpaal** | /ɛlˈpeɪ.əl/ | curated | `` | 0.75 |
+| **Eshek** | /ˈiː.ʃɛk/ | curated | `` | 0.75 |
+| **Imri** | /ˈɪm.raɪ/ | curated | `` | 0.75 |
+| **Shilonites** | /ˈʃaɪ.lə.naɪts/ | curated | `` | 0.75 |
+| **Ahohite** | /əˈhoʊ.haɪt/ | curated | `` | 0.75 |
+| **Ribai** | /ˈraɪ.baɪ/ | curated | `` | 0.75 |
+| **Gaash** | /ˈɡeɪ.æʃ/ | curated | `` | 0.75 |
+| **Ezbai** | /ˈɛz.baɪ/ | curated | `` | 0.75 |
+| **Shama** | /ˈʃeɪ.mə/ | curated | `` | 0.75 |
+| **Ithmah** | /ˈɪθ.mə/ | curated | `` | 0.75 |
+| **Jeziel** | /ˈdʒiː.zi.ɛl/ | curated | `` | 0.75 |
+| **Perez-uzza** | /ˌpɛr.ɛzˈʌz.ə/ | curated | `` | 0.75 |
+| **Tyre** | /taɪər/ | curated | `` | 0.75 |
+| **Jehiel** | /dʒəˈhaɪ.ɛl/ | curated | `` | 0.75 |
+| **Alamoth** | /ˈæl.ə.mɒθ/ | curated | `` | 0.75 |
+| **Lahmi** | /ˈlɑː.maɪ/ | curated | `` | 0.75 |
+| **Haziel** | /ˈheɪ.zi.ɛl/ | curated | `` | 0.75 |
+| **Zina** | /ˈzaɪ.nə/ | curated | `` | 0.75 |
+| **Jehezkel** | /dʒəˈhɛz.kɛl/ | curated | `` | 0.75 |
+| **Shubael** | /ˈʃuː.beɪ.ɛl/ | curated | `` | 0.75 |
+| **Izharites** | /ˈɪz.hɑːr.aɪts/ | curated | `` | 0.75 |
+| **Ibri** | /ˈɪb.raɪ/ | curated | `` | 0.75 |
+| **Zerahites** | /ˈzɛr.ə.haɪts/ | curated | `` | 0.75 |
+| **Ezri** | /ˈɛz.raɪ/ | curated | `` | 0.75 |
+| **Hushai** | /ˈhuː.ʃaɪ/ | curated | `` | 0.75 |
+| **Ramah** | /ˈreɪ.mə/ | curated | `` | 0.75 |
+| **Ijon** | /ˈaɪ.dʒɒn/ | curated | `` | 0.75 |
+| **Maim** | /ˈmeɪ.ɪm/ | curated | `` | 0.75 |
+| **Rama** | /ˈreɪ.mə/ | curated | `` | 0.75 |
+| **Asheroth** | /ˈæʃ.ə.rɒθ/ | curated | `` | 0.75 |
+| **Hozai** | /ˈhoʊ.zaɪ/ | curated | `` | 0.75 |
+| **Carchemish** | /ˈkɑːr.kə.mɪʃ/ | curated | `` | 0.75 |
+| **Ulai** | /ˈjuː.laɪ/ | ISBE (1915) | `` | 0.75 |
+| **Caiaphas** | /ˈkeɪ.ə.fəs/ | curated | `` | 0.75 |
+| **Esli** | /ˈɛs.laɪ/ | curated | `` | 0.75 |
+| **Sosthenes** | /ˈsɒs.θə.niːz/ | curated | `` | 0.75 |
+| **Trogyllium** | /troʊˈdʒɪl.i.əm/ | curated | `` | 0.75 |
+| **Castor** | /ˈkæs.tər/ | curated | `` | 0.75 |
+| **Hazzelelponi** | /ˌhæz.ə.lɛlˈpoʊ.naɪ/ | curated | `` | 0.77 |
+| **Hizkiah** | /hɪzˈkaɪ.ə/ | curated | `` | 0.77 |
+| **Iphedeiah** | /ˌɪf.ɪˈdiː.ə/ | curated | `` | 0.77 |
+| **Zaanan** | /ˈzeɪ.ə.næn/ | ISBE (1915) | `` | 0.77 |
+| **Jehallelel** | /dʒəˈhæl.ə.lɛl/ | curated | `` | 0.78 |
+| **Jehozabad** | /dʒəˈhɒz.ə.bæd/ | curated | `` | 0.78 |
+| **Jeremoth** | /ˈdʒɛr.ə.mɒθ/ | curated | `` | 0.79 |
+| **Beth-shean** | /bɛθˈʃiː.ən/ | curated | `` | 0.79 |
+| **Kabzeel** | /ˈkæb.zi.ɛl/ | curated | `` | 0.79 |
+| **Jozabad** | /ˈdʒɒz.ə.bæd/ | curated | `` | 0.79 |
+| **Zabdiel** | /ˈzæb.di.ɛl/ | curated | `` | 0.79 |
+| **Ehi** | /ˈiː.haɪ/ | ISBE (1915) | `` | 0.88 |
+| **Amalekite** | /ə.ˈmæl.i.kaɪt/ | ISBE (1915) | `` | 0.88 |
+| **Galeed** | /ˈgæl.i.ɛd/ | ISBE (1915) | `` | 1.00 |
+| **Minni** | /ˈmɪn.aɪ/ | ISBE (1915) | `` | 1.00 |
 
-## Unsure — needs an ear, not another sweep
+## Overrides that still carry a pure-vowel hyphen segment
 
-916 names whose only reference is a rule-based guess. A low score here is as likely to mean the guess is wrong as the voice. The worst are listed; the Studio's "Unsure (guessed IPA)" filter shows them all.
+Pre-existing hand-tuned spellings the automated repair did not touch. The scorer cannot judge these — only the ear can.
 
-| Name | Guessed reference | Voice says | Score |
-| --- | --- | --- | --- |
-| Iye | /ˈi.ə.iː/ | `aɪ / aɪ` | 0.00 |
-| Ahzai | /ˈeɪ.zeɪ/ | `aʊsaɪ / aʊtsaɪ` | 0.00 |
-| Shuphamites | /ʃəˈfeɪ.mi.təs/ | `ʃɑpɛðəmaɪt / ʃɛpæðəmaɪt` | 0.11 |
-| Berites | /ˈbiː.ri.təs/ | `vuɹaɪɾiz / vɪɹaɪɾiz` | 0.14 |
-| Idumaea | /iˈdjuː.mə.iː/ | `eɪdʒɐmiɐ / eɪdʒəmiɐ` | 0.14 |
-| Hor | /ˈhɒr/ | `hoʊ / pu` | 0.17 |
-| Berothai | /ˈbiː.rə.θeɪ/ | `vɛɹoʊtaɪ / vɛɹoʊtaɪ` | 0.17 |
-| Toi | /ˈtɔɪ/ | `toɪ / soɪ` | 0.17 |
-| Hiel | /ˈhaɪl/ | `ɡi / hi` | 0.17 |
-| Aiath | /ˈeɪ.əθ/ | `aɪɐv / aɪɪð` | 0.17 |
-| Giloh | /ˈɡi.ləh/ | `dʒaɪloʊ / dʒaɪloʊ` | 0.20 |
-| Cabul | /ˈseɪ.bəl/ | `kɐbu / kəboʊ` | 0.20 |
-| Ithlah | /ˈi.θləh/ | `ɪfloʊ / ɪflaɪ` | 0.20 |
-| Necoh | /ˈniː.səh/ | `nɛkoʊ / nɛkoʊ` | 0.20 |
-| Uphaz | /ˈjuː.fəz/ | `ʌphæz / ʌphæz` | 0.20 |
-| Pau | /ˈpɔː/ | `paʊ / haʊ` | 0.25 |
-| Giah | /ˈɡi.əh/ | `dʒaɪɚ / dʒaɪɐ` | 0.25 |
-| Arieh | /ˈeɪ.raɪh/ | `ɑɹɹiɐ / ɑɹɹiɐ` | 0.25 |
-| Bezai | /ˈbiː.zeɪ/ | `vɛzaɪ / vɛzaɪ` | 0.25 |
-| Jahzeiah | /dʒəˈzaɪ.əh/ | `dʒɑsiɚ / dʒɑtsiə` | 0.25 |
-| Athlai | /ˈeɪ.θleɪ/ | `æflaɪ / æflaɪ` | 0.25 |
-| Shashai | /ˈʃeɪ.ʃeɪ/ | `ʃɑsaɪ / ʃɑsaɪ` | 0.25 |
-| Elul | /ˈiː.ləl/ | `ɛloʊ / ɛloʊ` | 0.25 |
-| Pathros | /ˈpeɪ.θrəs/ | `hæfɹoʊs / hæfɹoʊz` | 0.25 |
-| Ulai | /ˈjuː.leɪ/ | `boʊlɛ / boʊlɛ` | 0.25 |
-| Quartus | /ˈkjuː.ər.təs/ | `pɔɹdᵻ / kɔɹdɪs` | 0.25 |
-| Aretas | /ˈeɪ.rə.təs/ | `ɚɹɛdəz / ɚɹɛdᵻz` | 0.25 |
-| Raamses | /ˈreɪ.əm.səs/ | `ɹæmzɪz / ɹæmzɪz` | 0.29 |
-| Eliasaph | /əˈli.ə.səf/ | `ɪlaɪzæf / ɪlaɪzæf` | 0.29 |
-| Belaites | /ˈbiː.leɪ.təs/ | `vɛləaɪts / vɛləaɪts` | 0.29 |
-| Geliloth | /ˈɡiː.li.ləθ/ | `dʒɛləlɑf / dʒɛloʊlɑf` | 0.29 |
-| Paltite | /ˈpæl.ti.tiː/ | `pɑldaɪd / pɑldaɪd` | 0.29 |
-| Jedidah | /ˈdʒiː.di.dəh/ | `dʒɛɾədɐ / s` | 0.29 |
-| Agagite | /əˈɡeɪ.ɡi.tiː/ | `æɡədʒaɪt / æɡədʒaɪt` | 0.29 |
-| Hattaavah | /hətˈteɪ.ə.vəh/ | `hædɐvɑvɚ / hædɐvɑvɐ` | 0.29 |
-| Betah | /ˈbiː.təh/ | `beɪɾɚ / veɪtɑ` | 0.30 |
-| Paarai | /ˈpeɪ.ə.reɪ/ | `hisɛd / pɚɹaɪ` | 0.30 |
-| Calno | /ˈsæl.nə/ | `kaʊnoʊ / kɔlnoʊ` | 0.30 |
-| Gehazi | /ˈɡiː.hə.zə/ | `ɡɐhɑsi / ɡɐhɑtsi` | 0.31 |
-| Hathach | /ˈheɪ.θək/ | `hædhæk / hæthækt` | 0.31 |
-| Boanerges | /ˈboʊ.nər.ɡəs/ | `vɔnɜɡz / vɔlnɜɡz` | 0.31 |
-| Ithiel | /ˈi.θaɪl/ | `ɪθioʊ / ɪθiəl` | 0.33 |
-| Nicolaitans | /niˈsoʊ.leɪ.təns/ | `nɪkəllaɪɾænz / nɪkəllaɪɾænts` | 0.33 |
-| Eri | /ˈiː.rə/ | `eɪɹi / ɛɹi` | 0.33 |
-| Ehi | /ˈiː.hə/ | `ɐhaɪ / eɪhaɪ` | 0.33 |
-| Mishael | /ˈmi.ʃə.əl/ | `mɪsheɪl / mɪsheɪl` | 0.33 |
-| Pagiel | /ˈpeɪ.ɡaɪl/ | `pædʒiəl / pædʒiəl` | 0.33 |
-| Gemalli | /ˈɡiː.məl.lə/ | `dʒəmælaɪ / dʒəmælaɪ` | 0.33 |
-| Huzoth | /ˈhjuː.zəθ/ | `hiwzɑf / hiwzɑf` | 0.33 |
-| Ashbelites | /əˈʃbiː.li.təs/ | `æʃbɪlɪɾiz / æʃbɪlɪɾiz` | 0.33 |
-| Hupham | /ˈhjuː.fəm/ | `hʌphɛm / hʌphɛm` | 0.33 |
-| Huphamites | /həˈfeɪ.mi.təs/ | `hɑpɾəmaɪts / hʌpðəmaɪt` | 0.33 |
-| Tophel | /ˈtoʊ.fəl/ | `tɑphɛl / tɑphɛl` | 0.33 |
-| Maacath | /ˈmeɪ.ə.səθ/ | `mækɪθ / mækɪθ` | 0.33 |
-| Evi | /ˈiː.və/ | `ɛvi / ɛvi` | 0.33 |
-| Maareh | /ˈmeɪ.ə.rəh/ | `meɪ / meɪ` | 0.33 |
-| Saph | /ˈsæf/ | `sɪv / sʌv` | 0.33 |
-| Ahasbai | /ˈeɪ.həs.beɪ/ | `ɐhæzbaɪ / ɐhæzbaɪ` | 0.33 |
-| Cuth | /ˈsʌθ/ | `kʊθ / kʊθ` | 0.33 |
-| Abi | /ˈeɪ.bə/ | `ɑbi / ɑbi` | 0.33 |
-| Maai | /ˈmeɪ.eɪ/ | `maɪ / maɪ` | 0.33 |
-| Harsith | /ˈhær.sɪθ/ | `hɜsif / hɜsif` | 0.33 |
-| Baalis | /ˈbeɪ.ə.lɪs/ | `bɑliz / bɑliz` | 0.33 |
-| Bartimaeus | /bərˈti.mə.juːs/ | `bɑɹdəmiəs / ɑɹdəmiəs` | 0.35 |
-| Cushite | /ˈsjuː.ʃi.tiː/ | `kuʃaɪt / kuʃaɪd` | 0.36 |
-| Secacah | /ˈsiː.sə.səh/ | `sɛkɪkɚ / sɛkəkɐ` | 0.36 |
-| Ararite | /əˈreɪ.ri.tiː/ | `ɛɹɹaɪt / ɛɹɚɹaɪt` | 0.36 |
-| Bethlehemite | /bə.θləˈhiː.mi.tiː/ | `bɛfliəmaɪt / bɛfliəmaɪt` | 0.36 |
-| Taphath | /ˈteɪ.fəθ/ | `tæpæθ / tæphæθ` | 0.37 |
-| Shunites | /ˈʃjuː.ni.təs/ | `ʃunaɪdiz / ʃunaɪdiz` | 0.38 |
-| Jogbehah | /ˈdʒɒɡ.bə.həh/ | `dʒabihɑ / dʒabiha` | 0.38 |
-| Anath | /ˈeɪ.nəθ/ | `ɐnæf / ɐnæθ` | 0.38 |
-| Ephrathite | /əˈfreɪ.θi.tiː/ | `ɛfɹᵻfaɪt / ɛfɹɚθaɪt` | 0.38 |
-| Athach | /ˈeɪ.θək/ | `æfɪk / æθɪk` | 0.38 |
-| Basshebeth | /ˈbæs.ʃə.bəθ/ | `veɪshibɪθ / veɪshibɪθ` | 0.38 |
-| Hasupha | /ˈheɪ.sə.fə/ | `hæʒəkə / hæʒɪkvɚ` | 0.38 |
-| Bavvai | /ˈbæv.veɪ/ | `bəvaɪ / əvaɪ` | 0.38 |
-| Nahamani | /nəˈheɪ.mə.nə/ | `naʊmɑni / naʊmɑni` | 0.38 |
-| UPHARSIN | /ˈjuː.fər.sɪn/ | `ɐpɑɹsən / ɐpɑɹsən` | 0.38 |
-| Elkoshite | /əlˈkoʊ.ʃi.tiː/ | `ɛlkoʊsaɪd / ɛlkoʊsaɪd` | 0.38 |
-| Tahanites | /təˈheɪ.ni.təs/ | `tɑxɑnaɪs / tɑkɑnaɪts` | 0.39 |
-| Shuhamites | /ʃəˈheɪ.mi.təs/ | `ʃuðəmaɪts / ʃuʌvɐmaɪs` | 0.39 |
-| Decapolis | /dəˈseɪ.pə.lɪs/ | `dɛkəpoʊləs / dʒɛkəpoʊləs` | 0.39 |
-| Moreh | /ˈmoʊ.rəh/ | `mɔɹ / mɔɹ` | 0.40 |
-| Birsha | /ˈbɪr.ʃə/ | `bɜʃɑ / bɜʃɑ` | 0.40 |
-| Phicol | /ˈfi.səl/ | `faɪkɑl / vaɪkəl` | 0.40 |
-| Elohe | /ˈiː.lə.hiː/ | `iloʊ / iloʊ` | 0.40 |
-| Bacuth | /ˈbeɪ.səθ/ | `bəkʊθ / bəkʊθ` | 0.40 |
-| Areli | /ˈeɪ.rə.lə/ | `ɐɹɛli / ɚɹɛli` | 0.40 |
-| Arodi | /ˈeɪ.rə.də/ | `ɐɹoʊdi / ɹoʊdi` | 0.40 |
-| Geuel | /ˈɡjuː.əl/ | `ɡoʊl / ɡu` | 0.40 |
-| Sihon | /ˈsi.hən/ | `saɪn / saɪn` | 0.40 |
-| Nemuelites | /nə.məˈiː.li.təs/ | `nɛmjuəllaɪts / nɛmjuəllaɪts` | 0.40 |
-| Maacathites | /mə.əˈseɪ.θi.təs/ | `mækəθaɪts / mækəθaɪts` | 0.40 |
-| Zaphon | /ˈzeɪ.fən/ | `zæpɑn / zæpɔn` | 0.40 |
-| Ashnah | /ˈeɪ.ʃnəh/ | `æʃnɑ / æʃnɑ` | 0.40 |
-| Socoh | /ˈsoʊ.səh/ | `soʊkoʊ / soʊkoʊ` | 0.40 |
-| Sannah | /ˈsæn.nəh/ | `seɪnɑ / sɛnɑ` | 0.40 |
-| Ammoni | /ˈæm.mə.nə/ | `ɐmoʊni / ɐmoʊni` | 0.40 |
-| Seneh | /ˈsiː.nəh/ | `seɪneɪ / seɪneɪ` | 0.40 |
+| Name | Say |
+| --- | --- |
+| Achaia | `a-KAY-uh` |
+| Amariah | `am-a-REYE-uh` |
+| Baara | `BAY-a-ruh` |
+| Beracah | `BEHR-a-kuh` |
+| Berachah | `BEHR-a-kuh` |
+| Bethsaida | `behth-SAY-i-duh` |
+| Cenchreae | `sehn-KREE-ee` |
+| Eliel | `EE-lee-ehll` |
+| Eliphelehu | `i-lihf-uh-LEE-hoo` |
+| Ephron | `EE-fron` |
+| Jaalam | `JAY-a-lam` |
+| Jehoshabeath | `jee-hoh-SHAB-ee-athh` |
+| Maachah | `MAY-a-kuh` |
+| Naarah | `NAY-a-ruh` |
+| Syracuse | `SIHR-a-kyooz` |
 
-## Structural faults found and fixed
+## Unsure — 162 names still on a generated guess
 
-These were caught without relying on any reference, by checking the audio against what the spelling itself implies — scripture `ch` is /k/, `g` before a back vowel is hard, and the syllable count should roughly match. That is why they could be fixed even where the reference was only a guess.
-
-| Name | Fault | Now spelled |
-| --- | --- | --- |
-| Chezib | ch read as /tʃ/, should be /k/ | `kezib` |
-| Perezites | dropped 2 syllable(s) (4->2) | `perezitess` |
-| Helekites | dropped 2 syllable(s) (4->2) | `helekitess` |
-| Shechemites | ch read as /tʃ/, should be /k/ | `shekemites` |
-| Becherites | ch read as /tʃ/, should be /k/ | `bekerites` |
-| Malchielites | ch read as /tʃ/, should be /k/ | `malkielites` |
-| Og | g read as /dʒ/, should be hard | `ogh` |
-| Chinnereth | ch read as /tʃ/, should be /k/ | `kinnereth` |
-| Chislon | ch read as /tʃ/, should be /k/ | `kislon` |
-| Chinneroth | ch read as /tʃ/, should be /k/ | `kinneroth` |
-| Chesalon | ch read as /tʃ/, should be /k/ | `kesalon` |
-| Chesil | ch read as /tʃ/, should be /k/ | `kesil` |
-| Chitlish | ch read as /tʃ/, should be /k/ | `kitlish` |
-| Archites | ch read as /tʃ/, should be /k/ | `arkites` |
-| Chisloth | ch read as /tʃ/, should be /k/ | `kisloth` |
-| Chesulloth | ch read as /tʃ/, should be /k/ | `kesulloth` |
-| Asherites | dropped 2 syllable(s) (4->2) | `asheritess` |
-| Bochim | ch read as /tʃ/, should be /k/ | `bokim` |
-| Chilion | ch read as /tʃ/, should be /k/ | `kilion` |
-| Michmash | ch read as /tʃ/, should be /k/ | `mikmash` |
-| Hachilah | ch read as /tʃ/, should be /k/ | `hakilah` |
-| Maoch | ch read as /tʃ/, should be /k/ | `maok` |
-| Jerahmeelites | dropped 2 syllable(s) (5->3) | `jerahmeelitess` |
-| Chileab | ch read as /tʃ/, should be /k/ | `kileab` |
-| Chimham | ch read as /tʃ/, should be /k/ | `kimham` |
-| Cherith | ch read as /tʃ/, should be /k/ | `kerith` |
-| Azgad | g read as /dʒ/, should be hard | `azghad` |
-| Pochereth | ch read as /tʃ/, should be /k/ | `pokereth` |
-| Chelal | ch read as /tʃ/, should be /k/ | `kelal` |
-| Chislev | ch read as /tʃ/, should be /k/ | `kislev` |
-| Haccherem | ch read as /tʃ/, should be /k/ | `hackerem` |
-| Chenani | ch read as /tʃ/, should be /k/ | `kenani` |
-| Malluchi | ch read as /tʃ/, should be /k/ | `malluki` |
-| Barachel | ch read as /tʃ/, should be /k/ | `barakel` |
-| Chebar | ch read as /tʃ/, should be /k/ | `kebar` |
-| Chilmad | ch read as /tʃ/, should be /k/ | `kilmad` |
-| Sychar | ch read as /tʃ/, should be /k/ | `sykar` |
-| Stachys | ch read as /tʃ/, should be /k/ | `stakys` |
-
-One caution from that pass: the `ch` rule is a Hebrew-transliteration convention and does not hold for every name. It turned **Rachel** into "rakel" before CMUdict overruled it. If a fix above looks wrong for a familiar name, that is the likely cause.
+No entry in ISBE, CMUdict, Wiktionary or Wikipedia. A low score here is as likely to mean the guess is wrong as the voice. Closing these means listening.
 
 ---
 
-_Generated from a whole-canon verifier sweep of the WEB text (1189 chapters, voice en-US-AndrewNeural). Scores are two-carrier averages._
+_Generated by `regen_pronunciation_todo.py` from a whole-canon verifier sweep of the WEB text (1189 chapters, voice en-US-AndrewNeural). Scores are two-carrier averages._
