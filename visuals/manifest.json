@@ -9383,7 +9383,8 @@
       {
         "file": "Genesis/6/Genesis_6_16.svg",
         "kind": "diagram",
-        "animated": false
+        "animated": true,
+        "still": "Genesis/6/Genesis_6_16.still.svg"
       }
     ],
     "Genesis_6_17": [
@@ -9540,7 +9541,8 @@
       {
         "file": "Genesis/7/Genesis_7_16.svg",
         "kind": "diagram",
-        "animated": false
+        "animated": true,
+        "still": "Genesis/7/Genesis_7_16.still.svg"
       }
     ],
     "Genesis_7_17": [
@@ -9731,14 +9733,16 @@
       {
         "file": "Genesis/8/Genesis_8_18.svg",
         "kind": "diagram",
-        "animated": false
+        "animated": true,
+        "still": "Genesis/8/Genesis_8_18.still.svg"
       }
     ],
     "Genesis_8_19": [
       {
         "file": "Genesis/8/Genesis_8_19.svg",
         "kind": "diagram",
-        "animated": false
+        "animated": true,
+        "still": "Genesis/8/Genesis_8_19.still.svg"
       }
     ],
     "Genesis_8_2": [
@@ -9781,8 +9785,7 @@
       {
         "file": "Genesis/8/Genesis_8_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Genesis/8/Genesis_8_4.still.svg"
+        "animated": false
       }
     ],
     "Genesis_8_5": [
