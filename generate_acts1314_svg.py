@@ -10,9 +10,17 @@ Attalia->Antioch) read as dotted "sailing" lines; land legs are solid.
 
 A side panel gives the itinerary as a vertical route strip — the eleven
 waypoints in order, the current one lit — plus a two-line scene note, so the
-long stationary stretches (Paul's sermon at Pisidian Antioch, the Lystra
-scene) still have per-verse movement in the caption and panel while the map
-holds steady.
+long stationary stretches (the Lystra scene) still have per-verse movement in
+the panel while the map holds steady.
+
+Two stretches are too long for that, and they are consecutive. From 13:16 to
+13:50 the journey does not move an inch — Paul preaches for twenty-six
+verses, and nine more pass in the aftermath before they leave. So the map
+window breaks away twice: the sermon gets its own picture (`draw_sermon`),
+then the two Sabbaths that follow get theirs (`draw_aftermath`). The map
+returns at 13:51, where they shake off the dust and go to Iconium. The frame
+and the itinerary panel stay put across both breaks, so it reads as the same
+graphic looking at something else.
 
 Coordinates are approximate; ancient site identifications (Lystra, Derbe) are
 scholarly reconstructions and the footer says so. Geometry is hand-encoded
@@ -27,8 +35,8 @@ import math
 import os
 
 from svg_surface import SvgCanvas
-from generate_tabernacle import (W, H, BG, SAND, SAND_DIM, TEXT, TEXT_DIM, HL,
-                                 out_path)
+from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
+                                 TEXT_DIM, HL, out_path)
 from generate_tribal_maps import MapFrame, SEA, LAND, RIVER, WATER_TXT
 
 # ---------------------------------------------------------------------------
@@ -45,6 +53,11 @@ DASH_SEA = "2,6"         # a travelled sea crossing (dotted "sailing" line)
 
 def g(alpha):
     return HL + (int(255 * alpha),)
+
+
+def dim(col, a):
+    """The palette colour at `a` opacity."""
+    return (col[0], col[1], col[2], int(255 * a))
 
 
 # ---------------------------------------------------------------------------
@@ -344,7 +357,7 @@ def draw_legs(c, ch, v):
         c.traced(pts, stroke=g(0.95), width=4, dur="2.4s")
 
 
-def draw_cities(c, ch, v):
+def draw_cities(c, ch, v, pulse=False):
     focus_key = STORY[(ch, v)][0]
     p = _p(ch, v)
     # a city is "reached" once any leg ending there has fired (or it's the
@@ -359,7 +372,10 @@ def draw_cities(c, ch, v):
         cur = (key == focus_key)
         if cur:
             c.circle(x, y, 7, fill=HL, stroke=BG, width=2)
-            c.circle(x, y, 11, stroke=g(0.9), width=2)
+            if pulse:
+                c.pulse_ellipse(x, y, 11, 11, g(0.9), width=2, first=True)
+            else:
+                c.circle(x, y, 11, stroke=g(0.9), width=2)
         elif key in reached:
             c.circle(x, y, 4, fill=SAND, stroke=BG, width=1)
         else:
@@ -390,7 +406,7 @@ def compass_scale(c):
 ROW0, ROWH = 168, 27
 
 
-def draw_panel(c, ch, v):
+def draw_panel(c, ch, v, stop_tag=None):
     focus_key = STORY[(ch, v)][0]
     returning = is_returning(ch, v)
     if focus_key == "ANTIOCH_SYRIA":
@@ -413,6 +429,8 @@ def draw_panel(c, ch, v):
         y = ROW0 + (i - 1) * ROWH
         label = CITIES[key][0]
         cur = (i == cur_row)
+        if cur and stop_tag:
+            tag = stop_tag
         # a sea crossing between this row and the next
         if i in SEA_AFTER:
             c.line((dot_x, y + 4), (dot_x, y + ROWH - 4), RIVER, 2,
@@ -434,31 +452,318 @@ def draw_panel(c, ch, v):
 
 
 # ---------------------------------------------------------------------------
+# The sermon at Pisidian Antioch (13:16-41)
+#
+# The argument drawn as a profile: it climbs through Israel's history to
+# David, runs level from David's seed to Jesus, plunges into the sepulchre,
+# is thrown up again by the resurrection, and settles on the "therefore" it
+# was climbing towards all along. The shape is the outline.
+#
+# Same grammar as the map, so the break does not read as a different graphic:
+# what is still to be said is dim and dashed, what has been said is solid,
+# the step being read traces itself in gold. Text budget is the house rule —
+# the six movements are named once each, and only the verse being read gets
+# a word.
+# ---------------------------------------------------------------------------
+
+SERMON = (16, 41)
+
+# (name, first verse, last verse)
+MOVES = [
+    ("The fathers", 16, 22),
+    ("The promise", 23, 26),
+    ("Condemned",   27, 29),
+    ("But God",     30, 37),
+    ("Therefore",   38, 39),
+    ("The warning", 40, 41),
+]
+
+# verse -> (word, height of the argument, quotes the scriptures)
+#
+# Every word is lifted from the WEB text of its own verse (the app's default
+# translation), not paraphrased and not KJV — the graphic is shared by all
+# translations, so it follows the primary one.
+POINTS = {
+    16: ("Listen",         0.10, False),
+    17: ("Egypt",          0.18, False),
+    18: ("Forty years",    0.24, False),
+    19: ("Seven nations",  0.30, False),
+    20: ("Judges",         0.36, False),
+    21: ("Saul",           0.42, False),
+    22: ("David",          0.50, True),
+    23: ("Salvation",      0.58, False),
+    24: ("John",           0.58, False),
+    25: ("Not he",         0.58, False),
+    26: ("Word sent out",  0.58, False),
+    27: ("Didn’t know him", 0.40, False),
+    28: ("Pilate",         0.26, False),
+    29: ("A tomb",         0.12, False),
+    30: ("Raised him",     0.64, False),
+    31: ("Witnesses",      0.68, False),
+    32: ("Good news",      0.72, False),
+    33: ("My Son",         0.76, True),
+    34: ("Sure blessings", 0.76, True),
+    35: ("Holy One",       0.76, True),
+    36: ("Saw decay",      0.56, False),
+    37: ("No decay",       0.80, False),
+    38: ("Remission",      0.88, False),
+    39: ("Justified",      0.88, False),
+    40: ("Beware",         0.82, False),
+    41: ("You scoffers",   0.82, True),
+}
+
+SX0 = MF.px + 30                       # first node
+SX1 = MF.px + MF.mw - 30               # last node
+SSTEP = (SX1 - SX0) / (SERMON[1] - SERMON[0])
+BASE_Y = MF.py + 438                   # height 0
+RISE = 292                             # height 1 is this far above BASE_Y
+FLOOR_Y = MF.py + 450
+BRACKET_Y = MF.py + 78
+LABEL_Y = (MF.py + 32, MF.py + 56)     # staggered so neighbours never touch
+
+
+def node(v):
+    return (SX0 + (v - SERMON[0]) * SSTEP, BASE_Y - POINTS[v][1] * RISE)
+
+
+def scroll(c, x, y, col):
+    """The mark for a verse where Paul quotes the scriptures: a little
+    unrolled scroll — a written sheet held open between a roll at the head
+    and a roll at the foot."""
+    w, lw = 6.2, 1.1
+    yt, yb = y - 6.2, y + 6.2
+
+    def p(d):
+        c.path(d, stroke=col, width=lw, linecap="round")
+
+    c.line((x - w, yt), (x - w, yb), col, lw)          # the open sheet
+    c.line((x + w, yt), (x + w, yb), col, lw)
+    # the writing — ragged line lengths, so it reads as text and not as a
+    # row of even segments
+    for dy, f in ((-3.2, 0.66), (0.0, 0.66), (3.2, 0.42)):
+        c.line((x - w * 0.66, y + dy), (x - w * 0.66 + 2 * w * f, y + dy),
+               col, lw * 0.75)
+    # head and foot curl away from the reader in opposite directions, each
+    # with the inner turn of the roll showing — the S that says "unrolled"
+    p(f"M {x - w:.1f} {yt:.1f} C {x - w:.1f} {yt - 3.7:.1f}, "
+      f"{x + w:.1f} {yt - 3.7:.1f}, {x + w:.1f} {yt:.1f}")
+    p(f"M {x - w:.1f} {yt:.1f} C {x - w - 2.2:.1f} {yt - 1.4:.1f}, "
+      f"{x - w - 1.4:.1f} {yt - 3.4:.1f}, {x - w + 1.6:.1f} {yt - 2.6:.1f}")
+    p(f"M {x + w:.1f} {yb:.1f} C {x + w:.1f} {yb + 3.7:.1f}, "
+      f"{x - w:.1f} {yb + 3.7:.1f}, {x - w:.1f} {yb:.1f}")
+    p(f"M {x + w:.1f} {yb:.1f} C {x + w + 2.2:.1f} {yb + 1.4:.1f}, "
+      f"{x + w + 1.4:.1f} {yb + 3.4:.1f}, {x + w - 1.6:.1f} {yb + 2.6:.1f}")
+
+
+def word_label(c, x, y, s, size=21):
+    """The one word this verse gets, on a panel-coloured halo so it stays
+    legible where the profile runs steeply behind it."""
+    w = 0.56 * size * len(s) + 14
+    if x - w / 2 < SX0 - 22:
+        anch, x0 = "lm", x - 7
+    elif x + w / 2 > SX1 + 22:
+        anch, x0 = "rm", x - w + 7
+    else:
+        anch, x0 = "mm", x - w / 2
+    c.rect(x0, y - 14, w, 28, fill=PANEL)
+    c.text((x, y), s, size, HL, anch, bold=True)
+
+
+def draw_moves(c, v):
+    for i, (name, first, last) in enumerate(MOVES):
+        cur = first <= v <= last
+        done = v > last
+        col = HL if cur else (dim(SAND, 0.85) if done else dim(SAND_DIM, 0.95))
+        txt = HL if cur else (TEXT if done else TEXT_DIM)
+        x0, x1 = node(first)[0], node(last)[0]
+        cx, ly = (x0 + x1) / 2, LABEL_Y[i % 2]
+        c.text((cx, ly), name, 15 if cur else 14, txt, "mm", bold=cur)
+        c.line((cx, ly + 11), (cx, BRACKET_Y), col, 1)
+        c.line((x0 - 9, BRACKET_Y), (x1 + 9, BRACKET_Y), col, 2 if cur else 1)
+        for ex in (x0 - 9, x1 + 9):
+            c.line((ex, BRACKET_Y), (ex, BRACKET_Y + 6), col, 2 if cur else 1)
+
+
+def draw_profile(c, v):
+    verses = range(SERMON[0], SERMON[1] + 1)
+    pts = [node(i) for i in verses]
+    # the whole argument faintly, then the part already spoken, then the
+    # step being read tracing itself — the map's own dim/solid/gold grammar
+    c.polyline(pts, stroke=SAND_DIM + (255,), width=1.5, dash=DASH_UP)
+    said = pts[:v - SERMON[0]]
+    if len(said) > 1:
+        c.polyline(said, stroke=SAND + (255,), width=3)
+    if v > SERMON[0]:
+        c.traced([node(v - 1), node(v)], stroke=g(0.95), width=4, dur="1.2s")
+
+    for i in verses:
+        x, y = node(i)
+        cur = (i == v)
+        if cur:
+            continue
+        if i < v:
+            c.circle(x, y, 4, fill=SAND, stroke=PANEL, width=1)
+        else:
+            c.circle(x, y, 3.5, fill=PANEL, stroke=SAND_DIM, width=1.5)
+        if POINTS[i][2]:
+            scroll(c, x, y - 18, dim(SAND if i < v else SAND_DIM, 0.9))
+
+    x, y = node(v)
+    c.circle(x, y, 7, fill=HL, stroke=PANEL, width=2)
+    c.pulse_ellipse(x, y, 11, 11, g(0.9), width=2, first=True)
+    if POINTS[v][2]:
+        scroll(c, x, y - 22, g(0.9))
+    c.text((x, y + 20), str(v), 12, TEXT_DIM, "mm")
+    word_label(c, x, y - (48 if POINTS[v][2] else 30), POINTS[v][0])
+
+
+def draw_sermon(c, v):
+    c.rect(MF.px, MF.py, MF.mw, MF.mh, fill=PANEL)
+    c.line((SX0 - 20, FLOOR_Y), (SX1 + 20, FLOOR_Y), dim(SAND_DIM, 0.8), 1,
+           dash="2,7")
+    draw_moves(c, v)
+    draw_profile(c, v)
+
+
+# ---------------------------------------------------------------------------
+# The two Sabbaths (13:42-50)
+#
+# The sermon ends but the journey still does not move: nine more verses pass
+# at Pisidian Antioch before they shake the dust off and go. What those nine
+# verses actually describe is a congregation — so the picture is the
+# congregation. It gathers (a synagogue-full, then almost the whole city),
+# and then it divides: one way the Gentiles are glad and the word runs out
+# through the region, the other way jealousy hardens into persecution and
+# throws the two of them out. The flow forks, and each verse is a step on
+# one fork or the other.
+#
+# The map comes back at 13:51, where they leave for Iconium.
+# ---------------------------------------------------------------------------
+
+AFTER = (42, 50)
+
+SYN_X, SYN_Y, SYN_W, SYN_H = 62, 306, 96, 78
+CROWD_X0, CROWD_Y0 = 182, 298
+
+# verse -> (word, x, y). The trunk runs level, then splits at the fork.
+AFTER_NODES = {
+    42: ("The next Sabbath",   206, 392),
+    43: ("Continue in grace",  278, 392),
+    44: ("Almost the whole city", 350, 392),
+    45: ("Filled with jealousy", 438, 434),
+    46: ("To the Gentiles",    438, 352),
+    47: ("A light",            494, 324),
+    48: ("They were glad",     550, 296),
+    49: ("Spread abroad",      604, 268),
+    50: ("Out of their borders", 552, 480),
+}
+UP_BRANCH = (46, 47, 48, 49)
+DOWN_BRANCH = (45, 50)
+FORK = (386, 392)
+
+
+def crowd(n):
+    """A gathering, laid out on a jittered grid so it reads as people and
+    not as a lattice. Deterministic — the same n always draws the same
+    crowd, so a verse does not reshuffle its congregation on every build."""
+    pts = []
+    for i in range(n):
+        col, row = i % 10, i // 10
+        pts.append((CROWD_X0 + col * 19 + (i * 37) % 7 - 3,
+                    CROWD_Y0 + 58 - row * 17 + (i * 53) % 9 - 4))
+    return pts
+
+
+def synagogue(c, col):
+    c.rect(SYN_X, SYN_Y, SYN_W, SYN_H, stroke=col, width=2)
+    c.polyline([(SYN_X - 7, SYN_Y), (SYN_X + SYN_W / 2, SYN_Y - 26),
+                (SYN_X + SYN_W + 7, SYN_Y)], col, 2)
+    c.rect(SYN_X + SYN_W / 2 - 11, SYN_Y + SYN_H - 32, 22, 32, stroke=col,
+           width=1.6)
+
+
+def draw_aftermath(c, v):
+    c.rect(MF.px, MF.py, MF.mw, MF.mh, fill=PANEL)
+    synagogue(c, HL if v in (42, 43) else dim(SAND, 0.85))
+    big = v >= 44
+    for i, (cx, cy) in enumerate(crowd(60 if big else 14)):
+        fresh = big and i >= 14
+        c.circle(cx, cy, 3.2, fill=g(0.85) if (v == 44 and fresh)
+                 else dim(SAND, 0.85 if not fresh else 0.7))
+
+    # the trunk, then the two ways it divides
+    trunk = [(SYN_X + SYN_W + 16, 392), FORK]
+    up = [FORK] + [AFTER_NODES[k][1:] for k in UP_BRANCH]
+    down = [FORK] + [AFTER_NODES[k][1:] for k in DOWN_BRANCH]
+    c.polyline(trunk, stroke=SAND + (255,), width=3)
+    for branch, first_v in ((up, 46), (down, 45)):
+        live = v >= first_v
+        c.polyline(branch, stroke=SAND + (255,) if live
+                   else dim(SAND_DIM, 0.85), width=3 if live else 1.4,
+                   dash=None if live else DASH_UP)
+    c.text((SX1 + 10, 236), "TO THE GENTILES", 12,
+           HL if v in UP_BRANCH else TEXT_DIM, "ra", bold=True)
+    c.text((SX1 + 10, 506), "PERSECUTION", 12,
+           HL if v in DOWN_BRANCH else TEXT_DIM, "ra", bold=True)
+
+    for bv, (_w, x, y) in AFTER_NODES.items():
+        if bv == v:
+            continue
+        if bv < v:
+            c.circle(x, y, 4, fill=SAND, stroke=PANEL, width=1)
+        else:
+            c.circle(x, y, 3.5, fill=PANEL, stroke=SAND_DIM, width=1.5)
+
+    word, x, y = AFTER_NODES[v]
+    c.circle(x, y, 7, fill=HL, stroke=PANEL, width=2)
+    c.pulse_ellipse(x, y, 11, 11, g(0.9), width=2, first=True)
+    c.text((x, y + 20), str(v), 12, TEXT_DIM, "mm")
+    word_label(c, x, y - 30, word)
+
+
+# ---------------------------------------------------------------------------
 # Assemble one verse
 # ---------------------------------------------------------------------------
 
 def render(ch, v):
-    focus_key, caption = STORY[(ch, v)]
+    preaching = (ch == 13 and SERMON[0] <= v <= SERMON[1])
+    after = (ch == 13 and AFTER[0] <= v <= AFTER[1])
     c = SvgCanvas(W, H, bg=BG)
-    c.text((28, 24), f"Paul’s First Missionary Journey — Acts {ch}",
-           24, TEXT, "la", bold=True)
 
-    with c.group(MF.px, MF.py, clip=(MF.mw, MF.mh)):
-        c.rect(0, 0, MF.mw, MF.mh, fill=SEA)
-        c.polygon(MF.pts(MAINLAND), fill=LAND, stroke=SAND_DIM, width=2)
-        c.polygon(MF.pts(CYPRUS), fill=LAND, stroke=SAND_DIM, width=2)
+    if preaching:
+        c.text((28, 24), "Paul’s Sermon at Antioch in Pisidia — Acts 13",
+               24, TEXT, "la", bold=True)
+        c.text((28, 54), "in the synagogue  ·  verses 16–41", 13, TEXT_DIM,
+               "la", italic=True)
+        draw_sermon(c, v)
+    elif after:
+        c.text((28, 24), "Two Sabbaths at Antioch in Pisidia — Acts 13",
+               24, TEXT, "la", bold=True)
+        c.text((28, 54), "after the sermon  ·  verses 42–50", 13, TEXT_DIM,
+               "la", italic=True)
+        draw_aftermath(c, v)
+    else:
+        c.text((28, 24), f"Paul’s First Missionary Journey — Acts {ch}",
+               24, TEXT, "la", bold=True)
+        with c.group(MF.px, MF.py, clip=(MF.mw, MF.mh)):
+            c.rect(0, 0, MF.mw, MF.mh, fill=SEA)
+            c.polygon(MF.pts(MAINLAND), fill=LAND, stroke=SAND_DIM, width=2)
+            c.polygon(MF.pts(CYPRUS), fill=LAND, stroke=SAND_DIM, width=2)
 
-        for la, lo, txt, anch in REGIONS:
-            c.text(MF.pt(la, lo), txt, 13, TEXT_DIM, anch)
-        for la, lo, txt, anch in WATERS:
-            c.text(MF.pt(la, lo), txt, 14, WATER_TXT, anch, italic=True)
+            for la, lo, txt, anch in REGIONS:
+                c.text(MF.pt(la, lo), txt, 13, TEXT_DIM, anch)
+            for la, lo, txt, anch in WATERS:
+                c.text(MF.pt(la, lo), txt, 14, WATER_TXT, anch, italic=True)
 
-        draw_legs(c, ch, v)
-        draw_cities(c, ch, v)
-        compass_scale(c)
+            draw_legs(c, ch, v)
+            # coming back off the sermon, the focus ring pulses once so the
+            # map re-announces where we still are
+            draw_cities(c, ch, v, pulse=(ch == 13 and v == AFTER[1] + 1))
+            compass_scale(c)
     c.rect(MF.px - 1, MF.py - 1, MF.mw + 1, MF.mh + 1, stroke=SAND_DIM, width=1)
 
-    draw_panel(c, ch, v)
+    draw_panel(c, ch, v, "the sermon" if preaching else
+               ("two Sabbaths" if after else None))
     return c
 
 

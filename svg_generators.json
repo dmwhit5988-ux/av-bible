@@ -339,11 +339,63 @@
       "spec": [
         {
           "file": "generate_acts1314_svg.py",
-          "edit": "CITIES, ROUTE, LEGS, SCENES - all in this one file"
+          "edit": "CITIES, ROUTE, LEGS, SCENES for the map; MOVES/POINTS for the sermon outline that replaces it at 13:16-41; AFTER_NODES for the two-Sabbaths picture at 13:42-50 - all in this one file"
         }
       ],
       "translation_suffixed": false,
       "kind": "map"
+    },
+    {
+      "_comment": "Map plus five set-pieces in one generator: only ~30 of these 143 verses involve travel, so the map carries the moving verses and steps aside at each long stop.",
+      "label": "Second Missionary Journey (Acts 15-18)",
+      "book": "Acts",
+      "chapters": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "generator": "generate_acts1518_svg.py",
+      "spec": [
+        {
+          "file": "generate_acts1518_svg.py",
+          "edit": "MED/PELOPONNESE/ISLANDS for the coastline, CITIES/LEGS/STAGES/MAP_WORDS for the route and panel; the five break-aways are COUNCIL_ROWS+DECREE (15:1-35), PLACES (16:13-40), THESS_ROWS/BEREA_ROWS (17:2-14), AREO/BRANCH (17:16-34), SHOPS/CORINTH_AT (18:2-17); BREAKS maps verse ranges to views"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "map"
+    },
+    {
+      "_comment": "One family for the whole letter: the catalog's three Romans candidates (the argument arc, the Adam/Christ parallel of ch5, the olive tree of 9-11) are one drawing at three zoom levels, so they share a generator.",
+      "label": "The argument of Romans (Romans 1-16)",
+      "book": "Romans",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "generator": "generate_romans_svg.py",
+      "spec": [
+        {
+          "file": "generate_romans_svg.py",
+          "edit": "STOPS (the seven rail stops), BEATS (which set-piece and focus each passage gets), TRACK (the one word per verse), and the draw_* function of the stage being changed - all in this one file"
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
     }
   ]
 }

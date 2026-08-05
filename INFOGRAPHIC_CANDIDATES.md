@@ -40,7 +40,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **🌳 Genealogy:** already-built — Genesis 4, Genesis 5, Genesis 10, Genesis 11:10–32, 1 Chronicles 1–9, Matthew 1, Luke 3
 - **🏛️ Architectural:** [Exodus 28–29](#exodus), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Ephesians 6:10–18](#ephesians), [Hebrews 9](#hebrews), [Revelation 21–22](#revelation) — plus already-built Genesis 6–9, Exodus 25–27
 - **🔄 Process/Cycle:** [Exodus 12](#exodus), [Leviticus 16](#leviticus), [Joshua 6](#joshua), [Judges — the judges' cycle](#judges), [Ezekiel 4](#ezekiel), [Revelation 6–16](#revelation)
-- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John — seven signs](#john), [John — seven "I am" statements](#john), [Romans](#romans), [Galatians 5](#galatians), [Hebrews — "better than" argument](#hebrews), [Hebrews 11](#hebrews), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4
+- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John — seven signs](#john), [John — seven "I am" statements](#john), [Galatians 5](#galatians), [Hebrews — "better than" argument](#hebrews), [Hebrews 11](#hebrews), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4, Romans 1–16
 - **🔢 Numeric/Statistical:** [Ezra 1–2](#ezra) — plus already-built Numbers 1–2
 - **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Zechariah 1–6](#zechariah), [1 Samuel 17](#1-samuel), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [Revelation 4–5](#revelation) — plus already-built Genesis 3, Genesis 11:1–9
 
@@ -388,18 +388,16 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Acts 1–2** — 🆕 High · 🗺️ Map. The Ascension and Pentecost, including the list of nations/languages represented in Jerusalem.
 - **Acts 6–8** — 🆕 Med · 🗺️ Map. Stephen's martyrdom, the gospel's spread to Samaria, and the Ethiopian eunuch's road.
 - **Acts 9** — 🆕 Med · 🗺️ Map. Paul's conversion on the Damascus road.
-- **Acts 13–14** — ✅ Built · 🗺️ Map. Paul's First Missionary Journey — Cyprus and the Galatian region, revealed leg by leg with a vertical itinerary strip. *(`generate_acts1314_svg.py`)*
-- **Acts 15** — 🆕 Med · 🔄 Process diagram. The Jerusalem Council's decision process.
-- **Acts 15–18** — 🆕 High · 🗺️ Map. Paul's Second Missionary Journey — Asia Minor into Macedonia and Greece, including Philippi, Athens, and Corinth.
+- **Acts 13–14** — ✅ Built · 🗺️ Map. Paul's First Missionary Journey — Cyprus and the Galatian region, revealed leg by leg with a vertical itinerary strip. The map breaks away twice at Pisidian Antioch: for the sermon (13:16–41), then for the two Sabbaths after it (13:42–50). *(`generate_acts1314_svg.py`)*
+- **Acts 15** — ✅ Built · 🔄 Process diagram. The Jerusalem Council's decision process — a road with a bar across it, argued above and lifted by the decree. Built as the first break-away of the second-journey generator. *(`generate_acts1518_svg.py`)*
+- **Acts 15–18** — ✅ Built · 🗺️ Map. Paul's Second Missionary Journey — Asia Minor into Macedonia and Greece. Only ~30 of the 143 verses travel, so the map carries those and steps aside for five set-pieces: the council, Philippi, Thessalonica & Beroea, the Areopagus, and Corinth. *(`generate_acts1518_svg.py`)*
 - **Acts 18–21** — 🆕 High · 🗺️ Map. Paul's Third Missionary Journey — centered on Ephesus, then the return to Jerusalem.
 - **Acts 27–28** — 🆕 High · 🗺️ Map. The voyage to Rome and the shipwreck at Malta — a richly detailed, highly mappable nautical journey.
 
 ### Romans
 *16 chapters.*
 
-- **Romans (overall)** — 🆕 High · 📊 Doctrinal flow chart. The letter's argument arc — sin, law, grace, justification, sanctification, Israel's future, practical living — the basis of the popular "Romans Road" salvation outline.
-- **Romans 5** — 🆕 Med · 📊 Parallel chart. Adam and Christ compared — "as in Adam all die, in Christ all live."
-- **Romans 9–11** — 🆕 Med · 💡 Conceptual. Israel, the Gentiles, and the olive-tree metaphor.
+- **Romans 1–16** — ✅ Built · 📊 Doctrinal flow chart. The letter's argument arc — guilt, justification, Adam and Christ, life in the Spirit, Israel, the body — as a rail of seven stops beside the current stop's set-piece, drawn large. The three candidates this replaces (the overall arc, chapter 5's Adam/Christ parallel, the olive tree of 9–11) turned out to be one drawing at three zoom levels: the two set-pieces are stops on the arc, and each rail emblem is a miniature of the stage drawing it opens. A bead track along the bottom carries one word per verse, which is the whole per-verse text budget. *(`generate_romans_svg.py`)*
 
 ### 1 Corinthians
 *16 chapters.*
