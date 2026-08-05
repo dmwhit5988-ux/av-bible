@@ -14,7 +14,7 @@ const SILENT_WAV =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
 export class Player {
-  constructor({ onVerseChange, onStateChange, onEnd }) {
+  constructor({ onVerseChange, onStateChange, onEnd, onStart }) {
     this.synth = window.speechSynthesis;
     this.audioEl = new Audio();
     this.queue = []; // [[num, text], ...]
@@ -30,6 +30,10 @@ export class Player {
     // user hits Next on the last verse. The host uses it to roll into the next
     // chapter. Passed whether playback was running so it can keep playing.
     this.onEnd = onEnd || (() => {});
+    // The mirror of onEnd: the user hit Prev on the first verse. The host uses
+    // it to roll back into the previous chapter's last verse. Passed whether
+    // playback was running so it can keep playing.
+    this.onStart = onStart || (() => {});
     this._keepAlive = null;
     this._unlocked = false;
     // Generation counter: bumped every time the active clip is torn down.
@@ -124,7 +128,10 @@ export class Player {
   }
 
   prev() {
-    if (this.index <= 0) return;
+    if (this.index <= 0) {
+      this.onStart(this.state === "playing");
+      return;
+    }
     this.index--;
     this._afterManualNav();
   }

@@ -34,6 +34,17 @@ export function nextChapter(book, chapter) {
   return { book: BOOKS[i + 1][0], chapter: 1 };
 }
 
+// The mirror of nextChapter: the chapter canonically before book/chapter,
+// rolling back into the previous book's *last* chapter at chapter 1.
+// Returns null at Genesis 1.
+export function prevChapter(book, chapter) {
+  if (chapter > 1) return { book, chapter: chapter - 1 };
+  const i = BOOKS.findIndex(([name]) => name === book);
+  if (i <= 0) return null;
+  const prevBook = BOOKS[i - 1][0];
+  return { book: prevBook, chapter: chaptersIn(prevBook) };
+}
+
 // code, dropdown label, attribution — ported from passages.py TRANSLATIONS.
 // All 9 ship as local per-chapter JSON under bibles/<CODE>/, so the web app
 // (unlike the desktop app) never needs an api_id or a live-fetch source.

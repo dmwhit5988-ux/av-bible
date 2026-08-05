@@ -1,4 +1,4 @@
-import { BOOKS, TRANSLATIONS, TRANSLATION_ATTRIBUTION, DEFAULTS, chaptersIn, nextChapter } from "./data.js";
+import { BOOKS, TRANSLATIONS, TRANSLATION_ATTRIBUTION, DEFAULTS, chaptersIn, nextChapter, prevChapter } from "./data.js";
 import { fetchChapter, PassageError } from "./bible.js";
 import { VisualStage, bookGradient } from "./visuals.js";
 import { Player } from "./tts.js";
@@ -82,6 +82,7 @@ const player = new Player({
   onVerseChange: (index) => renderVerse(index),
   onStateChange: (state) => updatePlayButtons(state),
   onEnd: (wasPlaying) => advanceToNextChapter(wasPlaying),
+  onStart: (wasPlaying) => retreatToPrevChapter(wasPlaying),
 });
 player.resolveAudio = resolveAudio;
 
@@ -164,7 +165,7 @@ function saveSelection() {
 // Chapter loading
 // ---------------------------------------------------------------------
 
-async function loadChapter({ resetStage = true } = {}) {
+async function loadChapter({ resetStage = true, startAtEnd = false } = {}) {
   const code = els.translation.value;
   const book = els.book.value;
   const chapter = Number(els.chapter.value);
@@ -181,7 +182,7 @@ async function loadChapter({ resetStage = true } = {}) {
   }
   populateVerses(passage.verses);
   renderVersePanel();
-  player.load(passage.verses, 0);
+  player.load(passage.verses, startAtEnd ? passage.verses.length - 1 : 0);
   player.voice = pickVoice();
   saveSelection();
   if (resetStage) showIdle();
@@ -204,6 +205,22 @@ async function advanceToNextChapter(wasPlaying) {
   if (!passage) return; // load failed (e.g. book missing in this translation)
   if (wasPlaying) player.play();
   else renderVerse(0);
+}
+
+// The mirror of advanceToNextChapter: Prev on the first verse rolls back into
+// the previous chapter and lands on its *last* verse, so a double-tap-left run
+// walks backwards across the boundary the same way double-tap-right walks
+// forwards. Keeps playing if we were playing. No-op at Genesis 1:1.
+async function retreatToPrevChapter(wasPlaying) {
+  const prev = passage && prevChapter(passage.book, passage.chapter);
+  if (!prev) return; // nothing before Genesis 1:1 — stay put, keep playing
+  els.book.value = prev.book;
+  populateChapters(prev.book);
+  els.chapter.value = String(prev.chapter);
+  await loadChapter({ resetStage: false, startAtEnd: true });
+  if (!passage) return; // load failed (e.g. book missing in this translation)
+  if (wasPlaying) player.play();
+  else renderVerse(player.index);
 }
 
 function pickVoice() {
