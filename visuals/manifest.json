@@ -3673,70 +3673,80 @@
       {
         "file": "Acts/14/Acts_14_10.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_10.still.svg"
       }
     ],
     "Acts_14_11": [
       {
         "file": "Acts/14/Acts_14_11.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_11.still.svg"
       }
     ],
     "Acts_14_12": [
       {
         "file": "Acts/14/Acts_14_12.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_12.still.svg"
       }
     ],
     "Acts_14_13": [
       {
         "file": "Acts/14/Acts_14_13.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_13.still.svg"
       }
     ],
     "Acts_14_14": [
       {
         "file": "Acts/14/Acts_14_14.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_14.still.svg"
       }
     ],
     "Acts_14_15": [
       {
         "file": "Acts/14/Acts_14_15.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_15.still.svg"
       }
     ],
     "Acts_14_16": [
       {
         "file": "Acts/14/Acts_14_16.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_16.still.svg"
       }
     ],
     "Acts_14_17": [
       {
         "file": "Acts/14/Acts_14_17.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_17.still.svg"
       }
     ],
     "Acts_14_18": [
       {
         "file": "Acts/14/Acts_14_18.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_18.still.svg"
       }
     ],
     "Acts_14_19": [
       {
         "file": "Acts/14/Acts_14_19.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_19.still.svg"
       }
     ],
     "Acts_14_2": [
@@ -3845,21 +3855,24 @@
       {
         "file": "Acts/14/Acts_14_7.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_7.still.svg"
       }
     ],
     "Acts_14_8": [
       {
         "file": "Acts/14/Acts_14_8.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_8.still.svg"
       }
     ],
     "Acts_14_9": [
       {
         "file": "Acts/14/Acts_14_9.svg",
         "kind": "map",
-        "animated": false
+        "animated": true,
+        "still": "Acts/14/Acts_14_9.still.svg"
       }
     ],
     "Acts_15_1": [
