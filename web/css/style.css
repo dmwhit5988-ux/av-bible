@@ -33,6 +33,34 @@ header {
   background: var(--panel);
 }
 
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.brand-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  align-self: center;
+}
+
+.brand-name {
+  font-size: 17px;
+  letter-spacing: 4px;
+  color: var(--sand);
+}
+
+.brand-theta { color: #d3a13c; }
+
+.brand-tag {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: #8a8aa0;
+}
+
 .pickers {
   display: flex;
   flex-wrap: wrap;

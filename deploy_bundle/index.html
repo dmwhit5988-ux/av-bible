@@ -3,18 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>AV Bible</title>
+<title>Theoria &#8212; A Visual Bible</title>
 <meta name="theme-color" content="#101018">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AV Bible">
+<meta name="apple-mobile-web-app-title" content="Theoria">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
+  <div class="brand">
+    <img class="brand-icon" src="icons/icon.svg" alt="">
+    <span class="brand-name">THE<span class="brand-theta">&#x0398;</span>RIA</span>
+    <span class="brand-tag">A VISUAL BIBLE</span>
+  </div>
   <div class="pickers">
     <label>Translation
       <select id="sel-translation"></select>
@@ -37,7 +44,7 @@
     <div id="stage-bg"></div>
     <img id="stage-img" alt="">
     <div id="stage-text"></div>
-    <div id="idle-message">AV Bible
+    <div id="idle-message">Theoria
 
 Choose a passage and press Play</div>
     <div id="notes-box"></div>

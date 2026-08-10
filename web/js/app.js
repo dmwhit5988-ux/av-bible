@@ -270,7 +270,7 @@ function escapeHtml(s) {
 function showIdle(message) {
   els.idleMessage.style.display = "flex";
   if (message) els.idleMessage.textContent = message;
-  else els.idleMessage.textContent = "AV Bible\n\nChoose a passage and press Play";
+  else els.idleMessage.textContent = "Theoria\n\nChoose a passage and press Play";
   els.stageImg.classList.remove("visible");
   els.stageText.classList.remove("visible");
   els.notesBox.textContent = "";

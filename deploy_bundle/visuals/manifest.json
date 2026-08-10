@@ -11189,64 +11189,56 @@
       {
         "file": "Matthew/1/Matthew_1_1.ASV.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.ASV.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.BSB": [
       {
         "file": "Matthew/1/Matthew_1_1.BSB.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.BSB.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.DARBY": [
       {
         "file": "Matthew/1/Matthew_1_1.DARBY.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.DARBY.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.DRA": [
       {
         "file": "Matthew/1/Matthew_1_1.DRA.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.DRA.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.KJV": [
       {
         "file": "Matthew/1/Matthew_1_1.KJV.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.KJV.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.OEB": [
       {
         "file": "Matthew/1/Matthew_1_1.OEB.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.OEB.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1": [
       {
         "file": "Matthew/1/Matthew_1_1.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_1.YLT": [
       {
         "file": "Matthew/1/Matthew_1_1.YLT.svg",
         "kind": "genealogy",
-        "animated": true,
-        "still": "Matthew/1/Matthew_1_1.YLT.still.svg"
+        "animated": false
       }
     ],
     "Matthew_1_10.ASV": [
@@ -11693,56 +11685,192 @@
       {
         "file": "Matthew/1/Matthew_1_17.ASV.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.ASV.still.svg"
       }
     ],
     "Matthew_1_17.BSB": [
       {
         "file": "Matthew/1/Matthew_1_17.BSB.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.BSB.still.svg"
       }
     ],
     "Matthew_1_17.DARBY": [
       {
         "file": "Matthew/1/Matthew_1_17.DARBY.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.DARBY.still.svg"
       }
     ],
     "Matthew_1_17.DRA": [
       {
         "file": "Matthew/1/Matthew_1_17.DRA.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.DRA.still.svg"
       }
     ],
     "Matthew_1_17.KJV": [
       {
         "file": "Matthew/1/Matthew_1_17.KJV.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.KJV.still.svg"
       }
     ],
     "Matthew_1_17.OEB": [
       {
         "file": "Matthew/1/Matthew_1_17.OEB.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.OEB.still.svg"
       }
     ],
     "Matthew_1_17": [
       {
         "file": "Matthew/1/Matthew_1_17.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.still.svg"
       }
     ],
     "Matthew_1_17.YLT": [
       {
         "file": "Matthew/1/Matthew_1_17.YLT.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_17.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_18.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_18.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_18.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_18.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_18.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_18.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_18.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_18.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_18.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_18.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_18.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_18.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_18": [
+      {
+        "file": "Matthew/1/Matthew_1_18.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.still.svg"
+      }
+    ],
+    "Matthew_1_18.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_18.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_18.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_19.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_19.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_19.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_19.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_19.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_19.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_19.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_19.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_19.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_19.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_19.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_19.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_19": [
+      {
+        "file": "Matthew/1/Matthew_1_19.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.still.svg"
+      }
+    ],
+    "Matthew_1_19.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_19.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_19.YLT.still.svg"
       }
     ],
     "Matthew_1_2.ASV": [
@@ -11807,6 +11935,390 @@
         "kind": "genealogy",
         "animated": true,
         "still": "Matthew/1/Matthew_1_2.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_20.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_20.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_20.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_20.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_20.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_20.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_20.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_20.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_20.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_20.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_20.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_20.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_20": [
+      {
+        "file": "Matthew/1/Matthew_1_20.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.still.svg"
+      }
+    ],
+    "Matthew_1_20.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_20.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_20.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_21.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_21.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_21.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_21.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_21.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_21.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_21.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_21.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_21.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_21.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_21.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_21.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_21": [
+      {
+        "file": "Matthew/1/Matthew_1_21.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.still.svg"
+      }
+    ],
+    "Matthew_1_21.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_21.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_21.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_22.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_22.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_22.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_22.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_22.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_22.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_22.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_22.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_22.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_22.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_22.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_22.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_22": [
+      {
+        "file": "Matthew/1/Matthew_1_22.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.still.svg"
+      }
+    ],
+    "Matthew_1_22.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_22.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_22.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_23.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_23.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_23.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_23.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_23.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_23.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_23.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_23.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_23.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_23.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_23.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_23.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_23": [
+      {
+        "file": "Matthew/1/Matthew_1_23.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.still.svg"
+      }
+    ],
+    "Matthew_1_23.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_23.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_23.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_24.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_24.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_24.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_24.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_24.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_24.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_24.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_24.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_24.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_24.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_24.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_24.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_24": [
+      {
+        "file": "Matthew/1/Matthew_1_24.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.still.svg"
+      }
+    ],
+    "Matthew_1_24.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_24.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_24.YLT.still.svg"
+      }
+    ],
+    "Matthew_1_25.ASV": [
+      {
+        "file": "Matthew/1/Matthew_1_25.ASV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.ASV.still.svg"
+      }
+    ],
+    "Matthew_1_25.BSB": [
+      {
+        "file": "Matthew/1/Matthew_1_25.BSB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.BSB.still.svg"
+      }
+    ],
+    "Matthew_1_25.DARBY": [
+      {
+        "file": "Matthew/1/Matthew_1_25.DARBY.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.DARBY.still.svg"
+      }
+    ],
+    "Matthew_1_25.DRA": [
+      {
+        "file": "Matthew/1/Matthew_1_25.DRA.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.DRA.still.svg"
+      }
+    ],
+    "Matthew_1_25.KJV": [
+      {
+        "file": "Matthew/1/Matthew_1_25.KJV.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.KJV.still.svg"
+      }
+    ],
+    "Matthew_1_25.OEB": [
+      {
+        "file": "Matthew/1/Matthew_1_25.OEB.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.OEB.still.svg"
+      }
+    ],
+    "Matthew_1_25": [
+      {
+        "file": "Matthew/1/Matthew_1_25.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.still.svg"
+      }
+    ],
+    "Matthew_1_25.YLT": [
+      {
+        "file": "Matthew/1/Matthew_1_25.YLT.svg",
+        "kind": "genealogy",
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_25.YLT.still.svg"
       }
     ],
     "Matthew_1_3.ASV": [
@@ -12005,56 +12517,64 @@
       {
         "file": "Matthew/1/Matthew_1_6.ASV.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.ASV.still.svg"
       }
     ],
     "Matthew_1_6.BSB": [
       {
         "file": "Matthew/1/Matthew_1_6.BSB.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.BSB.still.svg"
       }
     ],
     "Matthew_1_6.DARBY": [
       {
         "file": "Matthew/1/Matthew_1_6.DARBY.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.DARBY.still.svg"
       }
     ],
     "Matthew_1_6.DRA": [
       {
         "file": "Matthew/1/Matthew_1_6.DRA.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.DRA.still.svg"
       }
     ],
     "Matthew_1_6.KJV": [
       {
         "file": "Matthew/1/Matthew_1_6.KJV.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.KJV.still.svg"
       }
     ],
     "Matthew_1_6.OEB": [
       {
         "file": "Matthew/1/Matthew_1_6.OEB.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.OEB.still.svg"
       }
     ],
     "Matthew_1_6": [
       {
         "file": "Matthew/1/Matthew_1_6.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.still.svg"
       }
     ],
     "Matthew_1_6.YLT": [
       {
         "file": "Matthew/1/Matthew_1_6.YLT.svg",
         "kind": "genealogy",
-        "animated": false
+        "animated": true,
+        "still": "Matthew/1/Matthew_1_6.YLT.still.svg"
       }
     ],
     "Matthew_1_7.ASV": [
