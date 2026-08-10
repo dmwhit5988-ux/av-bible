@@ -27,6 +27,10 @@ const els = {
   chkMotion: $("chk-motion"),
   rateSlider: $("rate-slider"),
   versePanel: $("verse-panel"),
+  btnIllustrated: $("btn-illustrated"),
+  illOverlay: $("illustrated-overlay"),
+  illClose: $("btn-illustrated-close"),
+  illList: $("illustrated-list"),
 };
 
 const STORE_KEY = "avbible.web.selection";
@@ -119,16 +123,28 @@ function populateTranslations() {
   ).join("");
 }
 
+// "✦" marks books/chapters that have visuals built (see
+// VisualStage.illustratedChapters). U+2726 has no emoji presentation, so
+// iOS keeps it monochrome — same reasoning as the ICON SVGs below, except
+// <option> text can't hold SVG, so a safe glyph is the only choice here.
+const ILL_MARK = "✦";
+
 function populateBooks() {
-  els.book.innerHTML = BOOKS.map(
-    ([name]) => `<option value="${name}">${name}</option>`
-  ).join("");
+  const lit = stage.illustratedChapters();
+  els.book.innerHTML = BOOKS.map(([name]) => {
+    const mark = lit.has(name) ? ` ${ILL_MARK}` : "";
+    return `<option value="${name}">${name}${mark}</option>`;
+  }).join("");
 }
 
 function populateChapters(book) {
   const n = chaptersIn(book);
+  const lit = stage.illustratedChapters().get(book);
   const opts = [];
-  for (let c = 1; c <= n; c++) opts.push(`<option value="${c}">${c}</option>`);
+  for (let c = 1; c <= n; c++) {
+    const mark = lit && lit.has(c) ? ` ${ILL_MARK}` : "";
+    opts.push(`<option value="${c}">${c}${mark}</option>`);
+  }
   els.chapter.innerHTML = opts.join("");
 }
 
@@ -428,6 +444,59 @@ els.verse.addEventListener("change", () => {
 });
 
 // ---------------------------------------------------------------------
+// Illustrated-chapters jump list: a panel listing every chapter that has
+// visuals built (per visuals/manifest.json), one tap-to-jump chip each.
+// Jumping renders the chapter's first verse immediately — the point is to
+// *see* the visuals — unlike the pickers, which leave the stage idle.
+// ---------------------------------------------------------------------
+
+function buildIllustratedList() {
+  const lit = stage.illustratedChapters();
+  const parts = [];
+  for (const [name] of BOOKS) {
+    const chapters = lit.get(name);
+    if (!chapters || chapters.size === 0) continue;
+    const chips = [...chapters]
+      .sort((a, b) => a - b)
+      .map(
+        (c) =>
+          `<button class="ill-chip" data-book="${name}" data-chapter="${c}">${c}</button>`
+      )
+      .join("");
+    parts.push(
+      `<div class="ill-book"><span class="ill-book-name">${name}</span><span class="ill-chips">${chips}</span></div>`
+    );
+  }
+  els.illList.innerHTML = parts.length
+    ? parts.join("")
+    : '<p class="ill-hint">No illustrated chapters yet.</p>';
+  els.illList.querySelectorAll(".ill-chip").forEach((chip) => {
+    chip.addEventListener("click", async () => {
+      els.book.value = chip.dataset.book;
+      populateChapters(chip.dataset.book);
+      els.chapter.value = chip.dataset.chapter;
+      closeIllustrated();
+      await loadChapter({ resetStage: false });
+      if (passage) renderVerse(0);
+    });
+  });
+}
+
+function openIllustrated() {
+  els.illOverlay.hidden = false;
+}
+
+function closeIllustrated() {
+  els.illOverlay.hidden = true;
+}
+
+els.btnIllustrated.addEventListener("click", openIllustrated);
+els.illClose.addEventListener("click", closeIllustrated);
+els.illOverlay.addEventListener("click", (e) => {
+  if (e.target === els.illOverlay) closeIllustrated(); // backdrop tap
+});
+
+// ---------------------------------------------------------------------
 // Fullscreen + stage gestures
 //
 // Where the Fullscreen API exists (desktop, Android) we use it for true
@@ -575,7 +644,11 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space") { e.preventDefault(); togglePlay(); }
   else if (e.code === "ArrowRight") player.next();
   else if (e.code === "ArrowLeft") player.prev();
-  else if (e.code === "Escape") { setFullscreen(false); autoEnteredFs = false; }
+  else if (e.code === "Escape") {
+    if (!els.illOverlay.hidden) { closeIllustrated(); return; }
+    setFullscreen(false);
+    autoEnteredFs = false;
+  }
 });
 
 updateFsButton();
@@ -586,8 +659,10 @@ updateFsButton();
 
 async function boot() {
   populateTranslations();
-  populateBooks();
   await Promise.all([stage.loadManifest(), loadAudioManifest()]);
+  // After the manifest, so book/chapter options carry their ✦ markers.
+  populateBooks();
+  buildIllustratedList();
 
   const saved = loadSelection();
   els.translation.value = saved.translation;

@@ -1,3 +1,5 @@
+import { BOOKS } from "./data.js";
+
 // Ports visual_stage.py's _find_image fallback chain using
 // visuals/manifest.json (built by build_manifest.py) instead of probing the
 // filesystem. Priority per location: verse -> chapter -> book -> default,
@@ -88,6 +90,7 @@ export class VisualStage {
   }
 
   async loadManifest() {
+    this._illustrated = null;
     try {
       // "no-cache" = always revalidate with the server (cheap 304 when
       // unchanged). Without it, browsers heuristically cache the manifest
@@ -105,6 +108,34 @@ export class VisualStage {
     } catch {
       this.manifest = {};
     }
+  }
+
+  // Map of book name (with spaces, as in BOOKS) -> Set of chapter numbers
+  // that have at least one chapter- or verse-level graphic. Book-level
+  // fallbacks and .txt/.rtf note panels don't count — a whole-book image or
+  // a stray note would otherwise light up chapters with nothing drawn for
+  // them. Only books with at least one qualifying chapter appear in the map.
+  illustratedChapters() {
+    if (this._illustrated) return this._illustrated;
+    const map = new Map();
+    if (this.manifest) {
+      const bookByKey = new Map(
+        BOOKS.map(([name]) => [name.replace(/ /g, "_"), name])
+      );
+      for (const [key, records] of Object.entries(this.manifest)) {
+        const base = key.split(".")[0]; // strip .KJV/.mobile suffixes
+        const m = /^(.+?)_(\d+)(?:_\d+)?$/.exec(base);
+        if (!m) continue;
+        const book = bookByKey.get(m[1]);
+        if (!book) continue;
+        if (!(records || []).some((r) => !TEXT_EXTS.includes(extOf(r.file))))
+          continue;
+        if (!map.has(book)) map.set(book, new Set());
+        map.get(book).add(Number(m[2]));
+      }
+    }
+    this._illustrated = map;
+    return map;
   }
 
   // ctx: {book, chapter, verse, translation}

@@ -35,6 +35,7 @@
     <label>Start at verse
       <select id="sel-verse"></select>
     </label>
+    <button id="btn-illustrated" title="Chapters marked &#x2726; have visuals — browse and jump to one">&#x2726; Illustrated</button>
   </div>
   <div class="attribution" id="attribution"></div>
 </header>
@@ -69,6 +70,17 @@ Choose a passage and press Play</div>
 </div>
 
 <div id="verse-panel"></div>
+
+<div id="illustrated-overlay" hidden>
+  <div id="illustrated-panel" role="dialog" aria-modal="true" aria-label="Illustrated chapters">
+    <div class="ill-head">
+      <span class="ill-title">&#x2726; Illustrated chapters</span>
+      <button id="btn-illustrated-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <p class="ill-hint">These chapters have visuals built for them. Tap one to jump there.</p>
+    <div id="illustrated-list"></div>
+  </div>
+</div>
 
 <script type="module" src="js/app.js"></script>
 </body>

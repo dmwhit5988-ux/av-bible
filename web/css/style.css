@@ -88,6 +88,104 @@ select {
   min-height: 40px;
 }
 
+/* Illustrated-chapters launcher: sits at the end of the picker row,
+   bottom-aligned with the selects (its ✦ echoes the dropdown markers). */
+#btn-illustrated {
+  align-self: flex-end;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* Illustrated-chapters jump panel (modal over everything, incl. the
+   fullscreen stage overlay at z-index 1000). */
+#illustrated-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#illustrated-overlay[hidden] { display: none; }
+
+#illustrated-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-width: 520px;
+  width: 100%;
+  max-height: min(80vh, 80dvh);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+}
+
+.ill-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ill-title {
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+#btn-illustrated-close {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 4px 10px;
+  font-size: 16px;
+}
+
+.ill-hint {
+  margin: 8px 0 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: #9a9aa8;
+}
+
+#illustrated-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ill-book {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ill-book-name {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--sand);
+}
+
+.ill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ill-chip {
+  min-height: 38px;
+  min-width: 44px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 7px;
+}
+
 .attribution {
   margin-top: 6px;
   font-size: 11px;
