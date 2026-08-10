@@ -14816,16 +14816,14 @@
       {
         "file": "Romans/1/Romans_1_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/1/Romans_1_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_1_19": [
       {
         "file": "Romans/1/Romans_1_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/1/Romans_1_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_1_2": [
@@ -14840,8 +14838,7 @@
       {
         "file": "Romans/1/Romans_1_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/1/Romans_1_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_1_21": [
@@ -14856,16 +14853,14 @@
       {
         "file": "Romans/1/Romans_1_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/1/Romans_1_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_1_23": [
       {
         "file": "Romans/1/Romans_1_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/1/Romans_1_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_1_24": [
@@ -15000,32 +14995,28 @@
       {
         "file": "Romans/10/Romans_10_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_10": [
       {
         "file": "Romans/10/Romans_10_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_11": [
       {
         "file": "Romans/10/Romans_10_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_12": [
       {
         "file": "Romans/10/Romans_10_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_13": [
@@ -15048,104 +15039,91 @@
       {
         "file": "Romans/10/Romans_10_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_16": [
       {
         "file": "Romans/10/Romans_10_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_17": [
       {
         "file": "Romans/10/Romans_10_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_18": [
       {
         "file": "Romans/10/Romans_10_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_19": [
       {
         "file": "Romans/10/Romans_10_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_2": [
       {
         "file": "Romans/10/Romans_10_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_20": [
       {
         "file": "Romans/10/Romans_10_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_21": [
       {
         "file": "Romans/10/Romans_10_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_3": [
       {
         "file": "Romans/10/Romans_10_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_4": [
       {
         "file": "Romans/10/Romans_10_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_5": [
       {
         "file": "Romans/10/Romans_10_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_6": [
       {
         "file": "Romans/10/Romans_10_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_7": [
       {
         "file": "Romans/10/Romans_10_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/10/Romans_10_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_10_8": [
@@ -15168,64 +15146,56 @@
       {
         "file": "Romans/11/Romans_11_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_10": [
       {
         "file": "Romans/11/Romans_11_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_11": [
       {
         "file": "Romans/11/Romans_11_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_12": [
       {
         "file": "Romans/11/Romans_11_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_13": [
       {
         "file": "Romans/11/Romans_11_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_14": [
       {
         "file": "Romans/11/Romans_11_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_15": [
       {
         "file": "Romans/11/Romans_11_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_16": [
       {
         "file": "Romans/11/Romans_11_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_17": [
@@ -15256,56 +15226,49 @@
       {
         "file": "Romans/11/Romans_11_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_20": [
       {
         "file": "Romans/11/Romans_11_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_21": [
       {
         "file": "Romans/11/Romans_11_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_22": [
       {
         "file": "Romans/11/Romans_11_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_23": [
       {
         "file": "Romans/11/Romans_11_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_24": [
       {
         "file": "Romans/11/Romans_11_24.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_24.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_25": [
       {
         "file": "Romans/11/Romans_11_25.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_25.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_26": [
@@ -15320,56 +15283,49 @@
       {
         "file": "Romans/11/Romans_11_27.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_27.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_28": [
       {
         "file": "Romans/11/Romans_11_28.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_28.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_29": [
       {
         "file": "Romans/11/Romans_11_29.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_29.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_3": [
       {
         "file": "Romans/11/Romans_11_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_30": [
       {
         "file": "Romans/11/Romans_11_30.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_30.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_31": [
       {
         "file": "Romans/11/Romans_11_31.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_31.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_32": [
       {
         "file": "Romans/11/Romans_11_32.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_32.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_33": [
@@ -15384,24 +15340,21 @@
       {
         "file": "Romans/11/Romans_11_34.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_34.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_35": [
       {
         "file": "Romans/11/Romans_11_35.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_35.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_36": [
       {
         "file": "Romans/11/Romans_11_36.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_36.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_4": [
@@ -15416,40 +15369,35 @@
       {
         "file": "Romans/11/Romans_11_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_6": [
       {
         "file": "Romans/11/Romans_11_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_7": [
       {
         "file": "Romans/11/Romans_11_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_8": [
       {
         "file": "Romans/11/Romans_11_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_11_9": [
       {
         "file": "Romans/11/Romans_11_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/11/Romans_11_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_1": [
@@ -15464,80 +15412,70 @@
       {
         "file": "Romans/12/Romans_12_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_11": [
       {
         "file": "Romans/12/Romans_12_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_12": [
       {
         "file": "Romans/12/Romans_12_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_13": [
       {
         "file": "Romans/12/Romans_12_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_14": [
       {
         "file": "Romans/12/Romans_12_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_15": [
       {
         "file": "Romans/12/Romans_12_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_16": [
       {
         "file": "Romans/12/Romans_12_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_17": [
       {
         "file": "Romans/12/Romans_12_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_18": [
       {
         "file": "Romans/12/Romans_12_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_19": [
       {
         "file": "Romans/12/Romans_12_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_2": [
@@ -15568,8 +15506,7 @@
       {
         "file": "Romans/12/Romans_12_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_4": [
@@ -15584,8 +15521,7 @@
       {
         "file": "Romans/12/Romans_12_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_12_6": [
@@ -15616,8 +15552,7 @@
       {
         "file": "Romans/12/Romans_12_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/12/Romans_12_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_1": [
@@ -15656,48 +15591,42 @@
       {
         "file": "Romans/13/Romans_13_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_14": [
       {
         "file": "Romans/13/Romans_13_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_2": [
       {
         "file": "Romans/13/Romans_13_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_3": [
       {
         "file": "Romans/13/Romans_13_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_4": [
       {
         "file": "Romans/13/Romans_13_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_5": [
       {
         "file": "Romans/13/Romans_13_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_6": [
@@ -15712,8 +15641,7 @@
       {
         "file": "Romans/13/Romans_13_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_13_8": [
@@ -15728,16 +15656,14 @@
       {
         "file": "Romans/13/Romans_13_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/13/Romans_13_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_1": [
       {
         "file": "Romans/14/Romans_14_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_10": [
@@ -15760,40 +15686,35 @@
       {
         "file": "Romans/14/Romans_14_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_13": [
       {
         "file": "Romans/14/Romans_14_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_14": [
       {
         "file": "Romans/14/Romans_14_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_15": [
       {
         "file": "Romans/14/Romans_14_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_16": [
       {
         "file": "Romans/14/Romans_14_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_17": [
@@ -15808,72 +15729,63 @@
       {
         "file": "Romans/14/Romans_14_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_19": [
       {
         "file": "Romans/14/Romans_14_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_2": [
       {
         "file": "Romans/14/Romans_14_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_20": [
       {
         "file": "Romans/14/Romans_14_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_21": [
       {
         "file": "Romans/14/Romans_14_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_22": [
       {
         "file": "Romans/14/Romans_14_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_23": [
       {
         "file": "Romans/14/Romans_14_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_3": [
       {
         "file": "Romans/14/Romans_14_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_4": [
       {
         "file": "Romans/14/Romans_14_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_5": [
@@ -15888,32 +15800,28 @@
       {
         "file": "Romans/14/Romans_14_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_7": [
       {
         "file": "Romans/14/Romans_14_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_8": [
       {
         "file": "Romans/14/Romans_14_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_14_9": [
       {
         "file": "Romans/14/Romans_14_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/14/Romans_14_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_1": [
@@ -15928,24 +15836,21 @@
       {
         "file": "Romans/15/Romans_15_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_11": [
       {
         "file": "Romans/15/Romans_15_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_12": [
       {
         "file": "Romans/15/Romans_15_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_13": [
@@ -15960,40 +15865,35 @@
       {
         "file": "Romans/15/Romans_15_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_15": [
       {
         "file": "Romans/15/Romans_15_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_16": [
       {
         "file": "Romans/15/Romans_15_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_17": [
       {
         "file": "Romans/15/Romans_15_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_18": [
       {
         "file": "Romans/15/Romans_15_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_19": [
@@ -16008,32 +15908,28 @@
       {
         "file": "Romans/15/Romans_15_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_20": [
       {
         "file": "Romans/15/Romans_15_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_21": [
       {
         "file": "Romans/15/Romans_15_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_22": [
       {
         "file": "Romans/15/Romans_15_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_23": [
@@ -16056,32 +15952,28 @@
       {
         "file": "Romans/15/Romans_15_25.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_25.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_26": [
       {
         "file": "Romans/15/Romans_15_26.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_26.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_27": [
       {
         "file": "Romans/15/Romans_15_27.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_27.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_28": [
       {
         "file": "Romans/15/Romans_15_28.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_28.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_29": [
@@ -16096,8 +15988,7 @@
       {
         "file": "Romans/15/Romans_15_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_30": [
@@ -16112,8 +16003,7 @@
       {
         "file": "Romans/15/Romans_15_31.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_31.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_32": [
@@ -16128,56 +16018,49 @@
       {
         "file": "Romans/15/Romans_15_33.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_33.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_4": [
       {
         "file": "Romans/15/Romans_15_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_5": [
       {
         "file": "Romans/15/Romans_15_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_6": [
       {
         "file": "Romans/15/Romans_15_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_7": [
       {
         "file": "Romans/15/Romans_15_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_8": [
       {
         "file": "Romans/15/Romans_15_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_15_9": [
       {
         "file": "Romans/15/Romans_15_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/15/Romans_15_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_1": [
@@ -16240,8 +16123,7 @@
       {
         "file": "Romans/16/Romans_16_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_17": [
@@ -16256,32 +16138,28 @@
       {
         "file": "Romans/16/Romans_16_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_19": [
       {
         "file": "Romans/16/Romans_16_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_2": [
       {
         "file": "Romans/16/Romans_16_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_20": [
       {
         "file": "Romans/16/Romans_16_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_21": [
@@ -16312,8 +16190,7 @@
       {
         "file": "Romans/16/Romans_16_24.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_24.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_25": [
@@ -16328,16 +16205,14 @@
       {
         "file": "Romans/16/Romans_16_26.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_26.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_27": [
       {
         "file": "Romans/16/Romans_16_27.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_27.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_3": [
@@ -16352,8 +16227,7 @@
       {
         "file": "Romans/16/Romans_16_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/16/Romans_16_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_16_5": [
@@ -16408,16 +16282,14 @@
       {
         "file": "Romans/2/Romans_2_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_11": [
       {
         "file": "Romans/2/Romans_2_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_12": [
@@ -16432,8 +16304,7 @@
       {
         "file": "Romans/2/Romans_2_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_14": [
@@ -16448,56 +16319,49 @@
       {
         "file": "Romans/2/Romans_2_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_16": [
       {
         "file": "Romans/2/Romans_2_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_17": [
       {
         "file": "Romans/2/Romans_2_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_18": [
       {
         "file": "Romans/2/Romans_2_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_19": [
       {
         "file": "Romans/2/Romans_2_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_2": [
       {
         "file": "Romans/2/Romans_2_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_20": [
       {
         "file": "Romans/2/Romans_2_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_21": [
@@ -16512,24 +16376,21 @@
       {
         "file": "Romans/2/Romans_2_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_23": [
       {
         "file": "Romans/2/Romans_2_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_24": [
       {
         "file": "Romans/2/Romans_2_24.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_24.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_25": [
@@ -16544,24 +16405,21 @@
       {
         "file": "Romans/2/Romans_2_26.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_26.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_27": [
       {
         "file": "Romans/2/Romans_2_27.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_27.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_28": [
       {
         "file": "Romans/2/Romans_2_28.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_28.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_29": [
@@ -16576,24 +16434,21 @@
       {
         "file": "Romans/2/Romans_2_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_4": [
       {
         "file": "Romans/2/Romans_2_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_5": [
       {
         "file": "Romans/2/Romans_2_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_6": [
@@ -16608,104 +16463,91 @@
       {
         "file": "Romans/2/Romans_2_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_8": [
       {
         "file": "Romans/2/Romans_2_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_2_9": [
       {
         "file": "Romans/2/Romans_2_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/2/Romans_2_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_1": [
       {
         "file": "Romans/3/Romans_3_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_10": [
       {
         "file": "Romans/3/Romans_3_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_11": [
       {
         "file": "Romans/3/Romans_3_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_12": [
       {
         "file": "Romans/3/Romans_3_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_13": [
       {
         "file": "Romans/3/Romans_3_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_14": [
       {
         "file": "Romans/3/Romans_3_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_15": [
       {
         "file": "Romans/3/Romans_3_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_16": [
       {
         "file": "Romans/3/Romans_3_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_17": [
       {
         "file": "Romans/3/Romans_3_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_18": [
       {
         "file": "Romans/3/Romans_3_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_19": [
@@ -16728,8 +16570,7 @@
       {
         "file": "Romans/3/Romans_3_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_21": [
@@ -16744,8 +16585,7 @@
       {
         "file": "Romans/3/Romans_3_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_23": [
@@ -16768,8 +16608,7 @@
       {
         "file": "Romans/3/Romans_3_25.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_25.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_26": [
@@ -16800,80 +16639,70 @@
       {
         "file": "Romans/3/Romans_3_29.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_29.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_3": [
       {
         "file": "Romans/3/Romans_3_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_30": [
       {
         "file": "Romans/3/Romans_3_30.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_30.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_31": [
       {
         "file": "Romans/3/Romans_3_31.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_31.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_4": [
       {
         "file": "Romans/3/Romans_3_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_5": [
       {
         "file": "Romans/3/Romans_3_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_6": [
       {
         "file": "Romans/3/Romans_3_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_7": [
       {
         "file": "Romans/3/Romans_3_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_8": [
       {
         "file": "Romans/3/Romans_3_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_3_9": [
       {
         "file": "Romans/3/Romans_3_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/3/Romans_3_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_4_1": [
@@ -17088,40 +16917,35 @@
       {
         "file": "Romans/5/Romans_5_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_11": [
       {
         "file": "Romans/5/Romans_5_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_12": [
       {
         "file": "Romans/5/Romans_5_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_13": [
       {
         "file": "Romans/5/Romans_5_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_14": [
       {
         "file": "Romans/5/Romans_5_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_15": [
@@ -17136,32 +16960,28 @@
       {
         "file": "Romans/5/Romans_5_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_17": [
       {
         "file": "Romans/5/Romans_5_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_18": [
       {
         "file": "Romans/5/Romans_5_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_19": [
       {
         "file": "Romans/5/Romans_5_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_2": [
@@ -17176,24 +16996,21 @@
       {
         "file": "Romans/5/Romans_5_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_21": [
       {
         "file": "Romans/5/Romans_5_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_3": [
       {
         "file": "Romans/5/Romans_5_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_4": [
@@ -17224,8 +17041,7 @@
       {
         "file": "Romans/5/Romans_5_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_5_8": [
@@ -17240,64 +17056,56 @@
       {
         "file": "Romans/5/Romans_5_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/5/Romans_5_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_1": [
       {
         "file": "Romans/6/Romans_6_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_10": [
       {
         "file": "Romans/6/Romans_6_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_11": [
       {
         "file": "Romans/6/Romans_6_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_12": [
       {
         "file": "Romans/6/Romans_6_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_13": [
       {
         "file": "Romans/6/Romans_6_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_14": [
       {
         "file": "Romans/6/Romans_6_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_15": [
       {
         "file": "Romans/6/Romans_6_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_16": [
@@ -17312,56 +17120,49 @@
       {
         "file": "Romans/6/Romans_6_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_18": [
       {
         "file": "Romans/6/Romans_6_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_19": [
       {
         "file": "Romans/6/Romans_6_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_2": [
       {
         "file": "Romans/6/Romans_6_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_20": [
       {
         "file": "Romans/6/Romans_6_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_21": [
       {
         "file": "Romans/6/Romans_6_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_22": [
       {
         "file": "Romans/6/Romans_6_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_23": [
@@ -17392,16 +17193,14 @@
       {
         "file": "Romans/6/Romans_6_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_6": [
       {
         "file": "Romans/6/Romans_6_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_7": [
@@ -17416,104 +17215,91 @@
       {
         "file": "Romans/6/Romans_6_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_6_9": [
       {
         "file": "Romans/6/Romans_6_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/6/Romans_6_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_1": [
       {
         "file": "Romans/7/Romans_7_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_10": [
       {
         "file": "Romans/7/Romans_7_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_11": [
       {
         "file": "Romans/7/Romans_7_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_12": [
       {
         "file": "Romans/7/Romans_7_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_13": [
       {
         "file": "Romans/7/Romans_7_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_14": [
       {
         "file": "Romans/7/Romans_7_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_15": [
       {
         "file": "Romans/7/Romans_7_15.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_15.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_16": [
       {
         "file": "Romans/7/Romans_7_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_17": [
       {
         "file": "Romans/7/Romans_7_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_18": [
       {
         "file": "Romans/7/Romans_7_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_19": [
       {
         "file": "Romans/7/Romans_7_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_2": [
@@ -17528,32 +17314,28 @@
       {
         "file": "Romans/7/Romans_7_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_21": [
       {
         "file": "Romans/7/Romans_7_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_22": [
       {
         "file": "Romans/7/Romans_7_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_23": [
       {
         "file": "Romans/7/Romans_7_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_24": [
@@ -17576,8 +17358,7 @@
       {
         "file": "Romans/7/Romans_7_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_4": [
@@ -17592,16 +17373,14 @@
       {
         "file": "Romans/7/Romans_7_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_6": [
       {
         "file": "Romans/7/Romans_7_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_7": [
@@ -17616,16 +17395,14 @@
       {
         "file": "Romans/7/Romans_7_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_7_9": [
       {
         "file": "Romans/7/Romans_7_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/7/Romans_7_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_1": [
@@ -17640,40 +17417,35 @@
       {
         "file": "Romans/8/Romans_8_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_11": [
       {
         "file": "Romans/8/Romans_8_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_12": [
       {
         "file": "Romans/8/Romans_8_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_13": [
       {
         "file": "Romans/8/Romans_8_13.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_13.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_14": [
       {
         "file": "Romans/8/Romans_8_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_15": [
@@ -17688,112 +17460,98 @@
       {
         "file": "Romans/8/Romans_8_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_17": [
       {
         "file": "Romans/8/Romans_8_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_18": [
       {
         "file": "Romans/8/Romans_8_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_19": [
       {
         "file": "Romans/8/Romans_8_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_2": [
       {
         "file": "Romans/8/Romans_8_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_20": [
       {
         "file": "Romans/8/Romans_8_20.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_20.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_21": [
       {
         "file": "Romans/8/Romans_8_21.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_21.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_22": [
       {
         "file": "Romans/8/Romans_8_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_23": [
       {
         "file": "Romans/8/Romans_8_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_24": [
       {
         "file": "Romans/8/Romans_8_24.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_24.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_25": [
       {
         "file": "Romans/8/Romans_8_25.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_25.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_26": [
       {
         "file": "Romans/8/Romans_8_26.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_26.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_27": [
       {
         "file": "Romans/8/Romans_8_27.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_27.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_28": [
       {
         "file": "Romans/8/Romans_8_28.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_28.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_29": [
@@ -17808,8 +17566,7 @@
       {
         "file": "Romans/8/Romans_8_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_30": [
@@ -17832,24 +17589,21 @@
       {
         "file": "Romans/8/Romans_8_32.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_32.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_33": [
       {
         "file": "Romans/8/Romans_8_33.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_33.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_34": [
       {
         "file": "Romans/8/Romans_8_34.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_34.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_35": [
@@ -17864,8 +17618,7 @@
       {
         "file": "Romans/8/Romans_8_36.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_36.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_37": [
@@ -17896,80 +17649,70 @@
       {
         "file": "Romans/8/Romans_8_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_5": [
       {
         "file": "Romans/8/Romans_8_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_6": [
       {
         "file": "Romans/8/Romans_8_6.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_6.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_7": [
       {
         "file": "Romans/8/Romans_8_7.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_7.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_8": [
       {
         "file": "Romans/8/Romans_8_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_8_9": [
       {
         "file": "Romans/8/Romans_8_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/8/Romans_8_9.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_1": [
       {
         "file": "Romans/9/Romans_9_1.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_1.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_10": [
       {
         "file": "Romans/9/Romans_9_10.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_10.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_11": [
       {
         "file": "Romans/9/Romans_9_11.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_11.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_12": [
       {
         "file": "Romans/9/Romans_9_12.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_12.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_13": [
@@ -17984,8 +17727,7 @@
       {
         "file": "Romans/9/Romans_9_14.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_14.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_15": [
@@ -18000,40 +17742,35 @@
       {
         "file": "Romans/9/Romans_9_16.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_16.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_17": [
       {
         "file": "Romans/9/Romans_9_17.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_17.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_18": [
       {
         "file": "Romans/9/Romans_9_18.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_18.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_19": [
       {
         "file": "Romans/9/Romans_9_19.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_19.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_2": [
       {
         "file": "Romans/9/Romans_9_2.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_2.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_20": [
@@ -18056,40 +17793,35 @@
       {
         "file": "Romans/9/Romans_9_22.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_22.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_23": [
       {
         "file": "Romans/9/Romans_9_23.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_23.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_24": [
       {
         "file": "Romans/9/Romans_9_24.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_24.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_25": [
       {
         "file": "Romans/9/Romans_9_25.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_25.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_26": [
       {
         "file": "Romans/9/Romans_9_26.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_26.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_27": [
@@ -18104,40 +17836,35 @@
       {
         "file": "Romans/9/Romans_9_28.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_28.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_29": [
       {
         "file": "Romans/9/Romans_9_29.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_29.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_3": [
       {
         "file": "Romans/9/Romans_9_3.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_3.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_30": [
       {
         "file": "Romans/9/Romans_9_30.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_30.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_31": [
       {
         "file": "Romans/9/Romans_9_31.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_31.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_32": [
@@ -18160,16 +17887,14 @@
       {
         "file": "Romans/9/Romans_9_4.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_4.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_5": [
       {
         "file": "Romans/9/Romans_9_5.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_5.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_6": [
@@ -18192,16 +17917,14 @@
       {
         "file": "Romans/9/Romans_9_8.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_8.still.svg"
+        "animated": false
       }
     ],
     "Romans_9_9": [
       {
         "file": "Romans/9/Romans_9_9.svg",
         "kind": "diagram",
-        "animated": true,
-        "still": "Romans/9/Romans_9_9.still.svg"
+        "animated": false
       }
     ],
     "CREDITS": [
