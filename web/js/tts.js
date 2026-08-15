@@ -13,6 +13,12 @@
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
+// iPadOS 13+ reports itself as "Macintosh", so the user-agent string alone
+// misses iPads entirely — a Mac with a touchscreen is the tell.
+const IS_IOS =
+  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
 export class Player {
   constructor({ onVerseChange, onStateChange, onEnd, onStart }) {
     this.synth = window.speechSynthesis;
@@ -219,15 +225,28 @@ export class Player {
     this._startKeepAlive();
   }
 
-  // Warm the next verse's mp3 through the media cache so a quick Next has it
-  // ready instead of stalling on the network. A detached element that is
-  // never played — some browsers treat preload as a hint and ignore it,
-  // which costs nothing.
+  // Warm the next verse's mp3 so a quick Next has it ready instead of
+  // stalling on the network.
+  //
+  // Everywhere but iOS this is a detached element that is never played — some
+  // browsers treat preload as a hint and ignore it, which costs nothing.
+  //
+  // On iOS that second media element is a liability: it is loaded from the
+  // "ended" handler of the previous verse rather than from a user gesture, so
+  // WebKit ignores the preload and warms nothing, while still poking the one
+  // audio session the playing element is using. That lands on every verse
+  // change and is the suspect for the click heard between clips on iPad. A
+  // plain fetch warms the same HTTP cache entry the media load will hit,
+  // without a second element going anywhere near the audio session.
   _prefetchNext() {
     const url = this.resolveAudio ? this.resolveAudio(this.index + 1) : null;
     if (!url || url === this._prefetchedUrl) return;
     this._prefetchedUrl = url;
     try {
+      if (IS_IOS) {
+        fetch(url, { cache: "force-cache" }).catch(() => {});
+        return;
+      }
       const el = this._prefetchEl || (this._prefetchEl = new Audio());
       el.preload = "auto";
       el.src = url;
