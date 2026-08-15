@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The family tree of 1 &amp; 2 Chronicles</title>
+<style>
+  html,body{margin:0;height:100%;background:#0d0d14;color:#d8c68f;
+            font-family:Georgia,'Times New Roman',serif;overflow:hidden}
+  #stage{position:absolute;inset:0;cursor:grab;touch-action:none}
+  #stage.drag{cursor:grabbing}
+  #stage svg{position:absolute;top:0;left:0;transform-origin:0 0}
+  #bar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;
+       gap:10px;align-items:center;padding:10px 14px;
+       background:linear-gradient(#0d0d14ee,#0d0d1400)}
+  input,button{font:14px Georgia,serif;background:#16161f;color:#d8c68f;
+       border:1px solid #4a4658;border-radius:6px;padding:6px 10px}
+  button{cursor:pointer}
+  #hits{font-size:13px;color:#8a8270;font-style:italic}
+  .found rect:first-of-type{stroke:#fff4aa!important;stroke-width:3.5!important}
+</style>
+<div id="bar">
+  <input id="q" placeholder="find a name — Zerubbabel, Heman, Achsah…" size="34">
+  <button id="prev">&#8593;</button><button id="next">&#8595;</button>
+  <span id="hits"></span>
+  <button id="fit">fit</button><button id="in">+</button><button id="out">&minus;</button>
+</div>
+<div id="stage"></div>
+<script>
+const stage=document.getElementById('stage');
+fetch('1-2_Chronicles_family_tree.svg').then(r=>r.text()).then(t=>{stage.innerHTML=t;init()});
+let k=1,tx=0,ty=0,svg,groups=[],at=-1;
+function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`}
+function fit(){const w=19777,h=13754;k=Math.min(innerWidth/w,innerHeight/h);
+  tx=(innerWidth-w*k)/2;ty=(innerHeight-h*k)/2;apply()}
+function init(){svg=stage.querySelector('svg');
+  svg.removeAttribute('width');svg.removeAttribute('height');
+  svg.setAttribute('width',19777);svg.setAttribute('height',13754);
+  groups=[...svg.querySelectorAll('text')];fit()}
+stage.addEventListener('wheel',e=>{e.preventDefault();
+  const f=Math.exp(-e.deltaY*0.0015),nk=Math.min(8,Math.max(0.01,k*f));
+  tx=e.clientX-(e.clientX-tx)*(nk/k);ty=e.clientY-(e.clientY-ty)*(nk/k);
+  k=nk;apply()},{passive:false});
+let px,py,down=false;
+stage.addEventListener('pointerdown',e=>{down=true;px=e.clientX;py=e.clientY;
+  stage.classList.add('drag');stage.setPointerCapture(e.pointerId)});
+stage.addEventListener('pointermove',e=>{if(!down)return;
+  tx+=e.clientX-px;ty+=e.clientY-py;px=e.clientX;py=e.clientY;apply()});
+addEventListener('pointerup',()=>{down=false;stage.classList.remove('drag')});
+document.getElementById('fit').onclick=fit;
+document.getElementById('in').onclick=()=>{k*=1.3;apply()};
+document.getElementById('out').onclick=()=>{k/=1.3;apply()};
+let matches=[];
+function search(){const s=document.getElementById('q').value.trim().toLowerCase();
+  matches=s?groups.filter(t=>t.textContent.toLowerCase().includes(s)):[];
+  document.getElementById('hits').textContent=s?`${matches.length} found`:'';
+  at=-1;if(matches.length)go(0)}
+function go(i){at=(i+matches.length)%matches.length;const t=matches[at];
+  const b=t.getBoundingClientRect();
+  tx-=b.left+b.width/2-innerWidth/2;ty-=b.top+b.height/2-innerHeight/2;apply();
+  t.style.fill='#fff4aa';setTimeout(()=>t.style.fill='',2200);
+  document.getElementById('hits').textContent=`${at+1} / ${matches.length}`}
+document.getElementById('q').addEventListener('input',search);
+document.getElementById('next').onclick=()=>matches.length&&go(at+1);
+document.getElementById('prev').onclick=()=>matches.length&&go(at-1);
+</script>
