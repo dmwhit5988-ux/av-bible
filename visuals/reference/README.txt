@@ -37,3 +37,27 @@ Reading it:
 
 To rebuild:  python generate_ot_family_tree_svg.py
 To audit the tree without drawing it:  python chronicles_tree.py
+
+
+Old_Testament_family_tree_V6_heir_spine.svg   (EXPERIMENT, 2026-08-20)
+---------------------------------------------------------------------
+The same tree under an alternative layout, kept as evidence for a question
+that was asked and answered: now that this sheet is also the world for two
+per-verse camera readings (1 Chronicles 1-9 and Matthew 1), is the wall-chart
+layout the wrong shape for it?
+
+V6 places the HEIR — the child carrying the biggest descent — directly under
+its parent, with the other children beside it, instead of centring a parent
+over the whole span of its descendants. A line of descent therefore comes out
+as a straight vertical column, and the sheet is a fifth smaller in both
+directions (21,162 x 13,759 against 26,486 x 15,464).
+
+It is NOT the live layout, and on the measurement that prompted it, it is a
+wash: 296 of 334 named verses of 1 Chronicles fit at reading scale against
+the current layout's 297. It does cut total camera panning across the whole
+reading by 22%. It costs BIRTH ORDER — Israel's sons come out Judah first —
+which is why it was not adopted.
+
+Rebuild it with  _scratch/layout_lab.py  (which also holds the measurements,
+the other four variants tried, and why the remaining wide shots are
+geometric rather than a tuning problem).
