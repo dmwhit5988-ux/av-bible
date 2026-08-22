@@ -68,6 +68,11 @@ export class Player {
   // Must be called synchronously inside a user-gesture handler (tap) so iOS
   // Safari grants both speech and audio-element playback before any real
   // clip is queued.
+  //
+  // The primer utterance is deliberately never stored in `_utter`: that is
+  // how _haltPlayback() tells it apart from a real verse and leaves it alone
+  // when the clip about to start is an mp3 — see the note there. It is a
+  // volume-0 space; left alone it completes in milliseconds.
   unlock() {
     if (this._unlocked) return;
     this._unlocked = true;
@@ -153,14 +158,27 @@ export class Player {
   // play() promise — both of which used to arrive *after* the next verse had
   // started and were mistaken for that verse failing, which is how Web
   // Speech ended up reading over the top of a neural mp3 during fast skips.
-  _haltPlayback() {
+  //
+  // `cancelSpeech: false` says "the clip replacing this one is an mp3, so
+  // leave the synth queue alone unless we actually put something in it".
+  // An unconditional cancel() also killed unlock()'s primer, which on the
+  // very first tap is still queued a millisecond later — and on iOS, where
+  // the synth and the <audio> element share one AVAudioSession, WebKit's
+  // teardown of a cancelled utterance lands asynchronously a few hundred ms
+  // after the tap, on top of the mp3 that has just started. That is the
+  // "plays for a fraction of a second, then stops, but only on the first
+  // Play" bug; the second tap was fine because unlock() had already latched.
+  // Every utterance the player itself queues sets `_utter`, so this can
+  // never suppress a cancel the fast-skip fix above depends on.
+  _haltPlayback({ cancelSpeech = true } = {}) {
     this._gen++;
+    const hadUtterance = Boolean(this._utter);
     if (this._utter) {
       this._utter.onend = null;
       this._utter.onerror = null;
       this._utter = null;
     }
-    this.synth.cancel();
+    if (cancelSpeech || hadUtterance) this.synth.cancel();
     this.audioEl.pause();
   }
 
@@ -182,8 +200,11 @@ export class Player {
   }
 
   _playCurrent() {
-    this._haltPlayback();
     const url = this.resolveAudio ? this.resolveAudio(this.index) : null;
+    // Resolve the next clip *before* tearing the old one down, so the
+    // teardown knows whether it is handing over to the synth or to the mp3
+    // element and can leave the other one's audio session untouched.
+    this._haltPlayback({ cancelSpeech: !url });
     this.onVerseChange(this.index);
     if (url) {
       this.backend = "audio";
