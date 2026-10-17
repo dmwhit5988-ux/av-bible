@@ -1,4 +1,4 @@
-"""The Old Testament family tree, laid on a year scale. See TIMELINE.md.
+"""The Old Testament family tree, laid on a year scale. See docs/design/ot-timeline.md.
 
 Same tree as `generate_ot_family_tree_svg.py` — the Chronicles spine with
 every Old Testament join grafted on, and Matthew's tail past Zerubbabel —

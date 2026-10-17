@@ -1,4 +1,4 @@
-"""The chronology layer: years for the family tree. See TIMELINE.md.
+"""The chronology layer: years for the family tree. See docs/design/ot-timeline.md.
 
 The tree that `chronicles_tree` and `ot_grafts` weld together is structural —
 it knows who begat whom, and nothing about when. This module knows when,
@@ -34,7 +34,7 @@ from collections import namedtuple
 from chronicles_tree import walk
 
 # ---------------------------------------------------------------------------
-# The switches — see TIMELINE.md §3.2. Each moves everything upstream of it.
+# The switches — see docs/design/ot-timeline.md §3.2. Each moves everything upstream of it.
 # ---------------------------------------------------------------------------
 
 CREATION_BC = 4004        # Ussher.  bc = CREATION_BC - am
