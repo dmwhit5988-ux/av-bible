@@ -26,7 +26,7 @@
 Every book in the AV canon with **three chapters or fewer**: 13 books, 28 chapters.
 Six in the Old Testament, seven in the New.
 
-These are the books the catalog (`INFOGRAPHIC_CANDIDATES.md`) mostly waves off with a
+These are the books the catalog (`docs/content-catalog.md`) mostly waves off with a
 one-line "low density" note. That verdict was made looking for *maps and timelines*.
 Read instead for **contrast pairs, ordered sequences, ledgers, and thresholds**, and
 most of them turn out to be well-suited — several are stronger per-chapter subjects
@@ -37,7 +37,7 @@ Design rules assumed throughout (per the house style): the verse is being narrat
 so **no caption lines and no prose on the graphic** — names, numbers and labelled
 drawings only. One world per chapter, revealed by a per-verse camera.
 
-Type icons follow `INFOGRAPHIC_CANDIDATES.md`:
+Type icons follow `docs/content-catalog.md`:
 🗺️ map · ⏳ timeline · 🌳 genealogy · 🏛️ architectural · 🔄 process/cycle ·
 📊 comparison · 🔢 numeric · 💡 symbolic
 

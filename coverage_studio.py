@@ -12,7 +12,7 @@ chapter:
   Names       likely proper nouns not yet in pronunciations.json — an
               unreviewed-pronunciation count (pronunciation.scan_proper_nouns
               over the local WEB text)
-  Candidate   this chapter's entry in INFOGRAPHIC_CANDIDATES.md (priority +
+  Candidate   this chapter's entry in docs/content-catalog.md (priority +
               types), so the gap list doubles as the what-to-build-next list
 
 Everything is computed from local files in a background thread; no network.
@@ -37,7 +37,7 @@ from passages import PassageError, TRANSLATION, load_chapter
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 VISUALS_MANIFEST = os.path.join(REPO_ROOT, "visuals", "manifest.json")
 AUDIO_MANIFEST = os.path.join(REPO_ROOT, "web", "audio", "manifest.json")
-CANDIDATES_MD = os.path.join(REPO_ROOT, "INFOGRAPHIC_CANDIDATES.md")
+CANDIDATES_MD = os.path.join(REPO_ROOT, "docs", "content-catalog.md")
 
 _VERSE_KEY_RE = re.compile(r"^(.+?)_(\d+)_(\d+)$")
 # Chapter tokens inside a candidate label (book name already stripped):
@@ -51,7 +51,7 @@ FILTERS = ["All chapters", "Has content", "Candidate gaps (no visuals)",
 
 
 # ---------------------------------------------------------------------------
-# INFOGRAPHIC_CANDIDATES.md parsing
+# docs/content-catalog.md parsing
 # ---------------------------------------------------------------------------
 
 def _parse_candidates():

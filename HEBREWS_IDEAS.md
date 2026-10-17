@@ -288,7 +288,7 @@ Camera at the top of the column.
 - **vv. 16–18** — two hands offered, one taken (*not to angels, but to the
   offspring of Abraham*). HIGH PRIEST enters the book as an object — the
   garment and breastplate, drawn from **`svg_priest.py`**, which Exodus 28
-  built (see `INFOGRAPHIC_CANDIDATES.md`). The vested figure, the ephod, the
+  built (see `docs/content-catalog.md`). The vested figure, the ephod, the
   twelve-stone breastplate and the plate on the forehead are all reuse; what
   Hebrews adds is drawing them in the shadow key of §2.
 
