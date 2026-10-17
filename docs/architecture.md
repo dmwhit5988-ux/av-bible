@@ -1,6 +1,6 @@
 # Architecture
 
-Theoria is a static website: the World English Bible (WEB) read aloud, with an animated SVG picture for each verse. Its content (the text, the pictures, the narration and their manifests) is made ahead of time on the PC by Python, mostly from Theoria Studio ([studio.md](studio.md)). The web app in `web/` is hand-written static HTML, JS and CSS, with no build step. Verses with no neural MP3 are read by the browser's own Web Speech. Publishing commits the content and pushes it to GitHub; the web app's code is committed by hand ([Deploy](#deploy)). Cloudflare then deploys the site as static assets of the `av-bible` Worker.<!-- live URL: fill in -->
+Theoria is a static website: the World English Bible (WEB) read aloud, with an animated SVG picture for each verse. Its content (the text, the pictures, the narration and their manifests) is made ahead of time on the PC by Python, mostly from Theoria Studio ([studio.md](studio.md)). The web app in `web/` is hand-written static HTML, JS and CSS, with no build step. Verses with no neural MP3 are read by the browser's own Web Speech. Publishing commits the content and pushes it to GitHub; the web app's code is committed by hand ([Deploy](#deploy)). Cloudflare then deploys the site as static assets of the `av-bible` Worker, served at <https://theoria-bible.net/>.
 
 ```
 bibles/eng-web.usfx.xml --import_translation.py--> bibles/WEB/<Book>_<ch>.json
