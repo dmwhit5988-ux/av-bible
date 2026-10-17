@@ -1,5 +1,7 @@
 # Theoria cleanup & roadmap
 
+> **Archived 2026-10-17, after WS6.** The cleanup is done: Step 0 and WS1–WS7 landed (see each workstream's status). The forward plan is now [ROADMAP.md](../../ROADMAP.md), which also carries the two optional items left here, WS4f (serve `web/` directly) and WS4g (history slim). The text below is kept as written, so its paths and line numbers describe the repo before the cleanup.
+
 *This is a plan; nothing in the repo has been changed. All 16 decisions were answered on 2026-10-16 (§2), and the workstreams reflect those answers. Line numbers come from the working tree on 2026-10-06. Many files have large uncommitted diffs, so the numbers will drift after Step 0; search for the symbol named next to each number rather than relying on the number.*
 
 *Shells: blocks marked **(Git Bash)** use `grep`, `xargs`, `cut`, `wc` or `{a,b}` brace expansion and only work in Git Bash. Blocks marked **(PowerShell)** use `.ps1` scripts, `C:\…` paths or `.venv\Scripts\python.exe`. Plain `git` commands with no pipe work in either.*
@@ -856,6 +858,18 @@ Expect about 147 MiB. All SHAs change, and any other clone must re-clone.
 - [ ] Force the SVG preview's browser fallback, close the main window, reopen: `svg_preview_host` is still `browser`.
 
 ### WS6 — Docs cleanup
+
+> **Status (2026-10-17): done, committed locally as `3601be4e`…`824d2f66`, with this plan archived after them.**
+> - **Moves:** 15 docs moved into `docs/`, one `git mv` per commit with its pointers. `STUDIO_COMMANDS.md` and `visuals/README.txt` were deleted. The Matthew 1 alternates were split into `docs/archive/`. The three `visuals/*.txt` files left the deploy bundle (5,805 → 5,802 files). `mockups/luke3` and `mockups/matthew1` went to `C:\Dev\Theoria-archive\mockups\`.
+> - **New:** a rewritten README, ROADMAP.md, CLAUDE.md, CREDITS.md, `docs/architecture.md`, `docs/studio.md`, `docs/visuals.md`, `docs/pronunciation.md` and `docs/archive/README.md`.
+> - **Checks:**
+>   - Coverage went from 520 to 719 candidate chapters, from 447 to 646 gaps and from 213 to 254 High gaps, with none lost. Haggai 1–2, 2 and 3 John, John 2–11 and John 6–15 are present as High.
+>   - The one High demotion is the built Acts 18. The Third Journey is now `Acts 19–21`, so Coverage counts it as still to build.
+>   - The old-doc `git grep` shows only pointers into `docs/archive`.
+>   - Every relative link resolves, and `deploy_bundle/visuals` holds 0 `.txt` files.
+>   - The 33 tests pass. The `.py` edits are comments and docstrings only (`ast.dump` is identical).
+> - **Also:** the memory notes are refreshed.
+> - **Open:** the live workers.dev URL isn't recorded anywhere. README.md carries a `<!-- live URL: fill in -->` marker.
 
 **Goal.** Every doc is current or archived. The forward plan lives in one place, and generated reports stop pretending to be docs.
 
