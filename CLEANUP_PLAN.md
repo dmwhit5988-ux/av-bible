@@ -756,6 +756,22 @@ Expect about 147 MiB. All SHAs change, and any other clone must re-clone.
 
 ### WS5 — PC app → Studio shell cleanup
 
+> **Status (2026-10-17): done, committed locally as `33c6e132`; push pending your go-ahead.** Every checklist item landed, plus `app.ico` deleted.
+> - **Review:** 2 reviewers, then a fix round (15 fixes) and a re-check.
+> - **Checks:** the real window, checked at 900 px as `run.bat` starts it, fits both bars. 33 tests pass.
+> - **Beyond the plan:**
+>   - a user passage move stops playback, and verses are clamped to real ones;
+>   - Prev/Next while stopped step verses, and ◀ ▶ step chapters;
+>   - worker-thread errors are logged;
+>   - Audio/Video renders finish their current verse on close;
+>   - Publish refuses to close mid-push;
+>   - Audio/Video keep a hand-built range when it already contains the passage;
+>   - SVG Studio follows quietly, without narrating;
+>   - Coverage Rescan (broken before) works.
+> - **Known, accepted:**
+>   - Pronunciation saves and the audio manifest lock only within one process. Two processes saving within milliseconds could still lose one edit.
+>   - The meter can read one file low right after closing Audio mid-render.
+
 **Goal.** The main window stops being a reader with bolted-on buttons. Every studio-wide hazard found in the audit is fixed. This is Studio phase 1 (§5).
 
 **Final PC control set (D1/D2)**
