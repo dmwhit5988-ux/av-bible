@@ -47,5 +47,5 @@ export function prevChapter(book, chapter) {
 
 export const DEFAULTS = {
   book: "Genesis",
-  chapter: 5,
+  chapter: 1,
 };

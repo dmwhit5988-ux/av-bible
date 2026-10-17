@@ -1,6 +1,6 @@
 // Fetches chapter JSON from bibles/WEB/<Book>_<ch>.json — the on-disk shape
 // import_translation.py writes and passages.py reads (book, chapter,
-// canonical, verses:[[num,text],...], notes:[[...],...]).
+// canonical, verses:[[num,text],...]; the files' notes field is unused).
 
 const BASE = "/bibles/WEB";
 

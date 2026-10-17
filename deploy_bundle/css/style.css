@@ -33,11 +33,19 @@ header {
   background: var(--panel);
 }
 
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
 .brand {
   display: flex;
   align-items: baseline;
   gap: 9px;
-  margin-bottom: 8px;
+  min-width: 0;
 }
 
 .brand-icon {
@@ -59,6 +67,12 @@ header {
   font-size: 9px;
   letter-spacing: 2.5px;
   color: #8a8aa0;
+  white-space: nowrap;
+}
+
+/* On the narrowest phones the tagline would crowd the ✦ launcher. */
+@media (max-width: 400px) {
+  .brand-tag { display: none; }
 }
 
 .pickers {
@@ -73,13 +87,15 @@ header {
   font-size: 11px;
   color: #9a9aa8;
   gap: 3px;
-  flex: 1 1 auto;
-  min-width: 90px;
+  flex: 1 1 0;
+  min-width: 72px;
 }
+
+.pickers label.pick-book { flex-grow: 2; }
 
 select {
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   padding: 8px 6px;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -88,10 +104,10 @@ select {
   min-height: 40px;
 }
 
-/* Illustrated-chapters launcher: sits at the end of the picker row,
-   bottom-aligned with the selects (its ✦ echoes the dropdown markers). */
+/* Illustrated-chapters launcher: right end of the brand row (its ✦ echoes
+   the dropdown markers). */
 #btn-illustrated {
-  align-self: flex-end;
+  flex: none;
   min-height: 40px;
   padding: 8px 12px;
   font-size: 13px;
@@ -187,11 +203,14 @@ select {
 }
 
 .attribution {
-  margin-top: 6px;
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
   font-size: 11px;
   font-style: italic;
   color: #8a8aa0;
   line-height: 1.4;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
 }
 
 #stage-wrap {
@@ -221,11 +240,10 @@ select {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: none;
 }
 
-#stage-img.diagram { object-fit: contain; }
 #stage-img.visible { display: block; }
 
 /* Inline icons (play/pause/fullscreen). Monochrome SVG rather than Unicode
@@ -249,29 +267,42 @@ select {
 #btn-stage-play .ic { width: 40px; height: 40px; }
 #btn-fullscreen .ic { width: 22px; height: 22px; vertical-align: 0; }
 
-/* Text visuals (.txt/.rtf files in visuals/) — rendered like the notes
-   box, but centered on the stage over the book gradient. */
-#stage-text {
+/* A verse with nothing drawn for it: the reference over the book gradient,
+   and a quiet way into the illustrated chapters (see showNotIllustrated). */
+#stage-empty {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: calc(100% - 60px);
-  max-height: calc(100% - 80px);
-  overflow: hidden;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 40px 12%;
   text-align: center;
-  background: rgba(0, 0, 0, 0.55);
-  padding: 14px 22px;
-  border-radius: 8px;
-  font-style: italic;
-  color: var(--sand);
-  font-size: clamp(13px, 3vw, 20px);
-  white-space: pre-wrap;
-  pointer-events: none;
-  display: none;
 }
 
-#stage-text.visible { display: block; }
+#stage-empty[hidden] { display: none; }
+
+#empty-ref {
+  font-size: clamp(18px, 5vw, 30px);
+  letter-spacing: 1px;
+  color: var(--sand);
+}
+
+#empty-line {
+  font-size: clamp(12px, 3vw, 15px);
+  font-style: italic;
+  color: #9a9aa8;
+}
+
+#btn-empty-ill {
+  margin-top: 4px;
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--gold);
+  background: rgba(0, 0, 0, 0.35);
+}
 
 #idle-message {
   position: absolute;
@@ -286,24 +317,6 @@ select {
   white-space: pre-line;
   font-size: clamp(14px, 4vw, 22px);
 }
-
-#notes-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: calc(100% - 60px);
-  text-align: center;
-  background: rgba(0, 0, 0, 0.55);
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-style: italic;
-  pointer-events: none;
-  bottom: 20%;
-  color: var(--sand);
-  font-size: clamp(11px, 2.4vw, 16px);
-}
-
-#notes-box:empty { display: none; }
 
 /* Fullscreen: the Fullscreen API is used where available; this fixed
    overlay is both the iOS Safari fallback (no requestFullscreen on
@@ -407,26 +420,29 @@ button.primary {
 
 #verse-progress {
   flex: 1;
+  min-width: 0;
   text-align: center;
   font-size: 13px;
   color: #9a9aa8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.toggles {
-  display: flex;
-  gap: 14px;
-  padding: 8px 12px;
-  font-size: 12px;
-  color: #9a9aa8;
-  background: var(--panel);
+/* Phones: the transport shrinks to its icons (each button keeps its
+   aria-label) so the progress line, e.g. "Song of Solomon 8:14 · 14/14",
+   fits on one line beside it. */
+@media (max-width: 480px) {
+  #controls { gap: 8px; }
+  .nav-label, #btn-play .btn-label { display: none; }
+  #btn-prev, #btn-next { min-width: 46px; padding: 10px 12px; }
+  #btn-play.primary { min-width: 56px; }
 }
-
-.toggles label { display: flex; align-items: center; gap: 5px; }
 
 #verse-panel {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 10px 14px calc(40px + env(safe-area-inset-bottom));
+  padding: 10px 14px 24px;
   max-height: 30vh;
 }
 
@@ -454,5 +470,5 @@ button.primary {
 
 @media (min-width: 700px) {
   #stage-wrap { min-height: 55vh; }
-  header, #controls, .toggles, #verse-panel { padding-left: 24px; padding-right: 24px; }
+  header, #controls, #verse-panel, .attribution { padding-left: 24px; padding-right: 24px; }
 }

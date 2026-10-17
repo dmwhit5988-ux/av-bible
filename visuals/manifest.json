@@ -17010,27 +17010,6 @@
         "animated": true,
         "still": "Zephaniah/3/Zephaniah_3_9.still.svg"
       }
-    ],
-    "CREDITS": [
-      {
-        "file": "CREDITS.txt",
-        "kind": "note",
-        "animated": false
-      }
-    ],
-    "default": [
-      {
-        "file": "default.txt",
-        "kind": "note",
-        "animated": false
-      }
-    ],
-    "README": [
-      {
-        "file": "README.txt",
-        "kind": "note",
-        "animated": false
-      }
     ]
   }
 }

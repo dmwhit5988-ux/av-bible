@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Scan visuals/ and generate manifest.json — schema v2.
 
-v2 keeps v1's keys (exact file stems: "Genesis_5_3", "Genesis_5_3.mobile",
-"default") but each entry is a list of per-file records instead of bare
-paths, so the web app can filter/present by metadata without re-deriving it:
+v2 keeps v1's keys (exact file stems: "Genesis_5_3" for a verse, or
+"Genesis_5" for a whole-chapter graphic) but each entry is a list of per-file
+records instead of bare paths, so readers can filter/present by metadata
+without re-deriving it:
 
     {
       "version": 2,
@@ -23,16 +24,17 @@ Record fields:
             1. data-kind="…" on the SVG root element (hand-author override,
                travels inside the file itself)
             2. the owning generator family's "kind" (svg_generators.json)
-            3. extension default: png/jpg -> photo, txt/rtf -> note,
-               everything else -> infographic
+            3. extension default: png/jpg -> photo, everything else ->
+               infographic
   animated  SMIL sniff for .svg; gif/webp are the animated raster formats
             and count as true; static formats false
   still     present only when a <stem>.still.svg reduced-motion twin exists
             (built by build_stills.py). Still files are attached here, never
             indexed as entries of their own.
 
-Only web/js/visuals.js consumes this file; the desktop app probes the
-filesystem directly (visual_stage.py).
+Read by web/js/visuals.js (verse key, then chapter key), coverage_studio.py
+and svg_studio.py; the desktop stage probes the filesystem directly
+(visual_stage.py).
 
 WEB is the only translation, so visual files carry no translation suffix. A
 suffixed name (Genesis_5_3.KJV.svg) is a leftover that nothing serves;
@@ -50,15 +52,14 @@ from svg_freeze import svg_is_animated
 VISUALS_DIR = Path("visuals")
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
-# Extensions supported: vector diagrams (.svg), raster images, plus text
-# files (.txt/.rtf), which the app renders as an on-stage text panel.
-IMAGE_EXTS = {".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg", ".txt", ".rtf"}
+# Extensions indexed: vector diagrams (.svg) and raster images. Text files
+# (README, CREDITS) are documentation, not visuals.
+IMAGE_EXTS = {".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg"}
 
 STILL_SUFFIX = ".still"
 
 _KIND_BY_EXT = {
     ".png": "photo", ".jpg": "photo", ".jpeg": "photo",
-    ".txt": "note", ".rtf": "note",
 }
 _DEFAULT_KIND = "infographic"
 
@@ -73,10 +74,10 @@ _TRANSLATION_SUFFIX_RE = re.compile(
 
 
 def _book_chapter_verse(stem: str) -> tuple[str, int, int | None] | None:
-    """(book, chapter, verse) parsed from a verse-key stem (.mobile suffix
-    already stripped), or None for non-verse keys ("default"). The verse is
-    None for a chapter-level key ("Genesis_1"); it matters because a chapter
-    can be split between two generator families (Genesis 11)."""
+    """(book, chapter, verse) parsed from a verse-key stem, or None for a
+    stem that isn't one. The verse is None for a chapter-level key
+    ("Genesis_1"); it matters because a chapter can be split between two
+    generator families (Genesis 11)."""
     m = _KEY_RE.match(stem)
     if not m:
         return None
@@ -137,7 +138,7 @@ def _scan_files():
                     rel = f.relative_to(VISUALS_DIR).as_posix()
                     seen.add(rel)
                     yield f, rel, f.stem
-    # Flat layout: visuals/<Book>_<ch>[_<v>].ext and visuals/default.*
+    # Flat layout: visuals/<Book>_<ch>[_<v>].ext
     for f in VISUALS_DIR.glob("*"):
         if f.is_file() and f.suffix.lower() in IMAGE_EXTS:
             rel = f.name
@@ -165,9 +166,9 @@ def build_manifest():
             base_rel = rel_path[: -len(STILL_SUFFIX + ".svg")] + ".svg"
             stills[base_rel] = rel_path
             continue
-        # Key by the exact stem: "Genesis_5_3", or "Genesis_5_3.mobile" for a
-        # phone cut. Do NOT also add suffixed files under the plain key — that
-        # would make the plain lookup randomly pick up the phone file.
+        # Key by the exact stem ("Genesis_5_3"). Never also file a suffixed
+        # name under the plain key: the plain lookup would then pick up
+        # whichever file sorts first.
         entries[stem].append(_classify(path, rel_path, stem))
 
     for records in entries.values():
