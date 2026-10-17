@@ -8,7 +8,8 @@ route "edit this verse" to the generator that owns it.
 - every published verse SVG under visuals/<Book>/<ch>/ has an owner. This
   is the check that would have caught 2 Peter and Zephaniah shipping with no
   family at all;
-- no visual carries a translation code (WEB is the only translation).
+- no retired variant file is back: no translation code (WEB is the only
+  translation) and no .still.svg reduced-motion twin.
 """
 
 import importlib
@@ -21,11 +22,12 @@ import svg_registry
 HERE = os.path.dirname(os.path.abspath(__file__))
 VISUALS = os.path.join(HERE, "visuals")
 
-# <Book>_<ch>_<v>.svg (the .still.svg reduced-motion twins don't match)
+# <Book>_<ch>_<v>.svg
 VERSE_SVG = re.compile(r"^(?P<book>.+)_(?P<ch>\d+)_(?P<v>\d+)\.svg$")
 
-# WEB is the only translation (D9), so no visual may carry a translation code.
-SUFFIXED = re.compile(r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.")
+# Retired variants: a translation code (WEB is the only translation, D9) or
+# a reduced-motion .still.svg twin (D4).
+RETIRED = re.compile(r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.|\.still\.svg$")
 
 
 def _overlap(a, b):
@@ -69,8 +71,6 @@ class RegistryOwnership(unittest.TestCase):
                 if not (ch_dir.isdigit() and os.path.isdir(ch_path)):
                     continue
                 for name in sorted(os.listdir(ch_path)):
-                    if name.endswith(".still.svg"):
-                        continue
                     m = VERSE_SVG.match(name)
                     if not m:
                         continue
@@ -81,12 +81,13 @@ class RegistryOwnership(unittest.TestCase):
         self.assertEqual(orphans, [],
                          f"{len(orphans)} verse SVG(s) with no registry owner")
 
-    def test_no_translation_suffixed_visuals(self):
-        suffixed = [name for _, _, files in os.walk(VISUALS)
-                    for name in files if SUFFIXED.search(name)]
-        self.assertEqual(suffixed, [],
-                         f"{len(suffixed)} translation-suffixed file(s), "
-                         f"e.g. {suffixed[:3]}")
+    def test_no_retired_variant_files(self):
+        retired = [name for _, _, files in os.walk(VISUALS)
+                   for name in files if RETIRED.search(name)]
+        self.assertEqual(retired, [],
+                         f"{len(retired)} retired variant file(s) "
+                         f"(translation-suffixed or .still.svg), "
+                         f"e.g. {retired[:3]}")
 
 
 if __name__ == "__main__":

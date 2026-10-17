@@ -12,8 +12,7 @@ without re-deriving it:
         "Acts_13_1": [
           {"file": "Acts/13/Acts_13_1.svg",
            "kind": "map",
-           "animated": true,
-           "still": "Acts/13/Acts_13_1.still.svg"}
+           "animated": true}
         ]
       }
     }
@@ -28,9 +27,6 @@ Record fields:
                infographic
   animated  SMIL sniff for .svg; gif/webp are the animated raster formats
             and count as true; static formats false
-  still     present only when a <stem>.still.svg reduced-motion twin exists
-            (built by build_stills.py). Still files are attached here, never
-            indexed as entries of their own.
 
 Read by web/js/visuals.js (verse key, then chapter key), coverage_studio.py
 and svg_studio.py; the desktop stage probes the filesystem directly
@@ -56,8 +52,6 @@ MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 # (README, CREDITS) are documentation, not visuals.
 IMAGE_EXTS = {".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg"}
 
-STILL_SUFFIX = ".still"
-
 _KIND_BY_EXT = {
     ".png": "photo", ".jpg": "photo", ".jpeg": "photo",
 }
@@ -67,10 +61,11 @@ _DATA_KIND_RE = re.compile(r'<svg\b[^>]*\bdata-kind="([^"]+)"')
 # Verse-key shape after stripping a .mobile suffix: Book_ch or Book_ch_v,
 # where Book may itself contain underscores (Song_of_Solomon).
 _KEY_RE = re.compile(r"^(.+?)_(\d+)(?:_(\d+))?$")
-# A retired translation suffix anywhere in a file name: Genesis_5_3.KJV.svg,
-# Genesis_5_3.BSB.still.svg, or a .WEB.svg that would shadow the plain file.
-_TRANSLATION_SUFFIX_RE = re.compile(
-    r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.")
+# Retired variants (same pattern as test_registry.RETIRED): a translation
+# suffix (Genesis_5_3.KJV.svg, or a .WEB.svg that would shadow the plain file;
+# WEB is the only translation) or a reduced-motion .still.svg twin (D4).
+_RETIRED_RE = re.compile(
+    r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.|\.still\.svg$")
 
 
 def _book_chapter_verse(stem: str) -> tuple[str, int, int | None] | None:
@@ -146,53 +141,38 @@ def _scan_files():
                 yield f, rel, f.stem
 
 
-def _suffixed_leftovers() -> list[str]:
-    """Every file anywhere under visuals/ whose name carries a translation
-    suffix, as sorted visuals/-relative paths."""
+def _retired_leftovers() -> list[str]:
+    """Every retired variant file anywhere under visuals/, as sorted
+    visuals/-relative paths."""
     return sorted(f.relative_to(VISUALS_DIR).as_posix()
                   for f in VISUALS_DIR.rglob("*")
-                  if f.is_file() and _TRANSLATION_SUFFIX_RE.search(f.name))
+                  if f.is_file() and _RETIRED_RE.search(f.name))
 
 
 def build_manifest():
     """Scan visuals/ and build the v2 manifest. Returns the entries dict."""
     entries = defaultdict(list)
-    stills = {}  # base rel_path ("Acts/13/Acts_13_1.svg") -> still rel_path
 
     for path, rel_path, stem in _scan_files():
-        # A .still.svg is metadata on its base file, not an entry: index it
-        # under the base's rel_path and attach after the scan.
-        if stem.endswith(STILL_SUFFIX) and path.suffix.lower() == ".svg":
-            base_rel = rel_path[: -len(STILL_SUFFIX + ".svg")] + ".svg"
-            stills[base_rel] = rel_path
-            continue
+        if path.name.endswith(".still.svg"):
+            continue  # a retired twin is never a key of its own; reported below
         # Key by the exact stem ("Genesis_5_3"). Never also file a suffixed
         # name under the plain key: the plain lookup would then pick up
         # whichever file sorts first.
         entries[stem].append(_classify(path, rel_path, stem))
 
     for records in entries.values():
-        for record in records:
-            still = stills.pop(record["file"], None)
-            if still:
-                record["still"] = still
         records.sort(key=lambda r: r["file"])
 
-    if stills:
-        print(f"[WARN] {len(stills)} orphaned .still.svg file(s) with no "
-              f"base SVG (run build_stills.py to clean up):")
-        for still in sorted(stills.values()):
-            print(f"  - {still}")
-
-    suffixed = _suffixed_leftovers()
-    if suffixed:
-        print(f"[WARN] {len(suffixed)} translation-suffixed file(s) under "
-              f"visuals/ - WEB is the only translation, so nothing serves "
-              f"them (a stale backup copied back in?):")
-        for rel in suffixed[:20]:
+    retired = _retired_leftovers()
+    if retired:
+        print(f"[WARN] {len(retired)} retired variant file(s) under visuals/ "
+              f"(translation-suffixed or .still.svg) - nothing serves them "
+              f"(a stale backup copied back in?):")
+        for rel in retired[:20]:
             print(f"  - {rel}")
-        if len(suffixed) > 20:
-            print(f"  ... and {len(suffixed) - 20} more")
+        if len(retired) > 20:
+            print(f"  ... and {len(retired) - 20} more")
 
     manifest = {"version": 2, "entries": dict(entries)}
     with open(MANIFEST_PATH, "w") as f:
@@ -203,12 +183,10 @@ def build_manifest():
 
 if __name__ == "__main__":
     entries = build_manifest()
-    n_stills = sum(1 for recs in entries.values() for r in recs if "still" in r)
     n_animated = sum(1 for recs in entries.values()
                      for r in recs if r["animated"])
     print(f"[OK] Written {len(entries)} verse keys to {MANIFEST_PATH} "
-          f"(schema v2; {n_animated} animated file(s), "
-          f"{n_stills} with a still variant)")
+          f"(schema v2; {n_animated} animated file(s))")
     print("\nSample entries:")
     for key, recs in list(entries.items())[:3]:
         print(f"  {key}:")
