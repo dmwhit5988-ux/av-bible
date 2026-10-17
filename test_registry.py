@@ -7,7 +7,8 @@ route "edit this verse" to the generator that owns it.
 - no two families claim the same verse;
 - every published verse SVG under visuals/<Book>/<ch>/ has an owner. This
   is the check that would have caught 2 Peter and Zephaniah shipping with no
-  family at all.
+  family at all;
+- no visual carries a translation code (WEB is the only translation).
 """
 
 import importlib
@@ -20,8 +21,11 @@ import svg_registry
 HERE = os.path.dirname(os.path.abspath(__file__))
 VISUALS = os.path.join(HERE, "visuals")
 
-# <Book>_<ch>_<v>[.CODE].svg, but not the .still.svg reduced-motion twins
-VERSE_SVG = re.compile(r"^(?P<book>.+)_(?P<ch>\d+)_(?P<v>\d+)(\.[A-Z]+)?\.svg$")
+# <Book>_<ch>_<v>.svg (the .still.svg reduced-motion twins don't match)
+VERSE_SVG = re.compile(r"^(?P<book>.+)_(?P<ch>\d+)_(?P<v>\d+)\.svg$")
+
+# WEB is the only translation (D9), so no visual may carry a translation code.
+SUFFIXED = re.compile(r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.")
 
 
 def _overlap(a, b):
@@ -76,6 +80,13 @@ class RegistryOwnership(unittest.TestCase):
                         orphans.append(name)
         self.assertEqual(orphans, [],
                          f"{len(orphans)} verse SVG(s) with no registry owner")
+
+    def test_no_translation_suffixed_visuals(self):
+        suffixed = [name for _, _, files in os.walk(VISUALS)
+                    for name in files if SUFFIXED.search(name)]
+        self.assertEqual(suffixed, [],
+                         f"{len(suffixed)} translation-suffixed file(s), "
+                         f"e.g. {suffixed[:3]}")
 
 
 if __name__ == "__main__":
