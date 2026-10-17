@@ -1480,8 +1480,7 @@
       "ipa": "/dæn/",
       "ref": "Genesis 14:14",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "status": "ok"
     },
     "Hobah": {
       "say": "Hobah",
@@ -1519,12 +1518,11 @@
       "ipa_src": "isbe"
     },
     "Kenites": {
-      "say": "KEE-nites",
+      "say": "KEEnites",
       "ipa": "/ˈkiː.naɪts/",
       "ref": "Genesis 15:19",
-      "override": false,
-      "status": "suggested",
-      "score": 0.6
+      "override": true,
+      "status": "fixed"
     },
     "Kenizzites": {
       "say": "Kenizzites",
@@ -1791,8 +1789,7 @@
       "ipa": "/ˈkɪr.i.æθ/",
       "ref": "Genesis 23:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "status": "ok"
     },
     "Zohar": {
       "say": "Zohar",
@@ -2411,8 +2408,7 @@
       "ipa": "/ˈbɛn.dʒə.mɪn/",
       "ref": "Genesis 35:18",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Benoni": {
       "say": "Benoni",
@@ -2428,8 +2424,7 @@
       "ipa": "/ˈbɛθ.lɪ.hɛm/",
       "ref": "Genesis 35:19",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Eder": {
       "say": "EE-der",
@@ -2645,8 +2640,7 @@
       "ipa": "/ˈhiː.mən/",
       "ref": "Genesis 36:22",
       "override": false,
-      "status": "suggested",
-      "score": 0.667
+      "status": "ok"
     },
     "Hori": {
       "say": "HOR-eye",
@@ -3049,8 +3043,7 @@
       "ipa": "/ˈoʊ.næn/",
       "ref": "Genesis 38:4",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Chezib": {
       "say": "kezib",
@@ -3720,8 +3713,7 @@
       "ipa": "/əˈbaɪ.hjuː/",
       "ref": "Exodus 6:23",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "status": "ok"
     },
     "Amminadab": {
       "say": "uh-MIHN-uh-dab",
@@ -3969,8 +3961,7 @@
       "ipa": "/hɜːr/",
       "ref": "Exodus 17:10",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "status": "ok"
     },
     "Meeting": {
       "say": "Meeting",
@@ -3986,8 +3977,7 @@
       "ipa": "/ˈθʌm.ɪm/",
       "ref": "Exodus 28:30",
       "override": false,
-      "status": "unfixed",
-      "score": 0.7,
+      "status": "ok",
       "ipa_src": "isbe"
     },
     "Urim": {
@@ -3999,22 +3989,34 @@
       "score": 0.8,
       "ipa_src": "generated"
     },
+    "TO": {
+      "say": "TO",
+      "ref": "Exodus 28:36",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
+    },
     "YAHWEH": {
       "say": "YAHWEH",
       "ipa": "/jˈɑwɛ/",
       "ref": "Exodus 28:36",
       "override": false,
-      "status": "unfixed",
-      "score": 0.625,
+      "status": "ok",
       "ipa_src": "cmudict"
+    },
+    "Tent": {
+      "say": "Tent",
+      "ref": "Exodus 28:43",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Bezalel": {
       "say": "BEZ-uh-lel",
       "ipa": "/ˈbɛz.ə.lɛl/",
       "ref": "Exodus 31:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.714
+      "status": "ok"
     },
     "Uri": {
       "say": "YOORR-eye",
@@ -9579,8 +9581,7 @@
       "ipa": "/ˈoʊ.bɛd/",
       "ref": "Ruth 4:17",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Ram": {
       "say": "RAM",
@@ -12892,8 +12893,7 @@
       "ipa": "/ˈkeɪ.nə.naɪ.tɛs/",
       "ref": "1 Chronicles 2:3",
       "override": false,
-      "status": "unfixed",
-      "score": 0.778
+      "status": "ok"
     },
     "Pharez": {
       "say": "FAIR-ez",
@@ -12972,16 +12972,14 @@
       "ipa": "/ˈoʊ.zɛm/",
       "ref": "1 Chronicles 2:15",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Ishmaelite": {
       "say": "ISH-may-el-ite",
       "ipa": "/ˈɪʃ.meɪ.ə.laɪt/",
       "ref": "1 Chronicles 2:17",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Ishmeelite": {
       "say": "ISH-mee-uh-lite",
@@ -13068,8 +13066,7 @@
       "ipa": "/ˈɔːr.ɛn/",
       "ref": "1 Chronicles 2:25",
       "override": false,
-      "status": "unfixed",
-      "score": 0.55
+      "status": "ok"
     },
     "Atarah": {
       "say": "AT-uh-ruh",
@@ -13084,8 +13081,7 @@
       "ipa": "/ˈiː.kər/",
       "ref": "1 Chronicles 2:27",
       "override": false,
-      "status": "unfixed",
-      "score": 0.6
+      "status": "ok"
     },
     "Maaz": {
       "say": "MAY-azz",
@@ -13116,16 +13112,14 @@
       "ipa": "/ˈʃæm.aɪ/",
       "ref": "1 Chronicles 2:28",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Ahban": {
       "say": "AH-ban",
       "ipa": "/ˈɑː.bæn/",
       "ref": "1 Chronicles 2:29",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "status": "ok"
     },
     "Molid": {
       "say": "MOH-lid",
@@ -13472,15 +13466,14 @@
       "score": 1.0
     },
     "Ithrites": {
-      "say": "ITH-rites",
+      "say": "ITHrights",
       "ipa": "/ˈɪθ.raɪts/",
       "ref": "1 Chronicles 2:53",
-      "override": false,
-      "status": "unfixed",
-      "score": 0.429
+      "override": true,
+      "status": "fixed"
     },
     "Mishraites": {
-      "say": "MISH-ruh-ites",
+      "say": "MISHra-ites",
       "ipa": "/ˈmɪʃ.rə.aɪts/",
       "ref": "1 Chronicles 2:53",
       "override": false,
@@ -24398,6 +24391,13 @@
       "score": 0.667,
       "ipa_src": "wiktionary"
     },
+    "Abba": {
+      "say": "Ahbba",
+      "ipa": "/ˈæb.ə/",
+      "ref": "Mark 14:36",
+      "override": true,
+      "status": "fixed"
+    },
     "Rufus": {
       "say": "Rufus",
       "ipa": "/rˈuːfəs/",
@@ -25412,12 +25412,11 @@
       "ipa_src": "isbe"
     },
     "Father": {
-      "say": "fayther",
+      "say": "father",
       "ipa": "/ˈfeɪ.θər/",
       "ref": "Acts 1:4",
-      "override": true,
-      "status": "fixed",
-      "score": 1.0,
+      "override": false,
+      "status": "ok",
       "ipa_src": "isbe"
     },
     "Judaea": {
@@ -27281,6 +27280,13 @@
       "status": "ok",
       "score": 1.0,
       "ipa_src": "cmudict"
+    },
+    "Son": {
+      "say": "Son",
+      "ref": "Romans 8:3",
+      "override": false,
+      "status": "ok",
+      "ipa": ""
     },
     "Illyricum": {
       "say": "iliri-kum",
