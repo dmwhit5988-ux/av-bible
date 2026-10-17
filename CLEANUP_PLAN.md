@@ -608,6 +608,19 @@ Layout:
 
 ### WS7 — Shared visuals: one SVG across several verses (D17)
 
+> **Status (2026-10-17): done, committed locally as `4ae8a5b3`; push pending your go-ahead.**
+> - **Checks:** 125 verses share the previous verse's picture (Numbers 32:16-32 are one picture with one download). Play on the verse already shown still restarts its picture, so it stays in step with the narration. A real Video Studio render of Numbers 32:15-20 draws the trace once. 33 tests pass, 14 of them new.
+> - **Beyond the plan:**
+>   - single-verse and past-the-end ranges are handled;
+>   - overlapping ranges have a deterministic winner;
+>   - a range file is never taken over by a copy;
+>   - Video Studio honours the opt-out and restarts copies at a chapter boundary;
+>   - a picture that fails to load is retried.
+> - **Not done:** the `out_path` companion. Generators already pass any filename to `out_path`, so it isn't needed.
+> - **Known gaps:**
+>   - SVG Studio doesn't know range files yet (roadmap §6.3, "Shared visuals in the Studio").
+>   - The interim PC stage (`visual_stage.py`) doesn't look them up. It is retired after S4.
+
 **Goal.** When the next verse shows the same picture, it keeps playing instead of starting over. One SVG can be tied to a range of verses on purpose, and today's identical copies are treated as one picture automatically.
 
 **What happens today (measured 2026-10-16).** No two manifest keys share a file. But 125 consecutive verse pairs (62 runs) are byte-identical copies, and because each copy has its own URL, the browser treats each verse as a new image and replays its animation. 33 of those repeats are animated:
