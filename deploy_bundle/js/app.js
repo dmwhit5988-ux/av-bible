@@ -1,4 +1,4 @@
-import { BOOKS, TRANSLATIONS, TRANSLATION_ATTRIBUTION, DEFAULTS, chaptersIn, nextChapter, prevChapter } from "./data.js";
+import { BOOKS, DEFAULTS, chaptersIn, nextChapter, prevChapter } from "./data.js";
 import { fetchChapter, PassageError } from "./bible.js";
 import { VisualStage, bookGradient } from "./visuals.js";
 import { Player } from "./tts.js";
@@ -6,11 +6,9 @@ import { Player } from "./tts.js";
 const $ = (id) => document.getElementById(id);
 
 const els = {
-  translation: $("sel-translation"),
   book: $("sel-book"),
   chapter: $("sel-chapter"),
   verse: $("sel-verse"),
-  attribution: $("attribution"),
   stageWrap: $("stage-wrap"),
   stage: $("stage"),
   stageBg: $("stage-bg"),
@@ -36,7 +34,7 @@ const els = {
 const STORE_KEY = "avbible.web.selection";
 
 const stage = new VisualStage();
-let passage = null; // current fetched chapter {book,chapter,canonical,translation,verses,notes}
+let passage = null; // current fetched chapter {book,chapter,canonical,verses,notes}
 let lastImagePath = null;
 let lastRenderedIndex = null; // for re-rendering when display prefs change
 let stageTextToken = 0; // invalidates in-flight text-visual fetches
@@ -80,7 +78,7 @@ function initMotionToggle() {
   }
 }
 initMotionToggle();
-let audioManifest = {}; // "Book_ch_v.CODE" -> "filename.mp3", pre-generated neural narration
+let audioManifest = {}; // "Book_ch_v.WEB" -> "filename.mp3", pre-generated neural narration
 
 const player = new Player({
   onVerseChange: (index) => renderVerse(index),
@@ -92,10 +90,9 @@ player.resolveAudio = resolveAudio;
 
 // Pre-generated neural mp3s (generate_showcase_audio.py / the desktop Audio
 // Renderer studio) narrate a handful of showcase chapters — much better
-// quality than the browser's Web Speech voice. Keyed by translation (e.g.
-// "Genesis_1_1.KJV"), same suffix convention as visuals/manifest.json, so a
-// clip only stands in for the translation it actually narrates; every verse
-// without one, in any translation, falls back to speech.
+// quality than the browser's Web Speech voice. Keys are "Book_ch_v.WEB"
+// (e.g. "Genesis_1_1.WEB"), the format the producers write; every verse
+// without one falls back to speech.
 async function loadAudioManifest() {
   try {
     const resp = await fetch("audio/manifest.json");
@@ -109,19 +106,13 @@ function resolveAudio(index) {
   if (!passage || !passage.verses[index]) return null;
   const [num] = passage.verses[index];
   const key = `${passage.book.replace(/ /g, "_")}_${passage.chapter}_${num}`;
-  const filename = audioManifest[`${key}.${passage.translation}`];
+  const filename = audioManifest[`${key}.WEB`];
   return filename ? `audio/${filename}` : null;
 }
 
 // ---------------------------------------------------------------------
 // Picker population
 // ---------------------------------------------------------------------
-
-function populateTranslations() {
-  els.translation.innerHTML = TRANSLATIONS.map(
-    ([code, label]) => `<option value="${code}">${label}</option>`
-  ).join("");
-}
 
 // "✦" marks books/chapters that have visuals built (see
 // VisualStage.illustratedChapters). U+2726 has no emoji presentation, so
@@ -170,7 +161,6 @@ function saveSelection() {
   localStorage.setItem(
     STORE_KEY,
     JSON.stringify({
-      translation: els.translation.value,
       book: els.book.value,
       chapter: Number(els.chapter.value),
     })
@@ -182,13 +172,11 @@ function saveSelection() {
 // ---------------------------------------------------------------------
 
 async function loadChapter({ resetStage = true, startAtEnd = false } = {}) {
-  const code = els.translation.value;
   const book = els.book.value;
   const chapter = Number(els.chapter.value);
   player.stop();
-  els.attribution.textContent = TRANSLATION_ATTRIBUTION[code] || "";
   try {
-    passage = await fetchChapter(code, book, chapter);
+    passage = await fetchChapter(book, chapter);
   } catch (e) {
     passage = null;
     showIdle(e instanceof PassageError ? e.message : "Could not load this chapter.");
@@ -218,7 +206,7 @@ async function advanceToNextChapter(wasPlaying) {
   populateChapters(next.book);
   els.chapter.value = String(next.chapter);
   await loadChapter({ resetStage: false });
-  if (!passage) return; // load failed (e.g. book missing in this translation)
+  if (!passage) return; // load failed (e.g. offline)
   if (wasPlaying) player.play();
   else renderVerse(0);
 }
@@ -234,7 +222,7 @@ async function retreatToPrevChapter(wasPlaying) {
   populateChapters(prev.book);
   els.chapter.value = String(prev.chapter);
   await loadChapter({ resetStage: false, startAtEnd: true });
-  if (!passage) return; // load failed (e.g. book missing in this translation)
+  if (!passage) return; // load failed (e.g. offline)
   if (wasPlaying) player.play();
   else renderVerse(player.index);
 }
@@ -306,9 +294,8 @@ function renderVerse(index) {
     book: passage.book,
     chapter: passage.chapter,
     verse: num,
-    translation: passage.translation,
     notes: (passage.notes && passage.notes[index]) || [],
-    reference: `${passage.canonical}:${num} (${passage.translation})`,
+    reference: `${passage.canonical}:${num}`,
   };
 
   els.idleMessage.style.display = "none";
@@ -431,7 +418,6 @@ els.btnNext.addEventListener("click", () => { player.unlock(); player.next(); })
 els.chkNotes.addEventListener("change", () => { if (passage) renderVerse(player.index); });
 els.rateSlider.addEventListener("input", () => { player.rate = Number(els.rateSlider.value); });
 
-els.translation.addEventListener("change", () => loadChapter());
 els.book.addEventListener("change", () => {
   populateChapters(els.book.value);
   els.chapter.value = "1";
@@ -658,14 +644,12 @@ updateFsButton();
 // ---------------------------------------------------------------------
 
 async function boot() {
-  populateTranslations();
   await Promise.all([stage.loadManifest(), loadAudioManifest()]);
   // After the manifest, so book/chapter options carry their ✦ markers.
   populateBooks();
   buildIllustratedList();
 
   const saved = loadSelection();
-  els.translation.value = saved.translation;
   els.book.value = saved.book;
   populateChapters(saved.book);
   els.chapter.value = String(saved.chapter);

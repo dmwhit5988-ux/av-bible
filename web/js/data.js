@@ -45,27 +45,7 @@ export function prevChapter(book, chapter) {
   return { book: prevBook, chapter: chaptersIn(prevBook) };
 }
 
-// code, dropdown label, attribution — ported from passages.py TRANSLATIONS.
-// All 9 ship as local per-chapter JSON under bibles/<CODE>/, so the web app
-// (unlike the desktop app) never needs an api_id or a live-fetch source.
-export const TRANSLATIONS = [
-  ["KJV", "KJV — King James", "King James Version — public domain."],
-  ["WEB", "WEB — World English", "World English Bible — public domain."],
-  ["ASV", "ASV — American Standard", "American Standard Version (1901) — public domain."],
-  ["BBE", "BBE — Basic English", "Bible in Basic English — public domain."],
-  ["DARBY", "Darby Translation", "Darby Translation — public domain."],
-  ["DRA", "Douay-Rheims 1899", "Douay-Rheims 1899 American Edition — public domain."],
-  ["BSB", "BSB — Berean Standard", "Berean Standard Bible — public domain."],
-  ["YLT", "YLT — Young's Literal", "Young's Literal Translation — public domain."],
-  ["OEB", "OEB — Open English (partial)",
-    "Open English Bible — public domain (CC0). Not all books complete."],
-];
-
-export const TRANSLATION_ATTRIBUTION =
-  Object.fromEntries(TRANSLATIONS.map(([code, , attr]) => [code, attr]));
-
 export const DEFAULTS = {
-  translation: "WEB",
   book: "Genesis",
   chapter: 5,
 };

@@ -1,7 +1,8 @@
-// Fetches chapter JSON from bibles/<CODE>/<Book>_<ch>.json — the same
-// on-disk shape passages.py writes/reads (book, chapter, canonical,
-// translation, verses:[[num,text],...], notes:[[...],...]).
-import { TRANSLATIONS } from "./data.js";
+// Fetches chapter JSON from bibles/WEB/<Book>_<ch>.json — the on-disk shape
+// import_translation.py writes and passages.py reads (book, chapter,
+// canonical, verses:[[num,text],...], notes:[[...],...]).
+
+const BASE = "/bibles/WEB";
 
 const cache = new Map();
 
@@ -11,10 +12,10 @@ export function safeBookName(book) {
   return book.replace(/ /g, "_");
 }
 
-export async function fetchChapter(code, book, chapter) {
-  const key = `${code}|${book}|${chapter}`;
+export async function fetchChapter(book, chapter) {
+  const key = `${book}|${chapter}`;
   if (cache.has(key)) return cache.get(key);
-  const url = `/bibles/${code}/${safeBookName(book)}_${chapter}.json`;
+  const url = `${BASE}/${safeBookName(book)}_${chapter}.json`;
   let resp;
   try {
     resp = await fetch(url);
@@ -22,8 +23,7 @@ export async function fetchChapter(code, book, chapter) {
     throw new PassageError(`Could not load ${book} ${chapter}: ${e.message}`);
   }
   if (!resp.ok) {
-    const label = TRANSLATIONS.find(([c]) => c === code)?.[1] || code;
-    throw new PassageError(`${book} ${chapter} is not available in ${label}.`);
+    throw new PassageError(`${book} ${chapter} is not available.`);
   }
   const data = await resp.json();
   cache.set(key, data);

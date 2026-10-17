@@ -2,10 +2,9 @@ import { BOOKS } from "./data.js";
 
 // Ports visual_stage.py's _find_image fallback chain using
 // visuals/manifest.json (built by build_manifest.py) instead of probing the
-// filesystem. Priority per location: verse -> chapter -> book -> default,
-// and at each location a translation-suffixed file (e.g. Genesis_5_3.KJV)
-// wins over the generic one. Animated formats (webp/gif) are letterboxed
-// like diagrams; static photos (png/jpg) are cover-cropped.
+// filesystem. Priority per location: verse -> chapter -> book -> default.
+// Animated formats (webp/gif) are letterboxed like diagrams; static photos
+// (png/jpg) are cover-cropped.
 
 // Vector diagrams. Browsers render SVG natively via <img>; they scale to
 // any size without pixelation and are letterboxed like the animated
@@ -123,7 +122,7 @@ export class VisualStage {
         BOOKS.map(([name]) => [name.replace(/ /g, "_"), name])
       );
       for (const [key, records] of Object.entries(this.manifest)) {
-        const base = key.split(".")[0]; // strip .KJV/.mobile suffixes
+        const base = key.split(".")[0]; // strip a .mobile suffix
         const m = /^(.+?)_(\d+)(?:_\d+)?$/.exec(base);
         if (!m) continue;
         const book = bookByKey.get(m[1]);
@@ -138,7 +137,7 @@ export class VisualStage {
     return map;
   }
 
-  // ctx: {book, chapter, verse, translation}
+  // ctx: {book, chapter, verse}
   // Returns the best visual's full record, with resolved URLs:
   //   {url, stillUrl|null, kind, animated, file}
   // stillUrl is the reduced-motion twin (build_stills.py) when one exists.
@@ -152,13 +151,9 @@ export class VisualStage {
       "default",
     ];
     // Filename suffix priority. On phone-sized screens a ".mobile"
-    // variant (e.g. Genesis_5_3.mobile.webp, or Genesis_5_3.KJV.mobile.webp
-    // for a translation-specific one) wins over the standard file, so
-    // graphics can be re-cut with bigger text just where it matters.
-    let suffixes = ctx.translation ? [`.${ctx.translation}`, ""] : [""];
-    if (isMobileScreen()) {
-      suffixes = [...suffixes.map((s) => `${s}.mobile`), ...suffixes];
-    }
+    // variant (e.g. Genesis_5_3.mobile.webp) wins over the standard file,
+    // so graphics can be re-cut with bigger text just where it matters.
+    const suffixes = isMobileScreen() ? [".mobile", ""] : [""];
     for (const key of keys) {
       for (const suffix of suffixes) {
         const record = pickBestRecord(this.manifest[key + suffix]);
