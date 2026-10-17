@@ -440,6 +440,17 @@ Each content-deleting step is a **hand-written commit, not a Publish**, so the h
 
 ### WS2 — Web UI simplification
 
+> **Status (2026-10-16): done and committed (`bca83a6c`); push pending your go-ahead.**
+> - **Checked** on the web-static server at 375×812 and desktop. An adversarial review found 1 major issue (the progress line was truncated at 375 px) and 9 minor ones; all are fixed and re-tested.
+> - **Beyond the plan:**
+>   - Prev/Next/Play shrink to icons on phones.
+>   - The ✦ dialog makes the page behind it inert.
+>   - Wake Lock is held across chapter rollovers.
+>   - Stored selections are validated.
+>   - `findVisual` prefers `.svg`.
+>   - The pointer sits in the lower part of the stage, clear of the center Play button.
+> - **Still to check on a real iPhone:** Wake Lock (the test browser refuses the permission) and pinch-zoom.
+
 **Goal.** A two-row header, no toggles row, a stage that never shows stale text and points to ✦ when a verse isn't illustrated, no still code left in the web app, and a few fixes that were never built (Wake Lock, focus handling, keyboard access).
 
 **Final web control list (D5)**
