@@ -118,6 +118,11 @@ All 16 decisions are settled. Five differ from the original recommendation and a
 
 Nothing in WS1–WS6 should start until Step 0 is done. Step 0 changes nothing on the site except the deliberate content commits in 0.8b (the OT timeline, and a regeneration catch-up only if drift is found).
 
+> **Status (2026-10-16): done, except three follow-ups.** Commits `2b95df2b`…`8d0eb310` were pushed with the `pre-cleanup` tag. The backups and `pre-cleanup.bundle` are in `C:\Dev\Theoria-archive\`. The 24 tests pass in a clean checkout of the tag. The Publish fix was verified in a throwaway worktree. The regeneration baseline: 1 Chronicles (407) and Matthew 1 (25) are byte-identical, and all 24 generators run cleanly. Follow-ups:
+> 1. **0.2 Cloudflare check.** Needs your sign-in in the browser pane.
+> 2. **Genesis 1–3 drift.** 19 files differ from the current `svg_figures.py`: a brighter sun outline in Genesis 1:14-19, and sub-pixel shape changes in 2:19-25 and 3:2-13. They were restored to the published version and listed in `C:\Dev\Theoria-archive\regen-drift.txt`. Ship the catch-up only if you want the brighter sun.
+> 3. **Delete the merged `acts-second-journey` branch** (0 commits ahead of `main`). The session's permissions blocked it; run it yourself.
+
 **0.1 Freeze risky actions until Step 0 is complete**
 - [ ] Don't press **Publish**. It runs `git add -A` on `web bibles visuals deploy_bundle` and then `git commit` with no pathspec (publish_studio.py:247, 252), so it commits anything staged. That is how commit `368016f4` deleted `generate_matthew1.py`.
 - [ ] Don't press **Re-run generator** on any 1 Chronicles verse. The registry still names the v2 generator (svg_generators.json, 1 Chronicles family), and it writes the same 407 file paths.
