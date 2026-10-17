@@ -201,7 +201,9 @@ class App:
             if proc.returncode != 0:
                 raise RuntimeError("build_manifest.py failed: "
                                    + proc.stderr.strip()[:300])
-            put(("log", "  " + (proc.stdout.strip().splitlines() or ["ok"])[0]))
+            lines = [ln for ln in proc.stdout.splitlines() if ln.startswith("[")]
+            for line in lines or ["ok"]:
+                put(("log", "  " + line))
 
             put(("log", "— Step 2/3: deploy bundle —"))
             proc = _run(["powershell", "-NoProfile", "-ExecutionPolicy",

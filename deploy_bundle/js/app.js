@@ -69,6 +69,11 @@ const IDLE_TEXT = els.idleMessage.textContent;
 const stage = new VisualStage();
 let passage = null; // current fetched chapter {book,chapter,canonical,verses}
 let lastImagePath = null;
+// The verse on stage ("Book|chapter|index"). Rendering it again means
+// playback is starting on the verse already shown (Play from stopped, or a
+// tap on that verse), and its picture starts again in step with the
+// narration. Moving to another verse never restarts a shared picture (D17).
+let shownVerse = null;
 let audioManifest = {}; // "Book_ch_v.WEB" -> "filename.mp3", pre-generated neural narration
 
 const player = new Player({
@@ -291,6 +296,9 @@ function showIdle(message) {
   els.idleMessage.style.display = "flex";
   els.idleMessage.textContent = message || IDLE_TEXT;
   els.stageImg.classList.remove("visible");
+  els.stageImg.removeAttribute("src");
+  lastImagePath = null; // the next picture loads fresh
+  shownVerse = null;
   els.stageEmpty.hidden = true;
   els.stageBg.style.background = "#101018";
   els.verseProgress.textContent = "\u00a0";
@@ -316,6 +324,9 @@ function clearCurrentHighlight() {
 function renderVerse(index) {
   if (!passage) return;
   const [num] = passage.verses[index];
+  const verseId = `${passage.book}|${passage.chapter}|${index}`;
+  const replay = verseId === shownVerse;
+  shownVerse = verseId;
   const ctx = {
     book: passage.book,
     chapter: passage.chapter,
@@ -332,12 +343,14 @@ function renderVerse(index) {
   const imgPath = visual ? visual.url : null;
   if (imgPath) {
     els.stageEmpty.hidden = true;
-    if (imgPath === lastImagePath) {
-      // Same file as last verse — force the browser to restart its
-      // animation from the start rather than silently keeping the old one.
-      els.stageImg.src = "";
+    // The same picture as the verse before (a shared range file, or an
+    // identical copy the manifest points at one file) keeps running, or
+    // stays finished: it restarts only when the picture changes (D17).
+    if (replay) {
+      // A fresh URL is the restart every browser honours (re-setting the
+      // same URL can leave a cached SVG at its last frame).
       els.stageImg.src = `${imgPath}?r=${Date.now()}`;
-    } else {
+    } else if (imgPath !== lastImagePath) {
       els.stageImg.src = imgPath;
     }
     els.stageImg.classList.add("visible");
@@ -442,6 +455,10 @@ function togglePlay() {
 }
 
 els.btnPlay.addEventListener("click", togglePlay);
+
+// A picture that failed to load (offline, a flaky connection) is retried by
+// the next verse or Play, even inside a run that shares it.
+els.stageImg.addEventListener("error", () => { lastImagePath = null; });
 
 els.btnPrev.addEventListener("click", () => { player.unlock(); player.prev(); });
 els.btnNext.addEventListener("click", () => { player.unlock(); player.next(); });

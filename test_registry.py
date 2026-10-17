@@ -22,8 +22,9 @@ import svg_registry
 HERE = os.path.dirname(os.path.abspath(__file__))
 VISUALS = os.path.join(HERE, "visuals")
 
-# <Book>_<ch>_<v>.svg
-VERSE_SVG = re.compile(r"^(?P<book>.+)_(?P<ch>\d+)_(?P<v>\d+)\.svg$")
+# <Book>_<ch>_<v>.svg, or a range file <Book>_<ch>_<v>-<v2>.svg (D17)
+VERSE_SVG = re.compile(
+    r"^(?P<book>.+)_(?P<ch>\d+)_(?P<v>\d+)(?:-(?P<v2>\d+))?\.svg$")
 
 # Retired variants: a translation code (WEB is the only translation, D9) or
 # a reduced-motion .still.svg twin (D4).
@@ -75,8 +76,9 @@ class RegistryOwnership(unittest.TestCase):
                     if not m:
                         continue
                     book = m["book"].replace("_", " ")
-                    if svg_registry.owner_of(book, int(m["ch"]),
-                                             int(m["v"])) is None:
+                    last = int(m["v2"] or m["v"])
+                    if any(svg_registry.owner_of(book, int(m["ch"]), v) is None
+                           for v in range(int(m["v"]), last + 1)):
                         orphans.append(name)
         self.assertEqual(orphans, [],
                          f"{len(orphans)} verse SVG(s) with no registry owner")

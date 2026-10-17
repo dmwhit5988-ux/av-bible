@@ -72,6 +72,7 @@ from dataclasses import dataclass, field
 
 import books
 import generate_showcase_audio as showcase_audio
+import svg_registry
 import tts_engine
 from config import VISUALS_DIR
 from passages import ATTRIBUTION, PassageError, load_chapter
@@ -299,16 +300,28 @@ def motion_end(svg_text: str, cap: float) -> float:
 def resolve_svg(book: str, chapter: int, verse: int) -> str | None:
     """The SVG the stage would show for this verse, or None.
 
-    Mirrors visual_stage.DefaultRenderer._find_image's most-specific-wins
-    chain, narrowed to .svg: verse file, then chapter file, then book file,
-    then the global default.
+    Most specific first, as in the web manifest: the verse's own file, then
+    a range file covering the verse (Numbers_32_16-32.svg, D17; where two
+    overlap the name that sorts first wins, as in build_manifest), then the
+    chapter file; the book-level and global default files are legacy
+    fallbacks the web no longer uses.
     """
     safe = book.replace(" ", "_")
     chapter_dir = os.path.join(VISUALS_DIR, safe, str(chapter))
     book_dir = os.path.join(VISUALS_DIR, safe)
+    for directory in (chapter_dir, VISUALS_DIR):
+        path = os.path.join(directory, f"{safe}_{chapter}_{verse}.svg")
+        if os.path.exists(path):
+            return path
+    range_re = re.compile(rf"^{re.escape(safe)}_{chapter}_(\d+)-(\d+)\.svg$")
+    for directory in (chapter_dir, VISUALS_DIR):
+        if not os.path.isdir(directory):
+            continue
+        for name in sorted(os.listdir(directory)):
+            m = range_re.match(name)
+            if m and int(m.group(1)) <= verse <= int(m.group(2)):
+                return os.path.join(directory, name)
     locations = [
-        (chapter_dir, f"{safe}_{chapter}_{verse}"),
-        (VISUALS_DIR, f"{safe}_{chapter}_{verse}"),
         (chapter_dir, f"{safe}_{chapter}"),
         (VISUALS_DIR, f"{safe}_{chapter}"),
         (book_dir, safe),
@@ -448,6 +461,11 @@ class Item:
     motion_frames: int = 0
     motion_seconds: float = 0.0
     start_frame: int = 0
+    # Seconds of this picture's timeline already shown by the items before
+    # it: a verse with the same SVG as the verse before (a shared range
+    # file, an identical copy, held artwork) continues that clock instead of
+    # restarting at 0 (D17). Frames are captured at clock_offset + t.
+    clock_offset: float = 0.0
 
     def duration(self, fps: int) -> float:
         return self.frames / fps
@@ -580,13 +598,44 @@ def build_audio(ffmpeg: str, items, spec: RenderSpec, pcm_path: str,
                     if on_progress:
                         on_progress(done, len(items), item.ref)
 
+    assign_clocks(items, fps, spec.book)
+
+
+def _continues(prev, item, book: str | None) -> bool:
+    """Whether `item` shows the same picture as `prev` and so carries on its
+    clock (D17). The very same file always does (a range file, or artwork
+    held over a verse with no visual of its own). A byte-identical copy does
+    within a chapter, as on the web, unless its family opts out with
+    "replay_identical"."""
+    if prev is None or item.svg_text != prev.svg_text:
+        return False
+    if item.svg_path and item.svg_path == prev.svg_path:
+        return True
+    if item.kind != "verse" or item.chapter != prev.chapter:
+        return False
+    family = svg_registry.owner_of(book, item.chapter, item.verse) if book else None
+    return not (family and family.replay_identical)
+
+
+def assign_clocks(items, fps: int, book: str | None = None) -> None:
+    """Lay the items end to end (start_frame) and work out what of each one's
+    picture still moves: clock_offset carries a shared picture's timeline
+    over from the item before, and motion_seconds/motion_frames count only
+    what is left of it after that offset (a play-once animation that has
+    finished is a held still; a perpetual one keeps going)."""
     frame = 0
+    prev = None
     for item in items:
         item.start_frame = frame
         frame += item.frames
-        item.motion_seconds = motion_end(item.svg_text, item.duration(fps))
+        item.clock_offset = (prev.clock_offset + prev.duration(fps)
+                             if _continues(prev, item, book) else 0.0)
+        # motion_end answers on the picture's own clock.
+        end = motion_end(item.svg_text, item.clock_offset + item.duration(fps))
+        item.motion_seconds = max(0.0, end - item.clock_offset)
         item.motion_frames = min(item.frames,
                                  math.ceil(item.motion_seconds * fps))
+        prev = item
 
 
 # ---------------------------------------------------------------------------
@@ -878,7 +927,8 @@ async def _capture_item(page: _Page, item: Item, spec: RenderSpec,
     or None if the item is a single held still."""
     await page.load(item.svg_text)
 
-    still = await page.frame_at(max(item.motion_seconds, 0.0))
+    still = await page.frame_at(item.clock_offset
+                                + max(item.motion_seconds, 0.0))
     with open(os.path.join(workdir, f"still_{index:05d}.png"), "wb") as f:
         f.write(still)
     if not item.motion_frames:
@@ -887,7 +937,7 @@ async def _capture_item(page: _Page, item: Item, spec: RenderSpec,
     frames_dir = os.path.join(workdir, f"frames_{index:05d}")
     os.makedirs(frames_dir, exist_ok=True)
     for i in range(item.motion_frames):
-        png = await page.frame_at(i / spec.fps)
+        png = await page.frame_at(item.clock_offset + i / spec.fps)
         with open(os.path.join(frames_dir, f"{i:05d}.png"), "wb") as f:
             f.write(png)
     return frames_dir

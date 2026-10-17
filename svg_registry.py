@@ -40,6 +40,9 @@ class FamilyInfo:
                              # (genealogy / map / diagram / ...)
     verses: tuple | None = None  # (lo, hi) when the family owns only part of
                                  # its chapter; None means the whole chapter
+    replay_identical: bool = False  # True: a verse identical to the one
+                                    # before replays its animation instead of
+                                    # sharing the picture (build_manifest, D17)
 
     def covers(self, verse: int | None) -> bool:
         """Whether this family owns `verse` of a chapter it already matches.
@@ -64,6 +67,7 @@ def _load_families():
             spec=tuple(SpecPointer(p["file"], p["edit"]) for p in fam["spec"]),
             kind=fam.get("kind"),
             verses=(tuple(fam["verses"]) if fam.get("verses") else None),
+            replay_identical=bool(fam.get("replay_identical")),
         ))
     return families
 
