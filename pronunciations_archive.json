@@ -1,0 +1,1557 @@
+{
+  "_readme": "Pronunciation entries for spellings the World English Bible never uses (archived 2026-10-16, CLEANUP_PLAN.md D13). Not read by anything; kept for reference.",
+  "names": {
+    "Pison": {
+      "say": "pyson",
+      "ipa": "/ˈpaɪ.sɒn/",
+      "ref": "Genesis 2:11",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Methusael": {
+      "say": "meth-YOO-say-el",
+      "ipa": "/mɪˈθjuː.seɪ.ɛl/",
+      "ref": "Genesis 4:18",
+      "override": true,
+      "status": "fixed",
+      "score": 0.889
+    },
+    "Phut": {
+      "say": "FUT",
+      "ipa": "/fʌt/",
+      "ref": "Genesis 10:6",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Sabtechah": {
+      "say": "SAB-tih-kah",
+      "ipa": "/ˈsæb.tɪ.kɑː/",
+      "ref": "Genesis 10:7",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Philistim": {
+      "say": "fih-LIS-tim",
+      "ipa": "/fɪˈlɪs.tɪm/",
+      "ref": "Genesis 10:14",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Girgasite": {
+      "say": "gerrguhseyet",
+      "ipa": "/ˈɡɜːr.ɡə.saɪt/",
+      "ref": "Genesis 10:16",
+      "override": true,
+      "status": "fixed",
+      "score": 0.812
+    },
+    "Salah": {
+      "say": "SAY-la",
+      "ipa": "/ˈseɪ.lə/",
+      "ref": "Genesis 10:24",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Hazar-maveth": {
+      "say": "hay-zahr-MAY-vehth",
+      "ipa": "/ˌheɪ.zɑːrˈmeɪ.vɛθ/",
+      "ref": "Genesis 10:26",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "fathers'": {
+      "say": "fathers",
+      "ipa": "/ˈfɑː.ðərz/",
+      "ref": "Exodus 6:14",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Henoch": {
+      "say": "HEE-nok",
+      "ipa": "/ˈhiː.nɒk/",
+      "ref": "1 Chronicles 1:3",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Sabtecha": {
+      "say": "SAB-tih-kah",
+      "ipa": "/ˈsæb.tɪ.kɑː/",
+      "ref": "1 Chronicles 1:9",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Napthtuhim": {
+      "say": "naftoohihm",
+      "ipa": "/næfˈtuː.hɪm/",
+      "ref": "1 Chronicles 1:11",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Caphthorim": {
+      "say": "KAF-thor-im",
+      "ipa": "/ˈkæf.θɔː.rɪm/",
+      "ref": "1 Chronicles 1:12",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.625
+    },
+    "Zidon": {
+      "say": "ZY-don",
+      "ipa": "/ˈzaɪ.dɒn/",
+      "ref": "1 Chronicles 1:13",
+      "override": false,
+      "status": "suggested",
+      "score": 0.7
+    },
+    "Jaalam": {
+      "say": "JAYuh-lam",
+      "ipa": "/ˈdʒeɪ.ə.læm/",
+      "ref": "1 Chronicles 1:35",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Ezar": {
+      "say": "EE-zar",
+      "ipa": "/ˈiː.zɑːr/",
+      "ref": "1 Chronicles 1:38",
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Jakan": {
+      "say": "JAY-kan",
+      "ipa": "/ˈdʒeɪ.kæn/",
+      "ref": "1 Chronicles 1:42",
+      "override": true,
+      "status": "fixed",
+      "score": 0.8
+    },
+    "Zavan": {
+      "say": "ZAY-van",
+      "ipa": "/ˈzeɪ.væn/",
+      "ref": "1 Chronicles 1:42",
+      "override": true,
+      "status": "fixed",
+      "score": 0.8
+    },
+    "Aholibamah": {
+      "say": "uh-hol-ih-BAH-muh",
+      "ipa": "/ə.hɒl.ɪˈbɑː.mə/",
+      "ref": "1 Chronicles 1:52",
+      "override": false,
+      "status": "ok",
+      "score": 0.889
+    },
+    "Pharez": {
+      "say": "FAIR-ez",
+      "ipa": "/ˈfɛər.ɛz/",
+      "ref": "1 Chronicles 2:4",
+      "override": false,
+      "status": "suggested",
+      "score": 0.7
+    },
+    "Shimma": {
+      "say": "SHIM-uh",
+      "ipa": "/ˈʃɪm.ə/",
+      "ref": "1 Chronicles 2:13",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Ishmeelite": {
+      "say": "ISH-mee-uh-lite",
+      "ipa": "/ˈɪʃ.miː.ə.laɪt/",
+      "ref": "1 Chronicles 2:17",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Bezaleel": {
+      "say": "bih-ZAL-ee-el",
+      "ipa": "/bɪˈzæl.i.ɛl/",
+      "ref": "1 Chronicles 2:20",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.562
+    },
+    "Abiah": {
+      "say": "uh-BY-uh",
+      "ipa": "/əˈbaɪ.ə/",
+      "ref": "1 Chronicles 2:24",
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
+    },
+    "Ashur": {
+      "say": "ASH-ur",
+      "ipa": "/ˈæʃ.ər/",
+      "ref": "1 Chronicles 2:24",
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Caleb-ephratah": {
+      "say": "kay-leb-EF-ruh-tah",
+      "ipa": "/ˌkeɪ.lɛbˈɛf.rə.tɑː/",
+      "ref": "1 Chronicles 2:24",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.636
+    },
+    "Sisamai": {
+      "say": "SIS-uh-my",
+      "ipa": "/ˈsɪs.ə.maɪ/",
+      "ref": "1 Chronicles 2:40",
+      "override": false,
+      "status": "ok",
+      "score": 0.929
+    },
+    "Jorkoam": {
+      "say": "JOR-koh-am",
+      "ipa": "/ˈdʒɔːr.koʊ.æm/",
+      "ref": "1 Chronicles 2:44",
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Gesham": {
+      "say": "geeshaam",
+      "ipa": "/ˈɡiː.ʃæm/",
+      "ref": "1 Chronicles 2:47",
+      "override": true,
+      "status": "fixed",
+      "score": 0.8
+    },
+    "Achsa": {
+      "say": "AK-suh",
+      "ipa": "/ˈæk.sə/",
+      "ref": "1 Chronicles 2:49",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
+    },
+    "Machbenah": {
+      "say": "mak-BEE-nuh",
+      "ipa": "/mækˈbiː.nə/",
+      "ref": "1 Chronicles 2:49",
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
+    },
+    "Ephratah": {
+      "say": "EF-ruh-tah",
+      "ipa": "/ˈɛf.rə.tɑː/",
+      "ref": "1 Chronicles 2:50",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Kirjath-jearim": {
+      "say": "kur-jath-JEE-uh-rim",
+      "ipa": "/ˌkɜːr.dʒæθˈdʒiː.ə.rɪm/",
+      "ref": "1 Chronicles 2:50",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Manahethites": {
+      "say": "MAN-uh-heth-ites",
+      "ipa": "/ˈmæn.ə.hɛθ.aɪts/",
+      "ref": "1 Chronicles 2:52",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.7
+    },
+    "Eshtaulites": {
+      "say": "ESH-taw-lites",
+      "ipa": "/ˈɛʃ.tɔː.laɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Puhites": {
+      "say": "PYOO-hites",
+      "ipa": "/ˈpjuː.haɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false,
+      "status": "ok",
+      "score": 0.929
+    },
+    "Zareathites": {
+      "say": "ZAR-ee-uh-thites",
+      "ipa": "/ˈzær.i.ə.θaɪts/",
+      "ref": "1 Chronicles 2:53",
+      "override": false,
+      "status": "ok",
+      "score": 0.889
+    },
+    "Hemath": {
+      "say": "HEE-math",
+      "ipa": "/ˈhiː.mæθ/",
+      "ref": "1 Chronicles 2:55",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Suchathites": {
+      "say": "SOO-kuh-thites",
+      "ipa": "/ˈsuː.kə.θaɪts/",
+      "ref": "1 Chronicles 2:55",
+      "override": false,
+      "status": "ok",
+      "score": 0.938
+    },
+    "Maachah": {
+      "say": "MAY-yuh-ker",
+      "ipa": "/ˈmeɪ.ə.kə/",
+      "ref": "1 Chronicles 3:2",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Bath-shua": {
+      "say": "bath-SHOO-uh",
+      "ipa": "/bæθˈʃuː.ə/",
+      "ref": "1 Chronicles 3:5",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Abia": {
+      "say": "uh-BY-uh",
+      "ipa": "/əˈbaɪ.ə/",
+      "ref": "1 Chronicles 3:10",
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
+    },
+    "Salathiel": {
+      "say": "suhlaytheeehl",
+      "ipa": "/səˈleɪ.θi.ɛl/",
+      "ref": "1 Chronicles 3:17",
+      "override": true,
+      "status": "fixed",
+      "score": 0.812
+    },
+    "Jecamiah": {
+      "say": "jek-uh-MY-uh",
+      "ipa": "/ˌdʒɛk.əˈmaɪ.ə/",
+      "ref": "1 Chronicles 3:18",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Shenazar": {
+      "say": "shih-NAZ-er",
+      "ipa": "/ʃɪˈnæz.ər/",
+      "ref": "1 Chronicles 3:18",
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Jesaiah": {
+      "say": "jih-ZEYE-uh",
+      "ipa": "/dʒɪˈzaɪ.ə/",
+      "ref": "1 Chronicles 3:21",
+      "override": true,
+      "status": "fixed",
+      "score": 0.8
+    },
+    "Shechaniah": {
+      "say": "shek-uh-NY-uh",
+      "ipa": "/ˌʃɛk.əˈnaɪ.ə/",
+      "ref": "1 Chronicles 3:21",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Igeal": {
+      "say": "IG-ee-ul",
+      "ipa": "/ˈɪɡ.i.əl/",
+      "ref": "1 Chronicles 3:22",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.4
+    },
+    "Dalaiah": {
+      "say": "duh-LAY-uh",
+      "ipa": "/dəˈleɪ.ə/",
+      "ref": "1 Chronicles 3:24",
+      "override": false,
+      "status": "suggested",
+      "score": 0.733
+    },
+    "Hodaiah": {
+      "say": "hoh-DY-uh",
+      "ipa": "/hoʊˈdaɪ.ə/",
+      "ref": "1 Chronicles 3:24",
+      "override": false,
+      "status": "ok",
+      "score": 0.917
+    },
+    "Hazelelponi": {
+      "say": "haz-ih-LEL-poh-ny",
+      "ipa": "/ˌhæz.ɪˈlɛl.poʊ.naɪ/",
+      "ref": "1 Chronicles 4:3",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.682
+    },
+    "Ahuzam": {
+      "say": "uh-HYOO-zam",
+      "ipa": "/əˈhjuː.zæm/",
+      "ref": "1 Chronicles 4:6",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.571
+    },
+    "Jezoar": {
+      "say": "jih-ZOH-ar",
+      "ipa": "/dʒɪˈzoʊ.ɑːr/",
+      "ref": "1 Chronicles 4:7",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.583
+    },
+    "Coz": {
+      "say": "koz",
+      "ipa": "/kɒz/",
+      "ref": "1 Chronicles 4:8",
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
+    },
+    "Rechah": {
+      "say": "reeka",
+      "ipa": "/ˈriː.kə/",
+      "ref": "1 Chronicles 4:12",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Charashim": {
+      "say": "KAR-uh-shihmm",
+      "ipa": "/ˈkær.ə.ʃɪm/",
+      "ref": "1 Chronicles 4:14",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Asareel": {
+      "say": "uh-SAR-ee-el",
+      "ipa": "/əˈsær.i.ɛl/",
+      "ref": "1 Chronicles 4:16",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Jehaleleel": {
+      "say": "jih-HAL-ih-leel",
+      "ipa": "/dʒɪˈhæl.ɪ.liːl/",
+      "ref": "1 Chronicles 4:16",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.444
+    },
+    "Jehudijah": {
+      "say": "jeh-hyoo-DY-juh",
+      "ipa": "/ˌdʒɛ.hjuːˈdaɪ.dʒə/",
+      "ref": "1 Chronicles 4:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.556
+    },
+    "Socho": {
+      "say": "SOH-koh",
+      "ipa": "/ˈsoʊ.koʊ/",
+      "ref": "1 Chronicles 4:18",
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Maachathite": {
+      "say": "muh-AK-uh-thite",
+      "ipa": "/məˈæk.ə.θaɪt/",
+      "ref": "1 Chronicles 4:19",
+      "override": false,
+      "status": "ok",
+      "score": 0.812
+    },
+    "Chozeba": {
+      "say": "koh-ZEE-buh",
+      "ipa": "/koʊˈziː.bə/",
+      "ref": "1 Chronicles 4:22",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Jashubi-lehem": {
+      "say": "juh-shoo-bih-LEE-hem",
+      "ipa": "/dʒəˌʃuː.bɪˈliː.hɛm/",
+      "ref": "1 Chronicles 4:22",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.682
+    },
+    "Zacchur": {
+      "say": "ZAK-ur",
+      "ipa": "/ˈzæk.ər/",
+      "ref": "1 Chronicles 4:26",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Beer-sheba": {
+      "say": "beer-SHEE-buh",
+      "ipa": "/ˌbɪərˈʃiː.bə/",
+      "ref": "1 Chronicles 4:28",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Beth-birei": {
+      "say": "beth-BIR-ee-eye",
+      "ipa": "/bɛθˈbɪr.i.aɪ/",
+      "ref": "1 Chronicles 4:31",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Josibiah": {
+      "say": "jos-ih-BY-uh",
+      "ipa": "/ˌdʒɒs.ɪˈbaɪ.ə/",
+      "ref": "1 Chronicles 4:35",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.571
+    },
+    "Reaia": {
+      "say": "ree-AY-uh",
+      "ipa": "/riːˈeɪ.ə/",
+      "ref": "1 Chronicles 5:5",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
+    },
+    "Hagarites": {
+      "say": "HAG-uh-rites",
+      "ipa": "/ˈhæɡ.ə.raɪts/",
+      "ref": "1 Chronicles 5:10",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Salchah": {
+      "say": "SAL-kuh",
+      "ipa": "/ˈsæl.kə/",
+      "ref": "1 Chronicles 5:11",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Jaanai": {
+      "say": "jayuhneye",
+      "ipa": "/ˈdʒeɪ.ə.naɪ/",
+      "ref": "1 Chronicles 5:12",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Jachan": {
+      "say": "JAY-kan",
+      "ipa": "/ˈdʒeɪ.kæn/",
+      "ref": "1 Chronicles 5:13",
+      "override": true,
+      "status": "fixed",
+      "score": 0.8
+    },
+    "Nephish": {
+      "say": "NEE-fish",
+      "ipa": "/ˈniː.fɪʃ/",
+      "ref": "1 Chronicles 5:19",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Jeaterai": {
+      "say": "jee-AT-uh-ry",
+      "ipa": "/dʒiːˈæt.ə.raɪ/",
+      "ref": "1 Chronicles 6:21",
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
+    },
+    "Vashni": {
+      "say": "VASH-ny",
+      "ipa": "/ˈvæʃ.naɪ/",
+      "ref": "1 Chronicles 6:28",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Berachiah": {
+      "say": "behr-uh-KEYE-uh",
+      "ipa": "/ˌbɛr.əˈkaɪ.ə/",
+      "ref": "1 Chronicles 6:39",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Malchiah": {
+      "say": "mal-KY-uh",
+      "ipa": "/mælˈkaɪ.ə/",
+      "ref": "1 Chronicles 6:40",
+      "override": false,
+      "status": "ok",
+      "score": 0.917
+    },
+    "Shamer": {
+      "say": "SHAY-mer",
+      "ipa": "/ˈʃeɪ.mər/",
+      "ref": "1 Chronicles 6:46",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Kirjathaim": {
+      "say": "kur-juh-THAY-im",
+      "ipa": "/ˌkɜːr.dʒəˈθeɪ.ɪm/",
+      "ref": "1 Chronicles 6:76",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.556
+    },
+    "Shimrom": {
+      "say": "SHIM-rom",
+      "ipa": "/ˈʃɪm.rɒm/",
+      "ref": "1 Chronicles 7:1",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Jibsam": {
+      "say": "JIHB-samm",
+      "ipa": "/ˈdʒɪb.sæm/",
+      "ref": "1 Chronicles 7:2",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Ishiah": {
+      "say": "ih-SHY-uh",
+      "ipa": "/ɪˈʃaɪ.ə/",
+      "ref": "1 Chronicles 7:3",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
+    },
+    "Alameth": {
+      "say": "AL-uh-meth",
+      "ipa": "/ˈæl.ə.mɛθ/",
+      "ref": "1 Chronicles 7:8",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Tharshish": {
+      "say": "THAR-shish",
+      "ipa": "/ˈθɑːr.ʃɪʃ/",
+      "ref": "1 Chronicles 7:10",
+      "override": false,
+      "status": "ok",
+      "score": 0.917
+    },
+    "Hammoleketh": {
+      "say": "huh-MOL-ih-keth",
+      "ipa": "/həˈmɒl.ɪ.kɛθ/",
+      "ref": "1 Chronicles 7:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.611
+    },
+    "Ishod": {
+      "say": "EYE-shod",
+      "ipa": "/ˈaɪ.ʃɒd/",
+      "ref": "1 Chronicles 7:18",
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
+    },
+    "Mahalah": {
+      "say": "MAH-uh-luh",
+      "ipa": "/ˈmæh.ə.lə/",
+      "ref": "1 Chronicles 7:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.583
+    },
+    "Shemidah": {
+      "say": "shih-MY-duh",
+      "ipa": "/ʃɪˈmaɪ.də/",
+      "ref": "1 Chronicles 7:19",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Eladah": {
+      "say": "EL-uh-duh",
+      "ipa": "/ˈɛl.ə.də/",
+      "ref": "1 Chronicles 7:20",
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
+    },
+    "Sherah": {
+      "say": "SHEER-uh",
+      "ipa": "/ˈʃɪər.ə/",
+      "ref": "1 Chronicles 7:24",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Uzzen-sherah": {
+      "say": "uz-en-SHEER-uh",
+      "ipa": "/ˌʌz.ɛnˈʃɪər.ə/",
+      "ref": "1 Chronicles 7:24",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.625
+    },
+    "Jehoshuah": {
+      "say": "jih-HOSH-oo-uh",
+      "ipa": "/dʒɪˈhɒʃ.u.ə/",
+      "ref": "1 Chronicles 7:27",
+      "override": false,
+      "status": "ok",
+      "score": 0.804
+    },
+    "Ishuai": {
+      "say": "ISH-yoo-eye",
+      "ipa": "/ˈɪʃ.ju.aɪ/",
+      "ref": "1 Chronicles 7:30",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.6
+    },
+    "Isuah": {
+      "say": "IS-yoo-uh",
+      "ipa": "/ˈɪs.ju.ə/",
+      "ref": "1 Chronicles 7:30",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.4
+    },
+    "Birzavith": {
+      "say": "BUR-zuh-vith",
+      "ipa": "/ˈbɜːr.zə.vɪθ/",
+      "ref": "1 Chronicles 7:31",
+      "override": false,
+      "status": "ok",
+      "score": 0.812
+    },
+    "Pispah": {
+      "say": "PIS-puh",
+      "ipa": "/ˈpɪs.pə/",
+      "ref": "1 Chronicles 7:38",
+      "override": false,
+      "status": "ok",
+      "score": 0.917
+    },
+    "Haniel": {
+      "say": "HAN-ee-el",
+      "ipa": "/ˈhæn.i.ɛl/",
+      "ref": "1 Chronicles 7:39",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.536
+    },
+    "Rezia": {
+      "say": "rih-ZY-uh",
+      "ipa": "/rɪˈzaɪ.ə/",
+      "ref": "1 Chronicles 7:39",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Malcham": {
+      "say": "MAL-kam",
+      "ipa": "/ˈmæl.kæm/",
+      "ref": "1 Chronicles 8:9",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Mirma": {
+      "say": "MUR-muh",
+      "ipa": "/ˈmɜːr.mə/",
+      "ref": "1 Chronicles 8:10",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Shamed": {
+      "say": "SHAY-med",
+      "ipa": "/ˈʃeɪ.mɛd/",
+      "ref": "1 Chronicles 8:12",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Ader": {
+      "say": "AY-der",
+      "ipa": "/ˈeɪ.dər/",
+      "ref": "1 Chronicles 8:15",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Ispah": {
+      "say": "IS-puh",
+      "ipa": "/ˈɪs.pə/",
+      "ref": "1 Chronicles 8:16",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Hezeki": {
+      "say": "hehzihkeye",
+      "ipa": "/ˈhɛz.ɪ.kaɪ/",
+      "ref": "1 Chronicles 8:17",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Jezliah": {
+      "say": "jez-LY-uh",
+      "ipa": "/dʒɛzˈlaɪ.ə/",
+      "ref": "1 Chronicles 8:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
+    },
+    "Zilthai": {
+      "say": "ZIL-thy",
+      "ipa": "/ˈzɪl.θaɪ/",
+      "ref": "1 Chronicles 8:20",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Shimhi": {
+      "say": "SHIM-heye",
+      "ipa": "/ˈʃɪm.haɪ/",
+      "ref": "1 Chronicles 8:21",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Antothijah": {
+      "say": "an-toh-THY-juh",
+      "ipa": "/ˌæn.toʊˈθaɪ.dʒə/",
+      "ref": "1 Chronicles 8:24",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.75
+    },
+    "Iphedeiah": {
+      "say": "if-ih-DEE-uh",
+      "ipa": "/ˌɪf.ɪˈdiː.ə/",
+      "ref": "1 Chronicles 8:25",
+      "override": false,
+      "status": "suggested",
+      "score": 0.774
+    },
+    "Eliah": {
+      "say": "ih-LY-uh",
+      "ipa": "/ɪˈlaɪ.ə/",
+      "ref": "1 Chronicles 8:27",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Jaresiah": {
+      "say": "jar-ih-SY-uh",
+      "ipa": "/ˌdʒær.ɪˈsaɪ.ə/",
+      "ref": "1 Chronicles 8:27",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.786
+    },
+    "Zacher": {
+      "say": "ZAY-ker",
+      "ipa": "/ˈzeɪ.kər/",
+      "ref": "1 Chronicles 8:31",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Esh-baal": {
+      "say": "eshbayuhl",
+      "ipa": "/ɛʃˈbeɪ.əl/",
+      "ref": "1 Chronicles 8:33",
+      "override": true,
+      "status": "fixed",
+      "score": 0.917
+    },
+    "Malchi-shua": {
+      "say": "mal-keye-SHOO-uh",
+      "ipa": "/ˌmæl.kaɪˈʃuː.ə/",
+      "ref": "1 Chronicles 8:33",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Jehoadah": {
+      "say": "jih-HOH-uh-duh",
+      "ipa": "/dʒɪˈhoʊ.ə.də/",
+      "ref": "1 Chronicles 8:36",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.714
+    },
+    "Jehush": {
+      "say": "JEE-hush",
+      "ipa": "/ˈdʒiː.hʌʃ/",
+      "ref": "1 Chronicles 8:39",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Nethinims": {
+      "say": "NETH-ih-nimz",
+      "ipa": "/ˈnɛθ.ɪ.nɪmz/",
+      "ref": "1 Chronicles 9:2",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Hasenuah": {
+      "say": "has-ih-NYOO-uh",
+      "ipa": "/ˌhæs.ɪˈnjuː.ə/",
+      "ref": "1 Chronicles 9:7",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Maasiai": {
+      "say": "maayseeeye",
+      "ipa": "/məˈeɪ.si.aɪ/",
+      "ref": "1 Chronicles 9:12",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Pashur": {
+      "say": "PASH-ur",
+      "ipa": "/ˈpæʃ.ər/",
+      "ref": "1 Chronicles 9:12",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Pas-dammim": {
+      "say": "pas-DAM-im",
+      "ipa": "/pæsˈdæm.ɪm/",
+      "ref": "1 Chronicles 11:13",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.438
+    },
+    "Abi-ezer": {
+      "say": "aybeyeeezuhr",
+      "ipa": "/ˌeɪ.baɪˈiː.zər/",
+      "ref": "1 Chronicles 11:28",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Antothite": {
+      "say": "AN-tuh-thite",
+      "ipa": "/ˈæn.tə.θaɪt/",
+      "ref": "1 Chronicles 11:28",
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Shage": {
+      "say": "SHAY-ghee",
+      "ipa": "/ˈʃeɪ.ɡiː/",
+      "ref": "1 Chronicles 11:34",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Haggeri": {
+      "say": "HAG-uh-ry",
+      "ipa": "/ˈhæɡ.ə.raɪ/",
+      "ref": "1 Chronicles 11:38",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Hothan": {
+      "say": "HOH-than",
+      "ipa": "/ˈhoʊ.θæn/",
+      "ref": "1 Chronicles 11:44",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Jasiel": {
+      "say": "jayseeehl",
+      "ipa": "/ˈdʒeɪ.si.ɛl/",
+      "ref": "1 Chronicles 11:47",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Mesobaite": {
+      "say": "misohbayeyet",
+      "ipa": "/mɪˈsoʊ.beɪ.aɪt/",
+      "ref": "1 Chronicles 11:47",
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
+    },
+    "Berachah": {
+      "say": "BEHR-uh-kah",
+      "ipa": "/ˈbɛr.ə.kə/",
+      "ref": "1 Chronicles 12:3",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Ismaiah": {
+      "say": "iz-MY-uh",
+      "ipa": "/ɪzˈmaɪ.ə/",
+      "ref": "1 Chronicles 12:4",
+      "override": false,
+      "status": "suggested",
+      "score": 0.733
+    },
+    "Josabad": {
+      "say": "JOS-uh-bad",
+      "ipa": "/ˈdʒɒs.ə.bæd/",
+      "ref": "1 Chronicles 12:4",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Azareel": {
+      "say": "uh-ZAR-ee-el",
+      "ipa": "/əˈzær.i.ɛl/",
+      "ref": "1 Chronicles 12:6",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.571
+    },
+    "Jesiah": {
+      "say": "jih-SY-uh",
+      "ipa": "/dʒɪˈsaɪ.ə/",
+      "ref": "1 Chronicles 12:6",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.55
+    },
+    "Korhites": {
+      "say": "KAWR-heyetss",
+      "ipa": "/ˈkɔːr.haɪts/",
+      "ref": "1 Chronicles 12:6",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Machbanai": {
+      "say": "MAK-buh-ny",
+      "ipa": "/ˈmæk.bə.naɪ/",
+      "ref": "1 Chronicles 12:13",
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
+    },
+    "Aaronites": {
+      "say": "AIR-uh-nites",
+      "ipa": "/ˈɛər.ə.naɪts/",
+      "ref": "1 Chronicles 12:27",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Obed-edom": {
+      "say": "oh-bed-EE-dum",
+      "ipa": "/ˌoʊ.bɛdˈiː.dəm/",
+      "ref": "1 Chronicles 13:13",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Elpalet": {
+      "say": "el-PAY-let",
+      "ipa": "/ɛlˈpeɪ.lɛt/",
+      "ref": "1 Chronicles 14:5",
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Eliphalet": {
+      "say": "ih-LIF-uh-let",
+      "ipa": "/ɪˈlɪf.ə.lɛt/",
+      "ref": "1 Chronicles 14:7",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Gazer": {
+      "say": "GAY-zer",
+      "ipa": "/ˈɡeɪ.zər/",
+      "ref": "1 Chronicles 14:16",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Elipheleh": {
+      "say": "ih-LIF-ih-leh",
+      "ipa": "/ɪˈlɪf.ɪ.lɛ/",
+      "ref": "1 Chronicles 15:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.571
+    },
+    "Sheminith": {
+      "say": "SHEM-ih-nith",
+      "ipa": "/ˈʃɛm.ɪ.nɪθ/",
+      "ref": "1 Chronicles 15:21",
+      "override": false,
+      "status": "ok",
+      "score": 0.857
+    },
+    "Nethaneel": {
+      "say": "nih-THAN-ee-el",
+      "ipa": "/nɪˈθæn.i.ɛl/",
+      "ref": "1 Chronicles 15:24",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.562
+    },
+    "Hadarezer": {
+      "say": "had-ur-EE-zer",
+      "ipa": "/ˌhæd.ərˈiː.zər/",
+      "ref": "1 Chronicles 18:3",
+      "override": false,
+      "status": "ok",
+      "score": 0.944
+    },
+    "Syria-damascus": {
+      "say": "sir-ee-uh-duh-MAS-kus",
+      "ipa": "/ˌsɪr.i.ə.dəˈmæs.kəs/",
+      "ref": "1 Chronicles 18:6",
+      "override": false,
+      "status": "ok",
+      "score": 0.962
+    },
+    "Chun": {
+      "say": "kuhnn",
+      "ipa": "/kʌn/",
+      "ref": "1 Chronicles 18:8",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Syria-maachah": {
+      "say": "sir-ee-uh-MAY-uh-kuh",
+      "ipa": "/ˌsɪr.i.əˈmeɪ.ə.kə/",
+      "ref": "1 Chronicles 19:6",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.7
+    },
+    "Sibbechai": {
+      "say": "SIB-ih-ky",
+      "ipa": "/ˈsɪb.ɪ.kaɪ/",
+      "ref": "1 Chronicles 20:4",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Zidonians": {
+      "say": "zy-DOH-nee-unz",
+      "ipa": "/zaɪˈdoʊ.ni.ənz/",
+      "ref": "1 Chronicles 22:4",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Laadan": {
+      "say": "LAY-uh-dan",
+      "ipa": "/ˈleɪ.ə.dæn/",
+      "ref": "1 Chronicles 23:7",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Aphses": {
+      "say": "AF-seez",
+      "ipa": "/ˈæf.siːz/",
+      "ref": "1 Chronicles 24:15",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Jehezekel": {
+      "say": "jih-HEZ-ih-kel",
+      "ipa": "/dʒɪˈhɛz.ɪ.kɛl/",
+      "ref": "1 Chronicles 24:16",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.778
+    },
+    "Michah": {
+      "say": "MY-kuh",
+      "ipa": "/ˈmaɪ.kə/",
+      "ref": "1 Chronicles 24:24",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Asarelah": {
+      "say": "as-uh-REE-luh",
+      "ipa": "/ˌæs.əˈriː.lə/",
+      "ref": "1 Chronicles 25:2",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Romamti-ezer": {
+      "say": "roh-mam-tee-EE-zer",
+      "ipa": "/roʊˌmæm.tiˈiː.zər/",
+      "ref": "1 Chronicles 25:4",
+      "override": false,
+      "status": "ok",
+      "score": 0.818
+    },
+    "Peulthai": {
+      "say": "pee-UL-thy",
+      "ipa": "/piːˈʌl.θaɪ/",
+      "ref": "1 Chronicles 26:5",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Asuppim": {
+      "say": "uh-SUP-im",
+      "ipa": "/əˈsʌp.ɪm/",
+      "ref": "1 Chronicles 26:15",
+      "override": false,
+      "status": "suggested",
+      "score": 0.714
+    },
+    "Zarhites": {
+      "say": "zahrheyets",
+      "ipa": "/ˈzɑːr.haɪts/",
+      "ref": "1 Chronicles 27:11",
+      "override": true,
+      "status": "fixed",
+      "score": 0.875
+    },
+    "Anetothite": {
+      "say": "uh-NET-uh-thite",
+      "ipa": "/əˈnɛt.ə.θaɪt/",
+      "ref": "1 Chronicles 27:12",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.438
+    },
+    "Hagerite": {
+      "say": "haguhreyet",
+      "ipa": "/ˈhæɡ.ə.raɪt/",
+      "ref": "1 Chronicles 27:31",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Judaea": {
+      "say": "joo-DEE-uh",
+      "ipa": "/dʒuːˈdiː.ə/",
+      "ref": "Acts 1:8",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Zelotes": {
+      "say": "zi-LOH-teez",
+      "ipa": "/zɪˈloʊ.tiːz/",
+      "ref": "Acts 1:13",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Aceldama": {
+      "say": "uh-KEL-duh-muh",
+      "ipa": "/əˈkɛl.də.mə/",
+      "ref": "Acts 1:19",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Barsabas": {
+      "say": "BAR-suh-bus",
+      "ipa": "/ˈbɑːr.sə.bəs/",
+      "ref": "Acts 1:23",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.562
+    },
+    "Galilaeans": {
+      "say": "gal-ih-LEE-unz",
+      "ipa": "/ˌɡæl.ɪˈliː.ənz/",
+      "ref": "Acts 2:7",
+      "override": false,
+      "status": "ok",
+      "score": 0.889
+    },
+    "Grecians": {
+      "say": "GREE-shunz",
+      "ipa": "/ˈɡriː.ʃənz/",
+      "ref": "Acts 6:1",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Nicolas": {
+      "say": "NIK-uh-lus",
+      "ipa": "/ˈnɪk.ə.ləs/",
+      "ref": "Acts 6:5",
+      "override": false,
+      "status": "ok",
+      "score": 0.929
+    },
+    "Charran": {
+      "say": "karuhn",
+      "ipa": "/ˈkær.ən/",
+      "ref": "Acts 7:2",
+      "override": true,
+      "status": "fixed",
+      "score": 0.9
+    },
+    "Chanaan": {
+      "say": "KAY-nann",
+      "ipa": "/ˈkeɪ.næn/",
+      "ref": "Acts 7:11",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Emmor": {
+      "say": "EHM-awr",
+      "ipa": "/ˈɛm.ɔːr/",
+      "ref": "Acts 7:16",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Sychem": {
+      "say": "SY-kem",
+      "ipa": "/ˈsaɪ.kɛm/",
+      "ref": "Acts 7:16",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Madian": {
+      "say": "MAY-dee-un",
+      "ipa": "/ˈmeɪ.di.ən/",
+      "ref": "Acts 7:29",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Sina": {
+      "say": "SY-nuh",
+      "ipa": "/ˈsaɪ.nə/",
+      "ref": "Acts 7:30",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.675
+    },
+    "Remphan": {
+      "say": "REM-fan",
+      "ipa": "/ˈrɛm.fæn/",
+      "ref": "Acts 7:43",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Esaias": {
+      "say": "izayuhs",
+      "ipa": "/ɪˈzeɪ.əs/",
+      "ref": "Acts 8:28",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Saron": {
+      "say": "SAIRR-on",
+      "ipa": "/ˈsɛər.ɒn/",
+      "ref": "Acts 9:35",
+      "override": true,
+      "status": "fixed",
+      "score": 1.0
+    },
+    "Phenice": {
+      "say": "fihneyesee",
+      "ipa": "/fɪˈnaɪ.siː/",
+      "ref": "Acts 11:19",
+      "override": true,
+      "status": "fixed",
+      "score": 0.857
+    },
+    "Cis": {
+      "say": "SIS",
+      "ipa": "/sɪs/",
+      "ref": "Acts 13:21",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Mercurius": {
+      "say": "mur-KYOOR-ee-us",
+      "ipa": "/mɜːrˈkjʊər.i.əs/",
+      "ref": "Acts 14:12",
+      "override": false,
+      "status": "ok",
+      "score": 0.9
+    },
+    "Timotheus": {
+      "say": "tih-MOH-thee-us",
+      "ipa": "/tɪˈmoʊ.θi.əs/",
+      "ref": "Acts 16:1",
+      "override": false,
+      "status": "ok",
+      "score": 0.875
+    },
+    "Samothracia": {
+      "say": "sam-oh-THRAY-shuh",
+      "ipa": "/ˌsæm.oʊˈθreɪ.ʃə/",
+      "ref": "Acts 16:11",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.794
+    },
+    "Berea": {
+      "say": "buh-REE-uh",
+      "ipa": "/bəˈriː.ə/",
+      "ref": "Acts 17:10",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Epicureans": {
+      "say": "ep-ih-kyoo-REE-unz",
+      "ipa": "/ˌɛp.ɪ.kjʊˈriː.ənz/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 0.955
+    },
+    "Stoicks": {
+      "say": "STOH-iks",
+      "ipa": "/ˈstoʊ.ɪks/",
+      "ref": "Acts 17:18",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Mars": {
+      "say": "MARZ",
+      "ipa": "/mɑːrz/",
+      "ref": "Acts 17:22",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Cenchrea": {
+      "say": "SENG-krih-uh",
+      "ipa": "/ˈsɛŋ.krɪ.ə/",
+      "ref": "Acts 18:18",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.643
+    },
+    "Diana": {
+      "say": "dy-AN-uh",
+      "ipa": "/daɪˈæn.ə/",
+      "ref": "Acts 19:24",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    },
+    "Coos": {
+      "say": "KOH-os",
+      "ipa": "/ˈkoʊ.ɒs/",
+      "ref": "Acts 21:1",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.25
+    },
+    "Phenicia": {
+      "say": "fihnihshuh",
+      "ipa": "/fɪˈnɪʃ.ə/",
+      "ref": "Acts 21:2",
+      "override": true,
+      "status": "fixed",
+      "score": 0.833
+    },
+    "Adria": {
+      "say": "AY-dree-uh",
+      "ipa": "/ˈeɪ.dri.ə/",
+      "ref": "Acts 27:27",
+      "override": false,
+      "status": "ok",
+      "score": 0.8
+    },
+    "Melita": {
+      "say": "MEL-ih-tuh",
+      "ipa": "/ˈmɛl.ɪ.tə/",
+      "ref": "Acts 28:1",
+      "override": false,
+      "status": "unfixed",
+      "score": 0.5
+    },
+    "Castor": {
+      "say": "KAS-ter",
+      "ipa": "/ˈkæs.tər/",
+      "ref": "Acts 28:11",
+      "override": false,
+      "status": "suggested",
+      "score": 0.75
+    },
+    "Pollux": {
+      "say": "POL-uks",
+      "ipa": "/ˈpɒl.əks/",
+      "ref": "Acts 28:11",
+      "override": false,
+      "status": "ok",
+      "score": 0.833
+    },
+    "Appii": {
+      "say": "AP-ee-eye",
+      "ipa": "/ˈæp.i.aɪ/",
+      "ref": "Acts 28:15",
+      "override": false,
+      "status": "ok",
+      "score": 1.0
+    }
+  }
+}
