@@ -561,7 +561,7 @@ Layout:
 
 ### WS3 — Retire the reduced-motion stills
 
-> **Status (2026-10-17): done, committed locally as `7c2ef29e` (3b) and `9c30c3f0` (3c); push pending your go-ahead.**
+> **Status (2026-10-17): done, pushed as `a92ac8dc` (3b `7c2ef29e`, 3c `9c30c3f0`); Cloudflare's Workers Build succeeded.**
 > - **Done:** 2,646 `.still.svg` deleted and none recreated by a publish dry run. `build_stills.py` is gone, and Publish is three steps.
 > - **Checks:** the manifest keeps the same 2,241 keys and records minus `still`. 19 tests pass (14 freeze, 4 registry, 1 import sweep). SVG Studio's "Save + manifest" succeeds.
 > - **Numbers:** deploy bundle 7,128 → 5,805 files; tracked files 11,729.
@@ -608,7 +608,7 @@ Layout:
 
 ### WS7 — Shared visuals: one SVG across several verses (D17)
 
-> **Status (2026-10-17): done, committed locally as `4ae8a5b3`; push pending your go-ahead.**
+> **Status (2026-10-17): done, pushed as `ffef57c0`; Cloudflare's Workers Build succeeded.**
 > - **Checks:** 125 verses share the previous verse's picture (Numbers 32:16-32 are one picture with one download). Play on the verse already shown still restarts its picture, so it stays in step with the narration. A real Video Studio render of Numbers 32:15-20 draws the trace once. 33 tests pass, 14 of them new.
 > - **Beyond the plan:**
 >   - single-verse and past-the-end ranges are handled;
@@ -756,7 +756,7 @@ Expect about 147 MiB. All SHAs change, and any other clone must re-clone.
 
 ### WS5 — PC app → Studio shell cleanup
 
-> **Status (2026-10-17): done, committed locally as `33c6e132`; push pending your go-ahead.** Every checklist item landed, plus `app.ico` deleted.
+> **Status (2026-10-17): done, pushed as `f55eb258`; Cloudflare's Workers Build succeeded.** Every checklist item landed, plus `app.ico` deleted.
 > - **Review:** 2 reviewers, then a fix round (15 fixes) and a re-check.
 > - **Checks:** the real window, checked at 900 px as `run.bat` starts it, fits both bars. 33 tests pass.
 > - **Beyond the plan:**
