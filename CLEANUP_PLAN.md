@@ -561,6 +561,13 @@ Layout:
 
 ### WS3 — Retire the reduced-motion stills
 
+> **Status (2026-10-17): done, committed locally as `7c2ef29e` (3b) and `9c30c3f0` (3c); push pending your go-ahead.**
+> - **Done:** 2,646 `.still.svg` deleted and none recreated by a publish dry run. `build_stills.py` is gone, and Publish is three steps.
+> - **Checks:** the manifest keeps the same 2,241 keys and records minus `still`. 19 tests pass (14 freeze, 4 registry, 1 import sweep). SVG Studio's "Save + manifest" succeeds.
+> - **Numbers:** deploy bundle 7,128 → 5,805 files; tracked files 11,729.
+> - **Review:** the adversarial review found no blocker or major issue.
+> - **Beyond the plan:** `build_manifest` skips and reports any `.still.svg` copied back from `backups/` (which holds 1,405); `test_registry` fails on one; `svg_is_animated` keeps two test assertions.
+
 **Goal.** Zero `.still.svg` files and no stills step anywhere. There is no reduced-motion replacement (D4), so this is deletion only: the web side already went in WS2d, and what is left is the Python side (3b) and the files (3c).
 
 **Order. Follow it exactly:** WS2d deployed → 3b → 3c.
