@@ -27,7 +27,8 @@ persons named inside those passages are kept.
 
 Names and spellings are the WEB's, from the scene data, unmodified.
 
-Built into a poster by generate_chronicles_master_svg.py.
+Built into the wall chart by generate_ot_family_tree_svg.py, and read verse
+by verse as the 1 Chronicles 1-9 camera (svg_chronicles_world.py).
 Run `python chronicles_tree.py` for a structural audit.
 """
 
@@ -187,10 +188,6 @@ def upward(ch, title, col, i, drop=0):
     return out
 
 
-def kids_of(node):
-    return node.kids
-
-
 def strip(node, keep=()):
     """Drop '~heading' children, promoting their own children in place."""
     out = []
@@ -302,10 +299,6 @@ class Tree:
                 rec(k, n, depth + 1)
         rec(self.root, None, 0)
         return self
-
-
-def P(label, note=None, kids=None, **kw):
-    return N(label, note, kids, **kw)
 
 
 # ===========================================================================

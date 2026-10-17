@@ -1,60 +1,39 @@
-"""Generate per-verse map animations for Numbers 32 and Numbers 34.
+"""Shared map data for Numbers 32 and 34, and the map projection.
 
-Three map visualizations, one animated WebP per verse into visuals/:
+A library: generate_numbers34_svg.py and generate_numbers32_svg.py draw the
+maps from it, and eight more generators (Genesis 1, 2, 6-9, 10 and 11,
+Numbers 1-2, Acts 13-14 and 15-18) take its water and land colours or its
+MapFrame projection. What it holds:
 
-* Numbers 34:1-15  — a wide "Greater Canaan" map. The border of the land is
-  traced segment by segment as the verses describe it (south, west = the
-  Great Sea, north, east), with landmark dots appearing as they are named
-  and a side panel giving the modern scholarly identification of each
-  (Kadesh-barnea = Ein el-Qudeirat, Brook of Egypt = Wadi el-Arish,
-  Lebo-hamath = Labweh, Zedad = Sadad ...). The northern reach follows the
-  mainstream view (Mazar, Aharoni) that these borders preserve Egypt's
-  Late Bronze Age province of Canaan.
+* Numbers 34:1-15 — "Greater Canaan". The border of the land, one segment
+  per border verse in reading order (south, west = the Great Sea, north,
+  east), the landmarks named along it, and the side-panel notes giving the
+  modern scholarly identification of each (Kadesh-barnea = Ein el-Qudeirat,
+  Brook of Egypt = Wadi el-Arish, Lebo-hamath = Labweh, Zedad = Sadad ...).
+  The northern reach follows the mainstream view (Mazar, Aharoni) that these
+  borders preserve Egypt's Late Bronze Age province of Canaan.
 
-* Numbers 34:16-29 — a zoomed twelve-tribe allotment map (the territories
-  as later described in Joshua 13-19); as each tribal prince is named
-  (vv 19-28) his tribe's territory lights up.
+* Numbers 34:16-29 — the twelve tribal territories (as later described in
+  Joshua 13-19) and the prince named for each tribe (vv 19-28).
 
-* Numbers 32 (all 42 verses) — a Transjordan map: the lands of Jazer and
+* Numbers 32 (all 42 verses) — the Transjordan: the lands of Jazer and
   Gilead, the kingdoms of Sihon and Og, and the cities Gad and Reuben
-  rebuilt, highlighted verse by verse.
+  rebuilt, with a stage per verse saying what that verse shows.
 
 All coordinates are approximate scholarly reconstructions — the ancient
-landmarks are only partly identifiable, and every frame says so in the
-footer. Geometry is hand-encoded lat/lon simplified from standard Bible
-atlas reconstructions. Label positions are hand-tuned; if you move a dot,
-re-extract the affected verse's final frame and check for collisions.
-
-Follows the house animation rules: text fully opaque in every frame, the
-animation plays ONCE and holds (loop=1), <=24 frames, no pulsing.
-
-Run inside the project venv:  .venv\\Scripts\\python.exe generate_tribal_maps.py
+landmarks are only partly identifiable. Geometry is hand-encoded lat/lon
+simplified from standard Bible atlas reconstructions. Label positions are
+hand-tuned; if you move a dot, regenerate the affected verse's SVG and check
+for collisions.
 """
 
 import math
-import os
-
-from PIL import Image, ImageDraw
-
-from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
-                                 TEXT_DIM, HL, F_TITLE, F_LABEL, F_SMALL,
-                                 F_DIM, F_VERSE, font, ease, g, dashed_line,
-                                 out_path)
-
-G_FRAMES = 24
-G_FRAME_MS = 120
 
 SEA = (24, 36, 54)             # water fill
 LAND = (34, 35, 29)            # land fill
 RIVER = (78, 112, 148)
 RIVER_DIM = (52, 72, 94)
 WATER_TXT = (110, 132, 158)
-
-F_MAP = font(14)               # map labels — upright (small italics blur)
-F_MAP_B = font(14, bold=True)
-F_WATER = font(14, italic=True)
-F_TRIBE = font(14, bold=True)
-F_BIG = font(30, bold=True)
 
 # Muted per-tribe fills (drawn at low alpha over LAND)
 TRIBE_COL = {
@@ -80,7 +59,7 @@ COAST = [(30.95, 33.35), (31.05, 33.55), (31.16, 33.80), (31.29, 34.23),
          (34.95, 36.05), (35.20, 36.10)]
 
 # Land = everything east/south of the coastline (generous outer corners;
-# the map image clips whatever falls outside its own bounding box).
+# the map window clips whatever falls outside it).
 LAND_POLY = COAST + [(35.4, 38.4), (29.2, 38.4), (29.2, 33.0)]
 
 DEAD_SEA = [(31.77, 35.50), (31.76, 35.56), (31.60, 35.58), (31.45, 35.57),
@@ -126,7 +105,8 @@ BORDER_SEGS = [
 CANAAN_POLY = [p for _, seg in BORDER_SEGS for p in seg[:-1]]
 
 # (label, lat, lon, first verse, (dx, dy, PIL anchor), leader, uncertain)
-# Offsets are hand-tuned against the Frame A projection — QC after moving.
+# Offsets are hand-tuned against the Numbers 34:1-15 window
+# (generate_numbers34_svg.py) — QC after moving.
 # (Azmon and Hazar-addar get dots via the border itself; their labels would
 # not fit in the crowded southwest pocket — the side panel names them.)
 LANDMARKS34 = [
@@ -248,12 +228,14 @@ V3_CITIES = ["Ataroth", "Dibon", "Jazer", "Beth-nimrah", "Heshbon",
 
 
 # ---------------------------------------------------------------------------
-# Projection & drawing helpers
+# Projection & label anchors
 # ---------------------------------------------------------------------------
 
 class MapFrame:
-    """Equirectangular lat/lon window rendered into its own image (so
-    geometry outside the window clips cleanly), pasted onto the canvas."""
+    """Equirectangular lat/lon window fitted (centred) into `rect` =
+    (x0, y0, x1, y1) on the canvas. pt()/pts() give coordinates local to
+    the window, which is mw x mh with its top-left at (px, py); callers
+    draw inside a group clipped to it, so geometry outside clips cleanly."""
 
     def __init__(self, lat0, lat1, lon0, lon1, rect):
         self.lat0, self.lat1, self.lon0, self.lon1 = lat0, lat1, lon0, lon1
@@ -275,120 +257,17 @@ class MapFrame:
         return [self.pt(la, lo) for la, lo in seq]
 
 
-def seg_partial(pts, frac):
-    """Truncate a pixel polyline to the leading `frac` of its length."""
-    if frac >= 1.0 or len(pts) < 2:
-        return pts
-    lens = [math.hypot(b[0] - a[0], b[1] - a[1])
-            for a, b in zip(pts, pts[1:])]
-    total = sum(lens) or 1.0
-    target = total * max(frac, 0.0)
-    out = [pts[0]]
-    run = 0.0
-    for a, b, ln in zip(pts, pts[1:], lens):
-        if run + ln >= target:
-            f = (target - run) / (ln or 1.0)
-            out.append((a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f))
-            return out
-        out.append(b)
-        run += ln
-    return out
-
-
-def dashed_poly(d, pts, fill, width=2):
-    for a, b in zip(pts, pts[1:]):
-        dashed_line(d, a, b, fill, width)
-
-
+# a label's offset from its dot, (dx, dy, text anchor), by place:
+# right, left, above, below
 ANCHORS = {"r": (8, 0, "lm"), "l": (-8, 0, "rm"),
            "a": (0, -7, "mb"), "b": (0, 7, "mt")}
 
-
-def label_dot(d, xy, name, place="r", fill=TEXT, fnt=None, dot=SAND, r=3,
-              unc=False, leader=False):
-    """Dot + label. `place` is 'l'/'r'/'a'/'b' or an explicit
-    (dx, dy, PIL-anchor) triple; `leader` draws a thin line to the text."""
-    x, y = xy
-    fnt = fnt or F_MAP
-    if dot:
-        d.ellipse([x - r, y - r, x + r, y + r], outline=dot, width=2)
-    dx, dy, anch = ANCHORS[place] if isinstance(place, str) else place
-    if leader:
-        lx = x + dx * 0.75
-        ly = y + dy * 0.75
-        d.line([(x + (2 if dx >= 0 else -2), y - 3), (lx, ly)],
-               fill=SAND_DIM, width=1)
-    txt = name + " ?" if unc else name
-    d.text((x + dx, y + dy), txt, font=fnt, fill=fill, anchor=anch)
-
-
-def draw_base(md, fr, dim=False):
-    """Sea, land, lakes and rivers for one map window."""
-    river = RIVER_DIM if dim else RIVER
-    md.polygon(fr.pts(LAND_POLY), fill=LAND)
-    md.line(fr.pts(COAST), fill=SAND_DIM, width=2)
-    for lake in LAKES:
-        md.polygon(fr.pts(lake), fill=SEA, outline=SAND_DIM)
-    for rv in (JORDAN_UP, JORDAN_LOW, ARNON, JABBOK, YARMOUK):
-        md.line(fr.pts(rv), fill=river, width=2)
-
-
-def redraw_lakes(od, fr):
-    """Region fills live on the overlay and would tint the lakes — repaint
-    the water on top of them (highlight lines are drawn after this)."""
-    for lake in LAKES:
-        od.polygon(fr.pts(lake), fill=SEA + (255,),
-                   outline=SAND_DIM + (255,))
-
-
-def compass_scale(md, fr):
-    """North arrow (drawn with lines — no glyph arrows) + 50 km bar,
-    stacked bottom-right, where all three map windows are empty."""
-    x, y = fr.mw - 24, fr.mh - 62
-    md.line([(x, y + 22), (x, y)], fill=TEXT_DIM, width=2)
-    md.line([(x - 5, y + 8), (x, y)], fill=TEXT_DIM, width=2)
-    md.line([(x + 5, y + 8), (x, y)], fill=TEXT_DIM, width=2)
-    md.text((x - 10, y + 2), "N", font=F_MAP, fill=TEXT_DIM, anchor="rm")
-    bar = 50 * fr.s / 111.0
-    bx, by = fr.mw - 16 - bar, fr.mh - 16
-    md.line([(bx, by), (bx + bar, by)], fill=TEXT_DIM, width=2)
-    md.line([(bx, by - 3), (bx, by + 3)], fill=TEXT_DIM, width=2)
-    md.line([(bx + bar, by - 3), (bx + bar, by + 3)], fill=TEXT_DIM, width=2)
-    md.text((bx + bar / 2, by - 6), "50 km", font=F_SMALL, fill=TEXT_DIM,
-            anchor="mb")
-
-
-def flatten(m, mo):
-    """Composite the overlay, then hand back a draw for the TEXT PASS —
-    every label is drawn after fills/repaints/lines so nothing can paint
-    over a word."""
-    flat = Image.alpha_composite(m.convert("RGBA"), mo).convert("RGB")
-    return flat, ImageDraw.Draw(flat)
-
-
-def paste_map(img, flat, fr):
-    img.paste(flat, (fr.px, fr.py))
-    ImageDraw.Draw(img).rectangle(
-        [fr.px - 1, fr.py - 1, fr.px + fr.mw, fr.py + fr.mh],
-        outline=SAND_DIM, width=1)
-
-
-def panel_lines(d, x, y, lines, gap=22):
-    for ln in lines:
-        dimmed = ln.startswith(" ")
-        d.text((x, y), ln.strip(), font=F_SMALL if dimmed else F_LABEL,
-               fill=TEXT_DIM if dimmed else TEXT)
-        y += gap
-    return y
-
-
+PANEL_X = 440                  # left edge of the side panel, beside the map
 
 
 # ---------------------------------------------------------------------------
 # Numbers 34, verses 1-15 — tracing the border of Greater Canaan
 # ---------------------------------------------------------------------------
-
-FRAME_A = None
 
 CAPTIONS_34A = {
     1: "instructions for the land you are entering",
@@ -429,78 +308,9 @@ PANEL_34A = {
 }
 
 
-def draw_34_wide(img, verse, grow):
-    global FRAME_A
-    if FRAME_A is None:
-        FRAME_A = MapFrame(29.7, 35.0, 33.3, 37.9, (36, 86, 410, 556))
-    fr = FRAME_A
-    m = Image.new("RGB", (fr.mw, fr.mh), SEA)
-    md = ImageDraw.Draw(m)
-    mo = Image.new("RGBA", (fr.mw, fr.mh), (0, 0, 0, 0))
-    od = ImageDraw.Draw(mo)
-
-    draw_base(md, fr)
-
-    # faint tint of the whole land from v2 on; Transjordan tint on 14-15
-    if verse >= 2:
-        od.polygon(fr.pts(CANAAN_POLY), fill=HL + (16,))
-    if verse in (14, 15):
-        for key in EAST_TRIBES:
-            od.polygon(fr.pts(TRIBES[key][1]), fill=TRIBE_COL[key] + (80,))
-    redraw_lakes(od, fr)
-
-    # border segments (on the overlay, above the lake repaint — the east
-    # border runs along the Jordan and the Dead Sea shore):
-    # past = solid sand, current = growing highlight, future = dashed dim
-    for v, seg in BORDER_SEGS:
-        pts = fr.pts(seg)
-        if verse > v or verse >= 13:
-            od.line(pts, fill=SAND + (255,), width=3)
-        elif verse == v:
-            dashed_poly(od, pts, SAND_DIM + (255,), 1)
-            lead = seg_partial(pts, grow)
-            if len(lead) > 1:
-                od.line(lead, fill=g(0.95), width=4)
-        else:
-            dashed_poly(od, pts, SAND_DIM + (255,), 1)
-
-    # ---- text pass ----
-    flat, fd = flatten(m, mo)
-    fd.text(fr.pt(32.90, 34.15), "The Great Sea", font=F_WATER,
-            fill=WATER_TXT, anchor="mm")
-    fd.text(fr.pt(31.22, 35.66), "Salt Sea", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    fd.text(fr.pt(32.82, 35.72), "Chinnereth", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    fd.text(fr.pt(30.50, 35.80), "EDOM", font=F_MAP, fill=TEXT_DIM,
-            anchor="mm")
-    fd.text(fr.pt(30.05, 34.60), "wilderness of Zin", font=F_SMALL,
-            fill=TEXT_DIM, anchor="mm")
-    label_dot(fd, fr.pt(33.51, 36.29), "Damascus", "r", TEXT_DIM,
-              F_SMALL, SAND_DIM)
-    label_dot(fd, fr.pt(31.78, 35.23), "Jerusalem", "l", TEXT_DIM,
-              F_SMALL, SAND_DIM)
-    if verse >= 5:
-        fd.text(fr.pt(30.55, 33.42), "Brook of Egypt", font=F_SMALL,
-                fill=TEXT if verse == 5 else TEXT_DIM, anchor="lm")
-
-    for name, la, lo, v0, place, leader, unc in LANDMARKS34:
-        if verse < v0:
-            continue
-        cur = (verse == v0)
-        label_dot(fd, fr.pt(la, lo), name, place,
-                  HL if cur else TEXT, F_MAP_B if cur else F_MAP,
-                  HL if cur else SAND, unc=unc, leader=leader)
-
-    compass_scale(fd, fr)
-    paste_map(img, flat, fr)
-
-
 # ---------------------------------------------------------------------------
 # Numbers 34, verses 16-29 — the allotment, tribe by tribe
 # ---------------------------------------------------------------------------
-
-FRAME_B = None
 
 # verse -> (tribe key, prince, [blurb lines], [(city, lat, lon, place)])
 PRINCES = {
@@ -546,67 +356,9 @@ CAPTIONS_34B = {
 }
 
 
-def draw_34_zoom(img, verse, grow):
-    global FRAME_B
-    if FRAME_B is None:
-        FRAME_B = MapFrame(30.5, 33.5, 34.2, 36.7, (36, 86, 410, 556))
-    fr = FRAME_B
-    m = Image.new("RGB", (fr.mw, fr.mh), SEA)
-    md = ImageDraw.Draw(m)
-    mo = Image.new("RGBA", (fr.mw, fr.mh), (0, 0, 0, 0))
-    od = ImageDraw.Draw(mo)
-
-    draw_base(md, fr)
-
-    focus = PRINCES.get(verse)
-    focus_key = focus[0] if focus else None
-    labels, dim_lines, outlines = [], [], []
-
-    for key in WEST_TRIBES + EAST_TRIBES:
-        label, poly, lab = TRIBES[key]
-        east = key in EAST_TRIBES
-        cur = (key == focus_key or
-               (verse == 23 and key == "MANASSEH_E"))
-        done = verse == 29 and not east
-        if cur:
-            od.polygon(fr.pts(poly),
-                       fill=TRIBE_COL[key] + (int(60 + 90 * grow),))
-            outlines.append(seg_partial(fr.pts(poly + poly[:1]), grow))
-            fnt, fill = F_TRIBE, HL
-        else:
-            od.polygon(fr.pts(poly), fill=TRIBE_COL[key] + (26 if east else 42,))
-            dim_lines.append((fr.pts(poly + poly[:1]),
-                              SAND if done else SAND_DIM))
-            fnt = F_TRIBE if done else F_MAP
-            fill = TEXT if done else (TEXT_DIM if east else TEXT)
-        labels.append((fr.pt(*lab), label, fnt, fill))
-
-    redraw_lakes(od, fr)
-    for pts, col in dim_lines:          # borders above the water repaint
-        od.line(pts, fill=col + (255,), width=1)
-    for pts in outlines:
-        if len(pts) > 1:
-            od.line(pts, fill=g(0.95), width=3)
-
-    # ---- text pass ----
-    flat, fd = flatten(m, mo)
-    for xy, label, fnt, fill in labels:
-        fd.text(xy, label, font=fnt, fill=fill, anchor="mm")
-    # (no city dots here: on the allotment map they read as stray, unlabeled
-    #  points inside neighbouring tribes — the verses name only the princes)
-    fd.text(fr.pt(32.08, 34.60), "The Great Sea", font=F_WATER,
-            fill=WATER_TXT, anchor="mm")
-    fd.text(fr.pt(30.95, 35.62), "Salt Sea", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    compass_scale(fd, fr)
-    paste_map(img, flat, fr)
-
-
 # ---------------------------------------------------------------------------
 # Numbers 32 — Reuben, Gad, and half-Manasseh east of the Jordan
 # ---------------------------------------------------------------------------
-
-FRAME_C = None
 
 # stage: survey | cities3 | rebuke | pledge | grant | build | machir | jair
 #        | nobah
@@ -690,242 +442,3 @@ BUILD_VERSES = {34: ("GAD", ["Dibon", "Ataroth", "Aroer"]),
                 36: ("GAD", ["Beth-nimrah", "Beth-haran"]),
                 37: ("REUBEN", ["Heshbon", "Elealeh", "Kiriathaim"]),
                 38: ("REUBEN", ["Nebo", "Baal-meon", "Sibmah"])}
-
-
-def draw_32(img, verse, grow):
-    global FRAME_C
-    if FRAME_C is None:
-        FRAME_C = MapFrame(31.0, 33.4, 35.0, 36.9, (36, 86, 410, 556))
-    fr = FRAME_C
-    m = Image.new("RGB", (fr.mw, fr.mh), SEA)
-    md = ImageDraw.Draw(m)
-    mo = Image.new("RGBA", (fr.mw, fr.mh), (0, 0, 0, 0))
-    od = ImageDraw.Draw(mo)
-
-    stage, caption, notes = SPECS_32[verse]
-    draw_base(md, fr, dim=(stage == "rebuke"))
-
-    # ---- overlay pass: fills, water repaint, highlight lines ----
-    if stage in ("survey", "cities3"):
-        od.polygon(fr.pts(JAZER_GILEAD), fill=HL + (40,))
-        redraw_lakes(od, fr)
-        lead = seg_partial(fr.pts(JAZER_GILEAD + JAZER_GILEAD[:1]), grow)
-        if len(lead) > 1:
-            od.line(lead, fill=g(0.9), width=3)
-
-    elif stage == "rebuke":
-        # the point of the rebuke: Canaan, west of the river, still waits
-        west = [(32.4, 35.0), (32.4, 35.55), (31.9, 35.5), (31.77, 35.5),
-                (31.6, 35.4), (31.1, 35.4), (31.1, 35.0)]
-        od.polygon(fr.pts(west), fill=TRIBE_COL["EPHRAIM"] + (26,))
-        redraw_lakes(od, fr)
-        if verse == 8:
-            x, y = fr.pt(31.06, 35.06)
-            od.line([(x + 46, y - 14), (x, y)], fill=g(0.85), width=2)
-            od.line([(x + 10, y - 2), (x, y)], fill=g(0.85), width=2)
-            od.line([(x + 4, y - 12), (x, y)], fill=g(0.85), width=2)
-
-    elif stage == "pledge":
-        od.polygon(fr.pts(JAZER_GILEAD), fill=HL + (28,))
-        redraw_lakes(od, fr)
-        # arrow: armed men cross the Jordan ahead of Israel
-        a0, a1 = fr.pt(31.98, 35.72), fr.pt(31.95, 35.32)
-        lead = seg_partial([a0, a1], grow)
-        if len(lead) > 1:
-            od.line(lead, fill=g(0.9), width=3)
-            if grow > 0.9:
-                x, y = a1
-                od.line([(x + 10, y - 7), (x, y)], fill=g(0.9), width=3)
-                od.line([(x + 11, y + 5), (x, y)], fill=g(0.9), width=3)
-
-    elif stage == "grant":
-        for poly in (SIHON_POLY, OG_POLY):
-            od.polygon(fr.pts(poly), fill=HL + (34,))
-        redraw_lakes(od, fr)
-        for poly in (SIHON_POLY, OG_POLY):
-            lead = seg_partial(fr.pts(poly + poly[:1]), grow)
-            if len(lead) > 1:
-                od.line(lead, fill=g(0.95), width=3)
-
-    elif stage == "build":
-        tribe, cities = BUILD_VERSES[verse]
-        od.polygon(fr.pts(TRIBES[tribe][1]),
-                   fill=TRIBE_COL[tribe] + (60,))
-        redraw_lakes(od, fr)
-
-    elif stage in ("machir", "jair"):
-        od.polygon(fr.pts(N_GILEAD), fill=TRIBE_COL["MANASSEH_E"] + (70,))
-        redraw_lakes(od, fr)
-        lead = seg_partial(fr.pts(N_GILEAD + N_GILEAD[:1]), grow)
-        if len(lead) > 1:
-            od.line(lead, fill=g(0.9), width=3)
-        if stage == "jair":
-            for la, lo in HAVVOTH_JAIR:
-                x, y = fr.pt(la, lo)
-                od.ellipse([x - 3, y - 3, x + 3, y + 3], outline=g(0.95),
-                           width=2)
-
-    elif stage == "nobah":
-        od.polygon(fr.pts(OG_POLY), fill=TRIBE_COL["MANASSEH_E"] + (40,))
-        redraw_lakes(od, fr)
-        x, y = fr.pt(*CITIES32["Kenath"][1:3])
-        od.ellipse([x - 3, y - 3, x + 3, y + 3], outline=g(0.95), width=2)
-
-    # ---- text pass ----
-    flat, fd = flatten(m, mo)
-    fd.text(fr.pt(31.15, 35.60), "Salt Sea", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    fd.text(fr.pt(32.82, 35.68), "Chinnereth", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    fd.text(fr.pt(32.30, 35.48), "Jordan", font=F_WATER,
-            fill=WATER_TXT, anchor="rm")
-    fd.text(fr.pt(31.36, 36.20), "Arnon", font=F_WATER,
-            fill=WATER_TXT, anchor="lm")
-    fd.text(fr.pt(32.06, 35.94), "Jabbok", font=F_WATER,
-            fill=WATER_TXT, anchor="lt")
-    if stage != "grant":
-        # region words yield to the kingdom names on the grant verse
-        fd.text(fr.pt(31.20, 36.20), "MOAB", font=F_MAP, fill=TEXT_DIM,
-                anchor="mm")
-        fd.text(fr.pt(31.85, 36.45), "AMMON", font=F_MAP, fill=TEXT_DIM,
-                anchor="mm")
-        fd.text(fr.pt(32.95, 36.25), "BASHAN", font=F_MAP, fill=TEXT_DIM,
-                anchor="mm")
-        fd.text(fr.pt(32.25, 35.72), "GILEAD", font=F_MAP, fill=TEXT_DIM,
-                anchor="lm")
-    fd.text(fr.pt(31.70, 35.20), "CANAAN", font=F_MAP, fill=TEXT_DIM,
-            anchor="mm")
-    label_dot(fd, fr.pt(31.87, 35.44), "Jericho", (-8, 10, "rm"), TEXT_DIM,
-              F_SMALL, SAND_DIM)
-
-    if stage == "survey":
-        fd.text(fr.pt(31.98, 35.66), "Jazer", font=F_MAP, fill=TEXT,
-                anchor="rm")
-    elif stage == "cities3":
-        for key in V3_CITIES:
-            disp, la, lo, place, _ = CITIES32[key]
-            label_dot(fd, fr.pt(la, lo), disp, place, HL, F_MAP, HL, r=2)
-    elif stage == "rebuke" and verse == 8:
-        x, y = fr.pt(31.06, 35.06)
-        fd.text((x + 50, y - 16), "to Kadesh-barnea", font=F_SMALL,
-                fill=TEXT, anchor="lm")
-    elif stage == "pledge":
-        fd.text(fr.pt(32.08, 35.52), "armed, ahead of Israel",
-                font=F_SMALL, fill=TEXT, anchor="mb")
-    elif stage == "grant":
-        fd.text(fr.pt(31.62, 35.82), "kingdom of SIHON", font=F_MAP_B,
-                fill=HL, anchor="mm")
-        fd.text(fr.pt(32.93, 36.10), "kingdom of OG", font=F_MAP_B,
-                fill=HL, anchor="mm")
-        fd.text(fr.pt(31.35, 35.85), "Reuben", font=F_TRIBE, fill=TEXT,
-                anchor="mm")
-        fd.text(fr.pt(32.13, 35.82), "Gad", font=F_TRIBE, fill=TEXT,
-                anchor="mm")
-        fd.text(fr.pt(33.05, 35.85), "half-Manasseh", font=F_TRIBE,
-                fill=TEXT, anchor="mm")
-    elif stage == "build":
-        tribe, cities = BUILD_VERSES[verse]
-        fd.text(fr.pt(*TRIBES[tribe][2]), TRIBES[tribe][0], font=F_TRIBE,
-                fill=TEXT, anchor="mm")
-        # earlier-built cities of the same tribe stay, in plain sand
-        for v in range(34, verse):
-            if v in BUILD_VERSES and BUILD_VERSES[v][0] == tribe:
-                for key in BUILD_VERSES[v][1]:
-                    _, la, lo, place, _ = CITIES32[key]
-                    label_dot(fd, fr.pt(la, lo), key, place, TEXT, F_SMALL,
-                              SAND, r=2)
-        for key in cities:
-            _, la, lo, place, _ = CITIES32[key]
-            label_dot(fd, fr.pt(la, lo), key, place, HL, F_MAP_B, HL, r=3)
-    elif stage in ("machir", "jair"):
-        fd.text(fr.pt(32.62, 36.00), "Machir (Manasseh)", font=F_TRIBE,
-                fill=HL, anchor="mm")
-        if stage == "jair":
-            fd.text(fr.pt(32.22, 36.04), "Havvoth-jair", font=F_MAP_B,
-                    fill=HL, anchor="lt")
-    elif stage == "nobah":
-        x, y = fr.pt(*CITIES32["Kenath"][1:3])
-        fd.text((x, y + 7), "Kenath", font=F_MAP_B, fill=HL, anchor="mt")
-        fd.text((x, y + 23), "(Nobah)", font=F_MAP, fill=HL, anchor="mt")
-
-    compass_scale(fd, fr)
-    paste_map(img, flat, fr)
-
-
-# ---------------------------------------------------------------------------
-# Frame assembly
-# ---------------------------------------------------------------------------
-
-PANEL_X = 440
-
-
-def canvas(title, verse, caption):
-    # (no caption line or footer: the verse is narrated aloud — the map and
-    # its place names carry the graphic; specs still hold `caption` data)
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
-    d.text((28, 18), title, font=F_TITLE, fill=TEXT)
-    return img, d
-
-
-def render_34(verse, t):
-    grow = ease(min(1.0, t / 0.92))
-    if verse <= 15:
-        caption = CAPTIONS_34A[verse]
-        img, d = canvas("The Borders of the Land — Numbers 34", verse,
-                        caption)
-        draw_34_wide(img, verse, grow)
-        lines = PANEL_34A.get(verse)
-        if lines:
-            d.text((PANEL_X, 120), "the ancient landmarks", font=F_DIM,
-                   fill=TEXT_DIM)
-            panel_lines(d, PANEL_X, 150, lines)
-    else:
-        focus = PRINCES.get(verse)
-        if focus:
-            caption = f"for the tribe of {TRIBES[focus[0]][0]}: {focus[1]}"
-        else:
-            caption = CAPTIONS_34B[verse]
-        img, d = canvas("Dividing the Inheritance — Numbers 34", verse,
-                        caption)
-        draw_34_zoom(img, verse, grow)
-        if focus:
-            d.text((PANEL_X, 130), TRIBES[focus[0]][0], font=F_BIG, fill=HL)
-            d.text((PANEL_X, 176), f"prince: {focus[1]}", font=F_LABEL,
-                   fill=TEXT)
-    return img
-
-
-def render_32(verse, t):
-    grow = ease(min(1.0, t / 0.92))
-    stage, caption, notes = SPECS_32[verse]
-    img, d = canvas("East of the Jordan — Numbers 32", verse, caption)
-    draw_32(img, verse, grow)
-    y = 120
-    if verse in BUILD_VERSES:
-        d.text((PANEL_X, y), "modern identifications", font=F_DIM,
-               fill=TEXT_DIM)
-        y += 28
-        for key in BUILD_VERSES[verse][1]:
-            modern = CITIES32[key][4]
-            line = f"{key} — {modern}" if modern else f"{key} — site unknown"
-            d.text((PANEL_X, y), line, font=F_SMALL, fill=TEXT)
-            y += 22
-    if verse == 3:
-        d.text((PANEL_X, y), "identified sites include", font=F_DIM,
-               fill=TEXT_DIM)
-        y += 28
-        for key in ("Dibon", "Heshbon", "Nebo", "Baal-meon"):
-            d.text((PANEL_X, y), f"{CITIES32[key][0]} — {CITIES32[key][4]}",
-                   font=F_SMALL, fill=TEXT)
-            y += 22
-    return img
-
-
-# ---------------------------------------------------------------------------
-
-# The WebP rendering that used to close this file has been removed: the app
-# reads the SVGs natively, and generate_numbers32_svg.py / _34_svg.py draw
-# these maps from the same MapFrame and draw_* helpers above. Ten other
-# generators import this module for that shared map geometry — that is what
-# it is for now.

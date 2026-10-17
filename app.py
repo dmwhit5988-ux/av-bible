@@ -715,8 +715,9 @@ class App:
             self.recount_deploy_files()
 
     def recount_deploy_files(self):
-        """Count the files Publish would deploy against Cloudflare Pages'
-        file limit, on a worker thread (it walks web/ and visuals/)."""
+        """Count the files Publish would deploy against the file limit of
+        Cloudflare's Workers static assets (publish_studio's count and
+        limit), on a worker thread (it walks web/ and visuals/)."""
         if self._counting:
             self._recount_again = True  # the running count may predate it
             return
@@ -725,9 +726,9 @@ class App:
 
         def worker():
             try:
-                audio_studio = importlib.import_module("audio_studio")
-                self.events.put(("budget", audio_studio.count_deploy_files(),
-                                 audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT))
+                publish = importlib.import_module("publish_studio")
+                self.events.put(("budget", publish.count_deploy_files(),
+                                 publish.DEPLOY_FILE_LIMIT))
             except Exception as e:
                 log_error("counting deploy files", e)
                 self.events.put(("budget_error", f"{type(e).__name__}: {e}"))

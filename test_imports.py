@@ -2,10 +2,6 @@
 instead of in the app (run.bat launches pythonw, which dies silently).
 
     .venv\\Scripts\\python.exe -m unittest test_imports -v
-
-Skipped: the isbe_* one-off scripts. They have no __main__ guard and act at
-import time: isbe_apply rewrites pronunciations.json, isbe_benchmark runs an
-ASR benchmark, and all of them os.chdir() to a hard-coded repo path.
 """
 
 import glob
@@ -15,7 +11,7 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-SKIP_PREFIXES = ("isbe_", "test_")
+SKIP_PREFIXES = ("test_",)
 
 
 def root_modules():

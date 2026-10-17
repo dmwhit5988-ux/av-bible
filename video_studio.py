@@ -24,11 +24,11 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
 import books
+import config
 import tts_engine
 import video_render as vr
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-RENDERS_DIR = os.path.join(REPO_ROOT, "renders")
+RENDERS_DIR = config.RENDERS_DIR
 
 
 def _render(events, cancel, spec):

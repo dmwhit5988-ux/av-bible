@@ -1,25 +1,37 @@
+# Python
 .venv/
-cache/
 __pycache__/
+*.pyc
+
+# Local settings and caches
 config.json
 config.json.bak
-backups/
-bibles/*.xml
-*.pyc
+cache/
+.claude/settings.local.json
 # A save's temp file, swapped in once written (config.json, manifests)
 *.tmp
-.DS_Store
-node_modules/
-deploy_temp/
+
+# Generated reports (pronunciation.py and regen_pronunciation_todo.py write them)
+PRONUNCIATIONS.md
+PRONUNCIATION_TODO.md
+
+# Source text: bibles/WEB is built from it by import_translation.py
+bibles/*.xml
+
+# Kept outside the repo now (C:\Dev\Theoria-archive); ignored in case they reappear
+backups/
 renders/
-deploy.ps1
-deploy-api.ps1
-~$*
-# Scratch work, throwaway QC output, the ISBE fetch cache
 _scratch/
-mockups/figures/
+mockups/
 isbe_cache/
+
 # A dropped-in ffmpeg (video_render.find_ffmpeg looks in tools/ffmpeg/bin/)
 tools/ffmpeg/
-# Personal Claude Code settings
-.claude/settings.local.json
+
+# Tooling and OS litter
+node_modules/
+.wrangler/
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*

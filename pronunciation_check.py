@@ -22,11 +22,12 @@ carry more noise than long ones, so read the ordering rather than the number.
 Nothing is changed automatically; "Use heard IPA" is a manual per-row action for
 filling in or correcting a reference value.
 
-Results are cached in ``cache/ipa_checks.json`` keyed by the spoken text and
-voice, so a long sweep survives a restart and only genuinely changed entries
-are re-checked. Saving records the verdicts measured since the last save and
-merges them into pronunciations.json, keeping anything Pronunciation Studio
-saved while this window was open.
+Results are kept in ``data/ipa_checks.json`` (config.IPA_CHECKS_PATH, tracked:
+it is the whole-canon verdict store, and rebuilding it means a full sweep),
+keyed by the spoken text and voice, so a long sweep survives a restart and only
+genuinely changed entries are re-checked. Saving records the verdicts measured
+since the last save and merges them into pronunciations.json, keeping anything
+Pronunciation Studio saved while this window was open.
 
     python pronunciation_check.py
 """
@@ -44,7 +45,7 @@ import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
 
-CACHE_PATH = os.path.join(config.CACHE_DIR, "ipa_checks.json")
+CACHE_PATH = config.IPA_CHECKS_PATH
 # The Studio's icon, the same one the shell (app.py) sets.
 ICON_PATH = os.path.join(config.BASE_DIR, "web", "icons", "icon-192.png")
 
@@ -186,8 +187,8 @@ class App:
             return {}
 
     def _save_cache(self):
-        os.makedirs(config.CACHE_DIR, exist_ok=True)
         try:
+            os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
             with open(CACHE_PATH, "w", encoding="utf-8") as f:
                 json.dump(self.results, f, indent=1, ensure_ascii=False)
         except OSError:

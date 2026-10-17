@@ -53,7 +53,8 @@ import passages
 import svg_registry
 from svg_freeze import svg_is_animated
 
-VISUALS_DIR = Path("visuals")
+# Beside this file, not under the cwd, so it runs from any folder.
+VISUALS_DIR = Path(__file__).resolve().parent / "visuals"
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
 # Extensions indexed: vector diagrams (.svg) and raster images. Text files

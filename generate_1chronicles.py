@@ -1,10 +1,10 @@
 """Scene specs + verse-matching engine for the 1 Chronicles 1-9 genealogies.
 
 The nine genealogy chapters are broken into titled family-tree SCENES (a
-scene serves a contiguous verse range). Every verse's SVG shows its whole
-scene: names already read are solid, names still ahead are dim, and the
-current verse's names glow with a once-through reveal — the same visual
-language as the Genesis 5 / Matthew 1 genealogies.
+scene serves a contiguous verse range). The scenes are no longer drawn as
+they stand: `chronicles_tree.py` welds them into one Adam-rooted tree and
+every verse is a camera move over it (`svg_chronicles_world.py`). What this
+module still supplies is the names and which verse reads each one.
 
 Highlights are NOT hand-authored per verse. Each scene's rows are matched
 against the actual WEB verse text (word-boundary, longest-label-first, one
@@ -26,7 +26,7 @@ text-matched (highlightable only via `explicit`).
 
 Spellings are the WEB's (WEB is the only text, passages.TRANSLATION).
 
-Rendered by generate_1chronicles_svg.py.
+Rendered by generate_1chronicles_tree_svg.py.
 """
 
 import re

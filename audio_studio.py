@@ -11,8 +11,10 @@ web/audio/manifest.json exactly as generate_showcase_audio.py writes them
 player picks it up.
 
 Before rendering, shows the projected new-file count against the ~20k
-Cloudflare Pages file-count ceiling (STUDIO_PLAN.md Feature C caveat 2),
-counting the same files prepare-deploy.ps1 actually bundles.
+file-count ceiling of Cloudflare's Workers static assets
+(publish_studio.DEPLOY_FILE_LIMIT; STUDIO_PLAN.md Feature C caveat 2),
+counting what a deploy ships the way Publish does
+(publish_studio.count_deploy_files).
 
     python audio_studio.py
 """
@@ -28,31 +30,7 @@ import books
 import generate_showcase_audio as showcase_audio
 import tts_engine
 from passages import load_chapter, PassageError
-
-CLOUDFLARE_PAGES_FILE_LIMIT = 20000
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-
-def count_deploy_files() -> int:
-    """Count files that would ship to Cloudflare Pages, mirroring the bundle
-    prepare-deploy.ps1 actually builds: all of web/, the *.json in each
-    bibles/ subfolder (one level, not recursive; only WEB exists), and
-    visuals/ minus *.xml."""
-    count = 0
-    web_dir = os.path.join(REPO_ROOT, "web")
-    for _, _, files in os.walk(web_dir):
-        count += len(files)
-    bibles_dir = os.path.join(REPO_ROOT, "bibles")
-    if os.path.isdir(bibles_dir):
-        for sub in os.listdir(bibles_dir):
-            sub_dir = os.path.join(bibles_dir, sub)
-            if os.path.isdir(sub_dir):
-                count += sum(1 for f in os.listdir(sub_dir)
-                             if f.lower().endswith(".json"))
-    visuals_dir = os.path.join(REPO_ROOT, "visuals")
-    for _, _, files in os.walk(visuals_dir):
-        count += sum(1 for f in files if not f.lower().endswith(".xml"))
-    return count
+from publish_studio import DEPLOY_FILE_LIMIT, count_deploy_files
 
 
 # ----- worker threads --------------------------------------------------------
@@ -266,7 +244,7 @@ class App:
             n = count_deploy_files()
             self.count_var.set(
                 f"Current deploy bundle: {n:,} files "
-                f"(~{CLOUDFLARE_PAGES_FILE_LIMIT:,} Cloudflare Pages limit)")
+                f"(~{DEPLOY_FILE_LIMIT:,} Cloudflare limit)")
         except OSError:
             self.count_var.set("")
 
@@ -315,7 +293,7 @@ class App:
     def _do_confirm(self, book, chapters, voice, passages, manifest,
                      new_files, current_total, total_verses, force):
         resulting = current_total + new_files
-        over = resulting > CLOUDFLARE_PAGES_FILE_LIMIT
+        over = resulting > DEPLOY_FILE_LIMIT
         overwrites = total_verses - new_files if force else 0
         work = (f"{new_files} new file(s), {overwrites} overwrite(s)"
                 if force else f"{new_files} new file(s)")
@@ -323,12 +301,12 @@ class App:
                f"{total_verses} verse(s), {work} to render.\n\n"
                f"Current deploy bundle: {current_total:,} files\n"
                f"Resulting total: {resulting:,} files "
-               f"(limit ~{CLOUDFLARE_PAGES_FILE_LIMIT:,})\n\n")
+               f"(limit ~{DEPLOY_FILE_LIMIT:,})\n\n")
         if voice != tts_engine.HOUSE_VOICE:
             msg += (f"Voice: {voice} — an override, not the house voice "
                     f"({tts_engine.HOUSE_VOICE}).\n\n")
         if over:
-            msg += "This would EXCEED the Cloudflare Pages file-count ceiling.\n\n"
+            msg += "This would EXCEED Cloudflare's file-count ceiling.\n\n"
         msg += "Continue?"
         # parent= keeps the dialog owned by this window (not the main studio's
         # root), so dismissing it hands focus back here; the lift/focus_force

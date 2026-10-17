@@ -15,7 +15,7 @@ seven-day bar along the bottom advances. Days not yet reached stay ghosted, so
 the chart reads as the chapter's whole shape from verse 1 onward.
 
 This replaces the photographic stills that used to fill visuals/Genesis/1/
-(retired to backups/png_replaced_by_svg/; see visuals/CREDITS.txt).
+(retired to backups/png_replaced_by_svg/ under config.ARCHIVE_DIR; see visuals/CREDITS.txt).
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_genesis1_svg.py

@@ -1,23 +1,28 @@
-"""Generate per-verse tabernacle animations for Exodus 25, 26, and 27.
+"""The tabernacle of Exodus 25-27, and the house palette the generators share.
 
-Draws a to-scale top-down plan of the tabernacle courtyard (dimensions taken
-from the text: courtyard 100x50 cubits, tent 30x10, bronze altar 5x5x3, gate
-20 cubits) plus detail "inset" panels — the ark and mercy seat, the table of
-showbread, the golden lampstand, the curtains, the board frames, the veil,
-and the bronze altar — and renders one looping animated WebP per verse into
-visuals/ (Exodus_25_1.webp ... Exodus_27_21.webp), highlighting whatever each
-verse describes.
+A library, not a script; it has two jobs:
 
-Run inside the project venv:  .venv\\Scripts\\python.exe generate_tabernacle.py
+* The palette and helpers most generators import: the canvas size (W, H),
+  the colours (BG, PANEL, SAND, TEXT, HL ...), font() and the F_* sizes,
+  and out_path(), which files a visual under visuals/<Book>/<chapter>/.
 
-This is a dev tool, not part of the running app. To cover more passages, add
+* The tabernacle's own drawing: a to-scale top-down plan of the courtyard
+  (dimensions taken from the text: courtyard 100x50 cubits, tent 30x10,
+  bronze altar 5x5x3, gate 20 cubits) plus detail "inset" panels — the ark
+  and mercy seat, the table of showbread, the golden lampstand, the
+  curtains, the board frames, the veil, and the bronze altar — and the
+  per-verse CHAPTERS specs saying what each verse highlights.
+
+generate_exodus26_svg.py runs these draw functions against SvgLayer (an
+ImageDraw stand-in) to render Exodus 26, and generate_exodus2527_svg.py
+reuses it for Exodus 25 and 27. To cover more of these chapters, add
 entries to the CHAPTERS spec tables (and new inset drawers if needed).
 """
 
 import math
 import os
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import ImageFont
 
 import svg_figures as F
 
@@ -36,8 +41,6 @@ def out_path(book: str, chapter, filename: str) -> str:
 # ---------------------------------------------------------------------------
 
 W, H = 1024, 576
-FRAMES = 16
-FRAME_MS = 130
 
 BG = (16, 16, 24)
 PANEL = (26, 26, 38)
@@ -86,10 +89,6 @@ F_VERSE = font(18, italic=True)
 
 def ease(t):
     return t * t * (3 - 2 * t)
-
-
-def pulse(t):
-    return 0.5 - 0.5 * math.cos(2 * math.pi * t)
 
 
 def g(alpha):
@@ -677,8 +676,8 @@ KCX = IX + IW // 2
 # --- the cherubim -----------------------------------------------------------
 #
 # Built from point lists drawn with polygon/line/ellipse — the three primitives
-# this module shares with svg_surface.SvgLayer — so the same geometry renders
-# unchanged as animated WebP and as vector SVG. Local units below run x inward
+# this module shares with svg_surface.SvgLayer — so the geometry renders
+# unchanged as vector SVG through that layer. Local units below run x inward
 # (toward the middle of the mercy seat) and y up from the seat's top surface: a
 # cherub is 44 tall to the crown, 64 to the wing tips, and reaches 38 inward,
 # so the two covering wings vault over the seat with a gap left between the
@@ -1624,14 +1623,3 @@ CH27 = {
 }
 
 CHAPTERS = {25: CH25, 26: CH26, 27: CH27}
-
-
-# ---------------------------------------------------------------------------
-# Frame renderer
-# ---------------------------------------------------------------------------
-
-# The WebP rendering that used to close this file has been removed: the app
-# reads the SVGs natively, and generate_exodus2527_svg.py already draws every
-# verse of Exodus 25-27 from the INSETS / highlight functions above. This file
-# remains what the rest of the project actually imports it for — the palette,
-# the fonts, out_path, and the tabernacle's own plan and inset drawings.

@@ -18,8 +18,8 @@ last name, and the next verse begins there, the chapter plays as one
 continuous descent.
 
 (The previous designs are preserved: the straight-road tracking camera in
-backups/luke3_road/, the "whole serpentine path at once" original in
-backups/luke3_journey/ — copy one back to revert. Concept mocks for the
+backups/luke3_road/ (under config.ARCHIVE_DIR), the "whole serpentine path at once" original in
+backups/luke3_journey/ there — copy one back to revert. Concept mocks for the
 designs that were considered are in mockups/luke3/ + LUKE3_IDEAS.md.)
 
 Names are extracted directly from WEB's verse text (WEB is the only text,

@@ -73,6 +73,7 @@ import xml.sax.saxutils as saxutils
 from dataclasses import dataclass, field
 
 import books
+import config
 import generate_showcase_audio as showcase_audio
 import svg_registry
 import tts_engine
@@ -1322,8 +1323,7 @@ def main() -> int:
     ec, ev = split(args.end, None) if args.end else (sc, None)
     width, height = RESOLUTIONS[args.resolution]
     out = args.out or os.path.join(
-        REPO_ROOT, "renders",
-        f"{args.book.replace(' ', '_')}_{sc}-{ec}.mp4")
+        config.RENDERS_DIR, f"{args.book.replace(' ', '_')}_{sc}-{ec}.mp4")
 
     spec = RenderSpec(
         book=args.book, start_chapter=sc, start_verse=sv, end_chapter=ec,

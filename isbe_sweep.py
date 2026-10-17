@@ -9,13 +9,18 @@ For every name whose reference now comes from ISBE:
          clearly beats the plain reading (+0.10),
        - otherwise record it as a suggestion if it merely beats plain,
        - otherwise leave the name marked still-wrong;
-  3. record verdicts and the measurement cache like the GUI does, saving
-     through the same merge (so a Studio window open meanwhile keeps its
-     edits).
+  3. record verdicts and the measurements (the Verifier's store,
+     data/ipa_checks.json) like the GUI does, saving through the same merge
+     (so a Studio window open meanwhile keeps its edits).
 
 Candidates deliberately follow the studio's hard-won respelling rules: no
 bare-vowel hyphen segments, no trailing "-uh"; a single made-up word is
-preferred, a consonant-anchored hyphenation is the fallback.
+preferred, a consonant-anchored hyphenation is the fallback. They are built
+from the ISBE respellings in isbe_harvest.json, beside this script.
+
+    .venv\\Scripts\\python.exe isbe_sweep.py              # every ISBE name
+    .venv\\Scripts\\python.exe isbe_sweep.py --pass2      # only still-wrong ones
+    .venv\\Scripts\\python.exe isbe_sweep.py NAME ...     # just these names
 """
 import copy
 import json
@@ -24,18 +29,19 @@ import re
 import sys
 import time
 
-sys.path.insert(0, r"C:\Dev\AV Bible")
-os.chdir(r"C:\Dev\AV Bible")
+# The repo's own modules sit beside this script; every path below is built
+# from here or from config, so it runs the same from any working directory.
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 
 import config           # noqa: E402
 import ipa_asr          # noqa: E402
 import pronunciation    # noqa: E402
 import tts_engine       # noqa: E402
 
-HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = tts_engine.HOUSE_VOICE
 RATE = tts_engine.HOUSE_RATE
-CACHE_PATH = os.path.join(config.CACHE_DIR, "ipa_checks.json")
+CACHE_PATH = config.IPA_CHECKS_PATH     # the Verifier's verdict store
 OK_AT, WARN_AT = 0.80, 0.55
 ADOPT_AT, MARGIN = 0.70, 0.10
 
@@ -169,6 +175,13 @@ def save(names, base):
     return saved.names, copy.deepcopy(saved.names)
 
 
+def save_cache(cache):
+    """Write the measurements to the Verifier's verdict store (data/)."""
+    os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
+    with open(CACHE_PATH, "w", encoding="utf-8") as f:
+        json.dump(cache, f, indent=1, ensure_ascii=False)
+
+
 def main():
     names = copy.deepcopy(pronunciation.load(force=True))
     base = copy.deepcopy(names)
@@ -247,15 +260,13 @@ def main():
             tag = f"still wrong ({score:.2f})"
         print(f"[{i}/{len(targets)}] {name}: {tag}", flush=True)
         if i % 25 == 0:
-            with open(CACHE_PATH, "w", encoding="utf-8") as f:
-                json.dump(cache, f, indent=1, ensure_ascii=False)
+            save_cache(cache)
             names, base = save(names, base)
             el = time.time() - t0
             print(f"  … saved. {el/60:.1f} min elapsed, "
                   f"{el/i*(len(targets)-i)/60:.0f} min left", flush=True)
 
-    with open(CACHE_PATH, "w", encoding="utf-8") as f:
-        json.dump(cache, f, indent=1, ensure_ascii=False)
+    save_cache(cache)
     save(names, base)
     print(f"DONE: {ok} ok, {fixed} fixed, {suggested} suggested, "
           f"{unfixed} still wrong, {unmeasured} unmeasured", flush=True)

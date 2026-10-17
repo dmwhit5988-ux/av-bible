@@ -171,19 +171,6 @@ def beast(c, x, gy, ln, col, width=1.8, head_low=False, tail=True):
                (x - ln * 0.62, by - bh * 0.44), col, width)
 
 
-def lying_beast(c, x, gy, ln, col, width=1.8):
-    """A beast lying down — the posture Zephaniah gives both to the animals
-    in ruined Nineveh and to the remnant that no one makes afraid."""
-    bh = ln * 0.34
-    by = gy - bh * 0.60
-    c.ellipse(x, by, ln * 0.46, bh * 0.50, stroke=col, width=width)
-    hx = x + ln * 0.48
-    hy = by - bh * 0.44
-    c.line((x + ln * 0.30, by - bh * 0.24), (hx, hy), col, width)
-    c.circle(hx, hy, bh * 0.32, stroke=col, width=width)
-    c.line((x - ln * 0.30, gy), (x + ln * 0.16, gy), col, width)
-
-
 def bird(c, x, y, w, col, width=1.8):
     """A bird on the wing, facing right: two swept wings, a body and a head.
     The bare two-arc gull glyph reads as a squiggle at this size, so the body

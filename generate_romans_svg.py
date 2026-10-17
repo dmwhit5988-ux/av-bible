@@ -2,7 +2,7 @@
 vector SVGs — one full-frame scene per chapter, threaded by the Romans Road.
 
 Redesign (2026-08-10, see ROMANS_IDEAS.md): the old seven-stop rail and the
-per-verse bead track are gone (preserved in backups/romans_rail/). Every
+per-verse bead track are gone (preserved in backups/romans_rail/ under config.ARCHIVE_DIR). Every
 chapter now owns the whole frame with its own set-piece, and the classic
 Romans Road — 3:23, 5:8, 6:23, 10:9, 10:13 — is drawn literally: a winding
 Roman road toward a distant arch, gaining an engraved milestone at each of

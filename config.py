@@ -16,6 +16,19 @@ VISUALS_DIR = os.path.join(BASE_DIR, "visuals")
 # Read-only, ships with the app: the World English Bible, one JSON per
 # chapter under bibles/WEB/ (kept out of CACHE_DIR so it is never cleared).
 BIBLES_DIR = os.path.join(BASE_DIR, "bibles")
+# The web app (served from deploy_bundle/, a copy of web/ + bibles/ + visuals/)
+# and its pre-rendered narration.
+WEB_DIR = os.path.join(BASE_DIR, "web")
+WEB_AUDIO_DIR = os.path.join(WEB_DIR, "audio")
+# Tracked data the tools keep: the Verifier's whole-canon verdict store, which
+# would take a full ASR sweep to rebuild.
+DATA_DIR = os.path.join(BASE_DIR, "data")
+IPA_CHECKS_PATH = os.path.join(DATA_DIR, "ipa_checks.json")
+# Outside the repo, beside it: superseded designs kept for reference (a
+# generator backs up the previous design here before replacing it) and
+# finished video renders.
+ARCHIVE_DIR = os.path.join(os.path.dirname(BASE_DIR), "Theoria-archive")
+RENDERS_DIR = os.path.join(ARCHIVE_DIR, "renders")
 
 DEFAULTS = {
     "last_book": "Genesis",

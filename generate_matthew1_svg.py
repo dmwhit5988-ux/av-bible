@@ -37,8 +37,9 @@ Matthew's differ most the doubled label the chart already uses for
 Abram · Abraham — Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah,
 Azariah · Uzziah. So any listener hears a name they can find on the sheet.
 
-(The fractal-tree design this replaces is in backups/matthew1_fractal_tree/,
-with its rendered files. See the README there to restore it.)
+(The fractal-tree design this replaces, with its rendered files, is kept
+outside the repo in backups/matthew1_fractal_tree/ under config.ARCHIVE_DIR.
+See the README there to restore it.)
 """
 
 import os
@@ -49,9 +50,6 @@ from svg_matthew_nativity import NativityFrame, VERSES as NATIVITY_VERSES
 from svg_matthew_world import (BOOK, CHAPTER, MatthewFrame,
                                MatthewWorld)
 
-REPO = os.path.dirname(os.path.abspath(__file__))
-BACKUP = os.path.join(REPO, "backups", "matthew1_fractal_tree")
-
 
 def main(argv):
     dry = "--dry" in argv
@@ -59,12 +57,6 @@ def main(argv):
     if "--out" in argv:
         out_dir = argv[argv.index("--out") + 1]
         os.makedirs(out_dir, exist_ok=True)
-
-    if not os.path.isdir(BACKUP):
-        print(f"refusing to run: {BACKUP} is missing — the previous design "
-              f"and its rendered files should be there before this "
-              f"overwrites them")
-        return 1
 
     world = MatthewWorld()
     x0, y0, x1, y1 = world.world_box

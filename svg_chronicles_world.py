@@ -1,12 +1,13 @@
 """The 1 Chronicles 1-9 genealogies, read against the whole-canon tree.
 
-The old per-verse renderer (`svg_1chronicles_render.py`) laid each chapter
+The old per-verse renderer (v2, since deleted; its output is archived in
+config.ARCHIVE_DIR, backups/1_Chronicles_svg_v2_camera) laid each chapter
 out as its own world of side-by-side scenes. That reads well chapter by
 chapter and hides the thing the genealogies are actually for: it is ONE
-descent, and chapter 4 re-roots on a Judah the reader already met in chapter
-2. This world is the welded tree from `chronicles_tree.py` instead — laid out
-once, name-only — and every verse of all nine chapters is a camera move over
-that single map.
+descent, and chapter 4 re-roots on a Judah the reader already met in
+chapter 2. This world is the welded tree from `chronicles_tree.py` instead
+— laid out once, name-only — and every verse of all nine chapters is a
+camera move over that single map.
 
 Three consequences worth knowing:
 
@@ -36,6 +37,7 @@ import struct
 
 import chronicles_tree as CT
 from chronicles_tree import walk
+from config import WEB_AUDIO_DIR
 from generate_1chronicles import (CHAPTERS, assign, flatten,
                                   web_verses)
 from generate_ot_family_tree_svg import (BG, FAINT, HL, HOUSE, PANEL,
@@ -74,8 +76,7 @@ GROW_TAIL = 1.06             # arrivals finish at this multiple of the move
                              # (grow begins at 0.60 and runs 0.46 — see
                              # _grow_timing; keep the three in agreement)
 
-REPO = os.path.dirname(os.path.abspath(__file__))
-AUDIO_DIR = os.path.join(REPO, "deploy_bundle", "audio")
+AUDIO_DIR = WEB_AUDIO_DIR      # the narration MP3s that pace each verse
 
 # -- which layout the world is laid out in ----------------------------------
 #
@@ -321,7 +322,7 @@ F_NODE_B = font(15, bold=True)
 
 
 # ===========================================================================
-# Geometry helpers (the camera math of svg_1chronicles_render, restated for
+# Geometry helpers (the camera math of the retired v2 renderer, restated for
 # this viewport)
 # ===========================================================================
 

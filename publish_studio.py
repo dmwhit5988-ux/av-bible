@@ -13,12 +13,21 @@ Code changes (*.py, docs, the web app's own js/css/html) are deliberately
 left out of the publish commit — commit those yourself, so a content
 publish never sweeps up half-finished code. Both the add and the commit
 are limited to CONTENT_PATHS, so anything you had staged elsewhere stays
-staged and uncommitted.
+staged and uncommitted. When the web app's own files have uncommitted
+changes, Publish says so: they (and the copies step 2 makes of them in
+deploy_bundle/) stay unpublished until you commit them by hand.
 
 Between steps 2 and 3 you get a confirm dialog with the change summary and
-the file-count budget: files, not bytes, are the Cloudflare ceiling
-(~20k, STUDIO_PLAN.md Feature C caveat 2). A persistent budget meter at the
-top of the window tracks the same number while you author.
+the file-count budget: files, not bytes, are the ceiling of Cloudflare's
+Workers static assets (DEPLOY_FILE_LIMIT; STUDIO_PLAN.md Feature C caveat
+2). A persistent budget meter at the top of the window tracks the same
+number while you author; count_deploy_files() is also the count behind the
+Studio's meter and the Audio Renderer's projection.
+
+"Dry run (no commit / push)" runs steps 1 and 2, logs the change summary,
+the commit message and the budget, and stops before git: nothing is staged,
+committed or pushed. Steps 1 and 2 still rewrite visuals/manifest.json and
+deploy_bundle/, as a real publish would; that is what the summary describes.
 
     python publish_studio.py
 """
@@ -31,10 +40,15 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-import audio_studio
+import config
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-FILE_LIMIT = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
+
+# Cloudflare's Workers static assets take at most this many files in one
+# deployed version (20,000 on the Free plan). It is not a Pages limit: the
+# site deploys as a Worker serving deploy_bundle/ (wrangler.toml [assets]).
+# The Studio's meter (app.py) and the Audio Renderer read it from here.
+DEPLOY_FILE_LIMIT = 20000
 
 # Only these paths go into a publish commit. Content folders only, never the
 # web app shell: prepare-deploy.ps1 copies web/* (js, css, index.html) into
@@ -43,6 +57,41 @@ FILE_LIMIT = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
 CONTENT_PATHS = ["web/audio", "bibles", "visuals",
                  "deploy_bundle/audio", "deploy_bundle/bibles",
                  "deploy_bundle/visuals"]
+
+# The web app's own files: everything under web/ but the narration (js, css,
+# index.html, icons, manifest.webmanifest). Never in a publish commit;
+# web_app_changes() finds the uncommitted ones so Publish can warn.
+WEB_APP_PATHS = ["web", ":(exclude)web/audio"]
+
+# The visual files a change summary counts: the set build_manifest.IMAGE_EXTS
+# indexes. The rest of visuals/ (manifest.json, README.txt, the reference
+# pages) is committed too but counted as "other".
+_PICTURE_EXTS = (".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg")
+
+# The content a change summary counts, as (tally area, singular, plural).
+_COUNTED = (("visuals", "visual", "visuals"),
+            ("mp3s", "MP3", "MP3s"),
+            ("chapters", "Bible chapter", "Bible chapters"))
+
+
+def count_deploy_files() -> int:
+    """Count the files a deploy would ship, mirroring the bundle
+    prepare-deploy.ps1 builds: all of web/, the *.json in each bibles/
+    subfolder (one level, not recursive; only WEB exists), and visuals/
+    minus *.xml. Counted from those sources rather than deploy_bundle/,
+    which is only rebuilt by a publish."""
+    count = 0
+    for _, _, files in os.walk(config.WEB_DIR):
+        count += len(files)
+    if os.path.isdir(config.BIBLES_DIR):
+        for sub in os.listdir(config.BIBLES_DIR):
+            sub_dir = os.path.join(config.BIBLES_DIR, sub)
+            if os.path.isdir(sub_dir):
+                count += sum(1 for f in os.listdir(sub_dir)
+                             if f.lower().endswith(".json"))
+    for _, _, files in os.walk(config.VISUALS_DIR):
+        count += sum(1 for f in files if not f.lower().endswith(".xml"))
+    return count
 
 
 def add_argv() -> list[str]:
@@ -57,50 +106,142 @@ def commit_argv(msg: str) -> list[str]:
     return ["git", "commit", "-m", msg, "--"] + CONTENT_PATHS
 
 
-def _run(cmd, timeout=600):
-    """Run a command from the repo root; returns CompletedProcess."""
+def _run(cmd, timeout=600, env=None):
+    """Run a command from the repo root; returns CompletedProcess. Output is
+    read as UTF-8 (git's encoding for paths), never failing on a byte."""
     return subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True,
-                          text=True, timeout=timeout)
+                          text=True, encoding="utf-8", errors="replace",
+                          timeout=timeout, env=env)
 
 
 def git_content_changes() -> list[tuple[str, str]]:
-    """[(status, path)] for uncommitted changes under the content paths.
-    status is porcelain's two-letter code, e.g. ' M', '??', ' D'."""
-    proc = _run(["git", "status", "--porcelain", "--"] + CONTENT_PATHS,
-                timeout=120)
+    """[(change, path)] for every file under the content paths that the
+    publish commit would record, sorted by path. change is "deleted" when
+    the file is gone from the working tree, else "changed" (new or
+    modified). One entry per file: a new folder is listed file by file, not
+    as one "folder/" line, and a rename is a deletion plus an addition.
+    Paths are repo-relative with forward slashes, never quoted (-z)."""
+    proc = _run(["git", "status", "--porcelain", "-z",
+                 "--untracked-files=all", "--no-renames", "--"]
+                + CONTENT_PATHS, timeout=120)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "git status failed")
-    changes = []
-    for line in proc.stdout.splitlines():
-        if len(line) > 3:
-            changes.append((line[:2], line[3:].strip()))
-    return changes
+    changes = {}
+    for record in proc.stdout.split("\0"):
+        if len(record) < 4:
+            continue
+        status, path = record[:2], record[3:]
+        if status != "??" and not os.path.lexists(
+                os.path.join(REPO_ROOT, path)):
+            if status[0] == "A":
+                continue    # staged as new, since deleted: nothing to commit
+            changes[path] = "deleted"
+        else:
+            changes[path] = "changed"
+    return [(change, path) for path, change in sorted(changes.items())]
 
 
-def summarize_changes(changes) -> str:
-    """Human summary of a porcelain change list, grouped by content area."""
-    if not changes:
-        return "no content changes"
-    areas = {}
-    for _, path in changes:
-        area = path.split("/", 1)[0]
-        areas[area] = areas.get(area, 0) + 1
-    parts = [f"{n} file(s) under {area}/"
-             for area, n in sorted(areas.items())]
-    return ", ".join(parts)
+def web_app_changes() -> list[str]:
+    """The web app's own files (WEB_APP_PATHS) that differ from HEAD, new
+    ones included, as sorted repo-relative paths. Publish never commits
+    them, so it warns while there are any."""
+    found = set()
+    for argv in (["git", "diff", "--name-only", "-z", "HEAD"],
+                 ["git", "ls-files", "-z", "--others", "--exclude-standard"]):
+        proc = _run(argv + ["--"] + WEB_APP_PATHS, timeout=120)
+        if proc.returncode != 0:
+            raise RuntimeError(proc.stderr.strip() or f"git {argv[1]} failed")
+        found.update(p for p in proc.stdout.split("\0") if p)
+    return sorted(found)
+
+
+def _area(path: str) -> str:
+    """The tally a changed content path counts towards: "visuals" (a
+    picture under visuals/), "mp3s" (narration under web/audio/),
+    "chapters" (a Bible chapter, bibles/<code>/<chapter>.json), "bundle"
+    (anything under deploy_bundle/, the served copies of those) or "other"
+    (the two manifests, visuals/README.txt and the like)."""
+    low = path.lower()
+    if path.startswith("deploy_bundle/"):
+        return "bundle"
+    if path.startswith("visuals/") and low.endswith(_PICTURE_EXTS):
+        return "visuals"
+    if path.startswith("web/audio/") and low.endswith(".mp3"):
+        return "mp3s"
+    if (path.startswith("bibles/") and path.count("/") == 2
+            and low.endswith(".json")):
+        return "chapters"
+    return "other"
+
+
+def tally_changes(changes) -> dict[str, dict[str, int]]:
+    """{area: {"changed": n, "deleted": n}} for a git_content_changes()
+    list, with every area _area() names present."""
+    tally = {area: {"changed": 0, "deleted": 0}
+             for area in ("visuals", "mp3s", "chapters", "bundle", "other")}
+    for change, path in changes:
+        tally[_area(path)][change] += 1
+    return tally
+
+
+def _count(n: int, singular: str, plural: str) -> str:
+    return f"{n:,} {singular if n == 1 else plural}"
+
+
+def _counted(tally, change: str) -> str:
+    """The visuals, MP3s and Bible chapters with this change, as
+    "12 visuals, 30 MP3s"; "" when there are none."""
+    return ", ".join(_count(tally[area][change], one, many)
+                     for area, one, many in _COUNTED if tally[area][change])
 
 
 def commit_message(changes) -> str:
-    visuals = sum(1 for _, p in changes if p.startswith("visuals/"))
-    audio = sum(1 for _, p in changes
-                if p.startswith("web/audio/") and p.endswith(".mp3"))
-    parts = []
-    if visuals:
-        parts.append(f"{visuals} visual file(s)")
-    if audio:
-        parts.append(f"{audio} audio file(s)")
-    detail = ", ".join(parts) if parts else "content update"
-    return f"Publish: {detail}"
+    """The publish commit's message: the visuals, MP3s and Bible chapters
+    it adds or changes, then the ones it deletes, e.g. "Publish: 12
+    visuals, 30 MP3s; deleted 2 visuals". The manifests and the
+    deploy_bundle/ copies that go along aren't counted; a commit of only
+    those is a "content update"."""
+    tally = tally_changes(changes)
+    changed, deleted = _counted(tally, "changed"), _counted(tally, "deleted")
+    detail = "; ".join(filter(None, [changed,
+                                     deleted and f"deleted {deleted}"]))
+    return f"Publish: {detail or 'content update'}"
+
+
+def summarize_changes(changes) -> str:
+    """Human summary of a change list, one line per kind of change."""
+    if not changes:
+        return "no content changes"
+    tally = tally_changes(changes)
+    lines = []
+    changed, deleted = _counted(tally, "changed"), _counted(tally, "deleted")
+    if changed:
+        lines.append(f"new or changed: {changed}")
+    if deleted:
+        lines.append(f"deleted: {deleted}")
+    other = sum(tally["other"].values())
+    if other:
+        lines.append(_count(other, "other content file", "other content files")
+                     + " (the manifests and the like)")
+    bundle = sum(tally["bundle"].values())
+    if bundle:
+        lines.append(_count(bundle, "file", "files")
+                     + " under deploy_bundle/ (the copies Cloudflare serves)")
+    return "\n".join(lines)
+
+
+def web_app_warning(paths) -> str:
+    """What Publish says when the web app's own files have uncommitted
+    changes (paths from web_app_changes()); "" when they have none."""
+    if not paths:
+        return ""
+    shown = ", ".join(paths[:3])
+    if len(paths) > 3:
+        shown += f" and {len(paths) - 3} more"
+    return (f"The web app's own files have uncommitted changes ({shown}). "
+            f"Publish doesn't commit them (its commit takes content paths "
+            f"only), so they stay unpublished until you commit them, and "
+            f"their deploy_bundle/ copies, by hand.")
 
 
 class App:
@@ -155,23 +296,28 @@ class App:
         meter.pack(fill="x", padx=10, pady=(10, 4))
         self.meter_bar = ttk.Progressbar(meter, orient="horizontal",
                                          mode="determinate",
-                                         maximum=FILE_LIMIT)
+                                         maximum=DEPLOY_FILE_LIMIT)
         self.meter_bar.pack(fill="x")
         self.meter_var = tk.StringVar(value="counting…")
         self.meter_label = ttk.Label(meter, textvariable=self.meter_var)
         self.meter_label.pack(anchor="w", pady=(4, 0))
 
-        btns = ttk.Frame(self.root, padding=(10, 6))
+        btns = ttk.Frame(self.root, padding=(10, 6, 10, 0))
         btns.pack(fill="x")
         self.publish_btn = ttk.Button(btns, text="🚀 Publish…",
                                       command=self.start_publish)
         self.publish_btn.pack(side="left")
         ttk.Button(btns, text="Refresh", command=self._refresh_meter).pack(
             side="left", padx=(6, 0))
-        ttk.Label(btns, foreground="#888888",
-                  text="Publishes content only (web/ bibles/ visuals/ "
-                       "deploy_bundle/) — code commits stay yours.").pack(
-            side="left", padx=(12, 0))
+        self.dry_run_var = tk.BooleanVar(value=False)
+        self.dry_run_check = ttk.Checkbutton(
+            btns, text="Dry run (no commit / push)",
+            variable=self.dry_run_var)
+        self.dry_run_check.pack(side="left", padx=(12, 0))
+        ttk.Label(self.root, foreground="#888888", padding=(10, 2, 10, 4),
+                  text="Publishes content only (web/audio, bibles, visuals "
+                       "and their deploy_bundle/ copies) — code commits stay "
+                       "yours.").pack(anchor="w")
 
         logframe = ttk.LabelFrame(self.root, text="Log", padding=(6, 4))
         logframe.pack(fill="both", expand=True, padx=10, pady=(4, 4))
@@ -195,7 +341,7 @@ class App:
     def _refresh_meter(self):
         def worker():
             try:
-                n = audio_studio.count_deploy_files()
+                n = count_deploy_files()
             except OSError:
                 n = -1
             self.events.put(("meter", n))
@@ -205,11 +351,11 @@ class App:
         if n < 0:
             self.meter_var.set("count unavailable")
             return
-        pct = 100 * n / FILE_LIMIT
-        self.meter_bar.configure(value=min(n, FILE_LIMIT))
+        pct = 100 * n / DEPLOY_FILE_LIMIT
+        self.meter_bar.configure(value=min(n, DEPLOY_FILE_LIMIT))
         warn = "  ⚠ near the ceiling!" if pct >= 90 else ""
         self.meter_var.set(
-            f"{n:,} / {FILE_LIMIT:,} files ({pct:.0f}% of the Cloudflare "
+            f"{n:,} / {DEPLOY_FILE_LIMIT:,} files ({pct:.0f}% of Cloudflare's "
             f"limit){warn}")
 
     # ----- publish pipeline ------------------------------------------------
@@ -217,18 +363,23 @@ class App:
         if self.busy:
             return
         self.busy = True
+        dry_run = self.dry_run_var.get()
         self.publish_btn.configure(state="disabled")
-        self.status_var.set("Publishing…")
-        threading.Thread(target=self._prepare_worker, daemon=True).start()
+        self.dry_run_check.configure(state="disabled")
+        self.status_var.set("Dry run…" if dry_run else "Publishing…")
+        threading.Thread(target=self._prepare_worker, args=(dry_run,),
+                         daemon=True).start()
 
-    def _prepare_worker(self):
-        """Steps 1–2 + change scan, then hand off to the confirm dialog."""
+    def _prepare_worker(self, dry_run):
+        """Steps 1–2 + change scan, then hand off to the confirm dialog (or,
+        for a dry run, to the report)."""
         put = self.events.put
         try:
             put(("log", "— Step 1/3: visuals manifest —"))
             proc = _run([sys.executable,
                          os.path.join(REPO_ROOT, "build_manifest.py")],
-                        timeout=120)
+                        timeout=120,
+                        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
             if proc.returncode != 0:
                 raise RuntimeError("build_manifest.py failed: "
                                    + proc.stderr.strip()[:300])
@@ -246,38 +397,56 @@ class App:
             for line in (proc.stdout or "").strip().splitlines()[-2:]:
                 put(("log", "  " + line))
 
-            put(("log", "— Step 3/3: git —"))
+            put(("log", "— Step 3/3: git (dry run: status only) —" if dry_run
+                 else "— Step 3/3: git —"))
             put(("log", "  scanning content changes "
                         "(large bundle rebuilds take a moment)…"))
             changes = git_content_changes()
+            try:
+                web_app = web_app_changes()
+            except Exception as e:  # only a warning: never stop the publish
+                put(("log", f"  could not check the web app's own files: "
+                            f"{type(e).__name__}: {e}"))
+                web_app = []
             bundle_files = sum(
                 len(files) for _, _, files
                 in os.walk(os.path.join(REPO_ROOT, "deploy_bundle")))
-            put(("confirm", changes, bundle_files))
+            put(("confirm", changes, bundle_files, web_app, dry_run))
         except Exception as e:
             put(("fail", str(e)))
 
-    def _do_confirm(self, changes, bundle_files):
-        if not changes:
-            self._finish("Everything is already published — no content "
-                        "changes to commit.")
+    def _do_confirm(self, changes, bundle_files, web_app, dry_run):
+        over = bundle_files > DEPLOY_FILE_LIMIT
+        budget = (f"Deploy bundle: {bundle_files:,} files "
+                  f"(limit ~{DEPLOY_FILE_LIMIT:,})")
+        over_note = ("This EXCEEDS Cloudflare's file-count ceiling — the "
+                     "deploy will likely fail.") if over else ""
+        warning = web_app_warning(web_app)
+        if dry_run:
+            self._dry_run_report(changes, budget, over_note, warning)
             return
-        over = bundle_files > FILE_LIMIT
-        msg = (f"Ready to publish:\n\n"
-               f"  {summarize_changes(changes)}\n"
-               f"  ({len(changes)} file(s) total in the commit)\n\n"
-               f"Deploy bundle: {bundle_files:,} files "
-               f"(limit ~{FILE_LIMIT:,})\n\n")
-        if over:
-            msg += ("This EXCEEDS the Cloudflare file-count ceiling — the "
-                    "deploy will likely fail.\n\n")
+        if not changes:
+            self._finish(f"No content changes to commit.\n{warning}"
+                         if warning else
+                         "Everything is already published — no content "
+                         "changes to commit.")
+            return
+        summary = "\n".join("  " + line
+                            for line in summarize_changes(changes).splitlines())
+        msg = (f"Ready to publish {len(changes):,} file(s):\n\n"
+               f"{summary}\n\n"
+               f"Commit message: {commit_message(changes)}\n\n"
+               f"{budget}\n\n")
+        for note in (over_note, warning):
+            if note:
+                msg += f"{note}\n\n"
         msg += ("Commit and push to GitHub now? The push is the deploy — "
                 "GitHub uploads the bundle to Cloudflare.")
         self._confirming = True
         try:
             proceed = messagebox.askyesno(
                 "Publish", msg, parent=self.root,
-                icon="warning" if over else "question")
+                icon="warning" if over or warning else "question")
         finally:
             self._confirming = False
         if not proceed:
@@ -287,6 +456,23 @@ class App:
                          daemon=True).start()
         self._pushing = True    # set once the thread runs (see "confirm")
         self.status_var.set("Committing and pushing…")
+
+    def _dry_run_report(self, changes, budget, over_note, warning):
+        """Log what a publish would commit, then stop: no git add, commit
+        or push."""
+        if changes:
+            self._log(f"  would commit {len(changes):,} file(s):")
+            for line in summarize_changes(changes).splitlines():
+                self._log("    " + line)
+            self._log(f"  commit message: {commit_message(changes)}")
+        else:
+            self._log("  no content changes to commit")
+        self._log("  " + budget)
+        for note in (over_note, warning):
+            if note:
+                self._log("  ⚠ " + note)
+        self._finish("Dry run finished — nothing was staged, committed or "
+                     "pushed.")
 
     def _push_worker(self, changes):
         put = self.events.put
@@ -317,6 +503,7 @@ class App:
         self._confirming = False
         self._pushing = False
         self.publish_btn.configure(state="normal")
+        self.dry_run_check.configure(state="normal")
         self.status_var.set(status)
         self._log(status)
         self._refresh_meter()

@@ -597,11 +597,6 @@ def _person(pose="stand", head="cloth", beard=True, mantle=True,
     return P
 
 
-def _man(mantle=True, staff=False, pose="stand"):
-    return _person(pose=pose, mantle=mantle,
-                   prop="staff" if staff else None)
-
-
 # Her hair is what makes the figure legible as a woman and decent at the same
 # time, which is how she has been drawn for as long as she has been drawn: it
 # comes over the shoulders and down the chest, and the body underneath is the

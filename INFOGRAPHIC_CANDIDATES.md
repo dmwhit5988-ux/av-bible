@@ -179,7 +179,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### 1 Chronicles
 *29 chapters. Chapters 1–9's genealogies are a major candidate on their own.*
 
-- **1 Chronicles 1–9** — ✅ Built · 🌳 Genealogy. Nine chapters of genealogies from Adam through the returned exiles — the single largest genealogical block in Scripture, rendered as one world per chapter viewed through a per-verse camera. *(`generate_1chronicles.py` + `svg_1chronicles_render.py`)* Sections within it: ch. 1 (nations table, parallels Genesis 10), chs. 2–4 (Judah's line to David), ch. 6 (priestly/Levitical line), ch. 9 (post-exilic residents of Jerusalem).
+- **1 Chronicles 1–9** — ✅ Built · 🌳 Genealogy. Nine chapters of genealogies from Adam through the returned exiles — the single largest genealogical block in Scripture, rendered as one welded family tree from Adam on, with every verse of the nine chapters a camera move over it. *(`generate_1chronicles_tree_svg.py`: scenes and verse matching from `generate_1chronicles.py`, the tree from `chronicles_tree.py`, the camera in `svg_chronicles_world.py`)* Sections within it: ch. 1 (nations table, parallels Genesis 10), chs. 2–4 (Judah's line to David), ch. 6 (priestly/Levitical line), ch. 9 (post-exilic residents of Jerusalem).
 - **1 Chronicles 11–12** — 🆕 Med · 📊 Roster chart. David's mighty men, listed with their individual exploits.
 - **1 Chronicles 22–27** — 🆕 High · 📊 + 🔢 Organizational chart. David's organization of temple service — 24 priestly divisions, Levite duties, army divisions by month, tribal leaders — an unusually structured administrative chart.
 - **1 Chronicles 28–29** — 🆕 Med · 🏛️ Architectural. The temple's plans handed to Solomon — ties directly to 1 Kings 6–7.

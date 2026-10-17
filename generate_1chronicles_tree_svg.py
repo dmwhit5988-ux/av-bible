@@ -1,7 +1,8 @@
 """Render 1 Chronicles 1-9 as a camera over the one welded family tree.
 
-Supersedes generate_1chronicles_svg.py, which drew each chapter as its own
-world of side-by-side scenes. Same verse matching, same file names; the world
+Supersedes the v2 per-chapter renderer (deleted in WS4; its output is
+archived as backups/1_Chronicles_svg_v2_camera under config.ARCHIVE_DIR),
+which drew each chapter as its own world of side-by-side scenes. Same verse matching, same file names; the world
 underneath is now `chronicles_tree.py`'s single Adam-rooted tree, so a name
 read in chapter 2 is still standing when chapter 4 comes back to it.
 
@@ -11,34 +12,14 @@ read in chapter 2 is still standing when chapter 4 comes back to it.
     python generate_1chronicles_tree_svg.py --out DIR  # somewhere else
     python generate_1chronicles_tree_svg.py --spine     # the layout tried
                                                         # and rejected here
-
-Existing files are backed up to backups/1_Chronicles_svg_v2_camera/ the first
-time this writes over them.
 """
 
 import os
-import shutil
 import sys
 
 from generate_1chronicles import BOOK, CHAPTERS, coverage_check
 from generate_tabernacle import out_path
 from svg_chronicles_world import VerseFrame, World
-
-REPO = os.path.dirname(os.path.abspath(__file__))
-BACKUP = os.path.join(REPO, "backups", "1_Chronicles_svg_v2_camera")
-
-
-def back_up_once():
-    """Keep the previous family before overwriting it (project convention —
-    the column renderer it replaced is in backups/ too)."""
-    if os.path.isdir(BACKUP):
-        return False
-    src = os.path.join(REPO, "visuals", "1_Chronicles")
-    if not os.path.isdir(src):
-        return False
-    shutil.copytree(src, BACKUP)
-    return True
-
 
 def main(argv):
     dry = "--dry" in argv
@@ -61,9 +42,6 @@ def main(argv):
     print(f"       {named} of them read by a verse of 1 Chr 1-9; "
           f"{len(world.nodes) - named} standing as context")
 
-    if not dry and out_dir is None and back_up_once():
-        print(f"backed up the previous family to {BACKUP}")
-
     frame = VerseFrame(world)
     total = bytes_ = 0
     per_chapter = {}
@@ -75,7 +53,7 @@ def main(argv):
             continue
         name = f"1_Chronicles_{ch}_{v}.svg"
         if dry:
-            n = len(c.svg() if hasattr(c, "svg") else "")
+            n = len(c.tostring())
             bytes_ += n
             total += 1
             per_chapter[ch] = per_chapter.get(ch, 0) + 1
