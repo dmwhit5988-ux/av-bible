@@ -127,7 +127,7 @@ unchanged.
 | `visual_stage.py` | VerseContext, renderers, stage controller, fullscreen window |
 | `books.py` | 66-book canon with chapter counts |
 | `config.py` | Settings persistence (`config.json`) |
-| `video_render.py` / `video_studio.py` | Render a verse range to a YouTube-ready MP4 — see [VIDEO_STUDIO.md](VIDEO_STUDIO.md) |
+| `video_render.py` / `video_studio.py` | Render a verse range to a YouTube-ready MP4 — see [docs/video-studio.md](docs/video-studio.md) |
 
 Caches live in `cache/` (synthesized audio, downloaded narration, and passage
 text — the ESV text cache is capped under 500 verses per Crossway's license
