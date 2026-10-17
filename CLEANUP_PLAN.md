@@ -271,6 +271,16 @@ Each content-deleting step is a **hand-written commit, not a Publish**, so the h
 
 ### WS1 — WEB-only: data and Python code
 
+> **Status (2026-10-16): done, committed locally as `ce4b81c6` (1a), `796ac064` (1b), `62506892` (1c) and `bef1bfb2` (1d); 1e moved, not deleted, into `C:\Dev\Theoria-archive\ignored\`.** Push pending your go-ahead.
+> - **Verified:** 25 tests pass; all 24 generators reproduce the pre-cleanup output; the importer reproduces all 1,189 WEB files; a returning "KJV" visitor loads WEB on the web-static server; Romans 14:26, Romans 16:24, Acts 15:33/35, Genesis 5:9 and Luke 3:36 render; Genesis 1 plays neural MP3s; Coverage shows Romans 16 24/24 and Acts 15 40/40.
+> - **Numbers:** tracked files 33,727 → 14,385; deploy bundle 16,824 → 7,133.
+> - **Beyond the plan:** seven more generators iterate `verse_numbers()`; `test_registry` fails on any translation-suffixed visual; the visuals manifest gives 2 Peter and Zephaniah kind "diagram".
+> - **Follow-ups:**
+>   - Nine narrated verses are stale after 1d (Numbers 32:38; 1 Chronicles 2:45, 3:20, 4:12, 4:20, 5:8, 5:23, 8:34, 9:40).
+>   - Check the 8 re-keyed "fixed" names by ear in the Verifier.
+>   - The web and PC attribution wording differ (WS2 unifies them).
+>   - SVG Studio's verse spinbox isn't bounded by WEB's verse count (small, optional).
+
 **Goal.** One translation everywhere. Python has no translation parameter, no network text path and no notes. The 8 other translations, the suffixed visuals, the KJV MP3s and the orphan-verse visuals are deleted.
 
 **1a. Python code (one commit; all importers change together)**
