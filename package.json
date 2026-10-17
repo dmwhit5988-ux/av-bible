@@ -1,11 +1,8 @@
 {
   "name": "av-bible",
   "version": "1.0.0",
-  "description": "A Windows desktop app that reads the Bible aloud (ESV) with a visual stage that displays graphics for the verse currently being spoken.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "private": true,
+  "description": "Deploy tooling for Theoria, a visual Bible. It pins wrangler for the Cloudflare Worker av-bible, which serves deploy_bundle/ as static assets (wrangler.toml). Deploys run in Cloudflare Workers Builds on a push to main, never from a local wrangler.",
   "keywords": [],
   "author": "",
   "license": "ISC",
