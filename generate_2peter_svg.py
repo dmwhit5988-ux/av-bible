@@ -1,6 +1,6 @@
 """Render the second epistle of Peter (3 chapters, 61 verses) as per-verse
 vector SVGs — one full-frame scene per passage, three geometries for three
-chapters (see SHORT_BOOKS_IDEAS.md).
+chapters (see docs/design/short-books.md).
 
   ch1  The ladder of 1:5-7 — eight rungs added a clause at a time — with a
        sight gauge on the right, because the charge in v9 against the man who

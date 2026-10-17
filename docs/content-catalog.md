@@ -480,7 +480,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **1 Peter 2** — 🆕 Low · 💡 Conceptual. Living stones / spiritual house metaphor.
 
 ### 2 Peter
-*3 chapters. Complete — every verse has a visual. The first of the short books (1–3 chapters) to be built; see `SHORT_BOOKS_IDEAS.md` for the other twelve.*
+*3 chapters. Complete — every verse has a visual. The first of the short books (1–3 chapters) to be built; see `docs/design/short-books.md` for the other twelve.*
 
 - **2 Peter 1–3** — ✅ Built · 📊 + 💡 + ⏳. Three chapters, three geometries. Chapter 1 is the ladder of 1:5–7, eight rungs added a clause at a time, with a sight gauge on the right — because the charge in v9 against the man who lacks them is that he "cannot see afar off", and what he cannot see is the entrance of v11, drawn at the far end of that same horizon; then the tent Peter is shortly to put off set against the mount that stands, and the three light sources of v19 in the order the verse gives them. Chapter 2 puts the three judgment precedents on one rail with the count that came out of each (0, 8, 1), draws v11's withheld accusation as a power comparison, and closes the proverbs of v22 as a loop that returns the last frame to the first. Chapter 3 breaks the scoffers' unbroken line into three worlds divided by water and fire, lays v8's two rulers at true relative length, and brings chapter 1's ladder back at 3:18 with one more rung. *(`generate_2peter_svg.py`)*
 

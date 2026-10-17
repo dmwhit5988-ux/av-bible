@@ -1,6 +1,6 @@
 """Render Zephaniah (3 chapters, 53 verses) as per-verse vector SVGs.
 
-Design (see SHORT_BOOKS_IDEAS.md): three chapters, three geometries.
+Design (see docs/design/short-books.md): three chapters, three geometries.
 
   ch1  The created world drawn as three registers — sky, land, sea — and then
        swept, in the order 1:3 gives (man, animal, birds, fish). That order is

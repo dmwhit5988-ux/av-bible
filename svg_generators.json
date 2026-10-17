@@ -457,7 +457,7 @@
       "kind": "diagram"
     },
     {
-      "_comment": "One family for the whole book: three chapters, three geometries, one full-frame scene per passage. See SHORT_BOOKS_IDEAS.md.",
+      "_comment": "One family for the whole book: three chapters, three geometries, one full-frame scene per passage. See docs/design/short-books.md.",
       "label": "The second letter of Peter (2 Peter 1-3)",
       "book": "2 Peter",
       "chapters": [
@@ -483,7 +483,7 @@
       "kind": "diagram"
     },
     {
-      "_comment": "One family for the whole book: three chapters, three geometries, one full-frame scene per passage. See SHORT_BOOKS_IDEAS.md.",
+      "_comment": "One family for the whole book: three chapters, three geometries, one full-frame scene per passage. See docs/design/short-books.md.",
       "label": "The day of the LORD (Zephaniah 1-3)",
       "book": "Zephaniah",
       "chapters": [
