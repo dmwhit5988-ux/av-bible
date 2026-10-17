@@ -1,6 +1,6 @@
 # SVG Studio — Design
 
-> Implements STUDIO_PLAN.md Feature B (Option 3: verse-aware orchestrator).
+> Implements docs/archive/STUDIO_PLAN.md Feature B (Option 3: verse-aware orchestrator).
 > The 2026-07-08 decisions are taken as settled and are not revisited here:
 > embedded **pywebview** preview with system-browser fallback; generator-owned
 > files **detected and routed, never blocked**; **Inkscape optional** with a
@@ -8,7 +8,7 @@
 
 ## A correction to the plan's vocabulary (important)
 
-STUDIO_PLAN.md treats Acts 13–14 as the "pure hand-authored one-off" example.
+docs/archive/STUDIO_PLAN.md treats Acts 13–14 as the "pure hand-authored one-off" example.
 Reading the code: **every shipped SVG today is generator-owned**, including
 Acts 13–14 — `generate_acts1314_svg.py` hand-*encodes* the geometry in Python
 constants (`CITIES`, `ROUTE`, `LEGS`, `MAINLAND`…) but re-running it rewrites
@@ -41,7 +41,7 @@ all 80 files. So:
   and `open_svg_studio()` copying `open_audio_studio()` verbatim: reuse-or-
   deiconify a cached `tk.Toplevel`, construct `svg_studio.App(top, book,
   chapter)` pre-loaded on the reader's current selection.
-  *Note:* STUDIO_PLAN.md says "same Toplevel pattern as the Pronunciation
+  *Note:* docs/archive/STUDIO_PLAN.md says "same Toplevel pattern as the Pronunciation
   Studio", but in the code as built the Pronunciation Studio launches as a
   **subprocess** (`app.py:489`) and it is the **Audio Renderer**
   (`app.py:504`) that uses the Toplevel pattern. The Toplevel pattern is what
