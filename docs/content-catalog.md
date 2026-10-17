@@ -1,13 +1,18 @@
 # Bible Infographic Candidate Catalog
 
-A book-by-book pass over the entire canon (per the 66-book list in `books.py`) identifying which passages best support an infographic — map, timeline, genealogy, architectural diagram, process diagram, comparison chart, or symbolic diagram — and why. Chapters already produced (see `visuals/manifest.json`) are included inline, marked `✅ Built`, so this is a single complete reference rather than just a gap list.
+A book-by-book pass over the entire canon (per the 66-book list in `books.py`) identifying which passages best support an infographic — map, timeline, genealogy, architectural diagram, process diagram, comparison chart, or symbolic diagram — and why. Chapters already produced are included inline, marked `✅ Built`, so this is a single complete reference rather than just a gap list.
 
-Not every chapter is a candidate. Long stretches of law, poetry, and personal correspondence resist visual treatment; those books get a one-line note instead of forced entries.
+Not every chapter is a candidate. Long stretches of law, poetry, and personal correspondence resist visual treatment; those books get a one-line note instead of forced entries. Names and quotations in the entries describe the subject; anything lettered on a graphic is taken from the WEB text in `bibles/WEB/`.
+
+**This file is machine-read.** The Studio's Coverage tool (`coverage_studio._parse_candidates`) reads every `- **<Book> <chapters> …** — <status> · <types> …` line under a `### <Book>` heading and marks those chapters with the entry's priority. Keep these rules when editing:
+- The chapters go in the bold label. A label with no chapter number is invisible to Coverage, so a whole-book entry spells out its span (`Psalms 1–150`). In a label like `3:1–8` only the chapter (3) counts.
+- A label that runs into another book counts only this section's chapters, so a span across two books gets an entry under each.
+- Coverage takes the priority to be High if that word appears anywhere after the dash, otherwise Med, otherwise Low, so an entry's text must not contain those words, even inside another word ("Medes", "Highlands"). Where entries overlap, a chapter keeps the higher priority.
 
 ## Legend
 
 **Status**
-- `✅ Built` — visual already exists (see `visuals/<Book>/<chapter>/`)
+- `✅ Built` — the chapter has entries in `visuals/manifest.json` (its SVGs are in `visuals/<Book>/<chapter>/`, spaces in the book name as underscores). 73 chapters in 11 books, every verse covered.
 - `🆕 Candidate` — not yet built
 
 **Priority** (for candidates)
@@ -35,14 +40,16 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 
 ### By Type — High-Priority Highlights
 
-- **🗺️ Map:** [Genesis 12–25](#genesis), [Genesis 25–36](#genesis), [Genesis 37–50](#genesis), [Exodus 12–14](#exodus), [Numbers 10–14](#numbers), [Numbers 33](#numbers), [Numbers 35](#numbers), [Joshua 1–5](#joshua), [Joshua 9–12](#joshua), [Joshua 13–19](#joshua), [1 Samuel 18–27](#1-samuel), [2 Samuel 5, 8, 10](#2-samuel), [1 Kings 12](#1-kings), [1 Kings 17–19](#1-kings), [2 Kings 17](#2-kings), [2 Kings 24–25](#2-kings), [Ezra 1–2](#ezra), [Nehemiah 3](#nehemiah), [Isaiah 13–23](#isaiah), [Ezekiel 47–48](#ezekiel), [Amos 1–2](#amos), [Jonah 1–2](#jonah), [Matthew 2](#matthew), [Acts 1–2](#acts), [Acts 15–18](#acts), [Acts 18–21](#acts), [Acts 27–28](#acts), [Revelation 2–3](#revelation)
-- **⏳ Timeline:** [Leviticus 23](#leviticus), [Leviticus 25](#leviticus), [Numbers 33](#numbers), [Judges — the judges' cycle roster](#judges), [1 Kings 12 – 2 Kings 17](#1-kings), [2 Kings 24–25](#2-kings), [Ecclesiastes 3:1–8](#ecclesiastes), [Daniel 9](#daniel), [Daniel 10–12](#daniel), [Matthew 21–27](#matthew), [Luke 1–2](#luke), [Revelation 6–16](#revelation), [Revelation 19–20](#revelation) — plus already-built Genesis 6–9
+Every unbuilt High entry, grouped by the types it carries (an entry with two types appears under both), then the built chapters of the same type.
+
+- **🗺️ Map:** [Genesis 12–25](#genesis), [Genesis 25–36](#genesis), [Genesis 37–50](#genesis), [Exodus 12–14](#exodus), [Numbers 10–14](#numbers), [Numbers 33](#numbers), [Numbers 35](#numbers), [Joshua 1–5](#joshua), [Joshua 9–12](#joshua), [Joshua 13–19](#joshua), [1 Samuel 18–27](#1-samuel), [2 Samuel 5, 8, 10](#2-samuel), [1 Kings 12](#1-kings), [1 Kings 17–19](#1-kings), [2 Kings 17](#2-kings), [2 Kings 24–25](#2-kings), [Ezra 1–2](#ezra), [Nehemiah 3](#nehemiah), [Isaiah 13–23](#isaiah), [Ezekiel 47–48](#ezekiel), [Daniel 8](#daniel), [Daniel 10–12](#daniel), [Amos 1–2](#amos), [Jonah 1–2](#jonah), [Matthew 2](#matthew), [Acts 1–2](#acts), [Acts 19–21](#acts), [Acts 27–28](#acts), [Revelation 2–3](#revelation) — plus already-built Genesis 2, Genesis 10, Numbers 32, Numbers 34, Zephaniah 1–3, Acts 13–14, Acts 15–18
+- **⏳ Timeline:** [Leviticus 23](#leviticus), [Leviticus 25](#leviticus), [Numbers 33](#numbers), [Judges 3–16](#judges), [1 Kings 12–22 and 2 Kings 1–17](#1-kings), [2 Kings 24–25](#2-kings), [Ecclesiastes 3:1–8](#ecclesiastes), [Daniel 9](#daniel), [Daniel 10–12](#daniel), [Matthew 21–27](#matthew), [Luke 1–2](#luke), [Revelation 6–16](#revelation), [Revelation 19–20](#revelation) — plus already-built Genesis 6–9, Hebrews 1–13, 2 Peter 1–3
 - **🌳 Genealogy:** already-built — Genesis 4, Genesis 5, Genesis 10, Genesis 11:10–32, 1 Chronicles 1–9, Matthew 1, Luke 3, Hebrews 7 (the negative genealogy of Melchizedek)
-- **🏛️ Architectural:** [Exodus 29](#exodus), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Ephesians 6:10–18](#ephesians), [Revelation 21–22](#revelation) — plus already-built Genesis 6–9, Exodus 25–27, Exodus 28, Hebrews 1–13
-- **🔄 Process/Cycle:** [Exodus 12](#exodus), [Leviticus 16](#leviticus), [Joshua 6](#joshua), [Judges — the judges' cycle](#judges), [Ezekiel 4](#ezekiel), [Revelation 6–16](#revelation)
-- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John — seven signs](#john), [John — seven "I am" statements](#john), [Galatians 5](#galatians), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4, Romans 1–16, Hebrews 1–13
-- **🔢 Numeric/Statistical:** [Ezra 1–2](#ezra) — plus already-built Numbers 1–2
-- **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Zechariah 1–6](#zechariah), [1 Samuel 17](#1-samuel), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [Revelation 4–5](#revelation) — plus already-built Genesis 3, Genesis 11:1–9
+- **🏛️ Architectural:** [Joshua 6](#joshua), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Haggai 1](#haggai), [Ephesians 6:10–18](#ephesians), [Revelation 21–22](#revelation) — plus already-built Genesis 6–9, Exodus 25–27, Exodus 28, Numbers 1–2, Hebrews 1–13, Hebrews 9
+- **🔄 Process/Cycle:** [Exodus 12](#exodus), [Leviticus 16](#leviticus), [Joshua 6](#joshua), [Judges 2–16](#judges), [Ezekiel 4](#ezekiel), [Haggai 2](#haggai), [Revelation 6–16](#revelation) — plus already-built Acts 15
+- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [Judges 3–16](#judges), [1 Kings 12–22 and 2 Kings 1–17](#1-kings), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Haggai 1](#haggai), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John 2–11](#john), [John 6–15](#john), [1 Corinthians 12](#1-corinthians), [Galatians 5](#galatians), [3 John 1](#3-john), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4, Zephaniah 1–3, Romans 1–16, Hebrews 10:11–12, Hebrews 12:18–24, 2 Peter 1–3
+- **🔢 Numeric/Statistical:** [Exodus 5–11](#exodus), [Joshua 9–12](#joshua), [1 Chronicles 22–27](#1-chronicles), [Ezra 1–2](#ezra) — plus already-built Numbers 1–2
+- **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [1 Samuel 17](#1-samuel), [Ecclesiastes 3:1–8](#ecclesiastes), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Haggai 2](#haggai), [Zechariah 1–6](#zechariah), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [2 John 1](#2-john), [3 John 1](#3-john), [Revelation 4–5](#revelation) — plus already-built Genesis 3, Genesis 11:1–9, Zephaniah 1–3, Hebrews 1–13, 2 Peter 1–3
 
 ---
 
@@ -51,11 +58,11 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### Genesis
 *50 chapters. Extremely rich — origins narrative, three generations of patriarchal travel. **Chapters 1–11 are complete — every verse has a visual.** The patriarchal journey maps are the big gap.*
 
-- **Genesis 1 (Day Structure)** — ✅ Built · 📊 Comparison chart. The six days as a forming-then-filling parallel: Day 1 (light/dark) pairs with Day 4 (sun, moon, stars); Day 2 (sky/sea separated) with Day 5 (birds, fish); Day 3 (land/plants) with Day 6 (land animals, humans); Day 7 is rest. Two columns, three paired rows, a seven-day bar along the foot. *(`generate_genesis1_svg.py`; **replaced** the earlier photo-stills treatment, retired to `backups/png_replaced_by_svg/Genesis/1/` — see `docs/archive/genesis1-photo-credits.txt`)*
+- **Genesis 1 (Day Structure)** — ✅ Built · 📊 Comparison chart. The six days as a forming-then-filling parallel: Day 1 (light/dark) pairs with Day 4 (sun, moon, stars); Day 2 (sky/sea separated) with Day 5 (birds, fish); Day 3 (land/plants) with Day 6 (land animals, humans); Day 7 is rest. Two columns, three paired rows, a seven-day bar along the foot. *(`generate_genesis1_svg.py`)*
 - **Genesis 2** — ✅ Built · 🗺️ Map/Diagram. A schematic garden plan: the river out of Eden parting into four labelled heads (Pishon, Gihon, Hiddekel, Euphrates), the two named trees, the man and the woman, the animals named. Verses 1–3 close Genesis 1's seventh day. *(`generate_genesis2_svg.py`)*
 - **Genesis 3** — ✅ Built · 💡 Symbolic/Conceptual. The chapter has no numbers or geography, so the graphic is built from what it does have: a speaker strip (serpent, woman, man, God) with an arc from speaker to hearer on every line of dialogue — the blame arcs of 12–13 staying on screen so the chain reads whole — and a ledger pairing each Genesis 2 statement with the verse that reverses it. Three body modes: the garden (1–13), the three sentences as a triptych (14–19), the expulsion (20–24), closing with a flaming sword that turns every way. *(`generate_genesis3_svg.py`)*
-- **Genesis 4:17–22** — ✅ Built · 🌳 Genealogy. Cain's line down seven generations to Lamech and his three sons (herding, music, metalwork), with the murder story played across the tree and Seth/Enosh in Adam's other line. Covers all 26 verses. *(`generate_genesis4_svg.py`)*
-- **Genesis 5** — ✅ Built · 🌳 Genealogy. Adam to Noah, lifespans visualized. *(`visuals/Genesis/5/`)*
+- **Genesis 4** — ✅ Built · 🌳 Genealogy. Cain's line down seven generations to Lamech and his three sons (herding, music, metalwork), with the murder story played across the tree and Seth/Enosh in Adam's other line. Covers all 26 verses. *(`generate_genesis4_svg.py`)*
+- **Genesis 5** — ✅ Built · 🌳 Genealogy. Adam to Noah, lifespans visualized. *(`generate_genealogy_svg.py`, from the tables in `generate_genealogy.py`)*
 - **Genesis 6–9** — ✅ Built · 🏛️ Architectural + ⏳ Timeline. The ark to scale as a side elevation (300×50×30 cubits, three levels, door, roof) with a 50×30 end-view callout; the water level rises and falls verse by verse and the ark grounds on Ararat at 8:4; a 13-stop dated timeline along the foot carries the chronology. *(`generate_genesis69_svg.py`)*
 - **Genesis 10** — ✅ Built · 🌳 Genealogy + 🗺️ Map. The Table of Nations as both: a map of the known world with the three lines as bands and the son-level peoples as dots, plus a panel carrying the running name list and the per-line tallies that add to seventy. *(`generate_genesis10_svg.py`)*
 - **Genesis 11** — ✅ Built · 💡 Babel (1–9) + 🌳 Genealogy (10–32). Babel runs on the chapter's own vertical axis: men build up (a ziggurat rising course by course, its top never reaching the sky band it claims) while God comes down; the one-language band breaks into threads at v7, and a Genesis 10 map inset marks Shinar and fires the scattering back out of it. The panel carries the three “Come, let's…” summons — twice from below, once from above. Verses 10–32 remain the Shem-to-Abram genealogy. *(`generate_genesis11_svg.py` owns 1–9, `generate_genealogy_svg.py` owns 10–32 — the project's first split chapter, hence the `verses` ranges in `svg_generators.json`)*
@@ -68,15 +75,15 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Genesis 49** — 🆕 Med · 📊 Chart. Jacob's blessings over the twelve sons — pairs well as a "tribal characteristics" comparison chart.
 
 ### Exodus
-*40 chapters. The tabernacle chapters are already built; several neighboring chapters are equally strong.*
+*40 chapters. Exodus 25–28, the tabernacle and the priestly garments, are built; several neighboring chapters are equally strong.*
 
 - **Exodus 5–11** — 🆕 High · 🔢 Sequence infographic. The ten plagues, in order, each with its narrative trigger and outcome — a classic numbered-sequence subject.
 - **Exodus 12** — 🆕 High · 🔄 Process diagram. Passover's instructions: the lamb, the blood on doorposts, the meal eaten in haste — a ritual-steps diagram.
 - **Exodus 12–14** — 🆕 High · 🗺️ Map. The Exodus route from Egypt (Rameses) to the Red Sea crossing.
 - **Exodus 16–19** — 🆕 Med · 🗺️ Map. Wilderness route to Sinai: manna and quail, water from the rock at Rephidim, the battle with Amalek, Jethro's visit.
 - **Exodus 19–20** — 🆕 High · 💡 Symbolic/structural diagram. Sinai's setting and the Ten Commandments as two tablets — duty to God (1–4) vs. duty to neighbor (5–10). One of the most iconic possible subjects.
-- **Exodus 25–27** — ✅ Built · 🏛️ Architectural. Tabernacle diagrams. *(`visuals/Exodus/25-27/`)*
-- **Exodus 28** — ✅ Built · 🏛️ Architectural. The chapter is a build list — v4 names six garments, then makes them in that order for thirty-five verses — so the frame is what the chapter already has: a priest at full height dressed a garment per verse, v4's manifest ticking off down the left edge as the whole progress indicator, and a working drawing on the right at the scale you can read it. Garments are drawn in **wearing** order and gated by the verse that makes them, so the coat made last at v39 comes out underneath the robe made at v31. Three things a costume plate leaves out are what the drawing carries: the twelve names borne twice (six and six on the shoulder stones at v12, all twelve over the heart at v29 — v29 puts both bearings in one frame), the signet mark that recurs wherever a name is cut (vv11, 21, 36), and the stakes, since v35 and v43 both end "that he not die". The five materials of v5 run as warp stripes in the cloth rather than sitting in a key, and re-light whenever the text names them again (vv6, 8, 15). The breeches of v42 are appended below the manifest's six, because the chapter adds a seventh garment after the list it gave. *(`generate_exodus28_svg.py` + `svg_priest.py`, the garment geometry it shares with Hebrews)*
+- **Exodus 25–27** — ✅ Built · 🏛️ Architectural. Tabernacle diagrams: each verse is the courtyard plan, with a detail inset where the verse describes a part up close, and the part the verse describes pulsing on an overlay. *(drawing and spec in `generate_tabernacle.py`; `generate_exodus26_svg.py` renders chapter 26, `generate_exodus2527_svg.py` chapters 25 and 27)*
+- **Exodus 28** — ✅ Built · 🏛️ Architectural. The chapter is a build list — v4 names six garments, then makes them in that order for thirty-five verses — so the frame is what the chapter already has: a priest at full height dressed a garment per verse, v4's manifest ticking off down the left edge as the whole progress indicator, and a working drawing on the right at the scale you can read it. Garments are drawn in **wearing** order and gated by the verse that makes them, so the coat made last at v39 comes out underneath the robe made at v31. Three things a costume plate leaves out are what the drawing carries: the twelve names borne twice (six and six on the shoulder stones at v12, all twelve over the heart at v29 — v29 puts both bearings in one frame), the signet mark that recurs wherever a name is cut (vv11, 21, 36), and the stakes, since v35 and v43 both end on death ("that he not die", "that they don't bear iniquity, and die"). The five materials of v5 run as warp stripes in the cloth rather than sitting in a key, and re-light whenever the text names them again (vv6, 8, 15). The breeches of v42 are appended below the manifest's six, because the chapter adds a seventh garment after the list it gave. *(`generate_exodus28_svg.py` + `svg_priest.py`, the garment geometry it shares with Hebrews)*
 - **Exodus 29** — 🆕 Med · 🔄 Process diagram. The consecration of Aaron and his sons, step by step over seven days — the ordination Exodus 28:41 names in three words and Leviticus 8–9 narrates.
 - **Exodus 30** — 🆕 Med · 🏛️ Architectural. Incense altar, bronze laver, anointing oil recipe — a natural extension of the 25–27 diagram set.
 - **Exodus 35–40** — 🆕 Low · 🏛️ Architectural. The tabernacle's actual construction and erection — largely repeats 25–27's content from the building side.
@@ -88,7 +95,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Leviticus 8–9** — 🆕 Med · 🔄 Process diagram. The ordination of Aaron and his sons, step by step.
 - **Leviticus 11** — 🆕 Med · 📊 Chart. Clean vs. unclean animals — a natural two-column chart.
 - **Leviticus 16** — 🆕 High · 🔄 Process diagram. The Day of Atonement's precise ritual sequence — the two goats, the entry behind the veil.
-- **Leviticus 23** — 🆕 High · ⏳ Calendar/timeline. The seven feasts of the LORD (Passover, Unleavened Bread, Firstfruits, Weeks, Trumpets, Atonement, Tabernacles) laid out across the year.
+- **Leviticus 23** — 🆕 High · ⏳ Calendar/timeline. The seven set feasts of Yahweh (Passover, Unleavened Bread, Firstfruits, Weeks, Trumpets, Atonement, Tabernacles) laid out across the year.
 - **Leviticus 25** — 🆕 High · ⏳ Cyclical timeline. The sabbatical year (every 7th) and Jubilee (every 50th) — a nested-cycle diagram.
 - **Leviticus 26** — 🆕 Low · 📊 Chart. Conditional blessings vs. curses.
 
@@ -102,9 +109,9 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Numbers 20–21** — 🆕 Med · 🗺️ Map. Edom's refusal of passage, Aaron's death at Hor, the bronze serpent, and the conquest of Sihon and Og — sets up the already-built Numbers 32 map.
 - **Numbers 22–24** — 🆕 Med · 🗺️ Map. Balaam's journey and his oracles overlooking the Israelite camp.
 - **Numbers 26** — 🆕 Med · 🔢 Comparison chart. The second census, tribe by tribe, set against the first census in ch. 1.
-- **Numbers 32** — ✅ Built · 🗺️ Map (Transjordan). *(`visuals/Numbers/32/`)*
+- **Numbers 32** — ✅ Built · 🗺️ Map (Transjordan). *(`generate_numbers32_svg.py`, on the map geometry in `generate_tribal_maps.py`)*
 - **Numbers 33** — 🆕 High · 🗺️ Map + ⏳ Timeline. The full 42-station itinerary of the wilderness years, named stop by stop — the natural single map/timeline that ties the whole wilderness period together.
-- **Numbers 34** — ✅ Built · 🗺️ Map (Canaan's borders + tribal allotment). *(`visuals/Numbers/34/`)*
+- **Numbers 34** — ✅ Built · 🗺️ Map (Canaan's borders + tribal allotment). *(`generate_numbers34_svg.py`, on the same `generate_tribal_maps.py` geometry)*
 - **Numbers 35** — 🆕 High · 🗺️ Map. The six cities of refuge, positioned across both sides of the Jordan.
 
 ### Deuteronomy
@@ -130,7 +137,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 
 - **Judges 1** — 🆕 Med · 🗺️ Map. The incomplete conquest — which tribes failed to drive out the Canaanites, and where.
 - **Judges 2–16 (the judges' cycle)** — 🆕 High · 🔄 Cycle diagram. Sin → oppression → cry for help → deliverer raised up → peace → relapse. A textbook recurring-cycle diagram.
-- **Judges (the judges' cycle roster)** — 🆕 High · ⏳ + 📊 Timeline/chart. Each of the twelve judges with their tribe, oppressor, years of oppression, and years of peace that followed — a natural chronological chart.
+- **Judges 3–16 (the judges' roster)** — 🆕 High · ⏳ + 📊 Timeline/chart. Each of the twelve judges with their tribe, oppressor, years of oppression, and years of peace that followed — a natural chronological chart.
 - **Judges 4–5** — 🆕 Med · 🗺️ Map. Deborah, Barak, and Jael's defeat of Sisera.
 - **Judges 6–8** — 🆕 Med · 🗺️ + 🔄 Map. Gideon's 300 men and the rout of the Midianite camp.
 
@@ -164,20 +171,21 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **1 Kings 6–7** — 🆕 High · 🏛️ Architectural. Solomon's Temple and palace complex, with precise dimensions — arguably the best architectural-diagram candidate in the historical books.
 - **1 Kings 10** — 🆕 Low · 🗺️ Map. The Queen of Sheba's visit — a trade-route map.
 - **1 Kings 12** — 🆕 High · 🗺️ Map. The kingdom splits into Israel (north) and Judah (south) — the foundational map for the rest of Kings and Chronicles.
-- **1 Kings 12 – 2 Kings 17** — 🆕 High · ⏳ + 📊 Parallel timeline. The kings of Israel and Judah reigning side by side, with the prophets active in each period — one of the most famous Bible infographics in existence, spanning both books.
 - **1 Kings 17–19** — 🆕 High · 🗺️ Map. Elijah's travels — the Kerith Ravine, Zarephath, Mount Carmel, the 40-day journey to Horeb.
 - **1 Kings 18** — 🆕 Med · 💡 + 🔄 Scene diagram. The contest on Mount Carmel between Elijah and the prophets of Baal.
+- **1 Kings 12–22 and 2 Kings 1–17 (parallel kings)** — 🆕 High · ⏳ + 📊 Parallel timeline. The kings of Israel and Judah reigning side by side, with the prophets active in each period — one of the most famous Bible infographics in existence, spanning both books. The OT timeline sheet already dates the kings of both kingdoms, with Ussher's and Thiele's years (`docs/design/ot-timeline.md`).
 
 ### 2 Kings
-*25 chapters. Continues the parallel-kings timeline above; distinct entries below.*
+*25 chapters. Chapters 1–17 continue the parallel-kings timeline from 1 Kings.*
 
 - **2 Kings 2–8** — 🆕 Med · 🗺️ Map. Elisha's travels and miracles across several towns.
 - **2 Kings 17** — 🆕 High · 🗺️ Map. The fall of Samaria — Israel's deportation to Assyria and resettlement with foreign peoples.
+- **2 Kings 1–17 (parallel kings, with 1 Kings 12–22)** — 🆕 High · ⏳ + 📊 Parallel timeline. The second half of the 1 Kings entry: one design across both books, down to the fall of Samaria.
 - **2 Kings 18–19** — 🆕 Med · 🗺️ Map. Sennacherib's Assyrian invasion of Judah and the siege of Jerusalem.
 - **2 Kings 24–25** — 🆕 High · 🗺️ + ⏳ Map/timeline. The fall of Jerusalem and the waves of deportation to Babylon — sets up Ezra and Nehemiah's return narrative.
 
 ### 1 Chronicles
-*29 chapters. Chapters 1–9's genealogies are a major candidate on their own.*
+*29 chapters. Chapters 1–9, the genealogies, are built.*
 
 - **1 Chronicles 1–9** — ✅ Built · 🌳 Genealogy. Nine chapters of genealogies from Adam through the returned exiles — the single largest genealogical block in Scripture, rendered as one welded family tree from Adam on, with every verse of the nine chapters a camera move over it. *(`generate_1chronicles_tree_svg.py`: scenes and verse matching from `generate_1chronicles.py`, the tree from `chronicles_tree.py`, the camera in `svg_chronicles_world.py`)* Sections within it: ch. 1 (nations table, parallels Genesis 10), chs. 2–4 (Judah's line to David), ch. 6 (priestly/Levitical line), ch. 9 (post-exilic residents of Jerusalem).
 - **1 Chronicles 11–12** — 🆕 Med · 📊 Roster chart. David's mighty men, listed with their individual exploits.
@@ -210,8 +218,8 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### Esther
 *10 chapters.*
 
-- **Esther 1** — 🆕 Med · 🗺️ Map. The Persian Empire's extent — 127 provinces from India to Ethiopia — and the setting at Susa.
-- **Esther (overall)** — 🆕 Med · ⏳ Timeline. Events span roughly a decade of Xerxes' reign with specific dates given (e.g., the 13th of Adar).
+- **Esther 1** — 🆕 Med · 🗺️ Map. The Persian Empire's extent — 127 provinces from India to Ethiopia — and the setting at Shushan.
+- **Esther 1–10 (overall timeline)** — 🆕 Med · ⏳ Timeline. Events span roughly a decade of Ahasuerus' reign with specific dates given (e.g., the 13th of Adar).
 - **Esther 3–9** — 🆕 Low · 💡 Reversal diagram. Haman's plot flipped into Mordecai's triumph — a before/after contrast diagram.
 
 ### Job
@@ -224,7 +232,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 *150 chapters/psalms. Devotional poetry — very low density for maps/timelines, but two structural candidates stand out.*
 
 - **Psalm 119** — 🆕 Med · 🔤 Structure diagram. A 22-stanza acrostic, one stanza per Hebrew letter, 8 verses each.
-- **Psalms (overall)** — 🆕 Med · 📊 Organizational chart. The Psalter's five "books," each closing in a doxology.
+- **Psalms 1–150 (the five books)** — 🆕 Med · 📊 Organizational chart. The Psalter's five "books," each closing in a doxology.
 - **Psalm 23** — 🆕 Low · 💡 Conceptual. Shepherd/sheep imagery — popular subject, but conceptual rather than diagrammatic.
 
 ### Proverbs
@@ -266,9 +274,9 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### Ezekiel
 *48 chapters. One of the richest books in the whole Bible for this project — rivals Exodus and Daniel.*
 
-- **Ezekiel 1 & 10** — 🆕 High · 💡 Symbolic diagram. The wheel/throne vision — four living creatures and "wheels within wheels."
+- **Ezekiel 1 & 10** — 🆕 High · 💡 Symbolic diagram. The wheel/throne vision — four living creatures and "a wheel within a wheel."
 - **Ezekiel 4** — 🆕 High · 🔄 + 💡 Diagram. Siege sign-acts: lying on his side for a set number of days (each day representing a year) and building a model siege of Jerusalem on a clay tile — a genuinely literal diagram Ezekiel himself constructs.
-- **Ezekiel 8–11** — 🆕 Med · 🏛️ Diagram. Vision of temple abominations and the glory of the LORD departing.
+- **Ezekiel 8–11** — 🆕 Med · 🏛️ Diagram. Vision of temple abominations and Yahweh's glory departing.
 - **Ezekiel 37** — 🆕 Med · 💡 Sequence diagram. The valley of dry bones — bones, then sinews, then flesh, then breath.
 - **Ezekiel 38–39** — 🆕 Med · 🗺️ Map. The Gog/Magog invasion.
 - **Ezekiel 40–43** — 🆕 High · 🏛️ Architectural. The new temple, measured room by room by the man with the measuring reed — arguably the single best architectural-diagram candidate in the entire Bible.
@@ -292,20 +300,22 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Hosea 1–3** — 🆕 Low · 💡 Structure diagram. The marriage-as-metaphor structure (Gomer/Israel).
 
 ### Joel
-*3 chapters.*
+*3 chapters. One landscape for the whole book — a field, a city on a rise behind it, a valley below.*
 
-- **Joel 1–2** — 🆕 Med · 💡 + ⏳ Sequence diagram. The locust plague's stages, escalating into the "Day of the LORD" and the Spirit poured out (quoted in Acts 2).
+- **Joel 1** — 🆕 Med · 🔄 + 🔢 Four passes over one field. The four locusts of v4 (swarming locust, great locust, grasshopper, caterpillar) each eat what the last one left, and the produce ledger empties crop by crop. *(design: `docs/design/short-books.md`)*
+- **Joel 2** — 🆕 Med · 💡 + 🔄 The swarm redrawn as an army in ranks going up the city wall; the trumpet that gathers; the restoration read straight off chapter 1's ledger (v25); the Spirit poured out on four named groups (quoted in Acts 2). *(design: `docs/design/short-books.md`)*
+- **Joel 3** — 🆕 Med · 🗺️ + 📊 The valley of decision: a trade ring of the nations whose arrows reverse (vv1–8), the plowshares beaten into swords, and a watered map with Egypt and Edom left dry. *(design: `docs/design/short-books.md`)*
 
 ### Amos
 *9 chapters.*
 
-- **Amos 1–2** — 🆕 High · 🗺️ + 📊 Map/chart. Oracles against eight nations, each introduced with the repeated "for three transgressions... and for four" formula — a highly structured list that doubles as a regional map.
+- **Amos 1–2** — 🆕 High · 🗺️ + 📊 Map/chart. Oracles against eight nations, each introduced with the repeated "for three transgressions..., yes, for four" formula — a highly structured list that doubles as a regional map.
 - **Amos 7–9** — 🆕 Med · 💡 + 📊 Sequence chart. Five visions of judgment (locusts, fire, plumb line, basket of summer fruit, the Lord beside the altar).
 
 ### Obadiah
 *1 chapter.*
 
-- **Obadiah** — 🆕 Low · 🗺️ Map. Judgment on Edom — a single short oracle, mappable but thin.
+- **Obadiah 1** — 🆕 Med · 💡 + 🗺️ Judgment on Edom as one cliff drawn in section: the nest set among the stars, the camera falling down the face as the oracle proceeds, the crossroads of v14 as the set-piece, and a territory map for vv19–21. *(design: `docs/design/short-books.md`)*
 
 ### Jonah
 *4 chapters.*
@@ -318,20 +328,29 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Micah 5:2** — 🆕 Low · 💡 Conceptual. Bethlehem prophesied as the ruler's birthplace — single-verse, thematic rather than diagrammatic.
 
 ### Nahum
-*3 chapters. Judgment on Nineveh — low density; geographically pairs with Jonah but too thin on its own for a separate entry.*
+*3 chapters. Judgment on Nineveh: one city approached, entered, and set beside a city that already fell. Geographically it pairs with Jonah.*
+
+- **Nahum 1** — 🆕 Med · 💡 + 📊 The storm front crossing three named ridges (Bashan, Carmel, Lebanon), then the hinge of vv7–8 as a two-column ledger: a stronghold standing in the rising flood. *(design: `docs/design/short-books.md`)*
+- **Nahum 2** — 🆕 Med · 🏛️ + 🔄 The city in cutaway, taken piece by piece: chariots in the streets, the river gates opening on v6 and the water taking the palace, the spoil emptied, and the lions' den drawn empty. *(design: `docs/design/short-books.md`)*
+- **Nahum 3** — 🆕 Med · 📊 Nineveh set beside No-Amon (Thebes): the same row of defences and allies under both cities, Thebes' already struck through, Nineveh's struck one at a time. *(design: `docs/design/short-books.md`)*
 
 ### Habakkuk
-*3 chapters. A theological dialogue with God — low density, no strong visual candidates.*
+*3 chapters. A dialogue, a watchtower, and a march — three different geometries.*
+
+- **Habakkuk 1** — 🆕 Med · 💡 + 📊 A two-speaker exchange on the Genesis 3 speaker-strip device: two complaints and the answer between them, ending on men taken like fish with the hook and the net. *(design: `docs/design/short-books.md`)*
+- **Habakkuk 2** — 🆕 Med · 🏛️ + 📊 The watchtower and the tablet of v2 ("make it plain on tablets"), with the five woes cut into it as five emblems. *(design: `docs/design/short-books.md`)*
+- **Habakkuk 3** — 🆕 Med · 🗺️ + 🔢 A march across named ground (Teman, Mount Paran, Cushan, Midian), then six empty stalls and bins, all counted, all nothing (vv17–19). *(design: `docs/design/short-books.md`)*
 
 ### Zephaniah
-*3 chapters. Complete — every verse has a visual. The earlier "low priority, pairs with Joel" note was wrong: read for structure rather than theme, the book carries three strong geometries.*
+*3 chapters. Complete — every verse has a visual. Read for structure rather than theme, the book carries three strong geometries; the design is in `docs/design/short-books.md`.*
 
 - **Zephaniah 1–3** — ✅ Built · 💡 + 🗺️ + 📊. Chapter 1 draws the created world as three registers — sky, land, sea — and sweeps them in the order 1:3 gives (man, animal, birds, fish), which is the filling of Genesis 1 run backwards; then the hand stretched out, the rooftop worshippers who swear two ways at once, the sacrifice and its bidden guests, a plan of the city searched quarter by quarter with a lamp, and the nine words of 1:15 as a bar that goes to black one word at a time. Chapter 2 lays a compass over Judah and takes the oracles round the points in the text's own order — west (the four Philistine cities), east (Moab and Ammon), south (Cush), north (Nineveh) — with a corner compass as the whole progress indicator; Nineveh's ruin is a building labelled by the creatures now occupying its named parts (capitals, windows, thresholds, cedar beams). Chapter 3 holds one centre point through three occupants: Yahweh bringing justice to light every morning while the four offices fail around him (3:5), the afflicted and poor left in place of the proud (3:12), and the King who rejoices with singing (3:17). *(`generate_zephaniah_svg.py`)*
 
 ### Haggai
-*2 chapters.*
+*2 chapters. Five dates in Darius' second year run under both chapters as one date rail; it ties into the Ezra 3–6 rebuilding. One of the two best next builds among the short books.*
 
-- **Haggai (temple rebuilding)** — 🆕 Low · ⏳ Timeline. Short book, ties directly into the Ezra temple-rebuilding timeline rather than standing alone.
+- **Haggai 1** — 🆕 High · 📊 + 🏛️ Two houses at one scale — the paneled private house finished, Yahweh's house a bare foundation — and the futility ledger of v6: five inputs that never arrive at their outputs, ending in the bag with holes. *(design: `docs/design/short-books.md`)*
+- **Haggai 2** — 🆕 High · 💡 + 🔄 The first temple ghosted behind the new work at true scale; the priests' two rulings (vv12–13) as one contact chain drawn twice, holiness stopping after the first link and uncleanness running down every link; the shortfall jars of vv16–19; the signet ring. *(design: `docs/design/short-books.md`)*
 
 ### Zechariah
 *14 chapters.*
@@ -349,10 +368,10 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### Matthew
 *28 chapters. Strong across the board — genealogy already built, several other flagship candidates remain.*
 
-- **Matthew 1** — ✅ Built · 🌳 Genealogy (three columns of fourteen). *(`visuals/Matthew/1/`)*
+- **Matthew 1** — ✅ Built · 🌳 Genealogy. Verses 1–17 are a camera over the real Old Testament family tree — the welded tree 1 Chronicles 1–9 is read against, which already held thirty-six of Matthew's names in his order — so the generations he passes over sit on the sheet unlit and his fourteens can be seen being made. Verses 18–25 move to a figure stage for the Nativity, closing on the manger. *(`generate_matthew1_svg.py`: the grafts and verse table in `matthew_tree.py`, the camera in `svg_matthew_world.py`, the stage in `svg_matthew_nativity.py`; design in `docs/design/matthew-1.md`)*
 - **Matthew 2** — 🆕 High · 🗺️ Map. The wise men's journey from the East, and the flight to Egypt then Nazareth.
 - **Matthew 3–4** — 🆕 Low · 🗺️ Map. Baptism, temptation, and the geography of the Galilean ministry base.
-- **Matthew 5–7** — 🆕 High · 📊 Structural chart. The Sermon on the Mount's outline — the Beatitudes, the "you have heard... but I say" antitheses, the Lord's Prayer, the Golden Rule.
+- **Matthew 5–7** — 🆕 High · 📊 Structural chart. The Sermon on the Mount's outline — the Beatitudes, the "you have heard... but I tell you" antitheses, the Lord's Prayer, the Golden Rule.
 - **Matthew 8–9** — 🆕 Med · 📊 Catalog chart. A concentrated sequence of miracles.
 - **Matthew 13** — 🆕 High · 📊 Comparison chart. Seven kingdom parables in a single chapter.
 - **Matthew 16–17** — 🆕 Low · 💡 Conceptual. Caesarea Philippi confession and the Transfiguration.
@@ -369,7 +388,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 *24 chapters. Genealogy already built; the birth narrative and travel narrative are strong additional candidates.*
 
 - **Luke 1–2** — 🆕 High · ⏳ Timeline. The nativity timeline — Zechariah's vision, Mary's conception, the visitation, the birth, the shepherds, the presentation, the boy Jesus at twelve.
-- **Luke 3** — ✅ Built · 🌳 Genealogy (back to Adam, 77 names). *(`visuals/Luke/3/`)*
+- **Luke 3** — ✅ Built · 🌳 Genealogy (back to Adam, 77 names). Verses 1–22 are one held scene at the surface, building to the ax laid at the root of the trees (v9); verses 23–38 are a camera descending one long taproot from Jesus to "the son of God". *(`generate_luke3_svg.py`, names and geometry in `generate_luke3.py`)*
 - **Luke 9–19 (the travel narrative)** — 🆕 Med · 🗺️ Map. Luke structures a large central section of the Gospel as a single journey toward Jerusalem, naming villages along the way.
 - **Luke 15** — 🆕 Med · 📊 Comparison chart. Three parables of the lost — sheep, coin, son — presented side by side.
 - **Luke 22–23** — 🆕 Low · ⏳ Timeline. Passion week — cross-references the Matthew 21–27 entry.
@@ -378,8 +397,8 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### John
 *21 chapters. Two of the strongest structural candidates in the entire NT.*
 
-- **John — seven signs** — 🆕 High · 📊 Structural chart. The seven sign-miracles that structure the Gospel (water to wine, the official's son, the lame man, feeding the 5,000, walking on water, the blind man, Lazarus) — a famous literary-structure infographic unique to John.
-- **John — seven "I am" statements** — 🆕 High · 📊 Structural chart. Bread of life, light of the world, the door, the good shepherd, the resurrection and the life, the way/truth/life, the true vine — pairs naturally with the seven signs.
+- **John 2–11 (seven signs)** — 🆕 High · 📊 Structural chart. The seven sign-miracles that structure the Gospel (water to wine, the official's son, the lame man, feeding the 5,000, walking on water, the blind man, Lazarus) — a famous literary-structure infographic unique to John.
+- **John 6–15 (seven "I am" statements)** — 🆕 High · 📊 Structural chart. Bread of life, light of the world, the door, the good shepherd, the resurrection and the life, the way/truth/life, the true vine — pairs naturally with the seven signs.
 - **John 13–17** — 🆕 Low · 💡 Conceptual. The Upper Room Discourse — mostly extended teaching, thin on diagrammatic content.
 - **John 18–19** — 🆕 Med · 🔄 Sequence diagram. The distinct stages of the Jewish and Roman trials, as its own process diagram.
 
@@ -392,19 +411,19 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Acts 13–14** — ✅ Built · 🗺️ Map. Paul's First Missionary Journey — Cyprus and the Galatian region, revealed leg by leg with a vertical itinerary strip. The map breaks away three times: the sermon at Pisidian Antioch (13:16–41), the two Sabbaths after it (13:42–50), and Lystra (14:7–19), where the whole passage runs on a height — a cripple stands, the two are taken for gods and refuse it, and Paul is stoned to the ground. *(`generate_acts1314_svg.py`)*
 - **Acts 15** — ✅ Built · 🔄 Process diagram. The Jerusalem Council's decision process — a road with a bar across it, argued above and lifted by the decree. Built as the first break-away of the second-journey generator. *(`generate_acts1518_svg.py`)*
 - **Acts 15–18** — ✅ Built · 🗺️ Map. Paul's Second Missionary Journey — Asia Minor into Macedonia and Greece. Only ~30 of the 143 verses travel, so the map carries those and steps aside for five set-pieces: the council, Philippi, Thessalonica & Beroea, the Areopagus, and Corinth. *(`generate_acts1518_svg.py`)*
-- **Acts 18–21** — 🆕 High · 🗺️ Map. Paul's Third Missionary Journey — centered on Ephesus, then the return to Jerusalem.
+- **Acts 19–21** — 🆕 High · 🗺️ Map. Paul's Third Missionary Journey, which starts at 18:23 — centered on Ephesus, then the return to Jerusalem. Acts 18 is built with the second journey above, so the work is chapters 19–21 on the same coastline (`MED`/`PELOPONNESE`/`ISLANDS` in `generate_acts1518_svg.py`).
 - **Acts 27–28** — 🆕 High · 🗺️ Map. The voyage to Rome and the shipwreck at Malta — a richly detailed, highly mappable nautical journey.
 
 ### Romans
-*16 chapters.*
+*16 chapters. Complete — every verse has a visual. See `docs/design/romans.md` for the design.*
 
-- **Romans 1–16** — ✅ Built · 📊 Doctrinal flow chart. The letter's argument arc — guilt, justification, Adam and Christ, life in the Spirit, Israel, the body — as a rail of seven stops beside the current stop's set-piece, drawn large. The three candidates this replaces (the overall arc, chapter 5's Adam/Christ parallel, the olive tree of 9–11) turned out to be one drawing at three zoom levels: the two set-pieces are stops on the arc, and each rail emblem is a miniature of the stage drawing it opens. A bead track along the bottom carries one word per verse, which is the whole per-verse text budget. *(`generate_romans_svg.py`)*
+- **Romans 1–16** — ✅ Built · 📊 Doctrinal flow chart. One full-frame scene per chapter (two for chapters 1 and 3, which turn hard mid-chapter), threaded by the Romans Road: a Roman road the letter keeps returning to, where each classic Road verse (3:23, 5:6–11, 6:23, 10:8–13) plants an engraved milestone and each return shows the milestones already planted. Chapter 5's Adam/Christ parallel is drawn as two doorways and chapter 11 is the olive tree. Nothing on the canvas counts the verses; short engraved phrases mark the hinge verses only. *(`generate_romans_svg.py`)*
 
 ### 1 Corinthians
 *16 chapters.*
 
 - **1 Corinthians 12** — 🆕 High · 💡 + 📊 Diagram. The body of Christ / spiritual gifts — many members, one body. A perennially popular diagram subject.
-- **1 Corinthians 15** — 🆕 Med · ⏳ Sequence. The resurrection order — "Christ the firstfruits, afterward they that are Christ's."
+- **1 Corinthians 15** — 🆕 Med · ⏳ Sequence. The resurrection order — "Christ the first fruits, then those who are Christ's, at his coming."
 
 ### 2 Corinthians
 *13 chapters. Personal and defensive in tone — low density.*
@@ -421,7 +440,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 *6 chapters.*
 
 - **Ephesians 6:10–18** — 🆕 High · 🏛️ + 💡 Diagram. The armor of God — six named pieces, each explained. One of the most popular Bible infographics ever produced.
-- **Ephesians 2** — 🆕 Med · 💡 Conceptual. Grace through faith, and the "dividing wall" between Jew and Gentile broken down.
+- **Ephesians 2** — 🆕 Med · 💡 Conceptual. Grace through faith, and the "middle wall of partition" between Jew and Gentile broken down.
 - **Ephesians 4:11** — 🆕 Low · 📊 Chart. The five-fold ministry gifts.
 
 ### Philippians
@@ -442,7 +461,9 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### 2 Thessalonians
 *3 chapters.*
 
-- **2 Thessalonians 2** — 🆕 Low · ⏳ Timeline. The man of sin and the Day of the Lord's sequence — pairs with the 1 Thessalonians entry and, further out, Daniel 9 and Revelation.
+- **2 Thessalonians 1** — 🆕 Med · 📊 A balance that tips at the revealing (vv5–10): those who afflict on one pan, the afflicted on the other, and the loads swap sides. *(design: `docs/design/short-books.md`)*
+- **2 Thessalonians 2** — 🆕 Med · ⏳ + 🔄 A gated sequence the text insists on — the rebellion, the one who restrains until he is taken out of the way, the man of sin revealed — with a counter-sequence for the readers running the other way. Pairs with the 1 Thessalonians entry and, further out, Daniel 9 and Revelation. *(design: `docs/design/short-books.md`)*
+- **2 Thessalonians 3** — 🆕 Med · 🔄 + 💡 Two walks side by side with the rule of v10 as the gate between them, discipline drawn as distance rather than expulsion, and Paul's own hand at v17 answering the letter "as if from us" of 2:2. *(design: `docs/design/short-books.md`)*
 
 ### 1 Timothy
 *6 chapters.*
@@ -455,15 +476,19 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ### Titus
 *3 chapters.*
 
-- **Titus 1:5–9** — 🆕 Low · 📊 Chart. Elder qualifications — parallels and cross-references 1 Timothy 3.
+- **Titus 1** — 🆕 Med · 🗺️ + 📊 Crete as an island map, its cities filled one by one as elders are appointed (v5); the qualifications of vv6–9 as a two-sided checklist against one figure (parallels 1 Timothy 3); then the houses overthrown against the cities set in order. *(design: `docs/design/short-books.md`)*
+- **Titus 2** — 🆕 Med · 📊 + ⏳ The household table of vv1–10 (five groups, five charges, three purpose clauses), and the two appearings of vv11–13 as a bracket around "this present age". *(design: `docs/design/short-books.md`)*
+- **Titus 3** — 🆕 Med · 📊 + 🔄 Were / now, hinged on the washing of regeneration (vv3–7); a three-step process for the factious man; a short route strip to Nicopolis. *(design: `docs/design/short-books.md`)*
 
 ### Philemon
-*1 chapter. A single-chapter personal letter — no infographic candidates.*
+*1 chapter. A single-chapter personal letter with three subjects that fit on one page.*
+
+- **Philemon 1** — 🆕 Med · 💡 + 🔢 + 🗺️ The cast inside the house of v2; Onesimus's label changing on its own verse (useless → useful, slave → beloved brother) over the round trip Colossae → Rome → Colossae; and the ledger of vv18–19, the debt moved to Paul's account in his own hand. *(design: `docs/design/short-books.md`)*
 
 ### Hebrews
 *13 chapters, 303 verses. Complete — every verse has a visual. See `docs/design/hebrews.md` for the design and what the build changed.*
 
-- **Hebrews 1–13** — ✅ Built · 🏛️ + 💡 + ⏳. One vertical section drawn twice: the heavenly structure solid at the top of the frame, the earthly tabernacle below it as the **shadow it casts** (8:5 *a copy and shadow*, 9:24 *representations of the true*, 10:1 *a shadow… not the very image*). The camera's height on that column is the whole progress indicator, and the book is read as an approach — *drift away* (2:1), *enter into rest* (3–4), *within the veil* (6:19), *a new and living way* (10:20) — until 12:27 shakes the shadow layer off and 13:13 deliberately reverses, dropping the camera below the camp because the altar moved. Chapters 11–12 leave the column for a ground plane: a road of pilgrims walking toward a city none of them reach (11:39), whose gap becomes the racetrack at 12:1 and whose destination is the top of the same column at 12:2. Threads: voice-arcs for every OT quotation (Hebrews says *he says*, never *it is written*), the five warnings, and the eleven **BETTER** verses.
+- **Hebrews 1–13** — ✅ Built · 🏛️ + 💡 + ⏳. One vertical section drawn twice: the heavenly structure solid at the top of the frame, the earthly tabernacle below it as the **shadow it casts** (8:5 *a copy and shadow*, 9:24 *representations of the true*, 10:1 *a shadow… not the very image*). The camera's height on that column is the whole progress indicator, and the book is read as an approach — *drift away* (2:1), *enter into … rest* (3–4), *within the veil* (6:19), *a new and living way* (10:20) — until 12:27 shakes the shadow layer off and 13:13 deliberately reverses, dropping the camera below the camp because the altar moved. Chapters 11–12 leave the column for a ground plane: a road of pilgrims walking toward a city none of them reach (11:39), whose gap becomes the racetrack at 12:1 and whose destination is the top of the same column at 12:2. Threads: voice-arcs for every OT quotation (Hebrews says *he says*, never *it is written*), the five warnings, and the eleven **BETTER** verses.
 - **Hebrews 7** — ✅ Built · 🌳 Genealogy (break-away), in three sub-scenes. Melchizedek drawn as a genealogy node with the parent sockets empty and the lifespan bar running off both edges (*without father, without mother, without genealogy*), Levi nested inside Abraham at the moment of the tithe (7:9–10), and a row of priest figures each struck through by death against one unstruck (7:23–25).
 - **Hebrews 9** — ✅ Built · 🏛️ Architectural, in five sub-scenes. The tabernacle in section, reusing the built Exodus 25–27 geometry directly — the shadow layer *is* that drawing, flattened. Its best idea is the traffic diagram of 9:6–7: many worn paths into the first room, one thin dated path into the second.
 - **Hebrews 10:11–12** — ✅ Built · 📊 Set-piece. Every priest *stands* day by day offering the same sacrifices; one offered a single sacrifice and **sat down**. Pays off a frame-wide omission — there is no seat anywhere in the lower structure.
@@ -480,25 +505,29 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **1 Peter 2** — 🆕 Low · 💡 Conceptual. Living stones / spiritual house metaphor.
 
 ### 2 Peter
-*3 chapters. Complete — every verse has a visual. The first of the short books (1–3 chapters) to be built; see `docs/design/short-books.md` for the other twelve.*
+*3 chapters. Complete — every verse has a visual. One of the two built short books (1–3 chapters), with Zephaniah; `docs/design/short-books.md` holds its design and those of the other eleven.*
 
-- **2 Peter 1–3** — ✅ Built · 📊 + 💡 + ⏳. Three chapters, three geometries. Chapter 1 is the ladder of 1:5–7, eight rungs added a clause at a time, with a sight gauge on the right — because the charge in v9 against the man who lacks them is that he "cannot see afar off", and what he cannot see is the entrance of v11, drawn at the far end of that same horizon; then the tent Peter is shortly to put off set against the mount that stands, and the three light sources of v19 in the order the verse gives them. Chapter 2 puts the three judgment precedents on one rail with the count that came out of each (0, 8, 1), draws v11's withheld accusation as a power comparison, and closes the proverbs of v22 as a loop that returns the last frame to the first. Chapter 3 breaks the scoffers' unbroken line into three worlds divided by water and fire, lays v8's two rulers at true relative length, and brings chapter 1's ladder back at 3:18 with one more rung. *(`generate_2peter_svg.py`)*
+- **2 Peter 1–3** — ✅ Built · 📊 + 💡 + ⏳. Three chapters, three geometries. Chapter 1 is the ladder of 1:5–7, eight rungs added a clause at a time, with a sight gauge on the right — because the charge in v9 against the man who lacks them is that he is blind, "seeing only what is near", and what he cannot see is the entrance of v11, drawn at the far end of that same horizon; then the tent Peter is shortly to put off set against the mount that stands, and the three light sources of v19 in the order the verse gives them. Chapter 2 puts the three judgment precedents on one rail with the count that came out of each (0, 8, 1), draws v11's withheld accusation as a power comparison, and closes the proverbs of v22 as a loop that returns the last frame to the first. Chapter 3 breaks the mockers' unbroken line into three worlds divided by water and fire, lays v8's two rulers at true relative length, and brings chapter 1's ladder back at 3:18 with one more rung. *(`generate_2peter_svg.py`)*
 
 ### 1 John
 *5 chapters.*
 
-- **1 John (tests of genuine faith)** — 🆕 Med · 📊 Chart. The repeated "by this we know" tests of fellowship and true faith.
+- **1 John 2–5 (tests of genuine faith)** — 🆕 Med · 📊 Chart. The repeated "by this we know" tests of fellowship and true faith (2:3 to 5:2).
 
 ### 2 John
-*1 chapter. No infographic candidates.*
+*1 chapter. Designed with 3 John as a diptych — the same threshold drawn twice, in opposite senses; with Haggai, the best next build among the short books.*
+
+- **2 John 1** — 🆕 High · 💡 A threshold, rightly closed: the chosen lady's house with one door, truth and love going in, the deceivers approaching, and the door shut at vv10–11; closing on paper and ink set aside for face to face. *(design: `docs/design/short-books.md`)*
 
 ### 3 John
-*1 chapter. No infographic candidates.*
+*1 chapter. The other half of the 2 John diptych.*
+
+- **3 John 1** — 🆕 High · 📊 + 💡 Three doorways, one per named man: Gaius open (vv1–8), Diotrephes wrongly bolted (vv9–11), Demetrius with the testimony of all over the lintel (v12); the ending drawn to match 2 John's. *(design: `docs/design/short-books.md`)*
 
 ### Jude
 *1 chapter.*
 
-- **Jude (OT judgment examples)** — 🆕 Low · 📊 Chart. Angels, Sodom, Cain, Balaam, Korah — a small chart of judgment precedents.
+- **Jude 1** — 🆕 Med · 📊 + 💡 + 🌳 Jude thinks in threes: three judgment precedents on one rail (Egypt, the angels, Sodom and Gomorrah), three routes off one road (Cain, Balaam, Korah), six things failing at their own job (vv12–13), Enoch as the seventh from Adam lit on the Genesis 5 line, and a three-way triage (vv22–23). *(design: `docs/design/short-books.md`)*
 
 ### Revelation
 *22 chapters. Alongside Genesis/Exodus/Ezekiel/Daniel/Acts, the richest book in the Bible for this project.*
@@ -511,4 +540,4 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 - **Revelation 13** — 🆕 Med · 💡 Symbolic diagram. The two beasts.
 - **Revelation 17** — 🆕 Low · 💡 Conceptual. The great harlot / Babylon.
 - **Revelation 19–20** — 🆕 High · ⏳ Timeline. The return of Christ, the millennium, and the final judgment — the text's own event sequence, independent of any particular interpretive framework.
-- **Revelation 21–22** — 🆕 High · 🏛️ Architectural. The New Jerusalem — precise measurements (12,000 furlongs cubed, wall dimensions, twelve named gates and foundations). A spectacular architectural-diagram candidate that rivals Ezekiel 40–43 and the tabernacle.
+- **Revelation 21–22** — 🆕 High · 🏛️ Architectural. The New Jerusalem — precise measurements (the city measured with the reed, its length, width and height equal; the wall; twelve named gates and foundations). A spectacular architectural-diagram candidate that rivals Ezekiel 40–43 and the tabernacle.

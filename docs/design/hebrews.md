@@ -3,8 +3,8 @@
 > ## ✅ Built (2026-08-14) — all 13 chapters, 303 verses
 >
 > `generate_hebrews_svg.py` + `svg_priest.py`, registered in
-> `svg_generators.json`, stills and manifest built (2,970 verse keys).
-> Audit (`_scratch/audit_heb.py`): **0 off-canvas, 0 text overlaps, no
+> `svg_generators.json`, in the visuals manifest.
+> Audit (`tools/audit_heb.py`): **0 off-canvas, 0 text overlaps, no
 > identical run longer than 3** — including across 9:1–10:39, the 67-verse
 > stretch in one room that was the stagnation risk.
 >
@@ -62,19 +62,18 @@
 
 ## The original design
 
-> 13 chapters, **303 verses**, and — unusually — **no versification variance**: all nine
-> translations in `bibles/` agree on every chapter's verse count, so `CH_LEN`
-> is simply `[14, 18, 19, 16, 14, 20, 28, 13, 28, 39, 40, 29, 25]` and one set
-> of files serves every version (`translation_suffixed: false`).
+> 13 chapters, **303 verses**. `CH_LEN` holds WEB's verse count for each
+> chapter: 14, 18, 19, 16, 14, 20, 28, 13, 28, 39, 40, 29, 25.
 >
-> ⚠️ **Translation.** Quotations below are **WEB** (the project translation,
-> `config.json`) and were read off `bibles/WEB/Hebrews_*.json` rather than
-> recalled. Where WEB differs materially from AV the WEB reading is what the
-> drawing is built on — most consequentially **"copy and shadow"** (8:5, AV
-> "example and shadow"), **"collateral of a better covenant"** (7:22, AV
-> "surety"), **"sawn apart"** (11:37), **"festal gathering"** (12:23, AV
-> "general assembly"), and **"the Italians greet you"** (13:24). Engraved
-> phrases must be re-checked against WEB before lettering.
+> ⚠️ **Wording.** Quotations below are **WEB** (the project's only text,
+> `passages.TRANSLATION`) or, like the engraved phrases of §4, a tight
+> paraphrase of it: some are trimmed or re-ordered (*being dead, he still
+> speaks*, 11:4; *a body you prepared for me*, 10:5), and several are
+> lettered that way on the built graphic. The drawing is built on the WEB
+> reading — most consequentially **"copy and shadow"** (8:5), **"collateral
+> of a better covenant"** (7:22), **"sawn apart"** (11:37), **"festal
+> gathering"** (12:23), and **"the Italians greet you"** (13:24). Check every
+> phrase against `bibles/WEB/Hebrews_*.json` before lettering it.
 
 ---
 
@@ -84,11 +83,11 @@ Romans argues and travels; its design followed a road. Hebrews does neither.
 It is a book about **approach** — about how near a person may come, and to
 what — and its own vocabulary is relentlessly spatial and vertical:
 
-> *sat down* (1:3, 8:1, 10:12, 12:2) · *drift away* (2:1) · *enter into rest*
+> *sat down* (1:3, 8:1, 10:12, 12:2) · *drift away* (2:1) · *enter into … rest*
 > (11 verses across 3–4) · *passed through the heavens* (4:14) · *draw near*
 > (4:16, 7:19, 7:25, 10:1, 10:22) · *within the veil* (6:19) · *the way into
 > the Holy Place wasn't yet revealed* (9:8) · *a new and living way, through
-> the veil* (10:20) · *outside the camp* (13:13)
+> the veil* (10:20) · *outside of the camp* (13:13)
 
 Two further facts shape everything below.
 
@@ -144,8 +143,9 @@ Bottom to top:
 
 The two halves are **one object and its shadow**. The light source is the
 throne at the top of the frame, so the earthly structure below is literally
-what the heavenly one casts. 8:5's *pattern shown on the mountain* is drawn as
-the projection lines running from the upper structure to the lower — which is
+what the heavenly one casts. 8:5's *the pattern that was shown to you on the
+mountain* is drawn as the projection lines running from the upper structure
+to the lower — which is
 how a shadow is constructed, so the frame explains itself the moment the text
 names it.
 
@@ -280,7 +280,7 @@ Camera at the top of the column.
   column, past the rank line, past the camp, to the frame's lower edge. The
   only downward move in the first twelve chapters, and it rehearses 13:13.
   Engraved: BUT WE SEE HIM.
-- **v. 10** — the path drawn down and back, *made perfect through sufferings*.
+- **v. 10** — the path drawn down and back, *perfect through sufferings*.
 - **vv. 11–13** — three quotations, but the arcs now run **sideways** — Son to
   brothers, not heaven to earth. The speaker has changed position.
 - **vv. 14–15** — a lifespan bar drawn shackled end to end (*all their lifetime
@@ -288,7 +288,8 @@ Camera at the top of the column.
 - **vv. 16–18** — two hands offered, one taken (*not to angels, but to the
   offspring of Abraham*). HIGH PRIEST enters the book as an object — the
   garment and breastplate, drawn from **`svg_priest.py`**, which Exodus 28
-  built (see `docs/content-catalog.md`). The vested figure, the ephod, the
+  built (see its entry in the [content catalog](../content-catalog.md#exodus)).
+  The vested figure, the ephod, the
   twelve-stone breastplate and the plate on the forehead are all reuse; what
   Hebrews adds is drawing them in the shadow key of §2.
 
@@ -346,8 +347,9 @@ Three movements, three sub-scenes.
   arc that mirrors 2:9–10 at a smaller scale.
 - **vv. 11–14** — **third warning opens.** *Dull of hearing* — the voice arc
   arrives and greys out at the ear. Then **milk and solid food**: a growth
-  scale with a baby *unskilled in the word of righteousness* at one end and the
-  full-grown, *senses exercised to discern good and evil*, at the other.
+  scale with a baby *not experienced in the word of righteousness* at one
+  end and the full-grown, *senses exercised to discern good and evil*, at the
+  other.
 
 ### Hebrews 6 (20 vv.) · 🏛️ + 💡 — *foundation, field, oath, anchor*
 
@@ -631,7 +633,7 @@ Same drawing, continued.
   BE SHAKEN. And v. 29's *consuming fire* is the same fire that burned on the
   left-hand mountain at v. 18, now standing on the right.
 
-### Hebrews 13 (25 vv.) · 💡 + 🗺️ — *outside the gate*
+### Hebrews 13 (25 vv.) · 💡 + 🗺️ — *outside of the gate*
 
 The reversal. The frame is now single — no shadow — and the camera is at the
 top. It spends the chapter coming down and going out.
@@ -726,4 +728,5 @@ Hebrews spends it.
 SVGs reporting overlapping text boxes, text wider than its box, text
 off-canvas, and verses byte-identical to the previous verse. Target zero of
 the first three; **no identical run longer than three verses**, watched
-hardest across 9:1–10:39.
+hardest across 9:1–10:39. (Built as `tools/audit_heb.py`, which checks
+off-canvas text, overlaps and identical runs.)

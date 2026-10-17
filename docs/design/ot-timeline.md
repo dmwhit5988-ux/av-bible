@@ -14,13 +14,16 @@ dating stops.
 | the data, the binding, the audit | `chronology.py` — run it for the coverage report |
 | the sheet | `generate_ot_timeline_svg.py` → `visuals/reference/Old_Testament_timeline.svg` + `.html` |
 
+The sheet is deployed with the other reference charts but not linked from
+the app; [reference-charts.md](../reference-charts.md) covers all of them.
+
 84 of 1,258 people dated (6.7%): 29 lives, 41 reigns, 14 placed by an
 event. Sheet is 65,000 × 11,500 px — a ribbon, because siblings cannot be
 wrapped into rows on a time axis without saying brothers were born decades
 apart; only runs of childless brothers are gridded, since nothing hangs
 below a leaf.
 
-Three things the build settled that the spec below did not:
+Four things the build settled that the spec below did not:
 
 * **Binding came free.** `matthew_tree.build()` already returns `at`, a
   chain-walked locator dict for every name from Abraham to Jesus. Section 4
@@ -34,6 +37,10 @@ Three things the build settled that the spec below did not:
   stretched wherever a parent would otherwise sit on its child — so the axis
   opens out in the monarchy and closes up where nothing is recorded, and
   the century ticks on the rail show exactly where. No hand-set zones.
+* **One of the four switches became a constant.** `chronology.py` carries
+  `ABRAM_BIRTH` (with the §3.3 anchor `CREATION_BC`); the text, sojourn and
+  Exodus-gap forks of §3.2 are stated on the sheet (the ELASTIC STRETCH zone
+  note and "What this sheet will not do") rather than switchable.
 
 What the sheet carries: BC/AM rail on the left; Ussher's years throughout,
 with a right-hand rail showing Thiele's dates and the drift (−44 at the
@@ -181,8 +188,8 @@ which way.
 
     TEXT        = "MT"      # MT | LXX | SAM   — Gen 5/11 begetting ages
     ABRAM_BIRTH = 130       # Terah's age: 70 (Gen 11:26 flat) | 130 (Acts 7:4)
-    SOJOURN     = 430       # 430 in Egypt (AV/MT) | 215 (LXX/Sam, Gal 3:17)
-    EXODUS_GAP  = 480       # 1 Kgs 6:1 | 440 (LXX) | ~450 judges (AV Acts 13:20)
+    SOJOURN     = 430       # 430 in Egypt (MT, Ex 12:40) | 215 (LXX/Sam, Gal 3:17)
+    EXODUS_GAP  = 480       # 1 Kgs 6:1 | 440 (LXX) | the sum of Judges
 
 Effect of just the second switch, computed:
 
@@ -203,9 +210,10 @@ exactly — flood 2348 BC, Abram born 1996 BC — which confirms Ussher took
 Terah at 130, and gives a free regression test.
 
 **Recommendation: adopt Ussher as the house chronology.** These dates were
-printed in AV margins for over two centuries; for an *Authorized Version*
-project that is restoration, not imposition. Carry modern synchronised dates
-as a second muted scale from the monarchy down, where the two visibly part
+printed in the margins of the Authorized Version for over two centuries, so
+they are the familiar chronology rather than an imposed one. Carry modern
+synchronised dates as a second muted scale from the monarchy down, where the
+two visibly part
 company (fall of Jerusalem: Ussher 588, Thiele 586; division of the kingdom:
 975 vs 931).
 

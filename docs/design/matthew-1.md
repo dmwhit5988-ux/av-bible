@@ -4,8 +4,11 @@
 > tree**, not a made-up one — `matthew_tree.py` (grafts + the verse table),
 > `svg_matthew_world.py` (camera over the tree, vv1-17),
 > `svg_matthew_nativity.py` (figure stage, vv18-25), driven by
-> `generate_matthew1_svg.py`. The fractal-tree design it replaced, and its
-> 384 rendered files, are in `backups/matthew1_fractal_tree/`.
+> `generate_matthew1_svg.py`. The fractal-tree design it replaced (its
+> generators and its 384 rendered files) is in the archive,
+> `C:\Dev\Theoria-archive\backups\matthew1_fractal_tree\`; its status notes
+> and the ideas not built are in
+> [matthew-1-alternates.md](../archive/matthew-1-alternates.md).
 >
 > **The finding that made it possible.** Abraham to Zerubbabel is ALREADY one
 > unbroken parent-child chain on the welded tree that 1 Chronicles 1-9 is read
@@ -25,10 +28,10 @@
 > - Verse 12 draws the disagreement instead of hiding it: Zerubbabel keeps
 >   Chronicles' father (Pedaiah) and a gold arc springs from Shealtiel, whom
 >   Matthew, Ezra and Haggai give him.
-> - No translation variants are needed any more. The boxes carry the Old
->   Testament's spellings with the chart's doubled label where they differ —
->   Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah, Azariah · Uzziah —
->   so one set of 25 files serves all eight translations (was 384 files).
+> - The boxes carry the Old Testament's spellings with the chart's doubled
+>   label where Matthew's differ — Jacob · Israel, Salma · Salmon,
+>   Jeconiah · Jechoniah, Azariah · Uzziah — and the chapter is 25 files,
+>   one per verse.
 >
 > **What had to be fixed to make it read.**
 > - The chart centres a parent over its children's whole span, which put Ruth
@@ -41,7 +44,7 @@
 >   verse is equally the point, so it frames the whole lit set.
 >
 > **It uses the SPINE layout, not the wall chart's** (user, 2026-08-20, after
-> the layout study in `_scratch/layout_lab.py`). `arrange_spine`/`place_spine`
+> the layout study in `tools/layout_lab.py`). `arrange_spine`/`place_spine`
 > in `generate_ot_family_tree_svg.py` put the HEIR — the child carrying the
 > widest descent — directly under its parent, instead of centring a parent
 > over the whole span of its descendants. A line of descent is then a
@@ -84,7 +87,8 @@
 > stage that gives light instead of taking it. Note the manger itself comes
 > from Luke 2:7 — Matthew 1:25 says only "her firstborn son".
 >
-> Concept stills for the older ideas below are in `mockups/matthew1/`.
+> Concept mockups for idea A below and for the alternates are in
+> `C:\Dev\Theoria-archive\mockups\matthew1\`.
 
 ---
 
@@ -104,8 +108,8 @@ What the text itself supplies:
 - The three sets are three **stations**: climbing to the throne, holding the
   throne, after the throne is gone.
 - The **exile** is the hinge, named in both v11 and v12.
-- **Five women**, four of them outsiders: Tamar, Rahab, Ruth, "the wife of
-  Uriah" (Matthew pointedly will not name Bathsheba — he names the wronged
+- **Five women**, four of them outsiders: Tamar, Rahab, Ruth, "her who had been
+  Uriah's wife" (Matthew pointedly will not name Bathsheba — he names the wronged
   husband), and Mary.
 - The third set is historically **dark** — Abiud, Azor, Achim, Eliud and the
   rest appear nowhere else in scripture.
@@ -122,16 +126,16 @@ motif has to land, and it is richer than it looks:
   verses building. This is the hinge of the whole chapter.
 - "conceived in her is **of the Holy Spirit**" (v18, v20) — the begetting chain
   breaks and the last link comes from above.
-- "thou shalt **call his name Jesus**" (v21), **"Emmanuel — God with us"**
+- "You shall **call his name Jesus**" (v21), **"Immanuel … God with us"**
   (v23), and v25 Joseph performs the naming.
 - The chapter's plot: **the begetting formula breaks at v16 and the naming
   repairs it.**
 
 ---
 
-## A. One path through the tree ★ BUILT
+## A. One path through the tree (built 2026-08-07, replaced 2026-08-20)
 
-Still: `mockups/matthew1/mockA_tree_path.png`
+Mockup: `mockA_tree_path.png` in the archive's `mockups\matthew1\`
 
 A deterministic fractal tree is the whole family of Abraham; one lit path
 threading root-to-leaf is the line Matthew traces. The dim forks are literally
@@ -160,7 +164,11 @@ threading root-to-leaf is the line Matthew traces. The dim forks are literally
 Matthew claims three fourteens (42) but only **41 distinct names** appear —
 Jechoniah has to be counted twice, closing the second set and opening the
 third. The old three-column design handled this by putting 13 names in column
-three. The built tree draws **41 nodes** with the break falling between
-Jechoniah and Shealtiel, which sidesteps it visually; a six-sevens v17 frame
+three. The fractal tree (A) drew **41 nodes** with the break falling between
+Jechoniah and Shealtiel, which sidesteps it visually. The live design's verse
+17 is a panorama: one gold thread down the whole line (the five generations
+Matthew passes over included) with rings on its four end names, Abraham,
+David, Jechoniah and Jesus (`matthew_tree.READING`), so it draws no count.
+A six-sevens v17 frame
 would show **42**, following Matthew's own stated count. Both are defensible —
 they just must not contradict each other on screen.

@@ -3,8 +3,8 @@
 > **Status (2026-08-10):** the rail-and-bead design (seven stops on a left
 > rail, a per-verse bead track along the bottom) is retired; this doc records
 > why and what replaced it. The new design is per-chapter full-frame scenes
-> threaded by the **Romans Road** milestones. Old design preserved in
-> `backups/romans_rail/`.
+> threaded by the **Romans Road** milestones. The old design's generator is
+> kept in the archive, `C:\Dev\Theoria-archive\backups\romans_rail\`.
 
 ## What was wrong with the rail design
 
@@ -119,17 +119,15 @@ tying Israel's stumble to the walk without a full road frame.
     west (25–28); the four OT voices of 9–12 rise as the Gentiles' HOPE.
 14b. **The doxology, early (WEB 14:24–26)** — the WEB follows the
     manuscripts that place the closing doxology at the end of chapter 14
-    rather than at 16:25–27, so WEB Romans 14 runs to **26 verses** while
-    every other version stops at 23. Those three verses are drawn to rhyme
-    with the chapter-16 treatment of the same text: the mystery sealed under
-    a stamp (v24), the roll opened and shining (v25), then widening rings of
-    glory over the quiet table (v26). `CH_LEN` therefore carries the
-    **maximum** verse count across all translations, not one version's — a
-    version simply never requests the verses it does not have.
+    rather than at 16:25–27, so WEB Romans 14 runs to **26 verses** and
+    chapter 16 ends at 24. The doxology is drawn once, here: the mystery
+    sealed under a stamp (v24), the roll opened and shining (v25), then
+    widening rings of glory over the quiet table (v26). `CH_LEN` is WEB's verse count, and
+    `main()` writes the verses `passages.verse_numbers()` lists.
 16. **The lamps of Rome** — the city as clustered houses; Phebe arrives
     bearing the letter (1–2); every greeting lights a lamp (3–16, names
-    labelled as lit); the crooked path avoided (17); Satan under foot (20);
-    the doxology fuses the lamps into one glow (25–27, TO GOD, ALONE WISE).
+    labelled as lit); the crooked path avoided (17); Satan under foot (20),
+    held to v24.
 
 ## Rules carried forward
 
@@ -143,17 +141,18 @@ tying Israel's stumble to the walk without a full road frame.
   advance widths (via PIL) so rings, chips and the engraved milestone faces
   are cut to fit their text. A characters-times-a-guess estimate is what
   clipped the first cut's stone faces.
-* WEB wording (or tight paraphrase) for every on-canvas phrase; one set of
-  files for all translations (`translation_suffixed: false`).
+* WEB wording (or tight paraphrase) for every on-canvas phrase.
 * Palette: the tabernacle palette plus OLIVE/WILD (kept) and WATER for
   chapter 6.
 
 ## Automated checks
 
-`scratchpad/audit.py` (dev-only) parses all 433 generated SVGs and reports
-overlapping text boxes, text wider than its containing box, text off-canvas,
-and verses whose drawing is byte-identical to the previous verse. The design
-target is **zero** of the first three and **no identical run longer than
-three verses** — a hold of two or three across tightly-argued verses is the
-draw-once-then-hold rule working, not stagnation. Current state: 0 / 0 / 0,
-longest run 3.
+A dev-only audit parsed all 433 generated SVGs and reported overlapping text
+boxes, text wider than its containing box, text off-canvas, and verses whose
+drawing is byte-identical to the previous verse. The design target is
+**zero** of the first three and **no identical run longer than three
+verses** — a hold of two or three across tightly-argued verses is the
+draw-once-then-hold rule working, not stagnation. Result at the build: 0 / 0 /
+0, longest run 3. That script was not kept; the nearest kept equivalent is
+`tools/audit_heb.py`, which runs the off-canvas, overlap and identical-run
+checks over Hebrews' chapter table.
