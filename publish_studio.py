@@ -19,8 +19,8 @@ deploy_bundle/) stay unpublished until you commit them by hand.
 
 Between steps 2 and 3 you get a confirm dialog with the change summary and
 the file-count budget: files, not bytes, are the ceiling of Cloudflare's
-Workers static assets (DEPLOY_FILE_LIMIT; docs/archive/STUDIO_PLAN.md Feature C caveat
-2). A persistent budget meter at the top of the window tracks the same
+Workers static assets (DEPLOY_FILE_LIMIT; docs/architecture.md, "File
+budget"). A persistent budget meter at the top of the window tracks the same
 number while you author; count_deploy_files() is also the count behind the
 Studio's meter and the Audio Renderer's projection.
 

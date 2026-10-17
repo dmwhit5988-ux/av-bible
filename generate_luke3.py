@@ -1,4 +1,4 @@
-"""Generate per-verse animations for the genealogy of Jesus, Luke 3:23-38.
+"""The genealogy of Jesus, Luke 3:23-38: name extraction, grid and root.
 
 Luke runs the line BACKWARD — from Jesus through David and Abraham all the
 way to Adam, "the son of God." The visual is a taproot: the whole line is
@@ -17,18 +17,18 @@ Because each verse's animation ends with the camera resting on that verse's
 last name, and the next verse begins there, the chapter plays as one
 continuous descent.
 
-(The previous designs are preserved: the straight-road tracking camera in
-backups/luke3_road/ (under config.ARCHIVE_DIR), the "whole serpentine path at once" original in
-backups/luke3_journey/ there — copy one back to revert. Concept mocks for the
-designs that were considered are in mockups/luke3/ under
-config.ARCHIVE_DIR, with docs/archive/LUKE3_IDEAS.md.)
+(Earlier designs are kept for reference under config.ARCHIVE_DIR, in
+backups/: luke3_journey/ (the original "whole serpentine path at once"),
+luke3_road/ (a straight-road tracking camera) and luke3_descent_only/
+(this descent before 3:1-22 was drawn). Concept mocks are in mockups/luke3/
+there; the ideas behind them are in docs/archive/LUKE3_IDEAS.md.)
 
 Names are extracted directly from WEB's verse text (WEB is the only text,
-passages.TRANSLATION) — its "the son of X, of Y" phrasing. Animations play
-once, slowly, then hold (loop=1) — no flashing.
+passages.TRANSLATION) — its "the son of X, of Y" phrasing. Each verse's
+animation plays once, slowly, then holds — no flashing.
 
 This module holds the extraction, the grid and the root geometry;
-generate_luke3_svg.py renders the files:
+generate_luke3_svg.py renders the files (3:1-22 above ground as well):
     .venv\\Scripts\\python.exe generate_luke3_svg.py
 """
 

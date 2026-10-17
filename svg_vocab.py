@@ -8,9 +8,10 @@ that are genuinely book-independent, plus the text metrics every measured
 box needs.
 
 Nothing here knows about a canvas size, a palette or a chapter: callers
-pass colours and coordinates. Used by generate_2peter_svg.py and
-generate_zephaniah_svg.py; the older generators still carry their own
-copies and are left alone.
+pass colours and coordinates. Used by generate_2peter_svg.py,
+generate_exodus28_svg.py, generate_hebrews_svg.py and
+generate_zephaniah_svg.py (and tools/audit_heb.py, for text_w); the older
+generators still carry their own copies and are left alone.
 """
 
 import math

@@ -1,17 +1,18 @@
-"""Render Luke 3:23-38 as per-verse vector SVGs — the vector twin of the
-taproot-descent WebP animations (generate_luke3.py).
+"""Render Luke 3 as per-verse vector SVGs: 3:1-22 above ground, then the
+genealogy of 3:23-38 down the root (names and geometry: generate_luke3.py).
 
-Luke's motion is a camera descending one long taproot from the tree at the
-surface (Jesus) down through era strata to the light at "of God". That
-descent lives in the coordinate mapping, so the whole root world — strata,
-tree, root line, every node and name, the glow — is drawn once in root
-space inside a <g>, and that group's translate slides from the verse's
-starting camera to its resting camera and freezes. Because the root wanders
-side to side, the screen-fixed overlays that must track its tip (the bright
-"just travelled" sweep, the traveler ring, the depth-gauge progress) are
-animated with sampled value lists computed from the same eased trajectory
-as the raster frames, keeping everything in lockstep with the dolly.
-Names/geometry, fonts and colours are the WebP's own.
+3:1-22 is one held scene at the surface (render_above_svg), building to the
+axe laid at the tree's root at 3:9. 3:23-38 (render_verse_svg) is a camera
+descending one long taproot from the tree at the surface (Jesus) down
+through era strata to the light at "of God". That descent lives in the
+coordinate mapping, so the whole root world — strata, tree, root line, every
+node and name, the glow — is drawn once in root space inside a <g>, and that
+group's translate slides from the verse's starting camera to its resting
+camera and freezes. Because the root wanders side to side, the overlays that
+must track its tip (the bright "just travelled" sweep, the traveler ring,
+the depth-gauge progress) are animated with sampled value lists computed
+from the same eased trajectory (tip_track), keeping everything in lockstep
+with the dolly.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_luke3_svg.py
@@ -62,7 +63,7 @@ def _anim_seq(attr, values):
 
 def tip_track(verse, prev, end):
     """The camera's eased tip positions (px, root space), one per sample —
-    the same trajectory the raster frames follow."""
+    the one trajectory the dolly and every tip-tracking overlay follow."""
     tip0 = prev * SPACING - (V23_LIFT if verse == 23 else 0)
     tip1 = (end - 1) * SPACING
     return [tip0 + (tip1 - tip0) * ease(min(1.0, (k / (SAMPLES - 1)) / 0.92))

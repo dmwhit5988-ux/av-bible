@@ -404,9 +404,8 @@ def sword(c, x, y):
     The text's emphasis is that it *turned every way*, so the emblem is
     radially symmetric: five tongues sweeping out of a bright core, rather
     than one blade. A single elongated blade would pass through a vertical
-    reading at some point in every rotation; a wheel never does. It also means
-    the reduced-motion still — which strips the rotation — keeps reading as
-    something turning, because the sweep of the tongues carries it.
+    reading at some point in every rotation; a wheel never does. The sweep of
+    the tongues also reads as turning in any single frame.
     """
     c.raw([f'<g transform="translate({x},{y})">'
            f'<animateTransform attributeName="transform" type="rotate" '

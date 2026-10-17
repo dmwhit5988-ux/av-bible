@@ -24,9 +24,9 @@ WEB_AUDIO_DIR = os.path.join(WEB_DIR, "audio")
 # would take a full ASR sweep to rebuild.
 DATA_DIR = os.path.join(BASE_DIR, "data")
 IPA_CHECKS_PATH = os.path.join(DATA_DIR, "ipa_checks.json")
-# Outside the repo, beside it: superseded designs kept for reference (a
-# generator backs up the previous design here before replacing it) and
-# finished video renders.
+# Outside the repo, beside it: superseded designs, mockups and scratch work
+# kept for reference (backups/, mockups/, _scratch/), and finished video
+# renders (renders/).
 ARCHIVE_DIR = os.path.join(os.path.dirname(BASE_DIR), "Theoria-archive")
 RENDERS_DIR = os.path.join(ARCHIVE_DIR, "renders")
 

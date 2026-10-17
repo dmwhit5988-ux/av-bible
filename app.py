@@ -1,9 +1,10 @@
 """Theoria Studio — the PC authoring hub for the Theoria web app.
 
 The main window holds the shared passage (Book, Chapter, Verse) and opens the
-Studio's tools, which follow that passage. Until the Preview pane embeds the
-real web app (CLEANUP_PLAN.md §5, D1), it also previews the passage: the World
-English Bible read aloud in the house voice, with the per-verse SVG stage.
+Studio's tools, which follow that passage. It also previews the passage: the
+World English Bible read aloud in the house voice, with the per-verse SVG
+stage (visual_stage.py). A Preview pane embedding the real web app is planned
+to replace this player (ROADMAP.md, Studio).
 
 Run with:  python app.py   (or double-click run.bat)
 """
@@ -717,7 +718,7 @@ class App:
     def recount_deploy_files(self):
         """Count the files Publish would deploy against the file limit of
         Cloudflare's Workers static assets (publish_studio's count and
-        limit), on a worker thread (it walks web/ and visuals/)."""
+        limit), on a worker thread (it walks web/, bibles/ and visuals/)."""
         if self._counting:
             self._recount_again = True  # the running count may predate it
             return

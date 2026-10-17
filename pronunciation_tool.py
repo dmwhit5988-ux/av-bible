@@ -419,8 +419,8 @@ class App:
 
 
 def main():
-    # Optional argv: <book> <chapter> -- lets the desktop app open the tool on
-    # whatever passage is currently loaded there. Multi-word book names (e.g.
+    # Optional argv: <book> <chapter> -- lets the Studio open the tool on its
+    # shared passage. Multi-word book names (e.g.
     # "1 Samuel") may arrive as separate argv entries, so join everything but
     # the last one (the chapter) back into the book name.
     start_book, start_chapter = "Genesis", 5

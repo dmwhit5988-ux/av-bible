@@ -1,10 +1,11 @@
 """Render 1 Chronicles 1-9 as a camera over the one welded family tree.
 
-Supersedes the v2 per-chapter renderer (deleted in WS4; its output is
-archived as backups/1_Chronicles_svg_v2_camera under config.ARCHIVE_DIR),
-which drew each chapter as its own world of side-by-side scenes. Same verse matching, same file names; the world
-underneath is now `chronicles_tree.py`'s single Adam-rooted tree, so a name
-read in chapter 2 is still standing when chapter 4 comes back to it.
+The scenes and verse matching are `generate_1chronicles.py`'s; the world
+underneath is `chronicles_tree.py`'s single Adam-rooted tree, drawn by
+`svg_chronicles_world.py`, so a name read in chapter 2 is still standing when
+chapter 4 comes back to it. (An earlier renderer drew each chapter as its own
+world of side-by-side scenes; its output is archived as
+backups/1_Chronicles_svg_v2_camera under config.ARCHIVE_DIR.)
 
     python generate_1chronicles_tree_svg.py            # write all 407
     python generate_1chronicles_tree_svg.py --dry      # size report only

@@ -1,7 +1,7 @@
 """The visual layer: shows the SVG visual for whichever verse is being spoken.
 
 This is the Studio's interim preview stage. It goes, with PlaybackSession,
-once the Preview pane embeds the real web app (CLEANUP_PLAN.md D1, S4).
+once a Preview pane embeds the real web app (ROADMAP.md, Studio).
 
 - Playback emits a `VerseContext` every time the spoken verse changes.
 - A `StageController` broadcasts that context to every registered `StageView`

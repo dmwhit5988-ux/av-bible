@@ -1,18 +1,16 @@
-"""Render Exodus 26 as per-verse vector SVGs, reusing the tabernacle raster
-generator's drawing code unchanged.
+"""Render Exodus 26 as per-verse vector SVGs. render_verse_svg() here also
+renders Exodus 25 and 27 (generate_exodus2527_svg.py).
 
-generate_tabernacle.py builds each verse from a dimmed courtyard plan plus a
-detail inset, with the described part highlighted on a separate overlay whose
-alpha breathes (pulse) and loops forever. Here we run those exact drawing
-functions against SvgLayer (an ImageDraw stand-in), then compose:
+generate_tabernacle.py holds the drawing: each verse is the courtyard plan,
+plus a detail inset where the verse describes a part up close (the plan is
+then dimmed), with the part the verse describes drawn on a separate
+overlay. render_verse_svg() runs those draw functions against two SvgLayer
+objects (svg_surface's ImageDraw-shaped layer), then composes:
 
-    * base layer  -> static SVG (the plan + inset base shapes + chrome)
-    * overlay     -> a <g> whose opacity oscillates 0.62..1.0 forever,
-                     reproducing the pulse (every overlay element shared one
-                     alpha in the raster loop, so one group animation suffices)
-
-So the vectors are faithful to the raster art by construction — no drawing
-logic is re-implemented — and stay crisp at any size.
+    * base layer  -> static SVG (the plan and its labels, the inset's base
+                     shapes, the title and the cubit scale)
+    * overlay     -> one <g> whose opacity breathes 0.62..1.0 forever (SMIL),
+                     so every highlighted element pulses together
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_exodus26_svg.py
@@ -24,7 +22,7 @@ from svg_surface import SvgCanvas, SvgLayer
 from generate_tabernacle import (W, H, BG, HL, cub, F_DIM, draw_plan,
                                  draw_chrome, INSETS, CHAPTERS, out_path)
 
-# One pulse cycle ~= the raster loop (16 frames x 130 ms).
+# The overlay's breathing glow: (low opacity, high opacity, one cycle).
 PULSE = (0.62, 1.0, "2.1s")
 
 
@@ -45,7 +43,8 @@ def render_verse_svg(chapter, verse):
     for fn, kwargs, grows in highlights:
         fn(over, alpha=1.0, frac=1.0, **kwargs)
 
-    # plan captions (vv34-35): full opacity, static (they never pulsed)
+    # plan labels (26:34-35, and most of chapter 27): full opacity, on the
+    # static base so they don't pulse
     for text, x, y in labels:
         base.text(cub(x, y), text, font=F_DIM, fill=HL, anchor="mm")
 

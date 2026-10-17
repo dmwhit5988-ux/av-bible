@@ -265,7 +265,7 @@ def fit(parts, w):
 
 
 # ---------------------------------------------------------------------------
-# Static plan (drawn once per frame, optionally dimmed)
+# Static plan (drawn on every verse, optionally dimmed)
 # ---------------------------------------------------------------------------
 
 def draw_plan(d, dim=False):

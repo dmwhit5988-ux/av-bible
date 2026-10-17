@@ -26,7 +26,7 @@ the divided kingdom and converge by the exile. `MODERN` carries the pairs
 so a second rail can show the drift.
 
 Run `python chronology.py` for the audit: what binds, what does not, and
-how much of the tree is dated (about 6%).
+how much of the tree is dated (about 7%).
 """
 
 from collections import namedtuple

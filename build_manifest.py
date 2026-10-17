@@ -25,18 +25,19 @@ The web app keeps a picture running while the next verse shows the same file.
 
 Record fields:
   file      relative path from visuals/, forward slashes (as v1)
-  kind      classification for future display modes. Resolution order:
-            1. data-kind="…" on the SVG root element (hand-author override,
+  kind      classification (diagram, genealogy, map, chart), shown in
+            Coverage's Visuals column. Resolution order:
+            1. data-kind="…" on the SVG root element (an override that
                travels inside the file itself)
             2. the owning generator family's "kind" (svg_generators.json)
             3. extension default: png/jpg -> photo, everything else ->
                infographic
-  animated  SMIL sniff for .svg; gif/webp are the animated raster formats
-            and count as true; static formats false
+  animated  SMIL sniff for .svg; gif/webp count as true, other formats
+            false. (Every visual today is an .svg.)
 
 Read by web/js/visuals.js (verse key, then chapter key), coverage_studio.py
-and svg_studio.py; the desktop stage probes the filesystem directly
-(visual_stage.py).
+and svg_studio.py. The Studio's preview stage (visual_stage.find_svg) and
+video_render.resolve_svg find files on disk instead.
 
 WEB is the only translation, so visual files carry no translation suffix. A
 suffixed name (Genesis_5_3.KJV.svg) is a leftover that nothing serves;
@@ -67,8 +68,8 @@ _KIND_BY_EXT = {
 _DEFAULT_KIND = "infographic"
 
 _DATA_KIND_RE = re.compile(r'<svg\b[^>]*\bdata-kind="([^"]+)"')
-# Verse-key shape after stripping a .mobile suffix: Book_ch or Book_ch_v,
-# where Book may itself contain underscores (Song_of_Solomon).
+# Verse-key shape (a stem cut at its first dot, _base_stem): Book_ch or
+# Book_ch_v, where Book may itself contain underscores (Song_of_Solomon).
 _KEY_RE = re.compile(r"^(.+?)_(\d+)(?:_(\d+))?$")
 # One picture tied to a verse range on purpose (D17): Numbers_32_16-32.svg.
 _RANGE_RE = re.compile(r"^(.+?)_(\d+)_(\d+)-(\d+)$")
@@ -95,8 +96,9 @@ def _book_chapter_verse(stem: str) -> tuple[str, int, int | None] | None:
 
 
 def _base_stem(stem: str) -> str:
-    """Strip a .mobile suffix down to the verse key:
-    "Genesis_5_3.mobile" -> "Genesis_5_3"."""
+    """Cut a stem at its first dot, down to the verse key. A live file's
+    stem has no dot; a dotted one is a leftover, such as a retired variant
+    (see _RETIRED_RE)."""
     return stem.split(".", 1)[0]
 
 

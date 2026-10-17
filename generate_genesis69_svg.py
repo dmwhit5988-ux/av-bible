@@ -324,7 +324,7 @@ def stop_index(ch, v):
 
 
 # ---------------------------------------------------------------------------
-# Captions
+# What each verse lights: the measurements, the loading, the household
 # ---------------------------------------------------------------------------
 
 # The ark's given measurements, lit on the verse that gives them.

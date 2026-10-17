@@ -12,7 +12,7 @@ player picks it up.
 
 Before rendering, shows the projected new-file count against the ~20k
 file-count ceiling of Cloudflare's Workers static assets
-(publish_studio.DEPLOY_FILE_LIMIT; docs/archive/STUDIO_PLAN.md Feature C caveat 2),
+(publish_studio.DEPLOY_FILE_LIMIT; docs/architecture.md, "File budget"),
 counting what a deploy ships the way Publish does
 (publish_studio.count_deploy_files).
 

@@ -1,15 +1,17 @@
-"""Generate per-verse genealogy animations for Genesis 5 and Genesis 11:10-32.
+"""The genealogies of Genesis 5 and Genesis 11:10-32: chapter data and drawing.
 
 Layout: the family chain on the left (Adam -> Noah, or Shem -> Abram) and
 an overlapping-lifespans TIMELINE filling the right
 side — one horizontal bar per patriarch, positioned by birth year, so the
 listener watches lives overlap down the family line (Adam's life reaches
 Lamech's; Methuselah's ends in the flood year; in Genesis 11 the lifespans
-visibly collapse after the flood).
+visibly collapse after the flood). A gutter between them draws each
+chapter's own refrain in svg_figures (Genesis 5's graves, Genesis 11's
+children).
 
-Nothing textual flashes: all text is drawn at full opacity. The only pulsing
-element is the small ring marking the current person; all other animation is
-bars/edges extending once per loop.
+Nothing flashes: all text is drawn at full opacity and the ring marking the
+current person is steady. The only motion is the current verse's bar or edge
+extending once, then holding.
 
 The names drawn are WEB's spellings (WEB is the only text,
 passages.TRANSLATION). This module holds the chapter data and the drawing;
@@ -32,8 +34,9 @@ F_CHAIN_CUR = font(17, bold=True)   # current person pops from the chain
 F_NUM = font(14)                    # year labels/ticks — upright; small
                                     # italic digits blur at fullscreen
 
-# Genealogy animations play ONCE, slowly, then hold (loop=1 in the saved
-# file; the app honors it). Nothing pulses — per user feedback, no flashing.
+# Genealogy animations play ONCE, slowly, then hold. Nothing pulses — per
+# user feedback, no flashing. G_FRAMES and G_FRAME_MS are frame timings that
+# no drawing reads (generate_luke3.py imports them and never uses them).
 G_FRAMES = 24
 G_FRAME_MS = 120
 
@@ -287,12 +290,11 @@ G5_DIED = {5: 0, 8: 1, 11: 2, 14: 3, 17: 4, 20: 5, 27: 7, 31: 8}
 
 
 def blit(layer, parts, x, gy, s, ink, flip=1):
-    """Draw svg_figures parts onto a PIL-shaped surface.
+    """Draw svg_figures parts onto an ImageDraw-shaped layer.
 
     The vocabulary emits (kind, data, material) for an SvgCanvas; this maps
-    those onto the ellipse/polygon/line the genealogy's two backends both
-    already speak, so one call works for the raster loop and the vector build
-    alike.
+    those onto the ellipse/polygon/line that svg_surface's SvgLayer and
+    SvgAnimLayer speak, the surfaces draw_frame_on draws on.
     """
     sheet = F.palette(tuple(ink[:3]), BG)
     for kind, data, mat in parts:
@@ -386,10 +388,11 @@ def focus_bar(od, xb, y, x_start, x_final, grow, fill, outline):
 
     The bar always spans xb..x_final; `x_start` is where this verse's growth
     begins (xb for a bar built from birth, the son's x for an 'after' verse
-    that continues from the son, x_final for a completed-life verse). On the
-    vector overlay the xb..x_start part is held and only x_start..x_final wipes
-    in, so an 'after' verse never backtracks to birth; on raster the bar is
-    drawn at the current grow (x_start..x_final interpolate, as before).
+    that continues from the son, x_final for a completed-life verse). On an
+    SvgAnimLayer overlay (the one generate_genealogy_svg.py passes) the
+    xb..x_start part is held and only x_start..x_final wipes in, so an 'after'
+    verse never backtracks to birth. A layer without grow_rect gets a plain
+    bar out to the current `grow`.
     """
     if hasattr(od, "grow_rect"):
         od.grow_rect([xb, y - BAR_H, x_final, y + BAR_H], x_start,
@@ -400,18 +403,15 @@ def focus_bar(od, xb, y, x_start, x_final, grow, fill, outline):
                      fill=fill, outline=outline, width=2)
 
 
-# The WebP rendering that used to live here has been removed: the app reads
-# the SVGs natively, so the raster frames were built for nobody. draw_frame_on
-# below is kept and is the real drawing — generate_genealogy_svg.py calls it
-# with SVG layers instead of PIL surfaces.
+# draw_frame_on is the drawing; generate_genealogy_svg.py calls it with an
+# SvgLayer base and an SvgAnimLayer overlay.
 
 def draw_frame_on(d, od, cd, verse, spec, names, t):
-    """Draw one genealogy frame onto base `d` and overlay `od` at phase `t`.
+    """Draw one verse onto base `d` and overlay `od` at growth phase `t`.
 
-    Surface-agnostic so the same hand-tuned drawing serves both backends: PIL
-    ImageDraw for the raster loop, and SvgLayer + SvgAnimLayer for the vector
-    build (generate_genealogy_svg.py), where the overlay's growing bars and
-    edges self-animate once and hold.
+    generate_genealogy_svg.py passes t=1.0 (everything at full extent) and an
+    SvgAnimLayer overlay, whose growing bars and edges animate themselves in
+    once and hold.
     """
     ring_alpha = 1.0                       # static — nothing flashes
     grow = ease(min(1.0, t / 0.92))

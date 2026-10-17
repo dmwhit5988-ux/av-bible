@@ -130,7 +130,7 @@ def _places(beat):
 # brighten, they do not rebuild — stated for a stage instead of a camera.
 #
 # Both tests read BEATS and nothing else, so a verse can still be rendered
-# on its own, which the video renderer and the still builder rely on.
+# on its own.
 
 def _appeared(v, key):
     """The verse a thing comes ON the stage: falsy before, truthy now."""
@@ -153,7 +153,7 @@ class NativityFrame:
     Holds nothing between verses on purpose: every verse is drawn from its
     own beat, and continuity comes from the beats agreeing with each other
     rather than from state. That is what makes a verse re-renderable on its
-    own, which the video renderer and the still builder both rely on.
+    own.
     """
 
     def __init__(self, narr=None):

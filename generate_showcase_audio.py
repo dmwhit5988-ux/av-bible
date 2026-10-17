@@ -1,14 +1,15 @@
-"""Pre-generate neural-voice narration for the web app's showcase chapters.
+"""Pre-render neural-voice narration into web/audio/ for the web app.
 
-The web version normally reads aloud via the browser's Web Speech API, which
-on most devices sounds far more robotic than the desktop app's edge-tts
-neural voices (no key needed, but it's a Python library — a static site can't
-call it directly). This script bridges the gap for a small, fixed set of
-chapters: the ones that already have custom-generated visuals, since those
-are the app's showcase pieces.
+The web app reads aloud via the browser's Web Speech API wherever it has no
+MP3, and on most devices that sounds far more robotic than edge-tts's neural
+voices (no key needed, but it's a Python library — a static site can't call
+it directly). This module renders the MP3s instead. The Audio Renderer
+(audio_studio.py) renders through generate_chapter(), and it and Video Studio
+(video_render.py) both use the manifest helpers; run as a script, main()
+renders the fixed SHOWCASE_CHAPTERS list.
 
-For each verse it reuses tts_engine.synthesize() (the same function the
-desktop app calls during live playback) and copies the resulting neural mp3
+For each verse it reuses tts_engine.synthesize() in the house voice (the
+same call the Studio's player makes) and copies the resulting neural mp3
 into web/audio/, then updates web/audio/manifest.json — a flat
 {"Book_ch_v.WEB": "Book_ch_v.mp3"} map, one entry per verse. The ".WEB" on
 the key is a fixed part of the format (the web player looks up
@@ -19,7 +20,7 @@ write the manifest too, so every write merges with what is on disk.
 Resumable: skips verses whose mp3 already exists. Only ships real neural
 audio — if edge-tts is unreachable and tts_engine falls back to the lower
 quality offline SAPI voice, that verse is skipped rather than shipping
-degraded "showcase" audio (rerun later once online).
+degraded audio (rerun later once online).
 
 Usage:
     python generate_showcase_audio.py
@@ -38,7 +39,7 @@ VOICE = tts_engine.HOUSE_VOICE
 RATE = tts_engine.HOUSE_RATE
 TRANSLATION = "WEB"  # suffix on every manifest key: Book_ch_v.WEB
 
-# The chapters with custom-generated visuals (see visuals/<Book>/<chapter>/).
+# The fixed list main() renders. The Audio Renderer renders any chapter.
 SHOWCASE_CHAPTERS = [
     ("Genesis", 1), ("Genesis", 5), ("Genesis", 11),
     ("Exodus", 25), ("Exodus", 26), ("Exodus", 27),
@@ -167,7 +168,7 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
         src_path = tts_engine.synthesize(text, voice, rate)
         if not src_path.lower().endswith(".mp3"):
             # tts_engine fell back to the offline SAPI voice (edge-tts
-            # unreachable) — don't ship degraded audio as "showcase" quality.
+            # unreachable) — don't ship degraded audio.
             degraded += 1
             print(f"    {book} {chapter}:{num} — edge-tts unavailable, "
                   f"skipped (rerun later)")

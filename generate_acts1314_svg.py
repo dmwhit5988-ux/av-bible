@@ -25,7 +25,7 @@ The map returns at 13:51 (they shake off the dust and go to Iconium) and at
 break, so each reads as the same graphic looking at something else.
 
 Coordinates are approximate; ancient site identifications (Lystra, Derbe) are
-scholarly reconstructions and the footer says so. Geometry is hand-encoded
+scholarly reconstructions. Geometry is hand-encoded
 lat/lon simplified from standard atlas maps, projected with the same
 equirectangular MapFrame the Numbers tribal maps use.
 
@@ -184,6 +184,7 @@ def leg_pts(frm, to, way=()):
 
 # ---------------------------------------------------------------------------
 # Per-verse story:  (chapter, verse) -> (focus city key, caption)
+# Only the focus city is drawn: the verse is narrated, so the caption isn't.
 # ---------------------------------------------------------------------------
 
 STORY = {

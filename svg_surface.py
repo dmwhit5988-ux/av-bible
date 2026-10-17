@@ -1,17 +1,23 @@
-"""A tiny SVG canvas, shaped to mirror the subset of PIL's ImageDraw that the
-verse-graphic generators use, so their hand-tuned geometry can be re-emitted
-as vector SVG instead of rasterised WebP.
+"""The tiny SVG canvas every verse-graphic generator draws on.
+
+* ``SvgCanvas`` — primitives, text, groups and the SMIL animation helpers
+  (traced, grown, grow_rect, the pulse_* highlights, a pulsing group).
+* ``SvgLayer`` — a stand-in for PIL's ImageDraw.Draw. Code written against
+  ImageDraw's API (the tabernacle, genealogy and Luke 3 drawings, and the
+  1 Chronicles and Matthew 1 HUDs) runs against an SvgLayer and emits SVG
+  elements that an SvgCanvas then takes with ``raw()``.
+* ``SvgAnimLayer`` — an SvgLayer whose lines and bars draw themselves in
+  once and hold (the genealogy overlays).
 
 Design notes
 ------------
-* Colours are the same (r, g, b) or (r, g, b, a) tuples the PIL generators
-  already pass around; alpha becomes an SVG ``*-opacity`` attribute.
+* Colours are (r, g, b) or (r, g, b, a) tuples; alpha becomes an SVG
+  ``*-opacity`` attribute.
 * Text anchors use PIL's two-letter form (e.g. ``"mm"``, ``"lm"``, ``"mb"``)
-  and are mapped to ``text-anchor`` + ``dominant-baseline`` here, so callers
-  can pass the exact anchor strings the raster code used.
-* ``group()`` is a context manager for a translated + clipped ``<g>``, which
-  stands in for the raster trick of rendering a map into its own sub-image
-  and pasting it at an offset (geometry outside the window is clipped).
+  and are mapped to ``text-anchor`` + ``dominant-baseline`` here.
+* ``group()`` is a context manager for a translated + clipped ``<g>``: a map
+  drawn in its own window at an offset, with geometry outside the window
+  clipped.
 
 Only what the generators need is implemented — this is a dev tool, not a
 general SVG library.
@@ -86,7 +92,7 @@ def _box(box):
 
 
 def _font_meta(font):
-    """(size, bold, italic) from a PIL ImageFont, so the reused raster
+    """(size, bold, italic) from a PIL ImageFont, so ImageDraw-style
     drawing code can pass its F_* fonts straight through to SVG text."""
     size = getattr(font, "size", 14) if font is not None else 14
     bold = italic = False
@@ -192,13 +198,12 @@ class SvgCanvas:
 
     # -- SMIL animation helpers --------------------------------------------
     #
-    # Two motion styles, matching the two raster generators:
-    #  * traced()/grown() — the tribal maps' "draw once, then hold": a stroke
-    #    reveals itself (dash-offset) / a fill grows in, then freezes.
+    # Two motion styles:
+    #  * traced()/grown() — "draw once, then hold" (the house default): a
+    #    stroke reveals itself (dash-offset) / a fill grows in, then freezes.
     #  * group(pulse=...)  — the tabernacle's perpetual breathing glow: the
-    #    whole highlight layer's opacity oscillates forever (in the raster
-    #    version every overlay element shares one pulsing alpha, so a single
-    #    group-opacity animation reproduces it exactly).
+    #    whole highlight layer's opacity oscillates forever, so every element
+    #    in it pulses together from one group-opacity animation.
 
     _EASE = "0.42 0 0.58 1"
 
@@ -384,13 +389,13 @@ class SvgCanvas:
 
 class SvgLayer:
     """A drop-in stand-in for PIL's ImageDraw.Draw that records the subset of
-    calls the tabernacle/altar generators make and emits SVG element strings.
+    calls the ImageDraw-style drawing code makes and emits SVG element
+    strings.
 
-    This lets the existing, hand-tuned raster drawing functions (draw_plan,
-    inset_*, hl_*) run unchanged against SVG: pass one SvgLayer as their base
-    ``d`` and another as their overlay ``od``, then hand ``.elements()`` to an
-    SvgCanvas (the overlay inside a pulsing group, matching the raster
-    generator's alpha-composited, breathing highlight layer).
+    The tabernacle's drawing functions (draw_plan, inset_*, hl_*), for
+    example, take one SvgLayer as their base ``d`` and another as their
+    overlay ``od``; generate_exodus26_svg.py hands both ``.elements()`` to an
+    SvgCanvas, the overlay inside a pulsing group.
     """
 
     def __init__(self):
@@ -403,8 +408,8 @@ class SvgLayer:
 
     def line(self, xy, fill=None, width=1, joint=None):
         # xy: a sequence of (x, y) points (the generators never use the flat
-        # [x0, y0, x1, y1] form). joint="curve" is a raster antialias hint —
-        # irrelevant to SVG.
+        # [x0, y0, x1, y1] form). joint="curve" is ImageDraw's line-join
+        # option, accepted and ignored: SVG lines here always join round.
         # PIL's `fill` on a line is the stroke colour; _fill_stroke adds the
         # single fill="none".
         self._els.append(
@@ -478,9 +483,9 @@ class SvgLayer:
         self._els.append(f"<text {' '.join(a)}>{escape(s)}</text>")
 
     def textlength(self, s, font=None):
-        """Pixel advance width, so the reused raster code that positions one
-        element after a name (the Genesis 5:32 trio connector) lands the same.
-        The real PIL font is passed straight through, so this matches exactly.
+        """Pixel advance width, for drawing code that positions one element
+        after a name (the Genesis 5:32 trio connector). The real PIL font is
+        passed straight through, so this matches ImageDraw exactly.
         """
         if font is not None:
             try:
@@ -493,8 +498,8 @@ class SvgLayer:
 
 class SvgAnimLayer(SvgLayer):
     """An overlay SvgLayer for the genealogy-family SVGs whose growing pieces
-    animate themselves in once and then hold — reproducing the raster loop's
-    "play once, then freeze" reveal with no re-derived geometry.
+    animate themselves in once and then hold ("play once, then freeze"), from
+    the same geometry the drawing code passes a plain layer.
 
     In those generators the overlay (``od``) carries exactly the elements that
     grow: every ``line`` is a stroke that extends (a chain edge, a connector),

@@ -1,13 +1,11 @@
-"""Render Genesis 5 and 11:10-32 as per-verse vector SVGs — the vector twins
-of the genealogy WebP animations (generate_genealogy.py).
+"""Render Genesis 5 and 11:10-32 as per-verse vector SVGs, from the data and
+drawing in generate_genealogy.py (draw_frame_on).
 
-Reuses that generator's exact drawing (draw_frame_on), so the same
-hand-tuned layout comes out — only the backend changes. The names are WEB's
-spellings (WEB is the only text, passages.TRANSLATION). The static chain,
-timeline and labels go on a plain SvgLayer; the overlay (the growing
-lifespan bars and family edges) goes on an SvgAnimLayer, so each verse's
-highlight draws itself in once and then holds, keeping the "play once, no
-flashing" motion of the WebP.
+The names are WEB's spellings (WEB is the only text, passages.TRANSLATION).
+The static chain, timeline and labels go on a plain SvgLayer; the overlay
+(the growing lifespan bars and family edges) goes on an SvgAnimLayer, so each
+verse's highlight draws itself in once and then holds: play once, no
+flashing.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_genealogy_svg.py
@@ -22,7 +20,7 @@ from generate_genealogy import (
     G5_KEYS, G11_KEYS,
 )
 
-# One reveal ~ the raster grow (24 frames x 120 ms, complete by ~92%).
+# How long one verse's growing bars and edges take to draw in.
 DUR = "2.6s"
 
 

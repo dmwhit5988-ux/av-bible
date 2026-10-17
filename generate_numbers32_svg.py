@@ -1,13 +1,14 @@
-"""Render Numbers 32 as per-verse vector SVGs — the Transjordan map, the
-vector twin of the Numbers 34 conversion (generate_numbers34_svg.py).
+"""Render Numbers 32 as per-verse vector SVGs: the Transjordan map.
 
-Reuses the hand-tuned geometry, region/city coordinates, per-verse spec table
-and side-panel copy from generate_tribal_maps.py, and the shared SVG map
-helpers (base, lake repaint, dot labels, compass, border, side panel, canvas)
-from generate_numbers34_svg.py. Only the drawing backend changes, from PIL
-raster frames to one static SvgCanvas per verse — with the same "draw the
-highlight once, then hold" motion carried by SvgCanvas.traced (borders reveal
-themselves) so the maps still animate, crisply, at any size.
+Each verse has a stage in generate_tribal_maps.SPECS_32 (survey, rebuke,
+pledge, grant, build, machir, jair, nobah ...) that picks what the map
+highlights. Regions and kingdoms trace their borders with SvgCanvas.traced
+(draw once, then hold), and the city-building verses list each city with its
+modern identification in the side panel.
+
+The geometry, city coordinates and spec table come from
+generate_tribal_maps.py; the map helpers (lake repaint, dot labels, compass,
+border, side panel, canvas) come from generate_numbers34_svg.py.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_numbers32_svg.py

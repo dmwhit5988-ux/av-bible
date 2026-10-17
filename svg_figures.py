@@ -36,8 +36,8 @@ Three conventions make the parts reusable rather than merely shared:
 Masses are opaque. The cherubim's dim alpha fills let stacked shapes bleed
 through one another, which a wing survives and a person does not.
 
-Nothing here is wired into the existing generators; they keep their own
-figures. New work should come from here.
+Most generators that draw a person, creature or object take it from here; a
+new figure belongs here rather than in a generator.
 """
 
 import math

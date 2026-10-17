@@ -1,12 +1,13 @@
 """Render the letter to the Romans (16 chapters, 433 verses) as per-verse
 vector SVGs — one full-frame scene per chapter, threaded by the Romans Road.
 
-Redesign (2026-08-10, see docs/design/romans.md): the old seven-stop rail and the
-per-verse bead track are gone (preserved in backups/romans_rail/ under config.ARCHIVE_DIR). Every
-chapter now owns the whole frame with its own set-piece, and the classic
-Romans Road — 3:23, 5:8, 6:23, 10:9, 10:13 — is drawn literally: a winding
-Roman road toward a distant arch, gaining an engraved milestone at each of
-those verses. The road returns whenever the letter does.
+Design and reasoning: docs/design/romans.md. Every chapter owns the whole
+frame with its own set-piece, and the classic Romans Road — 3:23, 5:8, 6:23,
+10:9, 10:13 — is drawn literally: a winding Roman road toward a distant arch,
+gaining an engraved milestone at each of those verses. The road returns
+whenever the letter does. (The earlier design, a seven-stop rail with a
+per-verse bead track, is archived in backups/romans_rail/ under
+config.ARCHIVE_DIR.)
 
 Text budget (revised for this book): names, numbers, labelled parts, plus
 short engraved phrases (2-7 words, WEB wording or tight paraphrase, caps)

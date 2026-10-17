@@ -1,11 +1,14 @@
-"""Render Numbers 34 as per-verse vector SVGs (the held final frame of the
-existing animated WebP maps).
+"""Render Numbers 34 as per-verse vector SVGs: one map per verse, two views.
 
-Reuses the hand-tuned geometry, border segments, tribal territories, captions
-and side-panel copy from generate_tribal_maps.py — only the drawing backend
-changes, from PIL raster frames to a single static SvgCanvas per verse. The
-result is a crisp, hand-editable vector that scales to any screen (see the
-web app's new .svg support) and is far smaller than the 24-frame WebP.
+vv1-15 trace the border of Greater Canaan on a wide map: each border verse
+draws its own segment over a dashed underlay (SvgCanvas.traced), and the side
+panel names the ancient landmarks. vv16-29 zoom in on the twelve tribal
+territories: the tribe a verse names grows in and its border traces round,
+with its prince beside the map. Each animation plays once, then holds.
+
+The geometry, border segments, territories, landmarks and panel lines come
+from generate_tribal_maps.py. The map helpers here (lake repaint, dot labels,
+compass, border, side panel, canvas) are shared with generate_numbers32_svg.py.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_numbers34_svg.py
@@ -33,7 +36,7 @@ def g(alpha):
 
 
 # ---------------------------------------------------------------------------
-# Shared drawing helpers (SVG re-implementations of the raster ones)
+# Shared drawing helpers (generate_numbers32_svg.py imports these too)
 # ---------------------------------------------------------------------------
 
 def draw_base(c, fr):

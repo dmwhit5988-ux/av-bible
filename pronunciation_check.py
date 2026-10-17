@@ -2,7 +2,7 @@
 
 Tuning pronunciations in ``pronunciation_tool.py`` is done entirely by ear, and
 by ear is also the only way it gets re-checked. That works fine for the name in
-front of you and not at all for the 1500+ behind it: a respelling that used to
+front of you and not at all for the 3,000+ behind it: a respelling that used to
 sound right can drift when the voice model changes, and a name marked
 ``override: false`` may have been wrong all along.
 

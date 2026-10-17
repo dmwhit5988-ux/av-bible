@@ -37,9 +37,8 @@ Matthew's differ most the doubled label the chart already uses for
 Abram · Abraham — Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah,
 Azariah · Uzziah. So any listener hears a name they can find on the sheet.
 
-(The fractal-tree design this replaces, with its rendered files, is kept
-outside the repo in backups/matthew1_fractal_tree/ under config.ARCHIVE_DIR.
-See the README there to restore it.)
+(The fractal-tree design this replaces is kept for reference outside the
+repo, in backups/matthew1_fractal_tree/ under config.ARCHIVE_DIR.)
 """
 
 import os

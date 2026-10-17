@@ -1,8 +1,8 @@
 """The Bible text: the World English Bible, bundled as one JSON per chapter.
 
-WEB is the only translation Theoria reads (CLEANUP_PLAN.md, WS1). Chapters
-live under bibles/WEB/<Book>_<chapter>.json, written by import_translation.py
-from the eBible USFX source. Nothing here touches the network.
+WEB is the only translation Theoria reads. Chapters live under
+bibles/WEB/<Book>_<chapter>.json, written by import_translation.py from the
+eBible USFX source. Nothing here touches the network.
 
 The JSON files also carry "translation" and "notes" fields (kept so the
 re-importer round-trips byte-identically); the loader ignores them.

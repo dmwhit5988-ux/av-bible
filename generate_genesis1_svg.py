@@ -14,8 +14,9 @@ row's pairing arrow turns gold once both of its days have been reached, and the
 seven-day bar along the bottom advances. Days not yet reached stay ghosted, so
 the chart reads as the chapter's whole shape from verse 1 onward.
 
-This replaces the photographic stills that used to fill visuals/Genesis/1/
-(retired to backups/png_replaced_by_svg/ under config.ARCHIVE_DIR; see docs/archive/genesis1-photo-credits.txt).
+(The photographs these SVGs replaced are archived in
+backups/png_replaced_by_svg/ under config.ARCHIVE_DIR; their credits are in
+docs/archive/genesis1-photo-credits.txt.)
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_genesis1_svg.py
