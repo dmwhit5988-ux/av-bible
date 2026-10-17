@@ -57,8 +57,8 @@ from svg_freeze import svg_is_animated
 VISUALS_DIR = Path(__file__).resolve().parent / "visuals"
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
-# Extensions indexed: vector diagrams (.svg) and raster images. Text files
-# (README, CREDITS) are documentation, not visuals.
+# Extensions indexed: vector diagrams (.svg) and raster images. Anything
+# else under visuals/ (manifest.json itself) is not a visual.
 IMAGE_EXTS = {".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg"}
 
 _KIND_BY_EXT = {

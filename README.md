@@ -72,7 +72,7 @@ visuals/default.png            ← fallback for everything
 ```
 
 (Files placed flat in `visuals/` still work as a fallback, but the folder
-layout is preferred — see `visuals/README.txt` for the full conventions.)
+layout is preferred — see `docs/visuals.md` for the full conventions.)
 
 Supported formats: **PNG / JPG** (static — scaled to fill, center-cropped)
 and **animated WebP / GIF** (letterboxed to fit, never cropped, so diagrams

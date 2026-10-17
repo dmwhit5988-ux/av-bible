@@ -64,8 +64,8 @@ CONTENT_PATHS = ["web/audio", "bibles", "visuals",
 WEB_APP_PATHS = ["web", ":(exclude)web/audio"]
 
 # The visual files a change summary counts: the set build_manifest.IMAGE_EXTS
-# indexes. The rest of visuals/ (manifest.json, README.txt, the reference
-# pages) is committed too but counted as "other".
+# indexes. The rest of visuals/ (manifest.json, the reference pages) is
+# committed too but counted as "other".
 _PICTURE_EXTS = (".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg")
 
 # The content a change summary counts, as (tally area, singular, plural).
@@ -160,7 +160,7 @@ def _area(path: str) -> str:
     picture under visuals/), "mp3s" (narration under web/audio/),
     "chapters" (a Bible chapter, bibles/<code>/<chapter>.json), "bundle"
     (anything under deploy_bundle/, the served copies of those) or "other"
-    (the two manifests, visuals/README.txt and the like)."""
+    (the two manifests and the like)."""
     low = path.lower()
     if path.startswith("deploy_bundle/"):
         return "bundle"
