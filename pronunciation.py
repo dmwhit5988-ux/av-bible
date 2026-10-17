@@ -6,15 +6,18 @@ literally and can't be used; the reliable, engine-agnostic fix is to respell
 the name phonetically in the *text sent to the voice* while leaving the on-screen
 text untouched.
 
-The master list lives in ``pronunciations.json`` -- a dict keyed by the exact
-spelling as it appears in scripture, each entry
-``{say, ipa?, ref, override, status?, score?}``:
+The master list lives in ``pronunciations.json`` as ``{_readme, names}``.
+``names`` is keyed by a name's exact spelling in the World English Bible (the
+only text the app reads), each entry
+``{say, ipa?, ipa_src?, ref, override, status?, score?}``:
 
     say       the pronunciation, both shown to humans and (lowercased) fed to the
               voice when ``override`` is true. Tune this by ear -- whatever sounds
               right when spoken is what to store (e.g. "muh-HAL-uh-lel",
               "sheelah", "kaldeez").
     ipa       optional formal reference pronunciation.
+    ipa_src   where ``ipa`` came from (isbe, cmudict, wiktionary, wikipedia,
+              or generated), when that is recorded.
     ref       first place it appears (Book chapter:verse), for ordering.
     override  true = respell it before synthesis; false = speak it as spelled.
     status    what checking the audio concluded -- see below. Absent means the
@@ -40,12 +43,14 @@ would otherwise look identical as ``override: false``:
                it cannot convict the voice. Needs an ear, not another sweep.
 
 ``respell(text)`` swaps every whole-word occurrence of an ``override`` name for a
-lowercased ``say``. It's called from ``tts_engine.synthesize`` so desktop
-playback and the pre-rendered web showcase audio both benefit.
+lowercased ``say``. It's called from ``tts_engine.synthesize``, so every
+narration benefits: the Studio's playback, the web app's pre-rendered MP3s and
+Video Studio's renders.
 
 Edit the list with the GUI (``python pronunciation_tool.py``) -- it plays each
 name back in the real voice and writes both this module's JSON and the readable
-``PRONUNCIATIONS.md``. ``python pronunciation.py`` just rebuilds the markdown.
+``PRONUNCIATIONS.md`` (a generated report, git-ignored).
+``python pronunciation.py`` just rebuilds the markdown.
 """
 
 import json
@@ -72,7 +77,8 @@ README = (
     "'status' records what checking the audio concluded -- ok (reads correctly "
     "as spelled), fixed (override in place and working), suggested (a better "
     "spelling is known but unapplied, decide by ear), unfixed (wrong, nothing "
-    "found yet); absent means never checked, which is NOT the same as ok. "
+    "found yet), unsure (checked only against a generated reference, so it "
+    "needs an ear); absent means never checked, which is NOT the same as ok. "
     "'score' is the agreement measured at that check, 0-1. Edit with the GUI: "
     "python pronunciation_tool.py (it plays names back and rewrites this file + "
     "PRONUNCIATIONS.md); check against real audio with python "
@@ -143,7 +149,7 @@ def load(force: bool = False) -> dict:
     """Load and cache the master list. Missing/broken file -> empty (no-op).
 
     Auto-reloads when pronunciations.json changes on disk (its mtime moves), so
-    a long-running process -- e.g. the desktop app playing audio -- picks up
+    a long-running process -- e.g. the Studio playing a passage -- picks up
     edits made by the separate Pronunciation Studio without a restart. This is
     what lets a changed pronunciation actually re-render: respell() then yields
     new text, whose hash misses the audio cache.
