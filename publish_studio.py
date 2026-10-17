@@ -107,15 +107,46 @@ class App:
     def __init__(self, root):
         self.root = root
         self.events: queue.Queue = queue.Queue()
-        self.busy = False
+        self.busy = False       # a publish is in flight (any step)
+        self._confirming = False  # ...and is asking whether to commit
+        self._pushing = False   # ...or has reached git add/commit/push
 
         root.title("Publish")
         root.geometry("720x520")
         root.minsize(620, 420)
+        root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._build_ui()
         self._refresh_meter()
         self._poll_events()
+
+    def set_passage(self, book, chapter, verse=None, *, ask=False) -> bool:
+        """Publish works on the whole site, not a passage: nothing to do."""
+        return True
+
+    def can_close(self) -> bool:
+        """True when no publish is running, so closing is instant then.
+        While one runs, refuses (False) and says to wait: closing would
+        orphan it partway (during git, perhaps committed but not pushed),
+        and a second Publish could then start alongside it. Every step has
+        a timeout, so the wait always ends."""
+        if not self.busy:
+            return True
+        if self._pushing:
+            msg = ("Publish is committing and pushing to GitHub. Wait for it "
+                   "to finish, then close.")
+        elif self._confirming:
+            msg = ("Publish is asking whether to commit and push. Answer it, "
+                   "then close.")
+        else:
+            msg = ("Publish is still preparing (manifest and deploy bundle). "
+                   "Wait for it to finish, then close.")
+        messagebox.showinfo("Publish", msg, parent=self.root)
+        return False
+
+    def _on_close(self):
+        if self.can_close():
+            self.root.destroy()
 
     # ----- UI construction -----------------------------------------------
     def _build_ui(self):
@@ -242,13 +273,20 @@ class App:
                     "deploy will likely fail.\n\n")
         msg += ("Commit and push to GitHub now? The push is the deploy — "
                 "GitHub uploads the bundle to Cloudflare.")
-        if not messagebox.askyesno("Publish", msg, parent=self.root,
-                                   icon="warning" if over else "question"):
+        self._confirming = True
+        try:
+            proceed = messagebox.askyesno(
+                "Publish", msg, parent=self.root,
+                icon="warning" if over else "question")
+        finally:
+            self._confirming = False
+        if not proceed:
             self._finish("Publish cancelled — nothing was committed.")
             return
-        self.status_var.set("Committing and pushing…")
         threading.Thread(target=self._push_worker, args=(changes,),
                          daemon=True).start()
+        self._pushing = True    # set once the thread runs (see "confirm")
+        self.status_var.set("Committing and pushing…")
 
     def _push_worker(self, changes):
         put = self.events.put
@@ -276,6 +314,8 @@ class App:
 
     def _finish(self, status):
         self.busy = False
+        self._confirming = False
+        self._pushing = False
         self.publish_btn.configure(state="normal")
         self.status_var.set(status)
         self._log(status)
@@ -285,12 +325,20 @@ class App:
     def _poll_events(self):
         try:
             while True:
-                event = self.events.get_nowait()
+                try:
+                    event = self.events.get_nowait()
+                except queue.Empty:
+                    break
                 self._handle_event(event)
-        except queue.Empty:
-            pass
-        if self.root.winfo_exists():
-            self.root.after(80, self._poll_events)
+        finally:
+            # Rescheduled even when a handler raised: can_close refuses while
+            # busy, so the "done"/"fail" that clears it must always arrive.
+            try:
+                alive = self.root.winfo_exists()
+            except tk.TclError:
+                alive = False
+            if alive:
+                self.root.after(80, self._poll_events)
 
     def _handle_event(self, event):
         kind = event[0]
@@ -299,7 +347,12 @@ class App:
         elif kind == "meter":
             self._set_meter(event[1])
         elif kind == "confirm":
-            self._do_confirm(*event[1:])
+            try:
+                self._do_confirm(*event[1:])
+            except Exception as e:
+                if not self._pushing:   # no push thread started: not busy
+                    self._log(f"FAILED: {type(e).__name__}: {e}")
+                    self._finish("Publish failed — see the log.")
         elif kind == "done":
             self._finish(event[1])
         elif kind == "fail":

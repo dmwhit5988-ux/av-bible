@@ -7,8 +7,9 @@ if (Test-Path $deployDir) {
 New-Item -ItemType Directory -Path $deployDir | Out-Null
 
 # Copy web files to the bundle ROOT (the app is served at /, with
-# /bibles and /visuals alongside -- see wrangler.toml [assets])
-Copy-Item -Path (Join-Path $PSScriptRoot "web\*") -Destination $deployDir -Recurse
+# /bibles and /visuals alongside -- see wrangler.toml [assets]).
+# Skip *.tmp: a half-written file from a save in progress.
+Copy-Item -Path (Join-Path $PSScriptRoot "web\*") -Destination $deployDir -Recurse -Exclude "*.tmp"
 Write-Host "[OK] Copied web/ contents to bundle root"
 
 # Copy bibles JSON files
@@ -22,8 +23,8 @@ Get-ChildItem -Path (Join-Path $PSScriptRoot "bibles") -Directory | ForEach-Obje
 }
 Write-Host "[OK] Copied bibles/"
 
-# Copy visuals (skip XML)
-Copy-Item -Path (Join-Path $PSScriptRoot "visuals") -Destination $deployDir -Recurse -Exclude "*.xml"
+# Copy visuals (skip XML and *.tmp)
+Copy-Item -Path (Join-Path $PSScriptRoot "visuals") -Destination $deployDir -Recurse -Exclude "*.xml","*.tmp"
 Write-Host "[OK] Copied visuals/"
 
 $fileCount = @(Get-ChildItem -Path $deployDir -Recurse -File).Count

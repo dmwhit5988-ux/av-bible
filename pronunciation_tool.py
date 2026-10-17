@@ -7,7 +7,8 @@ are already customized, and lets you:
   * type your own "Say it" spelling and hear it     (▶ Say / Enter)
   * tick "Custom" when a name needs the override
   * click "✓ Fine" when the plain spelling is already read correctly
-  * Save -> writes pronunciations.json AND PRONUNCIATIONS.md
+  * Save -> writes pronunciations.json AND PRONUNCIATIONS.md, merging with
+    anything the Verifier saved while this window was open
 
 The "Checked" column is the point of "✓ Fine": a name you have listened to and
 approved used to be stored exactly like one nobody had ever opened, both being
@@ -18,13 +19,15 @@ the same field from measured audio.
 
 Names are keyed by spelling, so the same name across chapters is one shared
 entry: tune "Nahor" in Genesis 11 and it's already tuned when it turns up in
-Genesis 22. Preview uses the same edge-tts voice the web/desktop audio uses, so
-what you hear is what will be rendered.
+Genesis 22. Preview uses the house voice and rate (tts_engine.HOUSE_VOICE,
+HOUSE_RATE) that every narration is rendered with, so what you hear is what
+will be rendered.
 
     python pronunciation_tool.py [book] [chapter]
 """
 
 import copy
+import os
 import sys
 import threading
 import tkinter as tk
@@ -36,7 +39,9 @@ import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
 
-RATE = 0
+# The Studio's icon, the same one the shell (app.py) sets.
+ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "web", "icons", "icon-192.png")
 
 
 # How each verdict is shown. Unchecked is deliberately the attention-getting
@@ -84,6 +89,9 @@ class App:
         self.root = root
         self.player = AudioPlayer()
         self.names = copy.deepcopy(pronunciation.load(force=True))
+        # What the file held when self.names was loaded; save_names merges
+        # against it so the Verifier's edits since then are not undone.
+        self.base = copy.deepcopy(self.names)
         self.rows = []
         self.cur_book = None
         self.cur_ch = None
@@ -130,11 +138,6 @@ class App:
         self.ch_cb.pack(side="left", padx=(4, 10))
 
         ttk.Button(bar, text="Load chapter", command=self.load_chapter).pack(side="left")
-
-        ttk.Label(bar, text="   Voice:").pack(side="left")
-        self.voice_var = tk.StringVar(value="en-US-AndrewNeural")
-        ttk.Combobox(bar, textvariable=self.voice_var, width=22, state="readonly",
-                     values=tts_engine.EDGE_VOICES).pack(side="left", padx=(4, 10))
 
         ttk.Label(bar, text="   Show:").pack(side="left")
         self.filter_var = tk.StringVar(value=FILTERS[0])
@@ -350,13 +353,17 @@ class App:
                 pronunciation.set_status(entry, status, row.score)
                 self.names[name] = entry
 
-    def save(self):
+    def save(self) -> bool:
         self._commit_rows()
         try:
-            pronunciation.save_names(self.names)
+            saved = pronunciation.save_names(self.names, base=self.base)
         except Exception as e:  # noqa: BLE001 - surface any write error to the user
-            messagebox.showerror("Save failed", str(e))
-            return
+            messagebox.showerror("Save failed", str(e), parent=self.root)
+            return False
+        # Adopt the merged list, so names the Verifier saved meanwhile show up
+        # here and the next save measures this window's edits from this point.
+        self.names = saved.names
+        self.base = copy.deepcopy(saved.names)
         self.dirty = False
         self.root.title("Pronunciation Studio")
         counts = {}
@@ -370,6 +377,10 @@ class App:
             f"PRONUNCIATIONS.md — {summary}.  The desktop app will re-render "
             f"changed verses automatically on next play.")
         self._build_rows(keep_status=True)  # refresh status dots, keep save message
+        if saved.warning:
+            messagebox.showwarning("pronunciations.json had changed", saved.warning,
+                                   parent=self.root)
+        return True
 
     # ----- playback -----------------------------------------------------
     def _play(self, spoken, label):
@@ -378,11 +389,11 @@ class App:
             return
         self.busy = True
         self.status_var.set(f"Synthesizing “{label}”…")
-        voice = self.voice_var.get()
 
         def work():
             try:
-                path = tts_engine.synthesize(spoken, voice, RATE, apply_respell=False)
+                path = tts_engine.synthesize(spoken, tts_engine.HOUSE_VOICE,
+                                             tts_engine.HOUSE_RATE, apply_respell=False)
                 self.player.load(path)
                 self.player.play()
                 tag = "" if path.lower().endswith(".mp3") else "   [offline SAPI voice]"
@@ -401,8 +412,8 @@ class App:
                 "Unsaved changes", "Save your pronunciation changes before closing?")
             if ans is None:
                 return
-            if ans:
-                self.save()
+            if ans and not self.save():
+                return            # the save failed: keep the window and the edits
         self.player.close()
         self.root.destroy()
 
@@ -422,6 +433,15 @@ def main():
             pass  # malformed args -- fall back to the Genesis 5 default
 
     root = tk.Tk()
+    try:
+        root.tk.call("tk", "scaling", 1.25)   # match the main window and the Verifier
+    except tk.TclError:
+        pass
+    try:
+        icon = tk.PhotoImage(file=ICON_PATH)
+        root.iconphoto(True, icon)            # True: its dialogs too
+    except tk.TclError:
+        pass                                  # a missing icon is cosmetic
     App(root, start_book, start_chapter)
     root.mainloop()
 

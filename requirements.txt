@@ -1,19 +1,28 @@
 edge-tts>=6.1
 aiohttp>=3.8
+# The SVG generators (generate_tabernacle.py and the families built on it).
 Pillow>=11.0
-# Optional: embedded web views (WebView2) — the SVG Studio preview and
-# the stage's SVG visuals. The studio degrades to the system browser and
-# the stage falls back to raster (.webp/.png) visuals if this is missing
-# or broken.
+# Required: the embedded web views (WebView2) that show every visual -- the
+# Studio's preview stage and SVG Studio's preview. Without it the stage shows
+# only the book gradient (SVG Studio can still preview in the system browser).
 pywebview>=6.0
 
 # Optional: the Pronunciation Verifier (pronunciation_check.py / ipa_asr.py),
 # which transcribes rendered audio back into IPA to check it against
 # pronunciations.json. Heavy (~1.5 GB installed, plus a ~1.2 GB model cached on
 # first run) and needed only by that one authoring tool -- nothing else in the
-# app imports them, and both the studio and the stage run fine without them.
+# app imports them, and the rest of the Studio runs fine without them.
 #   pip install torch transformers soundfile scipy
 # torch>=2.5
 # transformers>=4.40
 # soundfile>=0.12
 # scipy>=1.11
+
+# Not pip packages -- install these separately:
+#   Microsoft Edge WebView2 Runtime  needed by pywebview (built into Windows 11)
+#   ffmpeg                           Video Studio (winget install BtbN.FFmpeg.GPL,
+#                                    or ffmpeg.exe/ffprobe.exe in tools/ffmpeg/bin/)
+#   Google Chrome or Microsoft Edge  Video Studio draws its frames in a browser
+#   Inkscape                         optional; SVG Studio's "Open in Inkscape"
+#   Windows PowerShell               Publish runs prepare-deploy.ps1; also the
+#                                    offline SAPI voice fallback (built in)

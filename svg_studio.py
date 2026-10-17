@@ -2,12 +2,14 @@
 
 The studio owns the verse workflow (navigate, know when a file is
 generator-owned), the XML editing pane, and the pipeline glue (save into
-visuals/<Book>/<chapter>/, manifest rebuild, deploy staging). It
-deliberately does NOT own vector drawing — that is the XML pane and/or
-Inkscape (SVG_STUDIO_DESIGN.md, "Option 3").
+visuals/<Book>/<chapter>/, manifest rebuild). Deploying is Publish's job
+(publish_studio.py). It deliberately does NOT own vector drawing — that is
+the XML pane and/or Inkscape (SVG_STUDIO_DESIGN.md, "Option 3").
 
-Usable standalone or as a Toplevel from app.py (same constructor contract as
-audio_studio.App):
+Usable standalone or as a Toplevel from app.py, with the same window-tool
+contract as the other studios: App(root, book, chapter, verse),
+set_passage() to follow the main window's passage, and can_close() before
+the window goes.
 
     python svg_studio.py [Book] [chapter]
 """
@@ -90,17 +92,16 @@ def verse_path(book: str, chapter: int, verse: int) -> str:
 
 
 class App:
-    def __init__(self, root, start_book="Genesis", start_chapter=1,
-                 start_verse=1):
+    def __init__(self, root, book=None, chapter=None, verse=None):
         self.root = root
         self.family: svg_registry.FamilyInfo | None = None
         self.current_path: str | None = None
+        self._loaded = None     # (book, chapter, verse) the pane holds
         self.dirty = False
         self.editable = False
         self._loading = False   # suppress dirty-marking while loading the pane
         self.preview_server: svg_preview.PreviewServer | None = None
         self._edit_debounce = None  # after() id for debounced preview pushes
-        self.cfg = config.load()
         self._preview_proc: subprocess.Popen | None = None
         self._embedded_deaths = 0   # early exits this session (2 = give up)
         self._hand_edit_mode = False  # unlocked a generator-owned file
@@ -111,15 +112,16 @@ class App:
         root.geometry("980x640")
         root.minsize(820, 520)
         root.protocol("WM_DELETE_WINDOW", self._on_close)
+        # The shell may destroy this window itself (closing the main window),
+        # so the preview cleanup hangs off <Destroy>, not the close button.
+        root.bind("<Destroy>", self._on_destroy, add="+")
 
         self._build_ui()
 
-        if start_book not in books.BOOK_NAMES:
-            start_book, start_chapter = "Genesis", 1
-        self.book_var.set(start_book)
-        self._on_book_change(keep_chapter=start_chapter)
-        self.verse_var.set(str(max(1, int(start_verse or 1))))
-        self._on_selection_change()
+        if book not in books.BOOK_NAMES:
+            book, chapter, verse = "Genesis", 1, 1
+        self._show_selection(book, chapter, verse)
+        self._load_selection()
         self._poll_events()
 
     # ----- UI construction --------------------------------------------------
@@ -221,14 +223,12 @@ class App:
         self.save_btn.pack(fill="x", pady=(0, 6))
         ttk.Button(actions, text="Save only", command=self.save).pack(
             fill="x", pady=(0, 6))
-        self.stage_btn = ttk.Button(actions, text="Stage for deploy",
-                                    command=self.stage_for_deploy)
-        self.stage_btn.pack(fill="x", pady=(0, 6))
         # "Try embedded preview again" escape hatch: once pywebview fails,
         # the studio persists browser mode and skips re-probing; unticking
         # and re-ticking this clears that record.
         self.embedded_var = tk.BooleanVar(
-            value=self.cfg.get("svg_preview_host", "embedded") == "embedded")
+            value=config.load().get("svg_preview_host",
+                                    "embedded") == "embedded")
         ttk.Checkbutton(actions, text="Preview in own window",
                         variable=self.embedded_var,
                         command=self._on_embedded_toggle).pack(
@@ -245,13 +245,22 @@ class App:
 
     # ----- navigation --------------------------------------------------------
 
-    def _on_book_change(self, keep_chapter=None):
+    def _on_book_change(self):
+        self._fill_chapters()
+        self._on_selection_change()
+
+    def _fill_chapters(self, keep_chapter=None):
         n = books.chapters_in(self.book_var.get())
         values = [str(i) for i in range(1, n + 1)]
         self.chapter_cb.configure(values=values)
         wanted = str(keep_chapter) if keep_chapter else self.chapter_var.get()
         self.chapter_var.set(wanted if wanted in values else "1")
-        self._on_selection_change()
+
+    def _show_selection(self, book, chapter, verse):
+        """Point the pickers at book chapter:verse without loading it."""
+        self.book_var.set(book)
+        self._fill_chapters(keep_chapter=chapter)
+        self.verse_var.set(str(max(1, int(verse or 1))))
 
     def _selection(self):
         book = self.book_var.get()
@@ -268,14 +277,59 @@ class App:
     def _confirm_discard(self) -> bool:
         if not self.dirty:
             return True
+        base = os.path.basename(self.current_path or "") or "this verse"
         return messagebox.askyesno(
-            "SVG Studio", "Unsaved changes in the XML pane will be lost. "
-                          "Continue?", parent=self.root)
+            "SVG Studio", f"Discard unsaved changes to {base}?",
+            icon="warning", parent=self.root)
 
     def _on_selection_change(self):
-        book, chapter, verse = self._selection()
-        if not self._confirm_discard():
+        """A picker moved. Load the verse it names, unless that verse is
+        already loaded; if the user keeps unsaved edits instead, put the
+        pickers back so they still name the verse in the pane."""
+        if self._selection() == self._loaded:
             return
+        if not self._confirm_discard():
+            self._show_selection(*self._loaded)
+            return
+        self._load_selection()
+
+    def set_passage(self, book, chapter, verse=None, *, ask=False) -> bool:
+        """Move to book chapter:verse; verse None means verse 1 of a new
+        chapter, or the current verse of this one. Stays put and returns
+        False while a generator runs, or while the pane has unsaved edits
+        that the user keeps (ask=True) or wasn't asked about (ask=False)."""
+        if book not in books.BOOK_NAMES:
+            return False
+        chapter = max(1, min(int(chapter or 1), books.chapters_in(book)))
+        if verse is None:
+            same = self._loaded and self._loaded[:2] == (book, chapter)
+            verse = self._loaded[2] if same else 1
+        target = (book, chapter, max(1, int(verse)))
+        if target == self._loaded:
+            return True
+        where = f"{book} {chapter}:{target[2]}"
+        if self.busy:
+            if ask:  # following quietly keeps the generator's progress shown
+                self.status_var.set(f"A generator is running — not moving "
+                                    f"to {where} yet.")
+            return False
+        if self.dirty and not (ask and self._confirm_discard()):
+            self.status_var.set(f"Not moving to {where} — the pane has "
+                                f"unsaved edits.")
+            return False
+        self._show_selection(*target)
+        # Following the main window on its own (ask=False) swaps the preview
+        # quietly: a 'nav' would start this verse's narration over whatever
+        # the main window is playing. An explicit re-click may narrate.
+        self._load_selection("nav" if ask else "edit")
+        return True
+
+    def _load_selection(self, cause="nav"):
+        """Load the verse the pickers name (unsaved edits already settled)
+        and push it to the preview with cause: 'nav' plays its narration,
+        'edit' swaps the picture silently."""
+        book, chapter, verse = self._selection()
+        self._loaded = (book, chapter, verse)
         self.family = svg_registry.owner_of(book, chapter, verse)
         self._update_banner()
         # Generator families build cumulatively from their spec already —
@@ -283,7 +337,7 @@ class App:
         self.continue_btn.configure(
             state="disabled" if self.family is not None else "normal")
         self._load_selected_file()
-        self._push_preview("nav")
+        self._push_preview(cause)
 
     def _update_banner(self):
         if self.family is None:
@@ -313,7 +367,7 @@ class App:
         self._update_title()
 
     def _load_selected_file(self):
-        book, chapter, verse = self._selection()
+        book, chapter, verse = self._loaded
         path = verse_path(book, chapter, verse)
         self.current_path = path
         self._hand_edit_mode = False
@@ -408,7 +462,7 @@ class App:
         to the OS file association."""
         if self.family is None:
             return
-        editor = self.cfg.get("editor")
+        editor = config.load().get("editor")
         opened = []
         for pointer in self.family.spec:
             path = os.path.join(REPO_ROOT, pointer.file)
@@ -507,20 +561,22 @@ class App:
             _, code, err = event
             self.busy = False
             self.rerun_btn.configure(state="normal")
-            if code == 0:
+            if code != 0:
+                self.status_var.set(
+                    f"Generator failed (exit {code}) {err} — see console.")
+            elif self.dirty:
+                # Edits made in the pane while it ran stay; reloading would
+                # silently throw them away.
+                self.status_var.set(
+                    "Generator finished — the pane has unsaved edits, so it "
+                    "was not reloaded (Reload from disk shows the new file).")
+            else:
                 self._load_selected_file()
                 self._push_preview("nav")
                 self.status_var.set(
                     "Generator finished — file reloaded from disk.")
-            else:
-                self.status_var.set(
-                    f"Generator failed (exit {code}) {err} — see console.")
         elif kind == "manifest_done":
             self.status_var.set(event[1])
-        elif kind == "stage_done":
-            self.busy = False
-            self.stage_btn.configure(state="normal")
-            self.status_var.set(f"Deploy bundle: {event[1]}")
 
     def hand_edit_anyway(self):
         """Unlock the pane on a generator-owned file. The save path stamps a
@@ -546,7 +602,7 @@ class App:
                 "This family is generated; the generator already carries "
                 "state between verses. Edit the spec instead.")
             return
-        book, chapter, verse = self._selection()
+        book, chapter, verse = self._loaded
         if verse < 2:
             self.status_var.set("Verse 1 has no previous verse to "
                                 "continue from.")
@@ -582,7 +638,7 @@ class App:
         'nav' (restart narration too) or 'edit' (silent re-inject)."""
         if self.preview_server is None:
             return
-        book, chapter, verse = self._selection()
+        book, chapter, verse = self._loaded
         audio = svg_preview.resolve_audio(book, chapter, verse)
         # XML validity feedback without blocking the live preview — the
         # browser shows whatever it gets, which is honest live feedback.
@@ -604,8 +660,7 @@ class App:
 
     def _on_embedded_toggle(self):
         host = "embedded" if self.embedded_var.get() else "browser"
-        self.cfg["svg_preview_host"] = host
-        config.save(self.cfg)
+        config.update(svg_preview_host=host)
         if host == "embedded":
             self._embedded_deaths = 0
             self.status_var.set(
@@ -613,15 +668,14 @@ class App:
                 "pywebview.")
 
     def _persist_browser_fallback(self, why: str):
-        self.cfg["svg_preview_host"] = "browser"
-        config.save(self.cfg)
+        config.update(svg_preview_host="browser")
         self.embedded_var.set(False)
         server = self._ensure_server()
         webbrowser.open(server.url)
         self.status_var.set(
             f"Embedded preview unavailable ({why}) — using the system "
-            f"browser instead. Tick 'Embedded preview' to try again after "
-            f"fixing pywebview.")
+            f"browser instead. Tick 'Preview in own window' to try again "
+            f"after fixing pywebview.")
 
     def _open_embedded(self):
         server = self._ensure_server()
@@ -663,8 +717,9 @@ class App:
     def open_preview(self):
         server = self._ensure_server()
         self._push_preview("nav")
-        if self.cfg.get("svg_preview_host", "embedded") == "embedded" \
-                and self._embedded_deaths < 2:
+        # The checkbox mirrors the persisted svg_preview_host: the toggle and
+        # the browser fallback each write both.
+        if self.embedded_var.get() and self._embedded_deaths < 2:
             self._open_embedded()
         else:
             webbrowser.open(server.url)
@@ -711,40 +766,6 @@ class App:
         except Exception as e:
             self.events.put(("manifest_done", f"manifest rebuild failed: {e}"))
 
-    def stage_for_deploy(self):
-        """Mirror web/, bibles/ and visuals/ into deploy_bundle/ via
-        prepare-deploy.ps1 (deploys themselves go through GitHub)."""
-        if self.busy:
-            return
-        try:
-            import audio_studio
-            n = audio_studio.count_deploy_files()
-            limit = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
-            msg = (f"Rebuild deploy_bundle/ with {n:,} files "
-                   f"(~{limit:,} Cloudflare Pages limit)?")
-        except Exception:
-            msg = "Rebuild deploy_bundle/?"
-        if not messagebox.askyesno("Stage for deploy", msg, parent=self.root):
-            return
-        self.busy = True
-        self.stage_btn.configure(state="disabled")
-        self.status_var.set("Staging deploy bundle…")
-        threading.Thread(target=self._stage_worker, daemon=True).start()
-
-    def _stage_worker(self):
-        try:
-            proc = subprocess.run(
-                ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
-                 "-File", os.path.join(REPO_ROOT, "prepare-deploy.ps1")],
-                cwd=REPO_ROOT, capture_output=True, text=True, timeout=600)
-            tail = (proc.stdout or "").strip().splitlines()
-            summary = tail[-2] if len(tail) >= 2 else "done"
-            if proc.returncode != 0:
-                summary = f"failed: {(proc.stderr or '').strip()[:200]}"
-            self.events.put(("stage_done", summary))
-        except Exception as e:
-            self.events.put(("stage_done", f"failed: {e}"))
-
     def _find_inkscape(self) -> str | None:
         exe = shutil.which("inkscape")
         if exe:
@@ -784,30 +805,46 @@ class App:
         self._load_selected_file()
         self._push_preview("nav")
 
+    def can_close(self) -> bool:
+        """True when the window may close now. Otherwise asks: a generator
+        still running (closing the app breaks its output pipe, so it can
+        stop partway through rewriting its SVGs), then unsaved edits."""
+        if self.busy and not messagebox.askyesno(
+                "SVG Studio",
+                "A generator re-run is still in progress. Closing now may "
+                "stop it partway through rewriting its SVGs. Close anyway?",
+                icon="warning", parent=self.root):
+            return False
+        return self._confirm_discard()
+
     def _on_close(self):
-        if not self._confirm_discard():
+        if self.can_close():
+            self.root.destroy()
+
+    def _on_destroy(self, event):
+        # <Destroy> on a window fires for each of its children too.
+        if event.widget is not self.root:
             return
         if self._preview_proc is not None and self._preview_proc.poll() is None:
             self._preview_proc.terminate()
         if self.preview_server is not None:
             self.preview_server.stop()
-        self.root.destroy()
+            self.preview_server = None
 
 
 def main():
     # Optional argv: <book> <chapter> — same convention as audio_studio.py /
-    # pronunciation_tool.py, so app.py can open the studio on the current
-    # passage.
-    start_book, start_chapter = "Genesis", 1
+    # pronunciation_tool.py, so the studio can open on a given passage.
+    book, chapter = "Genesis", 1
     argv = sys.argv[1:]
     if argv:
         try:
-            start_chapter = int(argv[-1])
-            start_book = " ".join(argv[:-1]) or start_book
+            chapter = int(argv[-1])
+            book = " ".join(argv[:-1]) or book
         except ValueError:
             pass
     root = tk.Tk()
-    App(root, start_book, start_chapter)
+    App(root, book, chapter)
     root.mainloop()
 
 

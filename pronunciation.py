@@ -51,6 +51,10 @@ name back in the real voice and writes both this module's JSON and the readable
 import json
 import os
 import re
+import sys
+import threading
+import time
+from typing import NamedTuple
 
 import books
 
@@ -103,8 +107,8 @@ def status_of(info: dict) -> str:
     point, so it reads as ``fixed`` rather than as unchecked.
     """
     info = info or {}
-    s = info.get("status", "")
-    if s in STATUS_LABELS:
+    s = info.get("status")
+    if s and s in STATUS_LABELS:       # "" is a label too: absent must fall through
         return s
     return STATUS_FIXED if info.get("override") else STATUS_UNCHECKED
 
@@ -189,7 +193,7 @@ def respell(text: str) -> str:
 
 
 # --------------------------------------------------------------------------
-# Saving (used by the GUI editor)
+# Saving (used by the GUI editor and the Verifier)
 # --------------------------------------------------------------------------
 
 _BOOK_INDEX = {name: i for i, name in enumerate(books.BOOK_NAMES)}
@@ -220,14 +224,152 @@ def _sorted_names(names: dict) -> dict:
     return {k: _tidy(v) for k, v in ordered}
 
 
-def save_names(names: dict) -> None:
-    """Write ``names`` to pronunciations.json (canonically ordered) + rebuild MD."""
-    data = {"_readme": README, "names": _sorted_names(names)}
-    with open(JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    load(force=True)
-    write_markdown(names)
+class SaveResult(NamedTuple):
+    """What ``save_names`` wrote, and what the caller should be told about it."""
+    names: dict    # the list as written: the merge, a fresh dict the caller may keep
+    warning: str   # "" unless the file had changed on disk since the caller loaded it
+
+
+_SAVE_LOCK = threading.Lock()
+
+
+def _read_saved():
+    """The names as they are on disk right now, bypassing the cache.
+
+    None when the file is missing or unreadable -- which must not be mistaken
+    for "every name was deleted elsewhere" by the merge.
+    """
+    try:
+        with open(JSON_PATH, encoding="utf-8") as f:
+            names = json.load(f).get("names")
+    except (OSError, ValueError, AttributeError):
+        return None
+    return names if isinstance(names, dict) else None
+
+
+def _canon(info):
+    """An entry reduced to what it means, for telling a real edit from a re-save.
+
+    Empty fields are dropped, ``override`` is a plain bool and the status is the
+    effective one (``status_of``), so a tool that merely folds an untouched
+    entry back -- adding ``"ipa": ""`` or spelling out the implied ``fixed`` --
+    has not edited it, and does not overwrite what another tool saved.
+    """
+    if info is None:
+        return None
+    out = {k: v for k, v in info.items() if v not in ("", None)}
+    out["override"] = bool(info.get("override"))
+    status = status_of(info)
+    if status:
+        out["status"] = status
+    else:
+        out.pop("status", None)
+    return out
+
+
+def _merge(names: dict, base: dict, saved: dict):
+    """Three-way merge, per name: apply only what changed between ``base`` and
+    ``names`` on top of ``saved``. Returns (merged, changed_elsewhere, clashes),
+    where a clash is a name both sides changed differently (``names`` wins)."""
+    merged = dict(saved)
+    elsewhere, clashes = [], []
+    for name in set(base) | set(names) | set(saved):
+        mine = _canon(names.get(name))
+        was = _canon(base.get(name))
+        theirs = _canon(saved.get(name))
+        if theirs != was:
+            elsewhere.append(name)
+        if mine == was:
+            continue              # untouched here: what is on disk stands
+        if theirs not in (was, mine):
+            clashes.append(name)
+        if name in names:
+            merged[name] = names[name]
+        else:
+            merged.pop(name, None)
+    return merged, elsewhere, sorted(clashes)
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}" + ("" if n == 1 else "s")
+
+
+def _replace(tmp: str, path: str) -> None:
+    """``os.replace``, retried briefly: on Windows it fails while another
+    process has ``path`` open -- e.g. the main window re-reading the list."""
+    for attempt in range(20):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.05)
+
+
+def save_names(names: dict, base: dict = None) -> SaveResult:
+    """Write ``names`` to pronunciations.json (canonically ordered) + rebuild MD.
+
+    Pronunciation Studio and the Verifier are separate processes, each editing
+    its own copy of the list, so writing a copy back whole undoes whatever the
+    other saved meanwhile. Pass ``base`` -- a deep copy of what the caller
+    loaded -- and only the names that differ from it (added, changed, deleted)
+    are applied, onto a fresh read of the file; every other name keeps what is
+    on disk now. A name changed on both sides takes the caller's version, and
+    the warning lists it.
+
+    With no ``base`` the whole of ``names`` is written, as it always was, and
+    the warning only notes (best effort) that the file's mtime moved since this
+    process last loaded it.
+
+    The file is written to a temp file and swapped in, so a reader never sees
+    half of it. Returns ``SaveResult(names, warning)``: the list as written --
+    the caller should adopt it, and a deep copy of it as its next ``base`` --
+    and a warning, also printed, or "".
+    """
+    with _SAVE_LOCK:
+        warning = ""
+        merged = names
+        if base is None:
+            if _names is not None and _current_mtime() != _mtime:
+                warning = ("pronunciations.json changed on disk since it was "
+                           "loaded; this save replaced those changes.")
+        else:
+            saved = _read_saved()
+            if saved is None:
+                if base:
+                    warning = ("pronunciations.json was missing or unreadable, "
+                               "so this save wrote this window's whole list.")
+            else:
+                merged, elsewhere, clashes = _merge(names, base, saved)
+                kept = len(elsewhere) - len(clashes)
+                parts = []
+                if kept:
+                    parts.append(f"{_plural(kept, 'name')} saved by another "
+                                 f"tool meanwhile {'was' if kept == 1 else 'were'} kept")
+                if clashes:
+                    shown = ", ".join(clashes[:8]) + ("…" if len(clashes) > 8 else "")
+                    parts.append(f"{_plural(len(clashes), 'name')} changed in both "
+                                 f"places took this window's version: {shown}")
+                if parts:
+                    warning = ("pronunciations.json had changed since this window "
+                               "loaded it. " + "; ".join(parts) + ".")
+
+        data = {"_readme": README, "names": _sorted_names(merged)}
+        tmp = f"{JSON_PATH}.{os.getpid()}.tmp"
+        try:
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+                f.write("\n")
+            _replace(tmp, JSON_PATH)
+        finally:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+        load(force=True)
+        write_markdown(data["names"])
+    if warning:
+        print(warning, file=sys.stderr)
+    return SaveResult(data["names"], warning)
 
 
 def write_markdown(names: dict = None) -> str:

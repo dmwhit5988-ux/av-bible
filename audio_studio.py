@@ -1,9 +1,11 @@
 """Audio Renderer -- batch-render chapter narration MP3s for the web app.
 
-Generalizes generate_showcase_audio.py into a GUI: pick a book, a chapter
-range and a voice, and render neural narration through the same production
-path the desktop reader uses (tts_engine.synthesize, which applies
-pronunciation respelling). Output lands in web/audio/ and
+Generalizes generate_showcase_audio.py into a GUI: pick a book and a chapter
+range, and render neural narration in the house voice
+(tts_engine.HOUSE_VOICE at HOUSE_RATE) through the same production path the
+desktop reader uses (tts_engine.synthesize, which applies pronunciation
+respelling). The one voice picker in the Studio lives here, as an advanced
+override for a single render. Output lands in web/audio/ and
 web/audio/manifest.json exactly as generate_showcase_audio.py writes them
 (see that module's docstring for the key and filename format), so the web
 player picks it up.
@@ -27,7 +29,6 @@ import generate_showcase_audio as showcase_audio
 import tts_engine
 from passages import load_chapter, PassageError
 
-RATE = 0
 CLOUDFLARE_PAGES_FILE_LIMIT = 20000
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,30 +55,143 @@ def count_deploy_files() -> int:
     return count
 
 
+# ----- worker threads --------------------------------------------------------
+# These get the event queue, the cancel flag and plain data, never the App or
+# a widget. The render thread is not a daemon, so a Studio close waits for the
+# verse it is on and the manifest save; it can therefore outlive every window,
+# and a thread that drops the last reference to a Tk object at exit aborts the
+# whole process ("Tcl_AsyncDelete: async handler deleted by the wrong thread").
+# Each worker posts exactly one closing event, whatever happens, so the window
+# always leaves its busy state.
+
+def _scan(events, book, chapters, voice, force):
+    """Load each chapter to count new-vs-existing verses, so the confirm
+    dialog can show the real projected file count. Passages loaded here
+    are reused by the render pass -- no double load. Overwrites (force)
+    don't add files, so they never count against the ceiling -- only
+    genuinely new files do."""
+    outcome = ("failed", "The scan stopped unexpectedly.")
+    try:
+        manifest = showcase_audio._load_manifest()
+        passages = {}
+        new_files = 0
+        total_verses = 0
+        for ch in chapters:
+            try:
+                passage = load_chapter(book, ch)
+            except PassageError as e:
+                events.put(("scan_error", f"{book} {ch}: {e}"))
+                continue
+            passages[ch] = passage
+            safe_book = book.replace(" ", "_")
+            for num, _ in passage.verses:
+                total_verses += 1
+                base = f"{safe_book}_{ch}_{num}"
+                key = showcase_audio._manifest_key(base)
+                out_path = os.path.join(showcase_audio.AUDIO_DIR,
+                                        showcase_audio._audio_filename(base))
+                if not (key in manifest and os.path.exists(out_path)):
+                    new_files += 1
+        if not passages:
+            outcome = ("render_done", 0, 0, 0, None)
+            return
+        current_total = count_deploy_files()
+        outcome = ("confirm", book, chapters, voice, passages, manifest,
+                   new_files, current_total, total_verses, force)
+    except Exception as e:
+        outcome = ("failed", f"Scan failed: {type(e).__name__}: {e}")
+    finally:
+        events.put(outcome)
+
+
+def _render(events, cancel, book, chapters, voice, passages, manifest, force):
+    """Render the chapters, stopping before the next verse once cancel is
+    set. The manifest is saved after every chapter, including one that
+    failed partway, so whatever was written stays registered."""
+    done = 0
+    totals = {"written": 0, "skipped": 0, "degraded": 0}
+    error = "The render stopped unexpectedly."
+
+    def on_verse(num, status, ch_ref):
+        nonlocal done
+        done += 1
+        totals[status] += 1
+        events.put(("progress", done, f"{book} {ch_ref}:{num} — {status}"))
+
+    try:
+        for ch in chapters:
+            if cancel.is_set():
+                break
+            passage = passages.get(ch)
+            if passage is None:
+                continue
+            try:
+                showcase_audio.generate_chapter(
+                    book, ch, manifest, voice=voice,
+                    rate=tts_engine.HOUSE_RATE, passage=passage,
+                    on_verse=(lambda num, status, ch=ch:
+                              on_verse(num, status, ch)),
+                    should_stop=cancel.is_set, force=force)
+            finally:
+                # Per chapter, so an interrupted render resumes.
+                showcase_audio._save_manifest(manifest)
+        error = None
+    except Exception as e:
+        error = f"{type(e).__name__}: {e}"
+    finally:
+        events.put(("render_done", totals["written"], totals["skipped"],
+                    totals["degraded"], error))
+
+
 class App:
-    def __init__(self, root, start_book="Genesis", start_chapter=1):
+    def __init__(self, root, book=None, chapter=None, verse=None):
+        """verse is accepted for the shared tool contract; renders work in
+        whole chapters, so it is not used."""
         self.root = root
         self.events: queue.Queue = queue.Queue()
-        self.busy = False
+        self.busy = False     # a scan, its confirm dialog or a render
         self._cancel = threading.Event()
 
         root.title("Audio Renderer")
         root.geometry("640x440")
         root.minsize(580, 400)
         root.protocol("WM_DELETE_WINDOW", self._on_close)
+        # The shell may destroy this window itself (closing the main window),
+        # so stopping a render hangs off <Destroy>, not the close button.
+        root.bind("<Destroy>", self._on_destroy, add="+")
 
         self._build_ui()
 
-        if start_book not in books.BOOK_NAMES:
-            start_book, start_chapter = "Genesis", 1
-        self.book_var.set(start_book)
-        self._on_book_change()
-        n = books.chapters_in(start_book)
-        start_chapter = max(1, min(int(start_chapter or 1), n))
-        self.from_var.set(str(start_chapter))
-        self.to_var.set(str(start_chapter))
+        if book not in books.BOOK_NAMES:
+            book, chapter = "Genesis", 1
+        self._show_chapter(book, chapter)
 
         self._poll_events()
+
+    def _show_chapter(self, book, chapter):
+        """Set the range to the single chapter book chapter."""
+        self.book_var.set(book)
+        self._on_book_change()
+        n = books.chapters_in(book)
+        chapter = max(1, min(int(chapter or 1), n))
+        self.from_var.set(str(chapter))
+        self.to_var.set(str(chapter))
+
+    def set_passage(self, book, chapter, verse=None, *, ask=False) -> bool:
+        """Follow book chapter. A chapter already inside the From..To range
+        leaves the range alone (True), so a range built by hand survives the
+        main window moving through it; any other chapter becomes the whole
+        range. Refused (False) while a render is scanning, confirming or
+        running. There is nothing unsaved here, so ask changes nothing."""
+        if book not in books.BOOK_NAMES:
+            return False
+        current, chapters = self._chapter_range()
+        if book == current and int(chapter or 1) in chapters:
+            return True
+        if self.busy:
+            return False
+        self._show_chapter(book, chapter)
+        return True
 
     # ----- UI construction -----------------------------------------------
     def _build_ui(self):
@@ -104,11 +218,18 @@ class App:
                                   state="readonly")
         self.to_cb.pack(side="left")
 
-        ttk.Label(top, text="Voice:").grid(row=1, column=0, sticky="w", pady=(8, 0))
-        self.voice_var = tk.StringVar(value=showcase_audio.VOICE)
+        # Advanced: the house voice is the default and the norm; another
+        # voice is an override for one render, not a setting (not saved).
+        ttk.Label(top, text="Voice override:").grid(row=1, column=0, sticky="w",
+                                                    pady=(8, 0))
+        self.voice_var = tk.StringVar(value=tts_engine.HOUSE_VOICE)
         ttk.Combobox(top, textvariable=self.voice_var, width=22, state="readonly",
                      values=tts_engine.EDGE_VOICES).grid(
             row=1, column=1, padx=(4, 14), pady=(8, 0), sticky="w")
+        ttk.Label(top, foreground="#888888",
+                  text=f"advanced — the house voice is "
+                       f"{tts_engine.HOUSE_VOICE}").grid(
+            row=1, column=2, columnspan=2, sticky="w", pady=(8, 0))
 
         self.force_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(
@@ -181,44 +302,15 @@ class App:
         voice = self.voice_var.get()
         force = self.force_var.get()
         self.busy = True
+        # Cleared here, not when the render starts: from now on only closing
+        # the window sets it, which the confirm step checks.
+        self._cancel.clear()
         self.render_btn.configure(state="disabled")
         self.status_var.set(f"Scanning {book} {chapters[0]}-{chapters[-1]}…")
-        threading.Thread(target=self._scan,
-                         args=(book, chapters, voice, force),
+        # A daemon: the scan only reads, so there is nothing to wait for.
+        threading.Thread(target=_scan,
+                         args=(self.events, book, chapters, voice, force),
                          daemon=True).start()
-
-    def _scan(self, book, chapters, voice, force):
-        """Load each chapter to count new-vs-existing verses, so the confirm
-        dialog can show the real projected file count. Passages loaded here
-        are reused by the render pass -- no double load. Overwrites (force)
-        don't add files, so they never count against the ceiling -- only
-        genuinely new files do."""
-        manifest = showcase_audio._load_manifest()
-        passages = {}
-        new_files = 0
-        total_verses = 0
-        for ch in chapters:
-            try:
-                passage = load_chapter(book, ch)
-            except PassageError as e:
-                self.events.put(("scan_error", f"{book} {ch}: {e}"))
-                continue
-            passages[ch] = passage
-            safe_book = book.replace(" ", "_")
-            for num, _ in passage.verses:
-                total_verses += 1
-                base = f"{safe_book}_{ch}_{num}"
-                key = showcase_audio._manifest_key(base)
-                out_path = os.path.join(showcase_audio.AUDIO_DIR,
-                                        showcase_audio._audio_filename(base))
-                if not (key in manifest and os.path.exists(out_path)):
-                    new_files += 1
-        if not passages:
-            self.events.put(("render_done", 0, 0, 0))
-            return
-        current_total = count_deploy_files()
-        self.events.put(("confirm", book, chapters, voice, passages, manifest,
-                         new_files, current_total, total_verses, force))
 
     def _do_confirm(self, book, chapters, voice, passages, manifest,
                      new_files, current_total, total_verses, force):
@@ -232,6 +324,9 @@ class App:
                f"Current deploy bundle: {current_total:,} files\n"
                f"Resulting total: {resulting:,} files "
                f"(limit ~{CLOUDFLARE_PAGES_FILE_LIMIT:,})\n\n")
+        if voice != tts_engine.HOUSE_VOICE:
+            msg += (f"Voice: {voice} — an override, not the house voice "
+                    f"({tts_engine.HOUSE_VOICE}).\n\n")
         if over:
             msg += "This would EXCEED the Cloudflare Pages file-count ceiling.\n\n"
         msg += "Continue?"
@@ -241,44 +336,36 @@ class App:
         proceed = messagebox.askyesno(
             "Confirm render", msg, icon="warning" if over else "question",
             parent=self.root)
+        if self._cancel.is_set():
+            return  # the window was closed while asking: start nothing
         self.root.lift()
         self.root.focus_force()
         if not proceed:
-            self.busy = False
-            self.render_btn.configure(state="normal")
+            self._idle()
             self.status_var.set("Cancelled before rendering.")
             return
-        self._cancel.clear()
         self.cancel_btn.configure(state="normal")
         self.progress.configure(maximum=max(total_verses, 1), value=0)
-        threading.Thread(target=self._render_worker,
-                         args=(book, chapters, voice, passages, manifest,
-                               force),
-                         daemon=True).start()
+        # Not a daemon: closing the Studio mid-render then finishes the
+        # current verse and saves the manifest instead of being cut off
+        # mid-write. Every step it can wait on is bounded (edge-tts 10 s
+        # connect / 60 s receive, the SAPI fallback 120 s), so it can't hang.
+        threading.Thread(target=_render, name="audio-render",
+                         args=(self.events, self._cancel, book, chapters,
+                               voice, passages, manifest, force),
+                         daemon=False).start()
 
-    def _render_worker(self, book, chapters, voice, passages, manifest, force):
-        done = 0
-        totals = {"written": 0, "skipped": 0, "degraded": 0}
+    def _idle(self):
+        """Back to ready: not busy, Render enabled, Cancel disabled."""
+        self.busy = False
+        self.render_btn.configure(state="normal")
+        self.cancel_btn.configure(state="disabled")
 
-        def on_verse(num, status, ch_ref):
-            nonlocal done
-            done += 1
-            totals[status] += 1
-            self.events.put(("progress", done, f"{book} {ch_ref}:{num} — {status}"))
-
-        for ch in chapters:
-            if self._cancel.is_set():
-                break
-            passage = passages.get(ch)
-            if passage is None:
-                continue
-            showcase_audio.generate_chapter(
-                book, ch, manifest, voice=voice, rate=RATE, passage=passage,
-                on_verse=lambda num, status, ch=ch: on_verse(num, status, ch),
-                should_stop=self._cancel.is_set, force=force)
-            showcase_audio._save_manifest(manifest)  # per-chapter, resumable
-        self.events.put(("render_done", totals["written"], totals["skipped"],
-                         totals["degraded"]))
+    def _fail(self, msg):
+        """Back to ready after a failure, and say what went wrong."""
+        self._idle()
+        self.status_var.set(msg)
+        messagebox.showerror("Audio Renderer", msg, parent=self.root)
 
     def cancel(self):
         self._cancel.set()
@@ -289,48 +376,77 @@ class App:
     def _poll_events(self):
         try:
             while True:
-                event = self.events.get_nowait()
+                try:
+                    event = self.events.get_nowait()
+                except queue.Empty:
+                    break
                 self._handle_event(event)
-        except queue.Empty:
-            pass
-        self.root.after(80, self._poll_events)
+        finally:
+            # Rescheduled even when a handler raised, so a later closing
+            # event still clears busy; but not on a destroyed window.
+            try:
+                alive = self.root.winfo_exists()
+            except tk.TclError:
+                alive = False
+            if alive:
+                self.root.after(80, self._poll_events)
 
     def _handle_event(self, event):
         kind = event[0]
         if kind == "scan_error":
             self.status_var.set(f"Skipped: {event[1]}")
         elif kind == "confirm":
-            self._do_confirm(*event[1:])
+            try:
+                self._do_confirm(*event[1:])
+            except Exception as e:      # never leave the window stuck busy
+                if not self._cancel.is_set():
+                    self._fail(f"Could not start the render: "
+                               f"{type(e).__name__}: {e}")
         elif kind == "progress":
             _, done, msg = event
             self.progress.configure(value=done)
             self.status_var.set(msg)
         elif kind == "render_done":
-            _, written, skipped, degraded = event
-            self.busy = False
-            self.render_btn.configure(state="normal")
-            self.cancel_btn.configure(state="disabled")
-            tag = " (cancelled)" if self._cancel.is_set() else ""
-            self.status_var.set(
-                f"Done{tag}: {written} written, {skipped} already present"
-                + (f", {degraded} degraded/skipped" if degraded else "") + ".")
+            _, written, skipped, degraded, error = event
+            counts = (f"{written} written, {skipped} already present"
+                      + (f", {degraded} degraded/skipped" if degraded else ""))
+            if error:
+                self._fail(f"Render failed ({counts} before it stopped): "
+                           f"{error}")
+            else:
+                self._idle()
+                tag = " (cancelled)" if self._cancel.is_set() else ""
+                self.status_var.set(f"Done{tag}: {counts}.")
             self._refresh_file_count()
+        elif kind == "failed":
+            self._fail(event[1])
+
+    def can_close(self) -> bool:
+        """True when the window may close now; asks while a render is in
+        progress. Saying yes doesn't stop it yet: the main window may still
+        abort its close, so the render stops when the window is destroyed,
+        after the verse it is on (the process waits for that and the
+        manifest save)."""
+        if not self.busy:
+            return True
+        return messagebox.askyesno(
+            "Audio Renderer",
+            "A render is in progress. Close anyway? It will finish the "
+            "current verse, then stop.", parent=self.root)
 
     def _on_close(self):
-        if self.busy:
-            if not messagebox.askyesno(
-                "Audio Renderer",
-                "A render is in progress. Close anyway? It will finish the "
-                "current verse, then stop.", parent=self.root):
-                return
-            self._cancel.set()
-        self.root.destroy()
+        if self.can_close():
+            self.root.destroy()
+
+    def _on_destroy(self, event):
+        # <Destroy> on a window fires for each of its children too.
+        if event.widget is self.root:
+            self._cancel.set()  # a running render stops after this verse
 
 
 def main():
-    # Optional argv: <book> <chapter> -- lets the desktop app open the tool
-    # pre-loaded on whatever passage is currently loaded there (same argv
-    # convention as pronunciation_tool.py).
+    # Optional argv: <book> <chapter> -- opens the tool on that passage (same
+    # argv convention as pronunciation_tool.py).
     start_book, start_chapter = "Genesis", 1
     argv = sys.argv[1:]
     if argv:

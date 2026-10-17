@@ -35,6 +35,12 @@ EDGE_VOICES = [
     "en-AU-WilliamNeural",
 ]
 
+# The house narration. Every tool renders with this voice and rate; only the
+# Audio Renderer's advanced picker overrides the voice, for one render. The
+# rate is a percent offset (edge-tts "+N%").
+HOUSE_VOICE = "en-US-AndrewNeural"
+HOUSE_RATE = 0
+
 SAPI_FALLBACK_NAME = "Windows built-in voice (offline fallback)"
 
 

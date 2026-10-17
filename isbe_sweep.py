@@ -9,12 +9,15 @@ For every name whose reference now comes from ISBE:
          clearly beats the plain reading (+0.10),
        - otherwise record it as a suggestion if it merely beats plain,
        - otherwise leave the name marked still-wrong;
-  3. record verdicts and the measurement cache like the GUI does.
+  3. record verdicts and the measurement cache like the GUI does, saving
+     through the same merge (so a Studio window open meanwhile keeps its
+     edits).
 
 Candidates deliberately follow the studio's hard-won respelling rules: no
 bare-vowel hyphen segments, no trailing "-uh"; a single made-up word is
 preferred, a consonant-anchored hyphenation is the fallback.
 """
+import copy
 import json
 import os
 import re
@@ -30,8 +33,8 @@ import pronunciation    # noqa: E402
 import tts_engine       # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VOICE = "en-US-AndrewNeural"
-RATE = 0
+VOICE = tts_engine.HOUSE_VOICE
+RATE = tts_engine.HOUSE_RATE
 CACHE_PATH = os.path.join(config.CACHE_DIR, "ipa_checks.json")
 OK_AT, WARN_AT = 0.80, 0.55
 ADOPT_AT, MARGIN = 0.70, 0.10
@@ -159,8 +162,16 @@ def candidates(name, respell):
     return out
 
 
+def save(names, base):
+    """Merge this run's verdicts into pronunciations.json; return (names, base)
+    to carry on from -- the merged list, and a copy of it as the next base."""
+    saved = pronunciation.save_names(names, base=base)   # prints any warning
+    return saved.names, copy.deepcopy(saved.names)
+
+
 def main():
-    names = pronunciation.load(force=True)
+    names = copy.deepcopy(pronunciation.load(force=True))
+    base = copy.deepcopy(names)
     try:
         with open(CACHE_PATH, encoding="utf-8") as f:
             cache = json.load(f)
@@ -184,7 +195,9 @@ def main():
     fixed = suggested = ok = unfixed = unmeasured = 0
     t0 = time.time()
     for i, name in enumerate(sorted(targets), 1):
-        info = names[name]
+        info = names.get(name)
+        if info is None:
+            continue                # removed by another tool since a save
         expected = info["ipa"]
         spoken = spoken_for(name, info)
         c = cache.get(name)
@@ -236,14 +249,14 @@ def main():
         if i % 25 == 0:
             with open(CACHE_PATH, "w", encoding="utf-8") as f:
                 json.dump(cache, f, indent=1, ensure_ascii=False)
-            pronunciation.save_names(names)
+            names, base = save(names, base)
             el = time.time() - t0
             print(f"  … saved. {el/60:.1f} min elapsed, "
                   f"{el/i*(len(targets)-i)/60:.0f} min left", flush=True)
 
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(cache, f, indent=1, ensure_ascii=False)
-    pronunciation.save_names(names)
+    save(names, base)
     print(f"DONE: {ok} ok, {fixed} fixed, {suggested} suggested, "
           f"{unfixed} still wrong, {unmeasured} unmeasured", flush=True)
 

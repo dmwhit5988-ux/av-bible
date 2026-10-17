@@ -6,10 +6,10 @@ moving parts mirror the SVG Studio preview (svg_preview.py), which proved
 the pattern on this machine:
 
 - `StageServer` — a tiny local HTTP server owned by the stage. The stage
-  publishes the current verse's SVG + reference text; a wrapper page polls
-  /state and re-injects the SVG inline whenever the generation counter
-  bumps. Re-insertion restarts SMIL from t=0, so animations replay from
-  the top of each verse exactly like the WebP path does.
+  publishes the current verse's SVG; a wrapper page polls /state and
+  re-injects the SVG inline whenever the generation counter bumps.
+  Re-insertion restarts SMIL from t=0, so animations replay from the top
+  of each verse.
 
 - A child process (this file run with --url/--parent) hosts a frameless
   pywebview window and *reparents it into the stage's Tk frame* with
@@ -21,7 +21,7 @@ the pattern on this machine:
 - `WebPanel` — the parent-side handle: a Tk frame placed over the stage
   canvas plus the child process. If the child dies early (pywebview or
   WebView2 broken), SVG support is marked unavailable for the session and
-  the stage falls back to the raster (.webp/.png) visuals it used before.
+  the stage shows the book gradient with the reason (see fail_reason()).
 """
 
 import http.server
@@ -49,6 +49,11 @@ def available() -> bool:
     return _available
 
 
+def fail_reason() -> str:
+    """Why the web view was given up on ("" while it is still available)."""
+    return _fail_reason
+
+
 def mark_unavailable(reason: str):
     global _available, _fail_reason
     _available = False
@@ -59,7 +64,7 @@ PAGE = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>AV Bible stage</title>
+<title>Theoria stage</title>
 <style>
   html, body { height: 100%; }
   body { background: #101018; margin: 0; overflow: hidden;
@@ -68,17 +73,10 @@ PAGE = """<!DOCTYPE html>
            align-items: center; justify-content: center; }
   #stage svg { max-width: 100vw; max-height: 100vh;
                width: auto; height: auto; }
-  .band { position: absolute; left: 50%; transform: translateX(-50%);
-          background: rgba(0,0,0,0.55); color: #d8c68f;
-          padding: 4px 16px; border-radius: 3px; white-space: nowrap;
-          max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
-  #ref { bottom: 4vh; font-style: italic; font-size: calc(11px + 0.8vw); }
-  .hidden { display: none; }
 </style>
 </head>
 <body>
 <div id="stage"></div>
-<div id="ref" class="band hidden"></div>
 <script>
   let gen = -1;
 
@@ -97,12 +95,8 @@ PAGE = """<!DOCTYPE html>
     } catch (e) {
       return;
     }
-    // Re-inserting inline SVG restarts its SMIL animations from t=0 —
-    // the equivalent of _Animation.restart() on the canvas path.
+    // Re-inserting inline SVG restarts its SMIL animations from t=0.
     document.getElementById("stage").innerHTML = svg;
-    const ref = document.getElementById("ref");
-    ref.textContent = s.ref || "";
-    ref.classList.toggle("hidden", !s.ref);
   }
   setInterval(tick, 250);
   tick();
@@ -114,23 +108,21 @@ PAGE = """<!DOCTYPE html>
 
 class StageServer:
     """Publishes the current verse's SVG to however many embedded panels
-    are open (the in-app stage and the fullscreen mirror each run their
-    own child window; both poll the same server, so they stay in sync
-    the same way canvas views share the wall clock)."""
+    are open. Each panel runs its own child window and every one polls
+    this server, so they all show the same verse."""
 
     def __init__(self):
         self._lock = threading.Lock()
         self._gen = 0
         self._key = None
         self._svg = b"<svg xmlns='http://www.w3.org/2000/svg'/>"
-        self._ref = ""
         self._httpd = None
         self._thread = None
 
-    def set_verse(self, key, svg_path: str, ref: str) -> bool:
+    def set_verse(self, key, svg_path: str) -> bool:
         """Publish a verse's SVG. `key` identifies the (verse, file)
         combination — repeat calls with the same key (window resizes,
-        the second stage view redrawing) do NOT bump the generation, so
+        another stage view redrawing) do NOT bump the generation, so
         SMIL only restarts when the verse or file actually changes."""
         with self._lock:
             if key == self._key:
@@ -140,7 +132,6 @@ class StageServer:
             self._key = key
             self._gen += 1
             self._svg = svg
-            self._ref = ref or ""
             return True
 
     def clear(self):
@@ -151,7 +142,7 @@ class StageServer:
 
     def snapshot(self):
         with self._lock:
-            return self._gen, self._svg, self._ref
+            return self._gen, self._svg
 
     @property
     def url(self) -> str:
@@ -177,7 +168,7 @@ class StageServer:
 
             def do_GET(self):
                 path = self.path.split("?")[0]
-                gen, svg, ref = server.snapshot()
+                gen, svg = server.snapshot()
                 try:
                     if path in ("/", "/stage.html"):
                         self._send(200, "text/html; charset=utf-8",
@@ -185,8 +176,7 @@ class StageServer:
                     elif path == "/verse.svg":
                         self._send(200, "image/svg+xml; charset=utf-8", svg)
                     elif path == "/state":
-                        body = json.dumps({"gen": gen,
-                                           "ref": ref}).encode("utf-8")
+                        body = json.dumps({"gen": gen}).encode("utf-8")
                         self._send(200, "application/json", body)
                     else:
                         self._send(404, "text/plain", b"not found")
@@ -279,7 +269,7 @@ class WebPanel:
 #     python svg_stage.py --url http://127.0.0.1:PORT/stage.html --parent HWND
 #
 # Exit codes: 0 = normal shutdown, 3 = pywebview missing/broken (parent
-# marks SVG support unavailable and falls back to raster visuals).
+# marks SVG support unavailable and shows the book gradient instead).
 # ---------------------------------------------------------------------------
 
 def _embed_and_track(window, parent_hwnd: int):
@@ -378,7 +368,7 @@ def run_embedded(url: str, parent_hwnd: int) -> int:
         return 3
     try:
         window = webview.create_window(
-            "AV Bible stage", url, frameless=True,
+            "Theoria stage", url, frameless=True,
             width=320, height=240, background_color="#101018")
         threading.Thread(target=_embed_and_track,
                          args=(window, parent_hwnd), daemon=True).start()

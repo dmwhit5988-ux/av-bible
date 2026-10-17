@@ -12,9 +12,11 @@ What it assembles, per verse, from assets the project already produces:
                 tts_engine.synthesize() -- the same production path (and the
                 same pronunciation respelling) the desktop reader uses -- so a
                 range that was never published still renders.
-    visual      visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg, resolved through the
-                same most-specific-wins chain as the stage (visual_stage.py
-                _find_image).
+    visual      visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg, resolved by
+                resolve_svg(): the verse's own file, then a range file
+                covering it, then the chapter file -- most specific first,
+                as the web manifest does (visual_stage.find_svg, the interim
+                PC stage, has no range-file step).
 
 Ranges cross chapters freely (Genesis 1:1 -> Genesis 3:24), which is the point:
 a video is a *passage*, not a chapter.
@@ -418,8 +420,8 @@ class RenderSpec:
     end_chapter: int
     end_verse: int | None          # None = to the end of end_chapter
     out_path: str
-    voice: str = tts_engine.EDGE_VOICES[0]
-    rate: int = 0
+    voice: str = tts_engine.HOUSE_VOICE
+    rate: int = tts_engine.HOUSE_RATE
     width: int = 3840
     height: int = 2160
     fps: int = 60
@@ -1303,7 +1305,7 @@ def main() -> int:
     ap.add_argument("start", help="chapter or chapter:verse")
     ap.add_argument("end", nargs="?", help="chapter or chapter:verse")
     ap.add_argument("--out", default=None)
-    ap.add_argument("--voice", default=tts_engine.EDGE_VOICES[0])
+    ap.add_argument("--voice", default=tts_engine.HOUSE_VOICE)
     ap.add_argument("--resolution", default=DEFAULT_RESOLUTION,
                     choices=list(RESOLUTIONS))
     ap.add_argument("--fps", type=int, default=60, choices=FRAME_RATES)

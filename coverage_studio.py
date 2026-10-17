@@ -271,22 +271,41 @@ def _row_matches(row, filt):
 # ---------------------------------------------------------------------------
 
 class App:
-    def __init__(self, root, goto=None):
-        """goto(book, chapter), if given, points the main reader at a row
-        (the dashboard is the backlog; the reader/studios do the work)."""
+    def __init__(self, root, book=None, chapter=None, verse=None, goto=None):
+        """goto(book, chapter), if given, points the main window's shared
+        passage at a row (the dashboard is the backlog; the studios do the
+        work). book/chapter pick the row to select; verse is accepted for
+        the shared tool contract and not used (rows are chapters)."""
         self.root = root
         self.goto = goto
         self.events: queue.Queue = queue.Queue()
         self.data = {}  # book -> {chapter: row}
-        self.busy = False
+        self.busy = False  # a scan is running (read-only: nothing to lose)
+        self._passage = None  # (book, chapter) whose row is selected
 
         root.title("Coverage")
         root.geometry("900x620")
         root.minsize(760, 480)
 
         self._build_ui()
+        if book in books.BOOK_NAMES:
+            self._passage = (book, int(chapter or 1))
         self._poll_events()
         self.rescan()
+
+    def set_passage(self, book, chapter, verse=None, *, ask=False) -> bool:
+        """Select (and scroll to) that chapter's row, or remember it until
+        the scan reaches its book. Coverage has no unsaved state and a scan
+        doesn't depend on the selection, so it always follows."""
+        if book not in books.BOOK_NAMES:
+            return False
+        self._passage = (book, int(chapter or 1))
+        self._select_passage()
+        return True
+
+    def can_close(self) -> bool:
+        """Always True: a scan running in the background only reads files."""
+        return True
 
     def _build_ui(self):
         bar = ttk.Frame(self.root, padding=(10, 8))
@@ -300,7 +319,7 @@ class App:
         self.rescan_btn = ttk.Button(bar, text="Rescan", command=self.rescan)
         self.rescan_btn.pack(side="left")
         if self.goto:
-            ttk.Button(bar, text="Go to chapter in reader",
+            ttk.Button(bar, text="Go to chapter",
                        command=self._goto_selected).pack(side="left",
                                                          padx=(6, 0))
 
@@ -332,6 +351,9 @@ class App:
         self.busy = True
         self.rescan_btn.configure(state="disabled")
         self.data = {}
+        # The scan re-inserts every book row; an old row with the same iid
+        # would make that insert fail and stop the event pump.
+        self.tree.delete(*self.tree.get_children())
         self.status_var.set("Scanning local manifests and text…")
         threading.Thread(target=self._scan_worker, daemon=True).start()
 
@@ -351,6 +373,18 @@ class App:
             chapters = self.data.get(book)
             if chapters:
                 self._insert_book(book, chapters)
+        self._select_passage()
+
+    def _select_passage(self):
+        """Select the shared passage's row, if the tree shows it (it may not
+        be scanned yet, or the filter may hide it)."""
+        if self._passage is None:
+            return
+        book, chapter = self._passage
+        iid = f"{book}|{chapter}"
+        if self.tree.exists(iid):
+            self.tree.selection_set(iid)
+            self.tree.see(iid)  # opens its book node if needed
 
     def _insert_book(self, book, chapters):
         filt = self.filter_var.get()
@@ -391,6 +425,8 @@ class App:
             _, book, chapters = event
             self.data[book] = chapters
             self._insert_book(book, chapters)
+            if self._passage and self._passage[0] == book:
+                self._select_passage()
             self.status_var.set(f"Scanning… {book}")
         elif kind == "names":
             _, book, counts = event

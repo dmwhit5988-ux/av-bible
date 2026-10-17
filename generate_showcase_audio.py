@@ -13,7 +13,8 @@ into web/audio/, then updates web/audio/manifest.json — a flat
 {"Book_ch_v.WEB": "Book_ch_v.mp3"} map, one entry per verse. The ".WEB" on
 the key is a fixed part of the format (the web player looks up
 "<verse>.WEB"); the filename has no suffix. The web player falls back to
-Web Speech for any verse with no MP3.
+Web Speech for any verse with no MP3. The Audio Renderer and Video Studio
+write the manifest too, so every write merges with what is on disk.
 
 Resumable: skips verses whose mp3 already exists. Only ships real neural
 audio — if edge-tts is unreachable and tts_engine falls back to the lower
@@ -27,12 +28,14 @@ Usage:
 import json
 import os
 import shutil
+import threading
+import time
 
 from passages import load_chapter, PassageError
 import tts_engine
 
-VOICE = "en-US-AndrewNeural"
-RATE = 0
+VOICE = tts_engine.HOUSE_VOICE
+RATE = tts_engine.HOUSE_RATE
 TRANSLATION = "WEB"  # suffix on every manifest key: Book_ch_v.WEB
 
 # The chapters with custom-generated visuals (see visuals/<Book>/<chapter>/).
@@ -49,6 +52,11 @@ WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
 AUDIO_DIR = os.path.join(WEB_DIR, "audio")
 MANIFEST_PATH = os.path.join(AUDIO_DIR, "manifest.json")
 
+# Serialises the read-merge-write in _save_manifest across threads: the Audio
+# Renderer and Video Studio both write the manifest from worker threads of the
+# one Studio process.
+_MANIFEST_LOCK = threading.Lock()
+
 
 def _manifest_key(base: str) -> str:
     """'Genesis_1_1' -> 'Genesis_1_1.WEB'."""
@@ -60,17 +68,62 @@ def _audio_filename(base: str) -> str:
     return f"{base}.mp3"
 
 
+# How many times a manifest read or write is tried, 50 ms apart, while
+# Windows refuses it because another thread or process has the file open.
+_ATTEMPTS = 20
+
+
 def _load_manifest() -> dict:
-    try:
-        with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (OSError, ValueError):
-        return {}
+    """web/audio/manifest.json as a dict; {} if it is missing or unreadable."""
+    for attempt in range(_ATTEMPTS):
+        try:
+            with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else {}
+        except PermissionError:          # mid-swap: try again
+            if attempt == _ATTEMPTS - 1:
+                return {}
+            time.sleep(0.05)
+        except (OSError, ValueError):
+            return {}
 
 
-def _save_manifest(manifest: dict) -> None:
-    with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2, sort_keys=True)
+def _save_manifest(manifest: dict) -> dict:
+    """Merge ``manifest`` into web/audio/manifest.json; return what was written.
+
+    Each writer holds the copy it loaded when its render began, so writing that
+    copy back whole would drop every verse another render published since. The
+    file is re-read under a lock and the caller's entries laid over it (entries
+    are only ever added or re-pointed, never removed), then written to a temp
+    file and swapped in with os.replace, so a reader never sees half a file.
+
+    The temp name is unique to this process and thread, so two writers never
+    share one. A swap refused because the file is open elsewhere
+    (PermissionError), or a temp file or folder gone from under it
+    (FileNotFoundError), is retried from the re-read, briefly; after that the
+    error is raised. No temp file is ever left behind.
+    """
+    tmp = f"{MANIFEST_PATH}.{os.getpid()}.{threading.get_ident()}.tmp"
+    with _MANIFEST_LOCK:
+        for attempt in range(_ATTEMPTS):
+            merged = _load_manifest()
+            merged.update(manifest)
+            try:
+                os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
+                with open(tmp, "w", encoding="utf-8") as f:
+                    json.dump(merged, f, indent=2, sort_keys=True)
+                os.replace(tmp, MANIFEST_PATH)
+                return merged
+            except (PermissionError, FileNotFoundError):
+                if attempt == _ATTEMPTS - 1:
+                    raise
+                time.sleep(0.05)
+            finally:
+                if os.path.exists(tmp):    # web/audio ships whole: never leave it
+                    try:
+                        os.remove(tmp)
+                    except OSError:
+                        pass
 
 
 def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE,

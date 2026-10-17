@@ -10,8 +10,8 @@ This tool closes that loop mechanically. For every name it:
 
   1. builds the exact text the pipeline would speak -- the lowercased ``say``
      when ``override`` is true, otherwise the name itself,
-  2. synthesizes it with the real edge-tts voice (same cache as playback) --
-     alone for short names, inside a carrier sentence for longer ones,
+  2. synthesizes it with the house voice (tts_engine.HOUSE_VOICE, same cache
+     as playback) inside carrier sentences,
   3. transcribes the audio back to IPA acoustically (``ipa_asr``), and
   4. scores that against the ``ipa`` stored in pronunciations.json.
 
@@ -24,7 +24,9 @@ filling in or correcting a reference value.
 
 Results are cached in ``cache/ipa_checks.json`` keyed by the spoken text and
 voice, so a long sweep survives a restart and only genuinely changed entries
-are re-checked.
+are re-checked. Saving records the verdicts measured since the last save and
+merges them into pronunciations.json, keeping anything Pronunciation Studio
+saved while this window was open.
 
     python pronunciation_check.py
 """
@@ -42,8 +44,9 @@ import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
 
-RATE = 0
 CACHE_PATH = os.path.join(config.CACHE_DIR, "ipa_checks.json")
+# The Studio's icon, the same one the shell (app.py) sets.
+ICON_PATH = os.path.join(config.BASE_DIR, "web", "icons", "icon-192.png")
 
 # Score bands. Deliberately loose: the transcriber's own error rate means a
 # perfect respelling routinely lands around 0.8, so only the bottom band is
@@ -84,7 +87,13 @@ class App:
         self.root = root
         self.player = AudioPlayer()
         self.names = copy.deepcopy(pronunciation.load(force=True))
+        # What the file held when self.names was loaded; save_names merges
+        # against it so Pronunciation Studio's edits since then are not undone.
+        self.base = copy.deepcopy(self.names)
         self.results = self._load_cache()   # name -> {spoken, voice, heard, score}
+        # Names measured (or re-referenced) since the last save: the verdicts a
+        # save records. Older cached results were recorded when they were made.
+        self.measured = set()
         self.dirty = False
         self.running = False
         self._stop = False
@@ -109,13 +118,6 @@ class App:
     def _build_top(self):
         bar = ttk.Frame(self.root, padding=(10, 8))
         bar.pack(fill="x")
-
-        ttk.Label(bar, text="Voice:").pack(side="left")
-        self.voice_var = tk.StringVar(value=config.load().get("voice", tts_engine.EDGE_VOICES[0]))
-        vcb = ttk.Combobox(bar, textvariable=self.voice_var, width=22, state="readonly",
-                           values=tts_engine.EDGE_VOICES)
-        vcb.pack(side="left", padx=(4, 12))
-        vcb.bind("<<ComboboxSelected>>", lambda e: self.refresh())
 
         ttk.Label(bar, text="Show:").pack(side="left")
         self.filter_var = tk.StringVar(value=FILTERS[1])
@@ -200,7 +202,7 @@ class App:
         # The mode tag also versions the cache: results recorded by an older
         # measuring method are discarded rather than silently compared.
         if (r.get("spoken") != spoken_for(name, info)
-                or r.get("voice") != self.voice_var.get()
+                or r.get("voice") != tts_engine.HOUSE_VOICE
                 or r.get("mode") != "carrier-avg"):
             return None
         return r
@@ -307,7 +309,7 @@ class App:
         self.status_var.set("Stopping after the current name…")
 
     def _worker(self, names):
-        voice = self.voice_var.get()
+        voice = tts_engine.HOUSE_VOICE
         post = lambda fn, *a: self.root.after(0, fn, *a)  # noqa: E731
         for i, name in enumerate(names, 1):
             if self._stop:
@@ -325,7 +327,8 @@ class App:
             for text_fmt, head, tail in ipa_asr.CARRIERS:
                 try:
                     path = tts_engine.synthesize(text_fmt.format(spoken), voice,
-                                                 RATE, apply_respell=False)
+                                                 tts_engine.HOUSE_RATE,
+                                                 apply_respell=False)
                     heard = ipa_asr.transcribe(
                         path, status=lambda m: post(self.status_var.set, m))
                 except Exception as e:  # noqa: BLE001 - one bad name must not kill the sweep
@@ -353,13 +356,14 @@ class App:
 
     def _apply_result(self, name, result, i):
         self.results[name] = result
+        self.measured.add(name)
         # A measurement is unsaved work: mark dirty so closing offers to keep the
         # verdicts rather than discarding a sweep that took an hour.
         self._mark_dirty()
         score = result["score"]
         if self.tree.exists(name):
             self.tree.item(name, values=(name, result["spoken"],
-                                         self.names[name].get("ipa", ""),
+                                         self.names.get(name, {}).get("ipa", ""),
                                          result["heard"] or "(nothing heard)",
                                          "—" if score is None else f"{score:.2f}"),
                            tags=(self._band(score),))
@@ -399,11 +403,11 @@ class App:
         # Play the primary carrier -- one of the two that were scored -- so what
         # you hear is what the transcriber heard.
         text = CARRIER.format(spoken)
-        voice = self.voice_var.get()
 
         def work():
             try:
-                path = tts_engine.synthesize(text, voice, RATE, apply_respell=False)
+                path = tts_engine.synthesize(text, tts_engine.HOUSE_VOICE,
+                                             tts_engine.HOUSE_RATE, apply_respell=False)
                 self.player.load(path)
                 self.player.play()
                 msg = f"Playing “{text}”"
@@ -442,6 +446,7 @@ class App:
             # The stored reference just changed, so the old score is meaningless.
             self.results[name]["score"] = ipa_asr.similarity(
                 self.names[name]["ipa"], self.results[name]["heard"])
+            self.measured.add(name)
         self._mark_dirty()
         self.refresh(keep_status=True)
         self.status_var.set(f"Set IPA from audio on {len(names)} name(s). Save to keep.")
@@ -456,12 +461,16 @@ class App:
 
         A sweep is only worth running if its conclusion is kept: without this,
         "checked and fine" would be indistinguishable from "never opened" the
-        moment the window closes.
+        moment the window closes. Only names measured since the last save are
+        folded: re-applying an old cached result would overwrite a verdict
+        given by ear in Pronunciation Studio since, and would count as an
+        edit when the save merges with the file.
         """
         n = 0
-        for name, r in self.results.items():
+        for name in self.measured:
             info = self.names.get(name)
-            if info is None or self._result_for(name) is None:
+            r = self._result_for(name)
+            if info is None or r is None:
                 continue           # stale result: the spelling or voice changed
             score = r.get("score")
             if info.get("override"):
@@ -476,18 +485,28 @@ class App:
             n += 1
         return n
 
-    def save(self):
+    def save(self) -> bool:
         recorded = self._record_verdicts()
         try:
-            pronunciation.save_names(self.names)
+            saved = pronunciation.save_names(self.names, base=self.base)
         except Exception as e:  # noqa: BLE001
-            messagebox.showerror("Save failed", str(e))
-            return
+            messagebox.showerror("Save failed", str(e), parent=self.root)
+            return False
+        # Adopt the merged list, so names Pronunciation Studio saved meanwhile
+        # show here and the next save measures this window's edits from here.
+        self.names = saved.names
+        self.base = copy.deepcopy(saved.names)
+        self.measured.clear()
         self.dirty = False
         self.root.title("Pronunciation Verifier")
         self._save_cache()
+        self.refresh(keep_status=True)
         self.status_var.set(f"Saved {len(self.names)} names to pronunciations.json "
                             f"+ PRONUNCIATIONS.md — recorded {recorded} verdict(s).")
+        if saved.warning:
+            messagebox.showwarning("pronunciations.json had changed", saved.warning,
+                                   parent=self.root)
+        return True
 
     def _on_close(self):
         if self.running:
@@ -496,8 +515,8 @@ class App:
             ans = messagebox.askyesnocancel("Unsaved changes", "Save your IPA changes?")
             if ans is None:
                 return
-            if ans:
-                self.save()
+            if ans and not self.save():
+                return            # the save failed: keep the window and the work
         self._save_cache()
         self.player.close()
         self.root.destroy()
@@ -506,6 +525,15 @@ class App:
 def main():
     config.ensure_dirs()
     root = tk.Tk()
+    try:
+        root.tk.call("tk", "scaling", 1.25)   # match the main window and the Studio
+    except tk.TclError:
+        pass
+    try:
+        icon = tk.PhotoImage(file=ICON_PATH)
+        root.iconphoto(True, icon)            # True: its dialogs too
+    except tk.TclError:
+        pass                                  # a missing icon is cosmetic
     App(root)
     root.mainloop()
 

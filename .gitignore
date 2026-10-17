@@ -2,9 +2,12 @@
 cache/
 __pycache__/
 config.json
+config.json.bak
 backups/
 bibles/*.xml
 *.pyc
+# A save's temp file, swapped in once written (config.json, manifests)
+*.tmp
 .DS_Store
 node_modules/
 deploy_temp/

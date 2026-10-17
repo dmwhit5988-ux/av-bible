@@ -1,7 +1,6 @@
 """Audio playback via the Windows MCI interface (winmm.dll).
 
-No third-party dependencies; plays mp3 and wav, supports pause/resume and
-position queries (useful later for syncing graphics to long narration files).
+No third-party dependencies; plays mp3 and wav one file at a time.
 """
 
 import ctypes
@@ -11,6 +10,12 @@ import threading
 _winmm = ctypes.windll.winmm
 
 _MCI_TYPES = {".mp3": "type mpegvideo", ".wav": "type waveaudio"}
+
+# MCI aliases are shared by the whole process, so they are numbered here, not
+# per player: two players that each counted from 1 would open the same alias,
+# and the second open fails or one player stops the other's file.
+_alias_count = 0
+_alias_lock = threading.Lock()
 
 
 class PlayerError(Exception):
@@ -27,19 +32,24 @@ def _mci(command: str) -> str:
     return buf.value
 
 
+def _new_alias() -> str:
+    global _alias_count
+    with _alias_lock:
+        _alias_count += 1
+        return f"theoria{_alias_count}"
+
+
 class AudioPlayer:
     """Plays one file at a time. Safe to call from a worker thread."""
 
     def __init__(self):
         self._alias = None
-        self._counter = 0
         self._lock = threading.Lock()
 
     def load(self, path: str) -> None:
         with self._lock:
             self._close_locked()
-            self._counter += 1
-            alias = f"avbible{self._counter}"
+            alias = _new_alias()
             type_clause = _MCI_TYPES.get(os.path.splitext(path)[1].lower(), "")
             _mci(f'open "{path}" {type_clause} alias {alias}'.replace("  ", " "))
             self._alias = alias
@@ -48,16 +58,6 @@ class AudioPlayer:
         with self._lock:
             if self._alias:
                 _mci(f"play {self._alias}")
-
-    def pause(self) -> None:
-        with self._lock:
-            if self._alias:
-                _mci(f"pause {self._alias}")
-
-    def resume(self) -> None:
-        with self._lock:
-            if self._alias:
-                _mci(f"resume {self._alias}")
 
     def stop(self) -> None:
         with self._lock:
@@ -79,26 +79,8 @@ class AudioPlayer:
                 pass
             self._alias = None
 
-    def position_ms(self) -> int:
-        with self._lock:
-            if not self._alias:
-                return 0
-            try:
-                return int(_mci(f"status {self._alias} position") or 0)
-            except (PlayerError, ValueError):
-                return 0
-
-    def length_ms(self) -> int:
-        with self._lock:
-            if not self._alias:
-                return 0
-            try:
-                return int(_mci(f"status {self._alias} length") or 0)
-            except (PlayerError, ValueError):
-                return 0
-
     def mode(self) -> str:
-        """One of: playing, paused, stopped, (empty when nothing loaded)."""
+        """MCI's mode, e.g. playing or stopped ("" when nothing is loaded)."""
         with self._lock:
             if not self._alias:
                 return ""

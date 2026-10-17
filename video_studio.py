@@ -4,7 +4,9 @@ Pick a passage (it may cross chapters: Genesis 1:1 to Genesis 3:24), a
 resolution and a frame rate, and this assembles the narration MP3s and the
 animated SVG visuals the project already produces into one video, plus the
 sidecar files an upload wants: captions, a description with chapter
-timestamps, and a thumbnail.
+timestamps, and a thumbnail. Verses without a published MP3 are narrated in
+the house voice (tts_engine.HOUSE_VOICE at HOUSE_RATE); there is no voice
+choice here.
 
 All the actual work lives in video_render.py; this is the front end, built on
 the same pattern as the Audio Renderer (audio_studio.py) -- a worker thread
@@ -29,38 +31,111 @@ REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 RENDERS_DIR = os.path.join(REPO_ROOT, "renders")
 
 
+def _render(events, cancel, spec):
+    """The render thread. It gets the event queue, the cancel flag and the
+    spec, never the App or a widget: it is not a daemon, so it can outlive
+    every window, and a thread that drops the last reference to a Tk object
+    at exit aborts the whole process ("Tcl_AsyncDelete: async handler
+    deleted by the wrong thread"). Exactly one closing event, "done" or
+    "failed", is posted whatever happens."""
+    outcome = ("failed", "The render stopped unexpectedly.")
+    try:
+        outcome = ("done", vr.render(
+            spec,
+            on_status=lambda s: events.put(("status", s)),
+            on_progress=lambda phase, done, total, label:
+                events.put(("progress", phase, done, total, label)),
+            cancel=cancel.is_set))
+    except vr.RenderError as e:
+        outcome = ("failed", str(e))
+    except Exception as e:                          # unexpected: still report
+        outcome = ("failed", f"{type(e).__name__}: {e}")
+    finally:
+        events.put(outcome)
+
+
 class App:
-    def __init__(self, root, start_book="Genesis", start_chapter=1):
+    def __init__(self, root, book=None, chapter=None, verse=None):
         self.root = root
         self.events: queue.Queue = queue.Queue()
-        self.busy = False
+        self.busy = False              # a render is in flight
         self._cancel = threading.Event()
         self.result = None
         self._out_chosen = False       # has the user picked a filename by hand?
+        self._range_edited = False     # ...or changed the passage range?
+        self._showing = False          # _show_range is writing the pickers
 
         root.title("Video Studio")
         root.geometry("720x620")
         root.minsize(660, 560)
         root.protocol("WM_DELETE_WINDOW", self._on_close)
+        # The shell may destroy this window itself (closing the main window),
+        # so stopping a render hangs off <Destroy>, not the close button.
+        root.bind("<Destroy>", self._on_destroy, add="+")
 
         self._build_ui()
 
-        if start_book not in books.BOOK_NAMES:
-            start_book, start_chapter = "Genesis", 1
-        self.book_var.set(start_book)
-        self._on_book_change()
-        n = books.chapters_in(start_book)
-        start_chapter = max(1, min(int(start_chapter or 1), n))
-        self.from_ch_var.set(str(start_chapter))
-        self.to_ch_var.set(str(start_chapter))
+        if book not in books.BOOK_NAMES:
+            book, chapter, verse = "Genesis", 1, 1
+        self._show_range(book, chapter, verse)
         self._sync_out_path()
         # Trace rather than bind: the filename then follows the passage however
         # it was changed -- picker, keyboard, or set from the calling app.
         for var in (self.book_var, self.from_ch_var, self.to_ch_var):
             var.trace_add("write", self._sync_out_path)
+        for var in (self.book_var, self.from_ch_var, self.from_v_var,
+                    self.to_ch_var, self.to_v_var):
+            var.trace_add("write", self._on_range_edit)
 
         self._poll_events()
         self._check_tools()
+
+    def _show_range(self, book, chapter, verse=None):
+        """Set the range to run from book chapter:verse to the end of that
+        chapter. A range set here is not one edited by hand."""
+        self._showing = True
+        try:
+            self.book_var.set(book)
+            self._on_book_change()
+            n = books.chapters_in(book)
+            chapter = max(1, min(int(chapter or 1), n))
+            self.from_ch_var.set(str(chapter))
+            self.from_v_var.set(str(max(1, int(verse or 1))))
+            self.to_ch_var.set(str(chapter))
+            self.to_v_var.set("")
+        finally:
+            self._showing = False
+        self._range_edited = False
+
+    def _on_range_edit(self, *_):
+        if not self._showing:
+            self._range_edited = True
+
+    def _covers(self, book, chapter) -> bool:
+        """Whether the range's From..To chapters include book chapter."""
+        if book != self.book_var.get():
+            return False
+        try:
+            lo, hi = int(self.from_ch_var.get()), int(self.to_ch_var.get())
+        except ValueError:
+            return False
+        return min(lo, hi) <= int(chapter or 1) <= max(lo, hi)
+
+    def set_passage(self, book, chapter, verse=None, *, ask=False) -> bool:
+        """Follow book chapter:verse: the range then starts there and ends
+        with that chapter. A range edited by hand is kept (True) while the
+        chapter lies inside its From..To chapters, so the main window moving
+        through it doesn't undo it; a chapter outside it is followed, as
+        every move is for a range never edited. Refused (False) while a
+        render runs. There is nothing unsaved here, so ask changes nothing."""
+        if book not in books.BOOK_NAMES:
+            return False
+        if self._range_edited and self._covers(book, chapter):
+            return True
+        if self.busy:
+            return False
+        self._show_range(book, chapter, verse)
+        return True
 
     # ----- UI construction -------------------------------------------------
     def _build_ui(self):
@@ -110,14 +185,9 @@ class App:
         ttk.Label(to_frame, text=" (blank = end)",
                   foreground="#888888").pack(side="left")
 
-        ttk.Label(passage, text="Voice:").grid(row=1, column=0, sticky="w",
-                                               pady=(6, 0))
-        self.voice_var = tk.StringVar(value=tts_engine.EDGE_VOICES[0])
-        ttk.Combobox(passage, textvariable=self.voice_var, width=22,
-                     state="readonly", values=tts_engine.EDGE_VOICES).grid(
-            row=1, column=1, sticky="w", **pad)
         ttk.Label(passage, foreground="#888888",
-                  text="Verses without a published MP3 are narrated on the fly.").grid(
+                  text=f"Verses without a published MP3 are narrated on the "
+                       f"fly, in the house voice ({tts_engine.HOUSE_VOICE}).").grid(
             row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
         # -- output ---------------------------------------------------------
@@ -277,7 +347,7 @@ class App:
             start_chapter=from_ch, start_verse=from_v,
             end_chapter=to_ch, end_verse=to_v,
             out_path=out_path,
-            voice=self.voice_var.get(),
+            voice=tts_engine.HOUSE_VOICE, rate=tts_engine.HOUSE_RATE,
             width=width, height=height, fps=int(self.fps_var.get()),
             gap=float(self.gap_var.get()),
             title_card=bool(self.title_var.get()),
@@ -308,22 +378,17 @@ class App:
         self.progress.configure(value=0, maximum=100)
         self._say(f"── {spec.reference} · {spec.width}x{spec.height} @ "
                   f"{spec.fps}fps ──")
-        threading.Thread(target=self._worker, args=(spec,),
-                         daemon=True).start()
-
-    def _worker(self, spec):
-        try:
-            result = vr.render(
-                spec,
-                on_status=lambda s: self.events.put(("status", s)),
-                on_progress=lambda phase, done, total, label:
-                    self.events.put(("progress", phase, done, total, label)),
-                cancel=self._cancel.is_set)
-            self.events.put(("done", result))
-        except vr.RenderError as e:
-            self.events.put(("failed", str(e)))
-        except Exception as e:                      # unexpected: still report
-            self.events.put(("failed", f"{type(e).__name__}: {e}"))
+        # Not a daemon: closing the Studio mid-render then lets it stop after
+        # the current verse and clean up -- finish the encodes in flight,
+        # terminate headless Chrome (video_render.Chrome.__aexit__) and
+        # delete its temp folders -- instead of leaving Chrome running. Each
+        # step it can wait on is bounded: CDP commands and captures time out,
+        # Chrome startup gives up after 30 s and is killed 10 s after
+        # terminate, edge-tts and the SAPI fallback time out, and ffmpeg only
+        # reads files.
+        threading.Thread(target=_render, name="video-render",
+                         args=(self.events, self._cancel, spec),
+                         daemon=False).start()
 
     def cancel(self):
         self._cancel.set()
@@ -334,10 +399,26 @@ class App:
     def _poll_events(self):
         try:
             while True:
-                self._handle(self.events.get_nowait())
-        except queue.Empty:
-            pass
-        self.root.after(80, self._poll_events)
+                try:
+                    event = self.events.get_nowait()
+                except queue.Empty:
+                    break
+                self._handle(event)
+        finally:
+            # Rescheduled even when a handler raised, so a later closing
+            # event still clears busy; but not on a destroyed window.
+            try:
+                alive = self.root.winfo_exists()
+            except tk.TclError:
+                alive = False
+            if alive:
+                self.root.after(80, self._poll_events)
+
+    def _idle(self):
+        """Back to ready: not busy, Render enabled, Cancel disabled."""
+        self.busy = False
+        self.render_btn.configure(state="normal")
+        self.cancel_btn.configure(state="disabled")
 
     def _handle(self, event):
         kind = event[0]
@@ -352,14 +433,15 @@ class App:
         elif kind == "done":
             result = event[1]
             self.result = result
-            self.busy = False
-            self.render_btn.configure(state="normal")
-            self.cancel_btn.configure(state="disabled")
+            self._idle()
             self.open_btn.configure(state="normal")
             self.progress.configure(value=self.progress["maximum"])
-            size = os.path.getsize(result.out_path) / 1_000_000
+            try:
+                size = f"{os.path.getsize(result.out_path) / 1_000_000:.0f} MB"
+            except OSError:
+                size = "size unknown"
             self.status_var.set(
-                f"Done — {vr._stamp(result.duration)}, {size:.0f} MB, "
+                f"Done — {vr._stamp(result.duration)}, {size}, "
                 f"rendered in {result.seconds / 60:.1f} min.")
             self._say(f"Wrote {result.out_path}")
             for path in result.sidecars:
@@ -367,26 +449,37 @@ class App:
             for warning in result.warnings:
                 self._say(f"  ! {warning}")
         elif kind == "failed":
-            self.busy = False
-            self.render_btn.configure(state="normal")
-            self.cancel_btn.configure(state="disabled")
-            self.status_var.set("Render failed.")
+            self._idle()
+            self.status_var.set("Render cancelled." if self._cancel.is_set()
+                                else "Render failed — see the log.")
             self._say(event[1])
 
+    def can_close(self) -> bool:
+        """True when the window may close now; asks while a render is in
+        progress. Saying yes doesn't stop it yet: the main window may still
+        abort its close, so the render stops when the window is destroyed,
+        after the verse it is on (the process waits for that and for
+        Chrome's shutdown)."""
+        if not self.busy:
+            return True
+        return messagebox.askyesno(
+            "Video Studio",
+            "A render is in progress. Close anyway? It will stop after "
+            "the current verse.", parent=self.root)
+
     def _on_close(self):
-        if self.busy:
-            if not messagebox.askyesno(
-                    "Video Studio",
-                    "A render is in progress. Close anyway? It will stop after "
-                    "the current verse.", parent=self.root):
-                return
-            self._cancel.set()
-        self.root.destroy()
+        if self.can_close():
+            self.root.destroy()
+
+    def _on_destroy(self, event):
+        # <Destroy> on a window fires for each of its children too.
+        if event.widget is self.root:
+            self._cancel.set()  # a running render stops after this verse
 
 
 def main():
     # Optional argv: <book> <chapter> -- same convention as the other studios,
-    # so the desktop app can open this on whatever passage is loaded there.
+    # so this can open on a given passage.
     start_book, start_chapter = "Genesis", 1
     argv = sys.argv[1:]
     if argv:
