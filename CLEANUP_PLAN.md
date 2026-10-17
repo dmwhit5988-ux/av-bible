@@ -665,6 +665,15 @@ Video Studio does the same: every verse's SVG is timed from zero (video_render.p
 
 ### WS4 — Repo and deploy hygiene
 
+> **Status (2026-10-17): 4a–e done and committed locally as `37a89122`; push pending your go-ahead.** 4f and 4g are not started.
+> - **Checks:** tracked files 11,716. Every generator re-ran with output unchanged against the 0.8b baseline. 33 tests pass, and `isbe_sweep.py` is import-tested again.
+> - **Moved out:** `backups/`, `renders/`, `_scratch/` and `mockups/figures/` are now in `C:\Dev\Theoria-archive\` (`config.ARCHIVE_DIR`, `config.RENDERS_DIR`). The archive copies were verified identical before the repo copies were removed. `deploy_temp/` and the old deploy scripts are deleted.
+> - **Beyond the plan:**
+>   - Publish's web-code guard covers all of `web/` except `web/audio`, plus new untracked files.
+>   - The 1 Chronicles back-up-once step is dropped, like Matthew 1's. With the archive moved, it would have saved the current design under the old design's name.
+>   - The 1 Chronicles `--dry` size report works.
+> - **4f still needs** the Cloudflare build log (Step 0.2).
+
 **Goal.** Publish commits only content. The deploy is fully defined in the repo. Dead modules and clutter are gone. Optionally, `deploy_bundle` is retired and history is slimmed.
 
 **4a. Publish correctness (beyond the Step 0.7 pathspec and `CONTENT_PATHS` fixes)**
