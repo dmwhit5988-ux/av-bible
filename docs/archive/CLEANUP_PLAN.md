@@ -869,7 +869,7 @@ Expect about 147 MiB. All SHAs change, and any other clone must re-clone.
 >   - Every relative link resolves, and `deploy_bundle/visuals` holds 0 `.txt` files.
 >   - The 33 tests pass. The `.py` edits are comments and docstrings only (`ast.dump` is identical).
 > - **Also:** the memory notes are refreshed.
-> - **Open:** the live workers.dev URL isn't recorded anywhere. README.md carries a `<!-- live URL: fill in -->` marker.
+> - **Live site:** <https://theoria-bible.net/> (the custom domain on the `av-bible` Worker), now recorded in README.md.
 
 **Goal.** Every doc is current or archived. The forward plan lives in one place, and generated reports stop pretending to be docs.
 

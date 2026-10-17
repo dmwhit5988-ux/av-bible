@@ -7,7 +7,7 @@ authors the content and publishes it.
 
 ## Live site
 
-The site is served by the av-bible Cloudflare Worker: <!-- live URL: fill in -->
+**<https://theoria-bible.net/>**, served by the `av-bible` Cloudflare Worker.
 
 As of 2026-10-17 it has 2,241 illustrated verses in 73 chapters across 11 books
 (Genesis, Exodus, Numbers, 1 Chronicles, Matthew, Luke, Acts, Romans, Hebrews,

@@ -6,7 +6,7 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 ## Status (D14)
 
-- **Deployed.** All four charts deploy with the site at `/visuals/reference/<file>` on the av-bible Cloudflare Worker <!-- live URL: fill in -->. `prepare-deploy.ps1` copies all of `visuals/`, and Publish commits `visuals/`, so a change to a chart ships like any other visuals change.
+- **Deployed.** All four charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `prepare-deploy.ps1` copies all of `visuals/`, and Publish commits `visuals/`, so a change to a chart ships like any other visuals change.
 - **Not linked.** Nothing in the web app links to them, because which family-tree version belongs in the app hasn't been chosen. Anyone with the exact URL can open one.
 - **Not indexed.** `build_manifest.py` only indexes `visuals/<Book>/<chapter>/` and the flat `visuals/` root, so the charts never become manifest keys.
 - **None is archived.** The V6 heir-spine variant stays until the choice is made.
