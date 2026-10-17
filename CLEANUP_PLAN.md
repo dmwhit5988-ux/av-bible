@@ -440,7 +440,7 @@ Each content-deleting step is a **hand-written commit, not a Publish**, so the h
 
 ### WS2 — Web UI simplification
 
-> **Status (2026-10-16): done and committed (`bca83a6c`); push pending your go-ahead.**
+> **Status (2026-10-16): done, pushed as `442a6d8a`; Cloudflare's Workers Build succeeded.**
 > - **Checked** on the web-static server at 375×812 and desktop. An adversarial review found 1 major issue (the progress line was truncated at 375 px) and 9 minor ones; all are fixed and re-tested.
 > - **Beyond the plan:**
 >   - Prev/Next/Play shrink to icons on phones.
