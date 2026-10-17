@@ -1,4 +1,4 @@
-"""Faithful SMIL preview for the SVG Studio (SVG_STUDIO_DESIGN.md section 2).
+"""Faithful SMIL preview for the SVG Studio (docs/svg-studio.md section 2).
 
 One tiny local HTTP server, one wrapper page — served identically to the
 embedded pywebview window and to the system-browser fallback, so the
@@ -224,7 +224,7 @@ class PreviewServer:
 #
 # pywebview's webview.start() blocks and owns its own (WinForms) message
 # pump, which is exactly why this never runs inside the studio's tkinter
-# process (SVG_STUDIO_DESIGN.md section 2.3 / 7.2). All state flows over
+# process (docs/svg-studio.md section 2.3 / 7.2). All state flows over
 # HTTP; the only IPC is the URL argument. Exit codes: 0 = window closed
 # normally, 3 = pywebview missing/broken (studio falls back to the system
 # browser and persists that choice).

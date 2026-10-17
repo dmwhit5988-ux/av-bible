@@ -4,7 +4,7 @@ The studio owns the verse workflow (navigate, know when a file is
 generator-owned), the XML editing pane, and the pipeline glue (save into
 visuals/<Book>/<chapter>/, manifest rebuild). Deploying is Publish's job
 (publish_studio.py). It deliberately does NOT own vector drawing — that is
-the XML pane and/or Inkscape (SVG_STUDIO_DESIGN.md, "Option 3").
+the XML pane and/or Inkscape (docs/svg-studio.md, "Option 3").
 
 Usable standalone or as a Toplevel from app.py, with the same window-tool
 contract as the other studios: App(root, book, chapter, verse),
@@ -34,7 +34,7 @@ import svg_preview
 import svg_registry
 
 # How soon a preview-subprocess exit counts as "pywebview is broken" rather
-# than "the user closed the window" (SVG_STUDIO_DESIGN.md section 2.5).
+# than "the user closed the window" (docs/svg-studio.md section 2.5).
 EMBEDDED_FAIL_WINDOW_MS = 10_000
 
 # One-off hand edits to generator-owned files get flagged with this so the

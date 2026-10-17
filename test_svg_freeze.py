@@ -1,5 +1,5 @@
 """Unit tests for svg_freeze — one test per row of the normative case table
-(SVG_STUDIO_DESIGN.md section 3) plus round-trips of real generator output.
+(docs/svg-studio.md section 3) plus round-trips of real generator output.
 
     .venv\\Scripts\\python.exe -m unittest test_svg_freeze -v
 """

@@ -1,4 +1,4 @@
-"""Registry of generator-owned SVG families (SVG_STUDIO_DESIGN.md section 4).
+"""Registry of generator-owned SVG families (docs/svg-studio.md section 4).
 
 Every SVG the project ships today is produced by a generate_*_svg.py module;
 re-running a generator rewrites its family's files from the Python spec,

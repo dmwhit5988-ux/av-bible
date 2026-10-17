@@ -15,7 +15,7 @@ the pattern on this machine:
   pywebview window and *reparents it into the stage's Tk frame* with
   Win32 SetParent, so it looks and resizes like a native embedded panel.
   pywebview owns its own message pump and must never run inside the
-  tkinter process (SVG_STUDIO_DESIGN.md 2.3/7.2) — cross-process
+  tkinter process (docs/svg-studio.md 2.3/7.2) — cross-process
   reparenting keeps that rule while still embedding the view.
 
 - `WebPanel` — the parent-side handle: a Tk frame placed over the stage

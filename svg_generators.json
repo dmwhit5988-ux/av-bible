@@ -1,5 +1,5 @@
 {
-  "_comment": "Registry of generator-owned SVG families (SVG_STUDIO_DESIGN.md #4). Matched by (book, chapter). The 'edit' strings are documentation for the human, not parsed. 'kind' feeds the visuals manifest's per-file metadata (build_manifest.py).",
+  "_comment": "Registry of generator-owned SVG families (docs/svg-studio.md #4). Matched by (book, chapter). The 'edit' strings are documentation for the human, not parsed. 'kind' feeds the visuals manifest's per-file metadata (build_manifest.py).",
   "families": [
     {
       "label": "The six days: forming and filling (Genesis 1)",

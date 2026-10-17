@@ -1,6 +1,6 @@
 """Freeze a verse SVG's SMIL animations to their end state and demote it to
 a static base group — the "start from previous verse's final frame" tool
-(SVG_STUDIO_DESIGN.md section 3).
+(docs/svg-studio.md section 3).
 
 For hand-authored sequences only: each verse is the prior verse's steady
 state plus one new reveal, so verse N starts as verse N-1 with its play-once
