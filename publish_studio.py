@@ -5,14 +5,16 @@ Runs the whole publish chain that used to be four manual steps:
     1. build_stills        refresh reduced-motion .still.svg twins
     2. build_manifest.py   rebuild visuals/manifest.json (schema v2)
     3. prepare-deploy.ps1  mirror web/ + bibles/ + visuals/ into deploy_bundle/
-    4. git add/commit/push CONTENT paths only (web/, bibles/, visuals/,
-                           deploy_bundle/) — pushing is the deploy: the
-                           GitHub-side integration uploads to Cloudflare
-                           (local wrangler can't run on ARM64)
+    4. git add/commit/push CONTENT paths only (web/audio, bibles, visuals
+                           and their deploy_bundle/ copies) — pushing is the
+                           deploy: the GitHub-side integration uploads to
+                           Cloudflare (local wrangler can't run on ARM64)
 
-Code changes (*.py, docs, …) are deliberately left out of the publish
-commit — commit those yourself, so a content publish never sweeps up
-half-finished code.
+Code changes (*.py, docs, the web app's own js/css/html) are deliberately
+left out of the publish commit — commit those yourself, so a content
+publish never sweeps up half-finished code. Both the add and the commit
+are limited to CONTENT_PATHS, so anything you had staged elsewhere stays
+staged and uncommitted.
 
 Between steps 3 and 4 you get a confirm dialog with the change summary and
 the file-count budget: files, not bytes, are the Cloudflare ceiling
@@ -36,8 +38,25 @@ import build_stills
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 FILE_LIMIT = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
 
-# Only these paths go into a publish commit.
-CONTENT_PATHS = ["web", "bibles", "visuals", "deploy_bundle"]
+# Only these paths go into a publish commit. Content folders only, never the
+# web app shell: prepare-deploy.ps1 copies web/* (js, css, index.html) into
+# the deploy_bundle root, so listing plain "web" or "deploy_bundle" would ship
+# half-finished web code under "Publish: …".
+CONTENT_PATHS = ["web/audio", "bibles", "visuals",
+                 "deploy_bundle/audio", "deploy_bundle/bibles",
+                 "deploy_bundle/visuals"]
+
+
+def add_argv() -> list[str]:
+    """The `git add` the publish runs: stage content changes only."""
+    return ["git", "add", "-A", "--"] + CONTENT_PATHS
+
+
+def commit_argv(msg: str) -> list[str]:
+    """The `git commit` the publish runs. The pathspec matters: without it
+    git commits the whole index, which is how a publish once deleted a
+    generator someone had staged for removal."""
+    return ["git", "commit", "-m", msg, "--"] + CONTENT_PATHS
 
 
 def _run(cmd, timeout=600):
@@ -244,12 +263,11 @@ class App:
     def _push_worker(self, changes):
         put = self.events.put
         try:
-            proc = _run(["git", "add", "-A", "--"] + CONTENT_PATHS,
-                        timeout=300)
+            proc = _run(add_argv(), timeout=300)
             if proc.returncode != 0:
                 raise RuntimeError("git add failed: " + proc.stderr.strip())
             msg = commit_message(changes)
-            proc = _run(["git", "commit", "-m", msg], timeout=300)
+            proc = _run(commit_argv(msg), timeout=300)
             if proc.returncode != 0:
                 raise RuntimeError("git commit failed: "
                                    + (proc.stderr or proc.stdout).strip()[:300])
