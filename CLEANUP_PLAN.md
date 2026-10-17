@@ -665,7 +665,7 @@ Video Studio does the same: every verse's SVG is timed from zero (video_render.p
 
 ### WS4 — Repo and deploy hygiene
 
-> **Status (2026-10-17): 4a–e done and committed locally as `37a89122`; push pending your go-ahead.** 4f and 4g are not started.
+> **Status (2026-10-17): 4a–e done, pushed as `3d133a4f`; Cloudflare's Workers Build succeeded.** 4f and 4g are not started.
 > - **Checks:** tracked files 11,716. Every generator re-ran with output unchanged against the 0.8b baseline. 33 tests pass, and `isbe_sweep.py` is import-tested again.
 > - **Moved out:** `backups/`, `renders/`, `_scratch/` and `mockups/figures/` are now in `C:\Dev\Theoria-archive\` (`config.ARCHIVE_DIR`, `config.RENDERS_DIR`). The archive copies were verified identical before the repo copies were removed. `deploy_temp/` and the old deploy scripts are deleted.
 > - **Beyond the plan:**
