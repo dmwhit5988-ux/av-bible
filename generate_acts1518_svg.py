@@ -38,6 +38,7 @@ Run inside the project venv:
 import math
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, RED, out_path)
@@ -669,13 +670,34 @@ def scroll(c, x, y, col):
       f"{x + w + 1.4:.1f} {yb + 3.4:.1f}, {x + w - 1.6:.1f} {yb + 2.6:.1f}")
 
 
-def figure(c, x, y, s, col, lw=1.6):
-    """A person, small: head, body, arms, legs."""
-    c.circle(x, y - s * 0.42, s * 0.16, stroke=col, width=lw)
-    c.line((x, y - s * 0.26), (x, y + s * 0.16), col, lw)
-    c.line((x - s * 0.22, y - s * 0.10), (x + s * 0.22, y - s * 0.10), col, lw)
-    c.line((x, y + s * 0.16), (x - s * 0.18, y + s * 0.48), col, lw)
-    c.line((x, y + s * 0.16), (x + s * 0.18, y + s * 0.48), col, lw)
+MAN_UNITS = F.bbox((F.man(), 0))[3] - F.bbox((F.man(), 0))[2]
+_paint_cache = {}
+
+
+def _fade(col, a):
+    if col is None or a >= 1.0:
+        return col
+    had = (col[3] / 255.0) if len(col) > 3 else 1.0
+    return (col[0], col[1], col[2], int(255 * had * a))
+
+
+def _paint(col, lw):
+    key = (tuple(col), lw)
+    if key not in _paint_cache:
+        a = (col[3] / 255.0) if len(col) > 3 else 1.0
+        k = lw / 1.6
+        _paint_cache[key] = {
+            m: (_fade(f, a), _fade(s, a), w * k)
+            for m, (f, s, w) in F.palette(tuple(col[:3]), BG).items()}
+    return _paint_cache[key]
+
+
+def figure(c, x, y, s, col, lw=1.6, pose="stand", arms="down"):
+    """A person `s` tall, centred on `y` — the stick figure's own reference,
+    whose feet were at y + 0.48s. The drawn one stands on that same line, so
+    the emblems and the road keep their layout."""
+    F.draw(c, F.man(pose=pose, arms=arms), x, y + s * 0.48, s / MAN_UNITS,
+           col, BG, style=_paint(col, lw))
 
 
 def building(c, x, y, w, h, col, lw=2.0, door=True, pitched=False):
@@ -769,10 +791,12 @@ def draw_council(c, v):
         if v == 30:
             c.traced([(352, ROAD_Y - 30), (base - 8, ROAD_Y - 30)],
                      stroke=g(0.8), width=2, dur="1.4s")
+        # 44, not 30 — below about forty a drawn body has no room for a head
+        # and a shoulder. The feet stay on the road, so nothing else moved.
         for i, name in enumerate(("Judas", "Silas")):
             fx = base + i * 48
-            figure(c, fx, ROAD_Y - 30, 30, col)
-            c.text((fx, ROAD_Y - 52), name, 12, TEXT_DIM, "mm")
+            figure(c, fx, ROAD_Y - 37, 44, col, pose="walk")
+            c.text((fx, ROAD_Y - 72), name, 12, TEXT_DIM, "mm")
     if v >= 23:
         c.text((WX1 - 26, ROAD_Y + 34), "Antioch · Syria · Cilicia", 13,
                HL if v >= 30 else TEXT_DIM, "rm", italic=True)
@@ -972,9 +996,21 @@ BRANCH = {32: ("Some mocked", 46), 33: ("He went out", 0),
           34: ("Dionysius, Damaris", -46)}
 AX0, AX1 = WX0 + 52, WX1 - 152
 ABASE, ARISE = WY1 - 96, 272
-IDOLS = [(96, 214), (168, 176), (262, 200), (352, 168), (438, 196),
-         (520, 164), (592, 206), (128, 300), (300, 268), (472, 262),
-         (232, 356), (400, 330), (556, 300), (150, 402)]
+# Ten, not fourteen, and each drawn rather than ticked. The old marks were a
+# stroke with a disc on it, and fourteen of them at twenty pixels filled the
+# panel with notation — two of them sat on the route itself. These stand
+# clear of the three things the panel already owns: the argument's own line
+# from (81, 446) up to (479, 202), the altar at its 23rd step, and the branch
+# labels off its end. Placed by hand rather than scattered, so the eye reads
+# a city with images standing about in it and not a texture.
+#
+# (x, y-of-the-plinth, kind) — the kinds alternate so no two neighbours are
+# the same object, which is what makes a scatter read as many gods rather
+# than one repeated.
+IDOLS = [(104, 232), (196, 200), (286, 224), (372, 196), (150, 306),
+         (356, 448), (470, 408), (598, 366), (566, 486), (452, 534)]
+IDOL_FORMS = ("herm", "image", "stone", "seated", "image",
+              "herm", "stone", "herm", "image", "seated")
 
 
 def anode(v):
@@ -982,17 +1018,18 @@ def anode(v):
     return (AX0 + (v - 16) * (AX1 - AX0) / 15, ABASE - lvl * ARISE)
 
 
-def em_idol(c, x, y, col, s=1.0):
-    c.line((x - 6 * s, y + 10 * s), (x + 6 * s, y + 10 * s), col, 1.6)
-    c.line((x, y + 10 * s), (x, y - 2 * s), col, 1.6)
-    c.circle(x, y - 7 * s, 4.4 * s, stroke=col, width=1.6)
+def em_idol(c, x, y, col, kind="image", h=40):
+    """One image on its plinth, standing on `y`."""
+    parts = F.idol(kind)
+    y0, y1 = F.bbox((parts, 0))[2:]
+    F.draw(c, parts, x, y, h / (y1 - y0), col, BG, style=_paint(col, 1.6))
 
 
 def draw_areopagus(c, v):
     stage(c)
     caps(c, (WX0 + 30, 146), "THE CITY FULL OF IDOLS")
-    for ix, iy in IDOLS:
-        em_idol(c, ix, iy, dim(SAND_DIM, 0.95 if v > 16 else 0.7), 1.3)
+    for (ix, iy), kind in zip(IDOLS, IDOL_FORMS):
+        em_idol(c, ix, iy, dim(SAND_DIM, 0.95 if v > 16 else 0.7), kind)
 
     pts = [anode(i) for i in range(16, 32)]
     c.polyline(pts, stroke=dim(SAND_DIM, 0.75), width=1.4, dash=DASH_UP)
@@ -1007,10 +1044,16 @@ def draw_areopagus(c, v):
     ax, ay = anode(23)
     acol = HL if v == 23 else (dim(SAND, 0.9) if v > 23
                                else dim(SAND_DIM, 0.95))
-    c.rect(ax - 30, ay - 34, 60, 26, stroke=acol, width=2)
-    c.rect(ax - 22, ay - 8, 44, 8, stroke=acol, width=1.6)
+    # The one object the chapter turns on — "I found an altar with this
+    # inscription" — so it is the altar from the vocabulary and not two
+    # rectangles. Unhorned: the horns are the Hebrew altar's, and this one is
+    # Athenian.
+    al = F.altar("stone")
+    ax0, ax1 = F.bbox((al, 0))[:2]
+    F.draw(c, al, ax, ay, 62 / (ax1 - ax0), acol, BG,
+           style=_paint(acol, 2.0))
     if v >= 23:
-        c.text((ax, ay - 44), "TO AN UNKNOWN GOD", 11,
+        c.text((ax, ay - 52), "TO AN UNKNOWN GOD", 11,
                HL if v == 23 else TEXT_DIM, "mb", bold=(v == 23))
 
     for i in range(16, 32):

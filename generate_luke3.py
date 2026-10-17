@@ -1,20 +1,26 @@
 """Generate per-verse animations for the genealogy of Jesus, Luke 3:23-38.
 
 Luke runs the line BACKWARD — from Jesus through David and Abraham all the
-way to Adam, "the son of God." The visual is a slow tracking camera: the
-whole line is one long road, and the camera dollies along it as the chapter
-is read — a bright marker stays centered while the road and the names slide
-past, each generation's name written large beside its milestone. Era
-landmarks (Jesus, David, Abraham, Noah, Adam, God) get bold names and an
-era word. A minimap along the bottom shows the whole road, the landmarks,
-and how far back the line has traveled, with a "generation N of M" counter.
+way to Adam, "the son of God." The visual is a taproot: the whole line is
+one root running straight down from a tree at the surface (Jesus), and the
+camera descends it as the chapter is read — a bright marker rides the root
+tip while the soil and the names slide past. Each era is its own stratum of
+earth (the kings, the patriarchs, the pre-flood fathers, bedrock at Adam),
+so the ground itself says how deep in time the line has gone; at the very
+bottom the soil gives way to light around "of God." Era landmarks (Jesus,
+David, Abraham, Noah, Adam, God) get bold names and an era word, and a slim
+depth gauge on the right shows the whole root with a "generation N of M"
+counter. John's own image — the axe laid at the root of the trees (v9) —
+is what verse 23 descends into.
 
 Because each verse's animation ends with the camera resting on that verse's
 last name, and the next verse begins there, the chapter plays as one
-continuous journey.
+continuous descent.
 
-(The previous "whole serpentine path at once" design is preserved in
-backups/luke3_journey/ — copy it back to revert.)
+(The previous designs are preserved: the straight-road tracking camera in
+backups/luke3_road/, the "whole serpentine path at once" original in
+backups/luke3_journey/ — copy one back to revert. Concept mocks for the
+designs that were considered are in mockups/luke3/ + LUKE3_IDEAS.md.)
 
 Names are extracted directly from each translation's own verse text —
 "the son of X" / "of X" phrasing where present (WEB, KJV, ...), with a
@@ -26,27 +32,27 @@ hold (loop=1) — no flashing.
 Run inside the project venv:  .venv\\Scripts\\python.exe generate_luke3.py
 """
 
+import math
 import os
 import re
 import time
 
-from PIL import Image, ImageDraw
 
 from generate_tabernacle import (W, H, BG, SAND, SAND_DIM, TEXT, TEXT_DIM,
-                                 HL, F_SMALL, F_VERSE, F_TITLE, font, ease,
-                                 g, out_path)
+                                 HL, F_SMALL, F_TITLE, font, ease, g,
+                                 out_path)
 from generate_genealogy import G_FRAMES, G_FRAME_MS
 from passages import fetch_passage, PassageError, TRANSLATIONS
 
-F_ROAD = font(18)                  # names along the road
-F_ROAD_B = font(18, bold=True)     # era landmarks
+F_ROOT = font(18)                  # names along the root
+F_ROOT_B = font(18, bold=True)     # era landmarks
 F_ERA = font(13, italic=True)
 
 SON_OF = re.compile(r"of\s+([A-Z][A-Za-z]+)")
 NAME_TOKEN = re.compile(r"^[A-Z][a-z]+$")
 NOT_NAMES = {"He", "When", "The", "And", "His", "Now", "This"}
 
-# era landmarks along the road, with spellings seen across translations;
+# era landmarks along the root, with spellings seen across translations;
 # "Jesus" anchors only at the head of the line — ASV/DRA name an ancestor
 # Jesus in v29 who is no landmark.
 ERA_WORDS = [
@@ -140,132 +146,105 @@ def build_grid(line):
 
 
 # ---------------------------------------------------------------------------
-# Layout: an unrolled road under a tracking camera
+# Layout: a taproot under a descending camera
 # ---------------------------------------------------------------------------
 
-ROAD_Y = 320
-SPACING = 92                        # px between generations at road zoom
-MINI_X0, MINI_X1, MINI_Y = 64, 960, 508
+CY = 300                            # camera: the root tip rests here
+SPACING = 64                        # px between generations at root zoom
+ROOT_AMP, ROOT_FREQ = 60, 0.7       # the root's side-to-side wander
+SURFACE = -0.7 * SPACING            # root-space y of ground level
+TOP_STRIP, BOT_STRIP = 64, 538      # screen bands kept clear for title/footer
+GA_X, GA_Y0, GA_Y1 = 966, 96, 512   # the depth gauge at the right edge
+V23_LIFT = 2.8 * SPACING            # v23 starts up in the tree, then plunges
+
+# soil tones, one per era band (Jesus->David, ->Abraham, ->Noah, ->Adam,
+# then bedrock below Adam) — each deeper stratum a little darker
+STRATA = [(33, 29, 24), (40, 32, 23), (31, 28, 33), (27, 26, 20),
+          (24, 23, 27)]
+STRATA_LINE = (66, 56, 42)
 
 
-def draw_frame(verse, slots, ranges, t):
-    grow = ease(min(1.0, t / 0.92))
+def root_x(s):
+    """Root-space x of the taproot at generation s (float)."""
+    return W // 2 + ROOT_AMP * math.sin(s * ROOT_FREQ)
+
+
+# the tree at the surface: a small self-similar fractal — every branch forks
+# into two shorter ones, slightly asymmetric so it reads as grown, not drawn
+TREE_DEPTH = 7
+TREE_RATIO = 0.72
+TREE_SPLIT_L, TREE_SPLIT_R = 0.63, 0.55      # radians off the parent
+TREE_W = [14, 9, 6, 4, 2.6, 1.8, 1.2]        # stroke width per depth
+
+
+def tree_segments():
+    """[(x0, y0, x1, y1, depth)] relative to the trunk base at the surface,
+    y negative = up. Deterministic, shared by the raster and SVG surfaces."""
+    segs = []
+
+    def grow(x, y, ang, length, depth):
+        nx = x + length * math.sin(ang)
+        ny = y - length * math.cos(ang)
+        segs.append((x, y, nx, ny, depth))
+        if depth + 1 < TREE_DEPTH:
+            grow(nx, ny, ang - TREE_SPLIT_L, length * TREE_RATIO, depth + 1)
+            grow(nx, ny, ang + TREE_SPLIT_R, length * TREE_RATIO, depth + 1)
+
+    grow(0.0, 0.0, 0.0, 115, 0)
+    return segs
+
+
+def strata_bands(slots):
+    """[(top_px, bottom_px, tone)] in root space; bottom None = bedrock."""
     n = len(slots)
-    start, end = ranges[verse]
-    batch_names = [slots[i][0] for i in range(start, end)
-                   if slots[i][0] != "Jesus"]
-    if verse == 23:
-        caption = "the son (as was supposed) of " + ", of ".join(batch_names)
-    elif verse == 38:
-        caption = "… of " + ", of ".join(batch_names[:-1]) + \
-                  f", the son of {batch_names[-1]}"
-    else:
-        caption = "the son of " + ", of ".join(batch_names)
-
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
-    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    od = ImageDraw.Draw(overlay)
-
-    # (no caption line: the verse is narrated aloud — the road of names
-    # sliding under the camera carries it)
-    d.text((28, 20), "From Jesus back to Adam — Luke 3", font=F_TITLE,
-           fill=TEXT)
-
-    # the camera rides the sweep tip: the marker stays centered while the
-    # road slides past, from the previous verse's resting point to this
-    # verse's last name — so the chapter plays as one continuous journey
-    prev = max(start - 1, 0)
-    tip_s = (prev + (end - 1 - prev) * grow) * SPACING
-
-    def sx(s):
-        return W // 2 + s - tip_s
-
-    def clamp(x):
-        return max(-60, min(W + 60, x))
-
-    # road: dim ahead, plain behind, bright sweep for this verse
-    d.line([(clamp(sx(0)), ROAD_Y), (clamp(sx((n - 1) * SPACING)), ROAD_Y)],
-           fill=SAND_DIM, width=3)
-    if sx(prev * SPACING) > -60:
-        d.line([(clamp(sx(0)), ROAD_Y), (clamp(sx(prev * SPACING)), ROAD_Y)],
-               fill=SAND, width=3)
-    od.line([(clamp(sx(prev * SPACING)), ROAD_Y), (W // 2, ROAD_Y)],
-            fill=g(0.95), width=5)
-
-    for i, (name, _v) in enumerate(slots):
-        x = sx(i * SPACING)
-        if x < -140 or x > W + 140:
-            continue
-        era = era_of(name, i)
-        passed = i * SPACING <= tip_s + 1
-        cur = start <= i < end
-        read = i < start
-        r = 7 if era else 5
-        d.ellipse([x - r, ROAD_Y - r, x + r, ROAD_Y + r],
-                  outline=SAND if (read or (cur and passed)) else SAND_DIM,
-                  width=2)
-        if cur and passed:
-            fill = HL
-        elif read:
-            fill = TEXT
-        else:
-            fill = TEXT_DIM
-        above = (i % 2 == 0)
-        ny = ROAD_Y - 46 if above else ROAD_Y + 46
-        ey = ROAD_Y - 24 if above else ROAD_Y + 24
-        d.text((x, ny), name, font=F_ROAD_B if era else F_ROAD,
-               fill=fill, anchor="mm")
-        if era:
-            d.text((x, ey), era, font=F_ERA, fill=TEXT_DIM, anchor="mm")
-
-    # the traveler: a steady ring at the center of the view
-    od.ellipse([W // 2 - 10, ROAD_Y - 10, W // 2 + 10, ROAD_Y + 10],
-               outline=g(1.0), width=3)
-
-    # ---- minimap: the whole road at a glance ----
-    span = (n - 1) * SPACING
-
-    def mx(s):
-        return MINI_X0 + (MINI_X1 - MINI_X0) * s / span
-
-    d.line([(MINI_X0, MINI_Y), (MINI_X1, MINI_Y)], fill=SAND_DIM, width=2)
-    d.line([(MINI_X0, MINI_Y), (mx(tip_s), MINI_Y)], fill=SAND, width=2)
-    for i, (name, _v) in enumerate(slots):
-        era = era_of(name, i)
-        if not era:
-            continue
-        x = mx(i * SPACING)
-        d.line([(x, MINI_Y - 4), (x, MINI_Y + 4)], fill=SAND, width=2)
-        ly = MINI_Y - 14 if name == "Adam" else MINI_Y + 14
-        d.text((x, ly), name, font=F_ERA, fill=TEXT_DIM, anchor="mm")
-    od.ellipse([mx(tip_s) - 4, MINI_Y - 4, mx(tip_s) + 4, MINI_Y + 4],
-               fill=g(1.0))
-
-    if end >= n:
-        counter = f"all {n - 1} generations — back to the beginning"
-    else:
-        counter = f"generation {end - 1} of {n - 1}"
-    d.text((W - 28, H - 26), counter, font=F_SMALL, fill=TEXT, anchor="ra")
-
-    d.text((28, H - 26),
-           "Luke traces the line backward — from Jesus to Adam, "
-           "“the son of God”", font=F_SMALL, fill=TEXT_DIM)
-    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+    marks = [i for i in range(n) if era_of(slots[i][0], i)]
+    # a boundary sits just below each landmark: David closes the first age...
+    cuts = [(m + 0.5) * SPACING for m in marks[1:-1]]   # David..Adam
+    bands, top = [], SURFACE
+    for k, cut in enumerate(cuts):
+        bands.append((top, cut, STRATA[k]))
+        top = cut
+    bands.append((top, None, STRATA[len(cuts)]))
+    return bands
 
 
-def render_chapter(line, suffix):
-    slots, ranges = build_grid(line)
-    total_bytes = 0
-    for verse in sorted(ranges):
-        frames = [draw_frame(verse, slots, ranges, i / (G_FRAMES - 1))
-                  for i in range(G_FRAMES)]
-        out = out_path("Luke", 3, f"Luke_3_{verse}{suffix}.webp")
-        frames[0].save(out, save_all=True, append_images=frames[1:],
-                       duration=G_FRAME_MS, loop=1, quality=82, method=4)
-        total_bytes += os.path.getsize(out)
-    return len(ranges), total_bytes
+def root_points(s0, s1, ys, step=0.25):
+    """Screen polyline tracing the root from generation s0 to s1."""
+    pts, s = [], s0
+    while s < s1:
+        pts.append((root_x(s), ys(s * SPACING)))
+        s += step
+    pts.append((root_x(s1), ys(s1 * SPACING)))
+    return pts
 
+
+def draw_tree(d, ys):
+    """Ground level and the tree whose root this is (verse 23's opening)."""
+    gy = ys(SURFACE)
+    if gy < -40:
+        return
+    xt = root_x(SURFACE / SPACING)      # trunk grows where the root emerges
+    d.line([(0, gy), (W, gy)], fill=SAND, width=3)
+    for tx in range(60, W, 90):                     # sparse grass ticks
+        if abs(tx - xt) > 60:
+            d.line([(tx, gy - 5), (tx + 6, gy - 12)], fill=SAND_DIM, width=2)
+    for x0, y0, x1, y1, depth in tree_segments():
+        d.line([(xt + x0, gy + y0), (xt + x1, gy + y1)], fill=SAND,
+               width=max(1, round(TREE_W[depth])))
+
+
+def draw_glow(od, cx, cy):
+    """The soil gives way to light around 'of God' at the root's end."""
+    for r, a in ((130, 16), (104, 26), (80, 38), (58, 54), (40, 74),
+                 (26, 96)):
+        od.ellipse([cx - r, cy - r, cx + r, cy + r], fill=HL + (a,))
+
+
+# The WebP rendering that used to live here has been removed: the app reads
+# the SVGs natively, so the raster path was building animated images nobody
+# ever fetched. What remains is what this file is actually for — Luke 3's
+# name extraction, its grid, and the root/strata geometry that
+# generate_luke3_svg.py imports and draws.
 
 if __name__ == "__main__":
     codes = [code for code, *_ in TRANSLATIONS]

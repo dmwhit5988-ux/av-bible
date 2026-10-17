@@ -1,79 +1,139 @@
-"""Render Matthew 1:1-17 as per-verse vector SVGs — the vector twin of the
-Matthew genealogy WebP animations (generate_matthew1.py).
+"""Render Matthew 1 as per-verse vector SVGs — genealogy on the real tree,
+Nativity in figures.
 
-Reuses that generator's exact drawing (draw_frame_on) and name-resolution, so
-the same three-column layout and the same set of translation-suffixed files
-(Matthew_1_2.KJV.svg ...) come out. The static columns/dots/names go on a
-plain SvgLayer; the growing per-verse connector goes on an SvgAnimLayer, so it
-draws itself in once and then holds — the WebP's "play once, no flashing"
-motion.
-
-Run inside the project venv:
     .venv\\Scripts\\python.exe generate_matthew1_svg.py
+    .venv\\Scripts\\python.exe generate_matthew1_svg.py --dry
+    .venv\\Scripts\\python.exe generate_matthew1_svg.py --out DIR
+
+THE DESIGN. Matthew 1 is two chapters wearing one number, and it gets two
+drawings.
+
+Verses 1-17 are a CAMERA OVER THE OLD TESTAMENT FAMILY TREE — the same
+welded Adam-to-Jaddua tree that 1 Chronicles 1-9 is read against
+(`chronicles_tree` + `ot_grafts`, drawn by `generate_ot_family_tree_svg`).
+That works because it turns out to be literally true: Abraham to Zerubbabel
+is one unbroken parent-child chain already standing on that sheet, thirty-six
+of Matthew's forty-two names, in his order, with Tamar and Ruth already in
+place as wives. Matthew adds fifteen nodes and not one of them is in the
+middle — Rahab, Bathsheba and Uriah at the side, and twelve in a tail past
+Zerubbabel, which is to say past the end of the Old Testament. See
+`matthew_tree` for the grafts and `svg_matthew_world` for the camera.
+
+What the reader therefore watches is not a list being built but a line being
+traced down something already there, running off the bottom of the known
+world at verse 13 and ending at a name the tree could not have contained.
+Five generations Matthew skips are on the sheet, unlit, because his fourteens
+depend on the skipping; the one place he disagrees with Chronicles about a
+father is drawn as a gold arc rather than quietly resolved.
+
+Verses 18-25 are a STAGE (`svg_matthew_nativity`): Joseph, Mary, an angel and
+a child, on one ground line, with the bond between the two of them betrothed,
+cut, and made — and the last inch of the genealogy's thread coming down onto
+Joseph, lit on the verse that calls him "son of David".
+
+TRANSLATIONS. The previous design emitted a variant per translation because
+its boxes carried Matthew's spellings and the KJV reads Booz, Roboam, Ozias,
+Salathiel. This one carries the TREE's names, which are the Old Testament's,
+and gives the four that differ most the doubled label the chart already uses
+for Abram · Abraham — Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah,
+Azariah · Uzziah. So one set of files serves every translation, and any
+listener hears a name they can find on the sheet.
+
+(The fractal-tree design this replaces is in backups/matthew1_fractal_tree/,
+with its rendered files. See the README there to restore it.)
 """
 
 import os
-import time
+import sys
 
-from svg_surface import SvgCanvas, SvgLayer, SvgAnimLayer
-from generate_tabernacle import W, H, BG, out_path
-from generate_matthew1 import (
-    build_specs, first_read_map, draw_frame_on, MT_KEYS, MT_VARIANTS,
-)
-from generate_genealogy import resolve_names
-from passages import PassageError, TRANSLATIONS
+from generate_tabernacle import out_path
+from svg_matthew_nativity import NativityFrame, VERSES as NATIVITY_VERSES
+from svg_matthew_world import (BOOK, CHAPTER, MatthewFrame,
+                               MatthewWorld)
 
-DUR = "2.6s"
+REPO = os.path.dirname(os.path.abspath(__file__))
+BACKUP = os.path.join(REPO, "backups", "matthew1_fractal_tree")
 
 
-def render_verse_svg(verse, spec, specs, names, first_read):
-    base, over = SvgLayer(), SvgAnimLayer(dur=DUR)
-    draw_frame_on(base, over, verse, spec, specs, names, first_read, t=1.0)
-    c = SvgCanvas(W, H, bg=BG)
-    c.raw(base.elements())
-    c.raw(over.elements())
-    return c
+def stale_files(out_dir):
+    """Files the previous design left behind that this one does not write.
+
+    The old renderer emitted a variant per translation (Matthew_1_5.KJV.svg
+    and seven more) and a still twin for each. The app resolves a verse's
+    picture most-specific-first, so leaving those in place would serve a KJV
+    reader the OLD graphic and everyone else the new one — the two designs
+    interleaved, verse by verse. They go.
+    """
+    keep = {f"Matthew_{CHAPTER}_{v}.svg" for v in range(1, 26)}
+    keep |= {f"Matthew_{CHAPTER}_{v}.still.svg" for v in range(1, 26)}
+    if not os.path.isdir(out_dir):
+        return []
+    return [f for f in sorted(os.listdir(out_dir))
+            if f.endswith(".svg") and f not in keep]
 
 
-def render_chapter(names, suffix):
-    specs = build_specs(names)
-    first_read = first_read_map(specs)
-    total = 0
-    for verse, spec in sorted(specs.items()):
-        c = render_verse_svg(verse, spec, specs, names, first_read)
-        out = out_path("Matthew", 1, f"Matthew_1_{verse}{suffix}.svg")
-        c.save(out)
-        total += os.path.getsize(out)
-    return len(specs), total
+def main(argv):
+    dry = "--dry" in argv
+    out_dir = None
+    if "--out" in argv:
+        out_dir = argv[argv.index("--out") + 1]
+        os.makedirs(out_dir, exist_ok=True)
 
+    if not os.path.isdir(BACKUP):
+        print(f"refusing to run: {BACKUP} is missing — the previous design "
+              f"and its rendered files should be there before this "
+              f"overwrites them")
+        return 1
 
-def main():
-    codes = [code for code, *_ in TRANSLATIONS]
-    resolved = {}
-    for code in codes:
-        try:
-            resolved[code] = resolve_names(code, 1, MT_KEYS, book="Matthew",
-                                           variants=MT_VARIANTS)
-        except PassageError as e:
-            print(f"{code}: chapter unavailable ({e}) — skipped")
+    world = MatthewWorld()
+    x0, y0, x1, y1 = world.world_box
+    print(f"world: {len(world.nodes)} nodes, {x1 - x0:.0f} x {y1 - y0:.0f} px")
+    print(f"       {len(world.line.new)} of them added by Matthew; "
+          f"{len(world.nodes) - len(world.line.new)} standing from the "
+          f"Old Testament")
+
+    frame = MatthewFrame(world)
+    nativity = NativityFrame(narr={
+        v: world.narr.get((CHAPTER, v)) for v in NATIVITY_VERSES})
+
+    target = out_dir or os.path.dirname(
+        out_path(BOOK, CHAPTER, "Matthew_1_1.svg"))
+    stale = stale_files(target)
+
+    total = bytes_ = 0
+    first = True
+    canvases = []
+    for ch, v, scene in world.order:
+        canvases.append((v, frame.render(ch, v, scene, first)))
+        first = False
+    for v in NATIVITY_VERSES:
+        canvases.append((v, nativity.render(v)))
+
+    for v, c in canvases:
+        name = f"Matthew_{CHAPTER}_{v}.svg"
+        if dry:
+            bytes_ += len(c.tostring())
+            total += 1
             continue
-        time.sleep(0.2)
+        path = (os.path.join(out_dir, name) if out_dir
+                else out_path(BOOK, CHAPTER, name))
+        c.save(path)
+        bytes_ += os.path.getsize(path)
+        total += 1
 
-    generic = resolved["WEB"]
-    grand_files, grand_bytes = render_chapter(generic, "")
-    print(f"Matthew 1 generic: {grand_files} files")
-    for code in codes:
-        if code == "WEB" or code not in resolved:
-            continue
-        if resolved[code] == generic:
-            print(f"  {code}: matches generic spellings — skipped")
-            continue
-        n_files, n_bytes = render_chapter(resolved[code], f".{code}")
-        grand_files += n_files
-        grand_bytes += n_bytes
-        print(f"  {code}: {n_files} translation-specific files")
-    print(f"TOTAL: {grand_files} SVG files, {grand_bytes/1e3:.0f} KB")
+    if stale:
+        print(f"{len(stale)} file(s) from the previous design"
+              + ("" if dry else " removed") + f": {stale[0]} and others")
+        if not dry:
+            for f in stale:
+                os.remove(os.path.join(target, f))
+
+    print(f"TOTAL: {total} SVG files, {bytes_ / 1e6:.1f} MB "
+          f"({bytes_ / max(total, 1) / 1e3:.0f} KB each)")
+    if not dry:
+        print("next: python build_stills.py && python build_manifest.py")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv[1:]))

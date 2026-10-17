@@ -24,12 +24,13 @@ Run inside the project venv:
 import math
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, BROWN, out_path)
 from generate_tribal_maps import RIVER, WATER_TXT as FOAM
 # the garden palette, shared with Genesis 2 and 3
-from generate_genesis2_svg import GREEN, GREEN_DIM, EARTH
+from generate_genesis2_svg import GREEN, GREEN_DIM, EARTH, garden_paint
 
 
 def g(alpha):
@@ -133,92 +134,89 @@ def _g_expanse(c, x, y, w, h, lit, reached):
                dim(SAND_DIM, 170), 1.2)
 
 
+# Everything drawn on a card comes from svg_figures, so the creation days and
+# the garden of chapters 2 and 3 are populated by the same creatures. Days 1
+# and 2 are left as they were: light divided from darkness, and the waters
+# above from the waters beneath, are not things the vocabulary has, or should.
+#
+# MAN_H is the one number that matters on day 6. Everything standing on that
+# card is drawn at the scale it implies, so the ox is an ox beside the man
+# rather than a larger blob and the creeping thing creeps at its own size.
+
+MAN_H = 30.0
+
+
+def _ground(c, x, w, gy):
+    c.line((x, gy), (x + w, gy), dim(EARTH, 245), 3)
+
+
+def _fit(c, parts, x, gy, height, col, page=BG, flip=1, style=None):
+    """Draw `parts` to an overall `height`, standing on gy."""
+    y0, y1 = F.bbox((parts, 0))[2:]
+    F.draw(c, parts, x, gy, height / (y1 - y0), col, page, flip=flip,
+           style=style)
+
+
 def _g_land(c, x, y, w, h, lit, reached):
     """Day 3 — dry land out of the waters, and what grows on it."""
     gy = y + h - 5
-    col = GREEN if lit else GREEN_DIM
-    c.rect(x + w * 0.70, gy - 9, w * 0.30, 11, fill=dim(RIVER, 205))
-    c.line((x, gy), (x + w * 0.72, gy), dim(EARTH, 245), 4)
-    for dx in (0.07, 0.11, 0.15):           # grass
-        c.line((x + w * dx, gy - 1), (x + w * dx - 4, gy - 13), col, 1.8)
-    hx = x + w * 0.31                       # a seed-bearing herb
-    c.line((hx, gy), (hx, gy - 19), col, 2)
-    for s in (-1, 1):
-        c.line((hx, gy - 11), (hx + s * 6, gy - 16), col, 1.5)
-    c.circle(hx, gy - 22, 3.4, fill=GOLD if lit else dim(GOLD, 160))
-    tx = x + w * 0.53                       # a fruit tree
-    c.rect(tx - 2, gy - 15, 4, 15, fill=BROWN)
-    c.circle(tx, gy - 21, 10, fill=dim(col, 225), stroke=col, width=1.2)
-    c.circle(tx + 5, gy - 23, 2.3, fill=GOLD if lit else dim(GOLD, 160))
+    c.rect(x + w * 0.72, gy - 9, w * 0.28, 11, fill=dim(RIVER, 205))
+    _ground(c, x, w * 0.74, gy)
+    paint = garden_paint(lit)
+    for parts, fx, hgt in ((F.grass(), 0.07, 9), (F.herb(), 0.20, 15),
+                           (F.tree(fruit=3), 0.44, 32)):
+        _fit(c, parts, x + w * fx, gy, hgt, GREEN, style=paint)
 
 
 def _g_lights(c, x, y, w, h, lit, reached):
     """Day 4 — the greater light, the lesser, and the stars."""
     c.rect(x, y, w, h, fill=NIGHT, stroke=SAND_DIM, width=1)
-    sx, sy, r = x + w * 0.20, y + h / 2, h * 0.31
-    for i in range(8):                      # the greater light, with rays
-        a = math.radians(i * 45)
-        c.line((sx + math.cos(a) * (r + 3), sy + math.sin(a) * (r + 3)),
-               (sx + math.cos(a) * (r + 9), sy + math.sin(a) * (r + 9)),
-               GOLD if lit else dim(GOLD, 160), 1.6)
-    c.circle(sx, sy, r, fill=GOLD if lit else dim(GOLD, 175))
-    mx = x + w * 0.48                       # the lesser light, a crescent
-    c.circle(mx, sy, h * 0.23, fill=dim(SILVER, 225))
-    c.circle(mx + h * 0.11, sy - h * 0.04, h * 0.21, fill=NIGHT)
-    for dx, dy in ((0.68, 0.24), (0.76, 0.62), (0.84, 0.34),
-                   (0.64, 0.74), (0.92, 0.68), (0.90, 0.22)):
-        c.circle(x + w * dx, y + h * dy, 1.9, fill=HL if lit else SAND)
-
-
-def _bird(c, x, y, col):
-    c.polyline([(x - 8, y), (x - 3, y - 5), (x + 1, y - 1)], stroke=col,
-               width=1.8)
-    c.polyline([(x + 1, y - 1), (x + 5, y - 6), (x + 10, y)], stroke=col,
-               width=1.8)
-
-
-def _fish(c, x, y, col):
-    c.ellipse(x, y, 7, 3.6, fill=dim(col, 165), stroke=col, width=1.1)
-    c.polygon([(x - 7, y), (x - 12, y - 3.5), (x - 12, y + 3.5)], fill=col)
+    cy = y + h / 2
+    F.draw(c, F.sun(), x + w * 0.16, cy, h * 0.0125,
+           GOLD if lit else dim(GOLD, 175), NIGHT)
+    F.draw(c, F.moon(), x + w * 0.36, cy, h * 0.0125, SILVER, NIGHT)
+    for dx, dy, r in ((0.60, 0.30, 0.011), (0.70, 0.66, 0.008),
+                      (0.80, 0.36, 0.010), (0.88, 0.70, 0.007),
+                      (0.94, 0.28, 0.009)):
+        F.draw(c, F.star(), x + w * dx, y + h * dy, h * r,
+               HL if lit else SAND, NIGHT)
 
 
 def _g_swarms(c, x, y, w, h, lit, reached):
-    """Day 5 — birds in the expanse, and the swarming seas."""
-    wl = y + h * 0.54
+    """Day 5 — fowl in the open firmament, and the swarming seas.
+
+    The birds are drawn in profile rather than from below: this card is a
+    band of sky read edge on, and a bird seen from beneath has a spread but
+    no heading, so a skyful of them sits still. Three attitudes and three
+    sizes, because a flock all at one point of one stroke reads as wallpaper.
+    """
+    wl = y + h * 0.52
     col = HL if lit else SAND
     c.rect(x, wl, w, y + h - wl, fill=dim(RIVER, 215))
-    wave = [(x + w * i / 12, wl + (2.5 if i % 2 else -2.5))
-            for i in range(13)]
-    c.polyline(wave, stroke=dim(FOAM, 200), width=1.5)
-    for bx, by in ((0.16, 0.22), (0.33, 0.11), (0.50, 0.28)):
-        _bird(c, x + w * bx, y + h * by, col)
-    for fx, fy in ((0.26, 0.78), (0.48, 0.90), (0.70, 0.74),
-                   (0.88, 0.86)):
-        _fish(c, x + w * fx, y + h * fy, col)
+    for fx, fy, s, pose, rot in ((0.10, 0.30, 0.20, "up", 0.06),
+                                 (0.26, 0.16, 0.15, "glide", -0.10),
+                                 (0.41, 0.34, 0.12, "down", 0.08)):
+        F.draw(c, F.bird(pose=pose, view="profile"), x + w * fx,
+               y + h * fy, s, col, BG, rot=rot)
+    for fx, fy, s, fl in ((0.60, 0.72, 0.36, 1), (0.76, 0.88, 0.30, -1),
+                          (0.90, 0.70, 0.26, 1)):
+        F.draw(c, F.fish(), x + w * fx, y + h * fy, s, col, BG, flip=fl)
 
 
 def _g_creatures(c, x, y, w, h, lit, reached):
-    """Day 6 — the creatures of the land, and man in God's image."""
+    """Day 6 — cattle, the creeping thing, the beast, and man in God's
+    image, all at one scale."""
     gy = y + h - 5
     col = HL if lit else SAND
-    c.line((x, gy), (x + w, gy), dim(EARTH, 245), 4)
-    qx = x + w * 0.20                       # livestock
-    c.ellipse(qx, gy - 15, 14, 7, fill=dim(col, 165), stroke=col, width=1.2)
-    for dx in (-9, -4, 4, 9):
-        c.line((qx + dx, gy - 9), (qx + dx, gy - 1), col, 1.5)
-    c.circle(qx + 18, gy - 21, 4.5, fill=dim(col, 165), stroke=col, width=1.2)
-    c.line((qx - 14, gy - 17), (qx - 20, gy - 23), col, 1.5)
-    cx = x + w * 0.46                       # a creeping thing
-    c.polyline([(cx, gy - 3), (cx + 5, gy - 7), (cx + 10, gy - 3),
-                (cx + 15, gy - 7), (cx + 20, gy - 3)], stroke=col, width=1.8)
-    fx = x + w * 0.78                       # man, in God's image
-    c.circle(fx, gy - 27, 5, fill=col)
-    c.line((fx, gy - 22), (fx, gy - 10), col, 2.4)
-    c.line((fx - 7, gy - 18), (fx + 7, gy - 18), col, 2.2)
-    c.line((fx, gy - 10), (fx - 5, gy), col, 2.2)
-    c.line((fx, gy - 10), (fx + 5, gy), col, 2.2)
+    _ground(c, x, w, gy)
+    s = MAN_H / 98.0
+    for parts, fx, k in ((F.ox(), 0.17, 1.0), (F.sheep(), 0.42, 1.0),
+                         (F.serpent(raised=False), 0.60, 0.8),
+                         (F.man(), 0.86, 1.0)):
+        F.draw(c, parts, x + w * fx, gy, s * k, col, BG)
     if lit:
-        c.circle(fx, gy - 16, 19, stroke=g(0.7), width=1.5)
+        c.circle(x + w * 0.86, gy - MAN_H * 0.52, MAN_H * 0.78,
+                 stroke=g(0.7), width=1.5)
 
 
 GLYPHS = {1: _g_light, 2: _g_expanse, 3: _g_land,

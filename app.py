@@ -20,6 +20,7 @@ import config
 import coverage_studio
 import publish_studio
 import svg_studio
+import video_studio
 from books import BOOK_NAMES, chapters_in
 from passages import (Passage, PassageError, fetch_passage, fetch_esv_audio,
                       TRANSLATIONS, TRANSLATION_LABELS,
@@ -268,6 +269,7 @@ class App:
         self.svg_studio_win: tk.Toplevel | None = None
         self.publish_win: tk.Toplevel | None = None
         self.coverage_win: tk.Toplevel | None = None
+        self.video_studio_win: tk.Toplevel | None = None
         self.stage = StageController()
 
         self._build_ui()
@@ -374,6 +376,8 @@ class App:
                    command=self.open_pronunciation_tool).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="👂 Verifier",
                    command=self.open_pronunciation_check).pack(side="right", padx=(0, 6))
+        ttk.Button(bar, text="🎬 Video Studio",
+                   command=self.open_video_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🎚 Audio Renderer",
                    command=self.open_audio_studio).pack(side="right", padx=(0, 6))
         ttk.Button(bar, text="🖥 Display window",
@@ -548,6 +552,22 @@ class App:
         svg_studio.App(top, book, chapter)
         self.svg_studio_win = top
         self.set_status(f"SVG Studio opened on {book} {chapter}.")
+
+    def open_video_studio(self):
+        """Open the Video Studio as a Toplevel, pre-loaded on whatever
+        book/chapter is currently selected here."""
+        if (self.video_studio_win is not None
+                and self.video_studio_win.winfo_exists()):
+            self.video_studio_win.deiconify()
+            self.video_studio_win.lift()
+            self.video_studio_win.focus_force()
+            return
+        book = self.book_var.get()
+        chapter = self._chapter()
+        top = tk.Toplevel(self.root)
+        video_studio.App(top, book, chapter)
+        self.video_studio_win = top
+        self.set_status(f"Video Studio opened on {book} {chapter}.")
 
     def open_publish(self):
         """Open the Publish tool (stills → manifest → deploy bundle → git

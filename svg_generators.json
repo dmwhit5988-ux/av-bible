@@ -199,6 +199,60 @@
       "kind": "diagram"
     },
     {
+      "_comment": "One family for one chapter. Exodus 28 is a build list - v4 names the six garments, then the chapter makes them in that order - so the frame is a priest dressed a garment per verse, v4's manifest ticking off down the left edge as the whole progress indicator, and a working drawing on the right. Garments are drawn in WEARING order and gated by the verse that makes them, so the coat of v39 comes out underneath the robe of v31. The garment geometry lives in svg_priest.py because Hebrews needs it too - see HEBREWS_IDEAS.md.",
+      "label": "The priestly garments (Exodus 28)",
+      "book": "Exodus",
+      "chapters": [
+        28
+      ],
+      "generator": "generate_exodus28_svg.py",
+      "spec": [
+        {
+          "file": "generate_exodus28_svg.py",
+          "edit": "TRIBES (birth order, from Genesis 29-30/35 - v10 orders them but does not list them), STONES (the twelve of vv17-20: WEB names and the drawn colours), MANIFEST (v4's list with the verse each piece finishes on), MATERIALS/MATERIAL_VERSES (the five of v5 and where the text re-names them), BP_X0/BP_Y0/BP_W with the ring and setting positions of vv23-28, and the per-verse branch in panel()"
+        },
+        {
+          "file": "svg_priest.py",
+          "edit": "Form landmarks (where each garment hangs), silhouette/body/coat/robe/ephod/sash/turban/plate_on, hem_ring (the bells and pomegranates of vv33-34), weave (the five materials as warp stripes), breastplate_plate and onyx_stone (the working drawings). Shared with Hebrews - editing one changes both books."
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
+      "_comment": "Complete - 13 chapters, 303 verses. One vertical section drawn twice: the heavenly sanctuary solid at the top, the earthly hanging below as the shadow its light casts (8:5, 9:24, 10:1). The column is 0-1000 in its own units and no verse sees all of it - each chapter sets a viewport and the gauge down the left margin says where the slice sits, which is the whole progress indicator. Chapters 7, 11 and 12 break away and set no viewport. See HEBREWS_IDEAS.md.",
+      "label": "The two sanctuaries, the road and the city (Hebrews 1-13)",
+      "book": "Hebrews",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "generator": "generate_hebrews_svg.py",
+      "spec": [
+        {
+          "file": "generate_hebrews_svg.py",
+          "edit": "U_* (the column's named stations), VIEWS (each chapter's viewport) and VIEW_BY_VERSE (chapter 13 changes viewport at v9), ENGRAVED (the 22 hinge-verse phrases), BETTER (the 11 verses carrying the word), CATENA (the seven quotations of 1:5-13), wilderness() (the shared plane of 3:7-4:11), COMMISSION/FOUNDATION/TASTED/COVENANT/FURNITURE/WITNESSES/MOUNTAIN_L/MOUNTAIN_R (the per-chapter lists, each row pinned to the verse that names it), shadow()/substance()/throne() (the two halves of the frame), city()/road() (the ch11-12 ground plane), balance() (the two weighings of 11:26 and 12:16, which share one instrument and differ only in which way it goes down), and the chN() or _chN_*() scene of the passage being changed. Chapters 6, 7, 9, 10, 12 and 13 cut between sub-scenes rather than accumulating - cramming a whole chapter into one frame is what put the field on top of the oath."
+        },
+        {
+          "file": "svg_priest.py",
+          "edit": "the vested high priest of 2:17 and the whole priesthood thread through ch10 - shared with Exodus 28, so editing one changes both books. The balance of 11:26 and 12:16 comes from svg_figures.scales(tilt)/scales_pans(tilt) instead."
+        }
+      ],
+      "translation_suffixed": false,
+      "kind": "diagram"
+    },
+    {
       "label": "The census and the camp (Numbers 1-2)",
       "book": "Numbers",
       "chapters": [
@@ -277,11 +331,19 @@
       "generator": "generate_matthew1_svg.py",
       "spec": [
         {
-          "file": "generate_matthew1.py",
-          "edit": "build_specs() verse table, MT_KEYS, MT_VARIANTS"
+          "file": "matthew_tree.py",
+          "edit": "READING verse table, PASSED, the grafts in build()"
+        },
+        {
+          "file": "svg_matthew_world.py",
+          "edit": "SECTIONS, WIVES, MatthewFrame.PANORAMA (verses 1-17)"
+        },
+        {
+          "file": "svg_matthew_nativity.py",
+          "edit": "BEATS, the stage constants (verses 18-25)"
         }
       ],
-      "translation_suffixed": true,
+      "translation_suffixed": false,
       "kind": "genealogy"
     },
     {

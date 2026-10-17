@@ -19,6 +19,7 @@ Run inside the project venv:
 
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, GOLD, HL, out_path)
@@ -218,32 +219,88 @@ def draw_edges(c, v):
             c.polyline(pts, stroke=SAND_DIM + (255,), width=2)
 
 
+# ---------------------------------------------------------------------------
+# The two brothers, and what each brought
+# ---------------------------------------------------------------------------
+#
+# The tree stays a tree: this chapter is a genealogy as much as a story, and
+# a genealogy is boxes and connectors, like Genesis 5 and 11. But the boxes
+# cannot say the thing the chapter turns on — two men, two altars, and one
+# offering not respected — and that difference used to be carried by two
+# thirty-pixel triangles, one with a flame and one with a cross. A difference
+# that small is not a difference a reader can see. It is drawn now, in the
+# column the tree leaves empty down the left.
+#
+# The people and their gear come from svg_figures at ONE scale, so the lamb
+# is a lamb's size against the man who keeps it and the altar comes to his
+# chest without anyone here having to know how tall an altar is.
+
+# The two groups are laid out to be COMPARED — side by side, each built the
+# same way: the man, his altar, and the thing he brought standing beside it.
+# The parallel is what makes the one difference between them (fire, or no
+# fire) the thing the eye lands on.
+STORY_GY = 310                  # the ground the brothers stand on
+STORY_MAN = 60                  # and how tall a man is on it
+STORY_S = STORY_MAN / (F.bbox((F.man(), 0))[3] - F.bbox((F.man(), 0))[2])
+
+LAMB_X, ABEL_ALTAR, ABEL_X = 28, 68, 104
+CAIN_X, CAIN_ALTAR, SHEAF_X = 144, 188, 228
+
+
+def put(c, parts, x, gy, col, style=None):
+    """One subject from the vocabulary, on the story's ground, at its scale."""
+    F.draw(c, parts, x, gy, STORY_S, col, BG, style=style)
+
+
+def top_of(parts):
+    """How far a subject rises above the ground, in canvas pixels — for the
+    things that are set down on top of another thing."""
+    y0, y1 = F.bbox((parts, 0))[2:]
+    return (y1 - y0) * STORY_S
+
+
 def draw_offerings(c, v):
-    """The two offerings (verses 3-5), under Abel's side of the tree."""
+    """Verses 3-5: the brothers at their altars, and the two offerings.
+
+    Abel's fire arrives at verse 4 and stays; Cain's smoke turns aside and is
+    struck out at verse 5, which is the wording's own order. From verse 8
+    Abel is no longer standing at his altar — the altar and the flock remain,
+    and the ground he stood on is where the blood comes from.
+    """
     if v < 3:
         return
-    for who, x, label, sub, verse in (
-            ("ABEL", 88, "Abel’s", None, 4),
-            ("CAIN", 238, "Cain’s", None, 3)):
-        lit = (v == verse) or (who == "CAIN" and v == 5)
-        accepted = (who == "ABEL")
-        y = 250
-        col = HL if lit else (TEXT if v >= verse else TEXT_DIM)
-        # a small altar mound
-        c.polygon([(x - 18, y + 10), (x + 18, y + 10), (x + 12, y - 2),
-                   (x - 12, y - 2)],
-                  fill=dim(SAND_DIM, 200), stroke=col, width=1.5)
-        if accepted:
-            flame = [(x, y - 26), (x + 7, y - 12), (x - 7, y - 12)]
-            c.polygon(flame, fill=GOLD if v >= 4 else None,
-                      stroke=GOLD if v >= 4 else SAND_DIM, width=1.5)
-        else:
-            c.polyline([(x - 6, y - 6), (x + 5, y - 14), (x - 4, y - 22)],
-                       stroke=SAND_DIM + (255,), width=1.5, dash="3,4")
-            if v >= 5:
-                c.line((x - 12, y - 24), (x + 12, y - 4), RED, 2.5)
-                c.line((x + 12, y - 24), (x - 12, y - 4), RED, 2.5)
-        c.text((x, y + 24), label, 13, col, "mm", bold=lit)
+    lit_a, lit_c = (v == 4), (v in (3, 5))
+    col_a = GOLD if v >= 4 else (HL if lit_a else TEXT)
+    col_c = HL if lit_c else TEXT
+
+    # --- Abel: the firstlings of his flock, and fire on the altar. He arrives
+    # a verse after Cain because that is the order the chapter brings them in
+    # — Cain at 3, Abel at 4 — and for one frame the left half is empty,
+    # which is the text's own shape and not a gap in the drawing.
+    if v >= 4:
+        put(c, F.sheep(lamb=True), LAMB_X, STORY_GY, col_a)
+        put(c, F.altar("stone", fire=True), ABEL_ALTAR, STORY_GY, col_a)
+        if v < 8:
+            put(c, F.man(), ABEL_X, STORY_GY, HL if lit_a else TEXT)
+        c.text(((LAMB_X + ABEL_X) / 2, STORY_GY + 24),
+               "firstlings of his flock", 10.5,
+               GOLD if lit_a else TEXT_DIM, "mm", italic=True)
+
+    # --- Cain: the fruit of the ground, and no fire
+    put(c, F.man(), CAIN_X, STORY_GY, HL if lit_c else TEXT)
+    put(c, F.altar("stone", fire=False), CAIN_ALTAR, STORY_GY, col_c)
+    herb = F.herb()
+    for ox, k in ((-11, 1.05), (1, 1.22), (12, 0.96)):   # sheaves, set down
+        F.draw(c, herb, SHEAF_X + ox, STORY_GY, STORY_S * k,
+               GOLD if lit_c else TEXT_DIM, BG, flip=1 if ox < 1 else -1)
+    if v >= 5:                                   # the offering not respected
+        top = STORY_GY - top_of(F.altar("stone")) - 4
+        c.line((CAIN_ALTAR - 24, top), (CAIN_ALTAR + 24, STORY_GY - 4),
+               RED, 2.5)
+        c.line((CAIN_ALTAR + 24, top), (CAIN_ALTAR - 24, STORY_GY - 4),
+               RED, 2.5)
+    c.text(((CAIN_X + SHEAF_X) / 2, STORY_GY + 24), "fruit of the ground",
+           10.5, GOLD if lit_c else TEXT_DIM, "mm", italic=True)
 
 
 def draw_murder(c, v):
@@ -260,10 +317,36 @@ def draw_murder(c, v):
     c.polygon([(ax1 + 2, 176), (ax1 + 14, 171), (ax1 + 14, 181)],
               fill=RED if v == 8 else dim(RED, 190))
     if 10 <= v <= 12:
-        # below the two offerings, so it never lands on the altars
-        bx = (ax0 + ax1) / 2
-        c.polyline([(bx, 348), (bx - 8, 330), (bx + 7, 312)],
+        # out of the ground Abel was standing on, which is now the empty
+        # place beside his altar
+        c.polyline([(ABEL_X, STORY_GY - 2), (ABEL_X - 9, STORY_GY - 26),
+                    (ABEL_X + 8, STORY_GY - 50)],
                    stroke=BLOOD, width=2.5, dash="3,4")
+
+
+def draw_trades(c, v):
+    """Verses 20-22: what Lamech's three sons were the father of.
+
+    The boxes name the trades in six italic words; the strip below draws
+    them. Naamah is given no trade in the text and is given none here — the
+    gap in the row is the text's own.
+    """
+    # Fitted to HEIGHT, not width: the strip is 41 pixels tall and these three
+    # have wildly different proportions — sized by width the sword ran off the
+    # page while the tent stayed a smear.
+    ty = CHILD_Y + CHILD_H / 2 + 34
+    for key, parts, intro, h in (("JABAL", F.tent(), 20, 22),
+                                 ("JUBAL", F.harp(), 21, 27),
+                                 ("TUBAL", F.sword(), 22, 30)):
+        if v < intro:
+            continue
+        for ck, _l, _lines, cx, _i in CHILDREN:
+            if ck == key:
+                break
+        lit = key in set(LIT.get(v, ()))
+        y0, y1 = F.bbox((parts, 0))[2:]
+        F.draw(c, parts, cx, ty, h / (y1 - y0),
+               GOLD if lit else SAND_DIM, BG)
 
 
 def draw_chips(c, v):
@@ -340,6 +423,7 @@ def render(v):
     draw_offerings(c, v)
     draw_murder(c, v)
     draw_chips(c, v)
+    draw_trades(c, v)
     draw_nodes(c, v)
     draw_panel(c, v)
     return c

@@ -31,11 +31,15 @@ Run inside the project venv:
 import math
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
-                                 TEXT_DIM, GOLD, HL, BROWN, out_path)
-# the garden's own palette, so chapters 2 and 3 read as one place
-from generate_genesis2_svg import GREEN, GREEN_DIM, EARTH, RED
+                                 TEXT_DIM, GOLD, HL, BROWN, out_path,
+                                 feathered_wing)
+# the garden's own palette AND its drawing helpers, so chapters 2 and 3 put
+# the same man, the same woman and the same trees in the same garden
+from generate_genesis2_svg import (GREEN, GREEN_DIM, EARTH, RED,
+                                   FIGURE_SCALE, put_tree, put_person)
 
 def g(alpha):
     return HL + (int(255 * alpha),)
@@ -149,11 +153,7 @@ LEDGER = [
 def tree(c, x, base, r, lit=False, forbidden=False, dead=False,
          label=None, ring=False):
     cy = base - r - 8
-    trunk = BROWN if not lit else GOLD
-    c.rect(x - 4, cy + r - 2, 8, base - cy - r + 2, fill=trunk)
-    canopy = dim(GREEN, 235) if not dead else dim(EARTH, 220)
-    c.circle(x, cy, r, fill=canopy, stroke=HL if lit else GREEN_DIM,
-             width=2.5 if lit else 1.5)
+    put_tree(c, x, base, 2 * r + 8, lit, dead)
     if ring:
         c.circle(x, cy, r + 8, stroke=g(0.85), width=2)
     if forbidden:
@@ -165,21 +165,20 @@ def tree(c, x, base, r, lit=False, forbidden=False, dead=False,
 
 
 def figure(c, x, y, lit=True, covering=None, hiding=False, label=None,
-           scale=1.0):
-    """A schematic figure. `covering` = None | 'leaves' | 'skins'."""
+           scale=1.0, woman=False):
+    """The man, or — with `woman` — the woman. `covering` is None before verse
+    7, 'leaves' from 7, 'skins' from 21, and it is drawn ON the body rather
+    than as a rectangle laid over it, which is what the chapter is about.
+
+    `y` is the waist the schematic figure hung from; the drawn one stands on
+    its feet, so the feet go where that figure's feet were and nothing in the
+    garden has to move.
+    """
     col = HL if lit else (TEXT_DIM if not hiding else dim(TEXT_DIM, 130))
-    h = 15 * scale
-    c.circle(x, y - h - 7 * scale, 5.5 * scale, fill=col)
-    c.line((x, y - h), (x, y), col, 2.6)
-    c.line((x - 7 * scale, y - h + 5), (x + 7 * scale, y - h + 5), col, 2.4)
-    c.line((x, y), (x - 5.5 * scale, y + 10 * scale), col, 2.4)
-    c.line((x, y), (x + 5.5 * scale, y + 10 * scale), col, 2.4)
-    if covering:
-        fill = GREEN if covering == "leaves" else BROWN
-        c.rect(x - 8 * scale, y - 9 * scale, 16 * scale, 10 * scale,
-               fill=fill, stroke=SAND_DIM, width=1)
+    put_person(c, x, y + 10 * scale, 37.5 * scale * FIGURE_SCALE, col, woman,
+               covering)
     if label:
-        c.text((x, y + 24 * scale), label, 12, col, "mt", italic=True)
+        c.text((x, y + 10 * scale + 14), label, 12, col, "mt", italic=True)
 
 
 def eyes(c, x, y, opened):
@@ -274,16 +273,19 @@ def draw_garden_body(c, v, expelled=False):
 
     # the serpent, tracing itself along the branch
     if v <= 13:
-        snake = [(432, 340), (410, 330), (388, 338), (366, 352), (348, 372),
-                 (336, 396), (332, 420)]
-        if v == 1:
-            c.traced(snake, stroke=dim(SAND, 240), width=4, dur="2.2s")
-        elif v <= 5 or v == 13:
-            c.polyline(snake, stroke=dim(SAND, 200), width=3)
-        else:
-            c.polyline(snake, stroke=dim(SAND_DIM, 220), width=2)
-        c.circle(snake[-1][0], snake[-1][1], 4.5,
-                 fill=HL if (v <= 5 or v == 13) else dim(SAND_DIM, 220))
+        # It stops on the branch above her rather than reaching down to where
+        # she stands: the head is the one part of a snake that has to be seen,
+        # and the drawn woman is tall enough to hide it. The verse has it
+        # speaking to her from the tree in any case.
+        snake = [(432, 340), (410, 330), (388, 338), (366, 352), (348, 372)]
+        live = (v <= 5 or v == 13)
+        col = dim(SAND, 240) if v == 1 else (
+            dim(SAND, 200) if live else dim(SAND_DIM, 220))
+        head = snake[-1]
+        # head-first, in units of the page, which is what a supplied spine is
+        spine = [(px - head[0], head[1] - py) for px, py in snake[::-1]]
+        F.draw(c, F.serpent(spine=spine, girth=11 if live else 8),
+               head[0], head[1], 1.0, col, BG)
 
     # verse 6: the fruit passing from the tree to her, and from her to him
     if v == 6:
@@ -302,7 +304,7 @@ def draw_garden_body(c, v, expelled=False):
     elif v >= 7:
         covering = "leaves"
     if expelled and v >= 23:
-        figure(c, *OUT_W, lit=True, covering=covering)
+        figure(c, *OUT_W, lit=True, covering=covering, woman=True)
         figure(c, *OUT_M, lit=True, covering=covering)
     else:
         wx, wy = WOMAN_XY
@@ -310,13 +312,16 @@ def draw_garden_body(c, v, expelled=False):
         if hiding:                      # behind the trees
             wx, mx = 250, 292
         figure(c, wx, wy, lit=(v in (2, 3, 6, 7, 13, 16, 20)),
-               covering=covering, hiding=hiding,
+               covering=covering, hiding=hiding, woman=True,
                label="Eve" if v >= 20 else None)
         figure(c, mx, my, lit=(v in (6, 7, 10, 12, 17)), covering=covering,
                hiding=hiding)
         if v >= 5:
-            eyes(c, wx, wy - 44, opened=(v >= 7))
-            eyes(c, mx, my - 44, opened=(v >= 7))
+            # clear of the crown of the drawn head, which is taller than the
+            # schematic figure's was
+            ey = 10 - 37.5 * FIGURE_SCALE - 13
+            eyes(c, wx, wy + ey, opened=(v >= 7))
+            eyes(c, mx, my + ey, opened=(v >= 7))
 
     # the east gate
     if expelled:
@@ -324,24 +329,57 @@ def draw_garden_body(c, v, expelled=False):
         col = GOLD if gate_open else SAND_DIM
         c.line((GATE_X, GATE_Y - 40), (GATE_X + 16, GATE_Y - 40), col, 2.5)
         c.line((GATE_X, GATE_Y + 40), (GATE_X + 16, GATE_Y + 40), col, 2.5)
-        c.text((GATE_X + 8, GATE_Y + 56), "the east", 11, TEXT_DIM, "mt",
+        # clear of the lower guardian, who stands below the gate post
+        c.text((GATE_X + 8, GATE_Y + 102), "the east", 11, TEXT_DIM, "mt",
                italic=True)
         if v == 23:
             c.polyline([(GX + 90, GY), (GATE_X + 40, GY)], stroke=GOLD,
                        width=2, dash="5,5")
         if v == 24:
-            cherub(c, GATE_X + 14, GATE_Y - 62)
-            cherub(c, GATE_X + 14, GATE_Y + 62)
+            cherub(c, GATE_X + 8, GATE_Y - 70)
+            cherub(c, GATE_X + 8, GATE_Y + 70)
             sword(c, GATE_X + 46, GATE_Y)
 
 
+# --- the guardians at the gate ---------------------------------------------
+#
+# The same creature as the mercy seat's pair, turned to face the way it keeps:
+# the wing comes from generate_tabernacle.feathered_wing, so Genesis 3 and
+# Exodus 25 draw one cherub, not two unrelated emblems. Local units run x
+# across and y up from the feet; the body is given once and the wing twice,
+# mirrored, since a guardian seen head-on is symmetrical.
+
+CH_BODY = [(-7, 0), (-5.4, 6), (-4.0, 12), (-3.6, 16), (-5.4, 21),
+           (-4.6, 23.5), (-1.8, 25), (1.8, 25), (4.6, 23.5), (5.4, 21),
+           (3.6, 16), (4.0, 12), (5.4, 6), (7, 0)]
+CH_HEAD = ((0, 29.5), 4.0)
+CH_MANTLE = [(-5.2, 21.5), (0, 19.8), (5.2, 21.5)]
+CH_BELT = [(-4.0, 14), (0, 13.4), (4.0, 14)]
+CH_FOLDS = [[(-2.2, 13), (-2.6, 6), (-2.2, 0.6)],
+            [(2.2, 13), (2.6, 6), (2.2, 0.6)]]
+CH_WING = dict(root=(2, 23), lc1=(6, 36), lc2=(16, 50), tip=(22, 54),
+               tc1=(17, 34), tc2=(8, 22), heel=(3, 15),
+               feathers=6, lobe=1.1, quills=(2, 4))
+CH_FEET = 26                    # the feet sit this far below the given centre
+
+
 def cherub(c, x, y):
-    """A guardian: a narrow body between two upswept wings."""
-    c.polygon([(x, y - 14), (x + 6, y), (x, y + 14), (x - 6, y)],
-              fill=dim(SILVER, 210), stroke=SILVER, width=1.4)
-    for s in (-1, 1):
-        c.path(f"M{x + s * 6},{y - 4} Q{x + s * 24},{y - 16} "
-               f"{x + s * 20},{y + 8}", fill=None, stroke=SILVER, width=2)
+    """A guardian at the east gate: a robed figure facing the way it keeps,
+    both wings raised."""
+    def P(pts, sx=1):
+        return [(x + sx * px, y + CH_FEET - py) for px, py in pts]
+
+    outline, quills = feathered_wing(**CH_WING)
+    for sx in (-1, 1):
+        c.polygon(P(outline, sx), fill=dim(SILVER, 38), stroke=SILVER,
+                  width=1.3)
+        for q in quills:
+            c.polyline(P(q, sx), stroke=dim(SILVER, 150), width=1)
+    c.polygon(P(CH_BODY), fill=dim(SILVER, 70), stroke=SILVER, width=1.4)
+    (hx, hy), r = CH_HEAD
+    c.circle(x + hx, y + CH_FEET - hy, r, fill=SILVER)
+    for pts in [CH_MANTLE, CH_BELT] + CH_FOLDS:
+        c.polyline(P(pts), stroke=dim(SILVER, 190), width=1)
 
 
 def _tongue(a_deg, r0, r1, sweep, half):

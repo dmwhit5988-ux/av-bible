@@ -24,7 +24,8 @@ import os
 import re
 import time
 
-from PIL import Image, ImageDraw
+
+import svg_figures as F
 
 from generate_tabernacle import (W, H, BG, PANEL, SAND,
                                  SAND_DIM, TEXT, TEXT_DIM, HL,
@@ -325,6 +326,122 @@ def node_y(i):
     return CHAIN_TOP + i * CHAIN_STEP
 
 
+# ---------------------------------------------------------------------------
+# Genesis 5's gutter
+# ---------------------------------------------------------------------------
+#
+# Between the name chain and the timeline there is a column of empty page.
+# Chapter 5 has one thing to say that the numbers cannot: eight men are
+# reported dead in the same eight words, and one is not. So a tomb lands in
+# the gutter on each "and he died" and stays; Enoch's row never gets one and
+# empties upward instead; and while Adam is still alive the pair created male
+# and female stand on his row, giving way to his tomb at 5:5.
+#
+# Genesis 11 shares this drawing and gets none of it — no refrain, no Enoch —
+# so everything here is gated on the chapter.
+#
+# Noah's row is deliberately left bare: 5:32 already branches Shem, Ham and
+# Japheth across this very gutter as named nodes.
+
+GUT_X = 296                       # clear of the longest name, left of TL_X0
+G5_DIED = {5: 0, 8: 1, 11: 2, 14: 3, 17: 4, 20: 5, 27: 7, 31: 8}
+
+
+def blit(layer, parts, x, gy, s, ink, flip=1):
+    """Draw svg_figures parts onto a PIL-shaped surface.
+
+    The vocabulary emits (kind, data, material) for an SvgCanvas; this maps
+    those onto the ellipse/polygon/line the genealogy's two backends both
+    already speak, so one call works for the raster loop and the vector build
+    alike.
+    """
+    sheet = F.palette(tuple(ink[:3]), BG)
+    for kind, data, mat in parts:
+        fill, stroke, wd = sheet.get(mat, sheet["rule"])
+        w = max(1, int(round(wd)))
+        if kind == "dot":
+            (cx, cy), = F.place([(data[0], data[1])], x, gy, s, flip)
+            r = data[2] * s
+            layer.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill,
+                          outline=stroke, width=w)
+        elif kind == "fill":
+            layer.polygon(F.place(data, x, gy, s, flip), fill=fill,
+                          outline=stroke, width=w)
+        else:
+            layer.line(F.place(data, x, gy, s, flip), fill=stroke, width=w)
+
+
+def _fit_h(parts, h):
+    y0, y1 = F.bbox((parts, 0))[2:]
+    return h / (y1 - y0)
+
+
+def draw_g5_gutter(d, verse):
+    """The chapter's own shape, drawn beside the names. Chapter 5 only."""
+    if 2 <= verse < 5:                    # male and female he created them
+        col = HL if verse == 2 else SAND + (190,)
+        for make, dx, h in ((F.man, -15, 36), (F.woman, 15, 34)):
+            parts = make()
+            blit(d, parts, GUT_X + dx, node_y(0) + 15, _fit_h(parts, h), col)
+
+    tomb = F.tomb()
+    for at, row in G5_DIED.items():
+        if verse >= at:
+            col = HL if verse == at else SAND_DIM + (140,)
+            blit(d, tomb, GUT_X, node_y(row) + 12, _fit_h(tomb, 26), col)
+
+    if verse >= 24:                       # and he was not, for God took him
+        col = HL if verse == 24 else SAND + (140,)
+        man = F.man(arms="up")
+        blit(d, man, GUT_X, node_y(6) + 13, _fit_h(man, 30), col)
+        for k in range(3):
+            yy = node_y(6) - 9 - k * 7
+            d.line([(GUT_X - 8 + k * 2, yy), (GUT_X + 8 - k * 2, yy)],
+                   fill=col, width=2)
+
+
+# Genesis 11 has a refrain of its own and it is NOT Genesis 5's. There is no
+# "and he died" here at all: eight times over the formula ends "and he became
+# the father of sons and daughters", and then stops saying it. So this gutter
+# fills with children on exactly the verses that say so — while the bars
+# beside them collapse from six hundred years to a hundred and forty-eight.
+# Then Terah's grave, the one death the chapter records, and then Abram and
+# Sarai with nothing between them. The line multiplies for eight generations
+# and runs out at the ninth, which is the whole reason the chapter exists.
+
+G11_SONS = {11: 0, 13: 1, 15: 2, 17: 3, 19: 4, 21: 5, 23: 6, 25: 7}
+G11_BROOD = (3, 2, 3, 3, 2, 3, 2, 3)   # fixed, so no row reshuffles per build
+G11_TERAH, G11_ABRAM = 8, 9
+
+
+def draw_g11_gutter(d, verse):
+    """Chapter 11 only. See G5's gutter above for the shared reasoning."""
+    child = F.child()
+    for at, row in G11_SONS.items():
+        if verse < at:
+            continue
+        col = HL if verse == at else SAND_DIM + (150,)
+        n = G11_BROOD[row]
+        for k in range(n):
+            dx = (k - (n - 1) / 2) * 19
+            blit(d, child, GUT_X + dx, node_y(row) + 11,
+                 _fit_h(child, 21 if k % 2 else 23), col)
+
+    if verse >= 30:                       # Sarai was barren; she had no child
+        col = HL if verse == 30 else SAND + (150,)
+        for make, dx, h in ((F.man, -22, 34), (F.woman, 22, 32)):
+            p = make()
+            blit(d, p, GUT_X + dx, node_y(G11_ABRAM) + 14, _fit_h(p, h), col)
+        r, cy = 7, node_y(G11_ABRAM) + 2   # the place a child would be, empty
+        d.ellipse([GUT_X - r, cy - r, GUT_X + r, cy + r],
+                  outline=SAND_DIM + (150,), width=1)
+
+    if verse >= 32:                       # Terah died in Haran
+        col = HL if verse == 32 else SAND_DIM + (150,)
+        tomb = F.tomb()
+        blit(d, tomb, GUT_X, node_y(G11_TERAH) + 12, _fit_h(tomb, 26), col)
+
+
 def focus_bar(od, xb, y, x_start, x_final, grow, fill, outline):
     """The current person's lifespan bar, drawn onto overlay `od`.
 
@@ -344,15 +461,10 @@ def focus_bar(od, xb, y, x_start, x_final, grow, fill, outline):
                      fill=fill, outline=outline, width=2)
 
 
-def draw_frame(cd, verse, spec, names, t):
-    """Raster frame: composite an animated overlay over the static base."""
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
-    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    od = ImageDraw.Draw(overlay)
-    draw_frame_on(d, od, cd, verse, spec, names, t)
-    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
-
+# The WebP rendering that used to live here has been removed: the app reads
+# the SVGs natively, so the raster frames were built for nobody. draw_frame_on
+# below is kept and is the real drawing — generate_genealogy_svg.py calls it
+# with SVG layers instead of PIL surfaces.
 
 def draw_frame_on(d, od, cd, verse, spec, names, t):
     """Draw one genealogy frame onto base `d` and overlay `od` at phase `t`.
@@ -368,6 +480,11 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
     d.text((28, 20), cd.title, font=F_TITLE, fill=TEXT)
     # (no caption line: the verse is narrated aloud, so the graphic carries
     # only names, years and the chain — specs still hold `caption` data)
+
+    if cd.chapter == 5:
+        draw_g5_gutter(d, verse)
+    else:
+        draw_g11_gutter(d, verse)
 
     focus = spec["focus"]
     stage = spec["stage"]
@@ -529,6 +646,17 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
                 taken_mark(i, tx(dth))
             else:
                 death_cap(i, tx(dth), SAND)
+        elif (born and cd.ages[i] is not None
+              and cd.fathered_verses[i] is not None
+              and verse >= cd.fathered_verses[i]):
+            # What has already been drawn stays drawn. Terah is named at
+            # 11:26 and not buried until 11:32, and in between the focus
+            # moves to Abram — so his bar used to appear, vanish for 11:29
+            # and 11:30, then come back, which reads as a glitch rather than
+            # as a life. Everyone else goes straight from focus to done, so
+            # this branch changes nothing for them.
+            d.rectangle([tx(b), y - BAR_H, tx(b + cd.ages[i]), y + BAR_H],
+                        outline=SAND_DIM, width=2)
         elif born:
             xb = tx(b)
             d.ellipse([xb - 3, y - 3, xb + 3, y + 3], outline=SAND_DIM,
@@ -536,21 +664,6 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
 
     d.text((28, H - 26), "years as given in the text", font=F_SMALL,
            fill=TEXT_DIM)
-
-
-def render_chapter(chapter, names, suffix):
-    cd = ChapterData(chapter)
-    specs = build_g5_specs(names) if chapter == 5 else build_g11_specs(names)
-    total_bytes = 0
-    for verse, spec in sorted(specs.items()):
-        frames = [draw_frame(cd, verse, spec, names, i / (G_FRAMES - 1))
-                  for i in range(G_FRAMES)]
-        out = out_path("Genesis", chapter,
-                       f"Genesis_{chapter}_{verse}{suffix}.webp")
-        frames[0].save(out, save_all=True, append_images=frames[1:],
-                       duration=G_FRAME_MS, loop=1, quality=82, method=4)
-        total_bytes += os.path.getsize(out)
-    return len(specs), total_bytes
 
 
 if __name__ == "__main__":

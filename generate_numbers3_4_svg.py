@@ -41,6 +41,7 @@ Run inside the project venv:
 
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, BRONZE, BROWN, GRAY,
@@ -308,39 +309,38 @@ def _g_gershon(c, x, y, w, h, ch, v, hot_a, hot_b, hot_all):
     _label(c, x + w / 2, gy + 13, "cords & pins", court_lit)
 
 
+# The six holy things, from the shared vocabulary rather than six sets of
+# rectangles. Each is fitted to a WIDTH, because the cell they sit in is a
+# fixed 53 pixels across and it is the width that has to be respected; their
+# own proportions then decide the height.
+#
+# The two altars are the same subject at two sizes, and deliberately so: both
+# are horned altars, and the text's difference between them is one of size
+# and metal, not of shape — five cubits square in bronze against one cubit in
+# gold. The labels under them carry the rest.
+HOLY_PARTS = {
+    "ark": (lambda: F.ark(), 46),
+    "table": (lambda: F.table(), 42),
+    "lamp stand": (lambda: F.lampstand(), 40),
+    "gold altar": (lambda: F.altar("horned"), 24),
+    "bronze altar": (lambda: F.altar("horned"), 42),
+}
+
+
 def _holy_icon(c, item, cx, base, col):
     """A drawing of one piece of the sanctuary furniture, sitting on `base`."""
-    if item == "ark":
-        c.rect(cx - 16, base - 20, 32, 17, fill=None, stroke=col, width=1.5)
-        c.line((cx - 19, base - 20), (cx + 19, base - 20), col, 2)
-        c.line((cx - 21, base - 8), (cx + 21, base - 8), col, 1.3)  # the poles
-    elif item == "table":
-        c.line((cx - 16, base - 17), (cx + 16, base - 17), col, 2)
-        for dx in (-13, 13):
-            c.line((cx + dx, base - 17), (cx + dx, base), col, 1.4)
-        for dx in (-8, 0, 8):
-            c.circle(cx + dx, base - 21, 3, fill=None, stroke=col, width=1.1)
-    elif item == "lamp stand":
-        c.line((cx, base), (cx, base - 21), col, 1.8)
-        for s in (-1, 1):
-            for r in (7, 12):
-                c.line((cx, base - 10), (cx + s * r, base - 21), col, 1.2)
-                c.circle(cx + s * r, base - 23, 2.1, fill=col)
-        c.circle(cx, base - 23, 2.1, fill=col)
-    elif item == "gold altar":
-        c.rect(cx - 10, base - 18, 20, 18, fill=None, stroke=col, width=1.5)
-        for dx in (-10, 10):
-            c.line((cx + dx, base - 18), (cx + dx, base - 23), col, 1.5)
-    elif item == "vessels":
-        c.ellipse(cx - 9, base - 7, 8, 5, fill=None, stroke=col, width=1.3)
-        c.ellipse(cx + 9, base - 11, 6.5, 4.2, fill=None, stroke=col,
-                  width=1.3)
-        c.line((cx + 1, base - 20), (cx + 6, base - 15), col, 1.3)
-    else:                                                    # bronze altar
-        c.rect(cx - 16, base - 17, 32, 17, fill=None, stroke=col, width=1.5)
-        for dx in (-16, 16):
-            c.line((cx + dx, base - 17), (cx + dx, base - 22), col, 1.5)
-        c.line((cx - 16, base - 9), (cx + 16, base - 9), dim(col, 170), 1.1)
+    if item == "vessels":
+        # the dishes, spoons, bowls and cups of 4:7 — a jar and a cup, which
+        # is as near as the vocabulary comes to a shelf of plate
+        for make, w, dx in ((F.jar, 18, -11), (F.cup, 13, 10)):
+            parts = make()
+            x0, x1 = F.bbox((parts, 0))[:2]
+            F.draw(c, parts, cx + dx, base, w / (x1 - x0), col, BG)
+        return
+    make, w = HOLY_PARTS[item]
+    parts = make()
+    x0, x1 = F.bbox((parts, 0))[:2]
+    F.draw(c, parts, cx, base, w / (x1 - x0), col, BG)
 
 
 def _g_kohath(c, x, y, w, h, ch, v, hot_a, hot_b, hot_all):

@@ -924,19 +924,8 @@ def render_32(verse, t):
 
 # ---------------------------------------------------------------------------
 
-def render_chapter(book, chapter, n_verses, renderer):
-    total = 0
-    for verse in range(1, n_verses + 1):
-        frames = [renderer(verse, i / (G_FRAMES - 1)) for i in range(G_FRAMES)]
-        out = out_path(book, chapter, f"{book}_{chapter}_{verse}.webp")
-        frames[0].save(out, save_all=True, append_images=frames[1:],
-                       duration=G_FRAME_MS, loop=1, quality=82, method=4)
-        total += os.path.getsize(out)
-    print(f"{book} {chapter}: {n_verses} files, {total/1e6:.1f} MB")
-    return total
-
-
-if __name__ == "__main__":
-    grand = render_chapter("Numbers", 34, 29, render_34)
-    grand += render_chapter("Numbers", 32, 42, render_32)
-    print(f"TOTAL {grand/1e6:.1f} MB")
+# The WebP rendering that used to close this file has been removed: the app
+# reads the SVGs natively, and generate_numbers32_svg.py / _34_svg.py draw
+# these maps from the same MapFrame and draw_* helpers above. Ten other
+# generators import this module for that shared map geometry — that is what
+# it is for now.

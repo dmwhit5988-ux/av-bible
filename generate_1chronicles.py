@@ -70,9 +70,25 @@ def CT(*nodes):
     return out
 
 
-def sc(title, lo, hi, cols, explicit=None, foot=None):
+def sc(title, lo, hi, cols, explicit=None, foot=None, places=False):
+    """One scene. `places` marks a scene whose rows are PLACE names.
+
+    Six of these chapters' scenes are allotment lists — where Simeon
+    settled, and the five lots of Levitical cities — and their rows are
+    towns, not people. The family tree carries no towns, so a reader of
+    those verses on the tree should see nothing light up, which is already
+    what happens for the seventy-odd verses whose town names are unique.
+    The flag exists for the handful that COLLIDE with a person: "they gave
+    them Hebron" was lighting Hebron the son of Kohath, and "Shechem in the
+    hill country of Ephraim" was lighting Shechem the son of Gilead.
+
+    It is a scene-level fact and not a name-level one, which is the whole
+    point — Hebron and Shechem are perfectly good people twenty verses
+    earlier in the same chapter, and a blocklist of names would put out
+    their lights too.
+    """
     return dict(title=title, verses=(lo, hi), cols=cols,
-                explicit=explicit or {}, foot=foot)
+                explicit=explicit or {}, foot=foot, places=places)
 
 
 def _node(n):
@@ -601,7 +617,7 @@ CH4 = [
          T(("~and all the villages around them, to Baal", []))],
     ], explicit={
         33: ["~and all the villages around them, to Baal"],
-    }),
+    }, places=True),
     sc("The princes of Simeon", 34, 43, [
         [T(("~princes in their families:", [
             "Meshobab", "Jamlech",
@@ -828,7 +844,7 @@ CH6 = [
         56: ["Hebron"],
         60: ["Geba", "Allemeth", "Anathoth", "~thirteen cities in all,",
              "~throughout their families"],
-    }),
+    }, places=True),
     sc("Cities allotted to the Levites", 61, 65, [
         [T(("~to the rest of the sons of Kohath, by lot:", [])),
          T(("ten cities", "out of the half-tribe of Manasseh")),
@@ -846,7 +862,7 @@ CH6 = [
         64: ["~Israel gave the Levites these cities with",
              "~their suburbs — by lot out of Judah,"],
         65: ["~Simeon, and Benjamin"],
-    }),
+    }, places=True),
     sc("Kohath's cities in Ephraim", 66, 70, [
         [T(("~some Kohathite families had cities", [])),
          T(("~out of the tribe of Ephraim:", [])),
@@ -861,7 +877,7 @@ CH6 = [
     ], explicit={
         66: ["~some Kohathite families had cities",
              "~out of the tribe of Ephraim:"],
-    }),
+    }, places=True),
     sc("Gershom's cities", 71, 76, [
         [T(("~to the sons of Gershom —", [])),
          T(("~from the half-tribe of Manasseh:", [
@@ -872,7 +888,7 @@ CH6 = [
             "Mashal", "Abdon", "Hukok", "Rehob"])),
          T(("~from Naphtali:", [
              ("Kedesh", "in Galilee"), "Hammon", "Kiriathaim"]))],
-    ], foot="every city with its suburbs"),
+    ], foot="every city with its suburbs", places=True),
     sc("Merari's cities", 77, 81, [
         [T(("~to the rest of the Levites, the sons of Merari —", [])),
          T(("~from Zebulun:", ["Rimmono", "Tabor"])),
@@ -881,7 +897,7 @@ CH6 = [
              "Kedemoth", "Mephaath"]))],
         [T(("~from Gad:", [
             ("Ramoth", "in Gilead"), "Mahanaim", "Heshbon", "Jazer"]))],
-    ], foot="every city with its suburbs"),
+    ], foot="every city with its suburbs", places=True),
 ]
 
 # ---------------------------------------------------------------------------

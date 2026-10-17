@@ -24,6 +24,7 @@ Run inside the project venv:
 
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, GOLD, HL, BROWN, out_path)
@@ -44,6 +45,53 @@ def dim(color, a):
     """`color` with an 0-255 alpha, in the (r, g, b, a) form SvgCanvas takes
     (it turns the fourth element into a fill-/stroke-opacity)."""
     return color + (int(a),)
+
+
+# ---------------------------------------------------------------------------
+# The garden's people, trees and creatures
+# ---------------------------------------------------------------------------
+#
+# Drawn from svg_figures, so chapters 2 and 3 put the same man, the same
+# woman and the same trees in the same garden. Genesis 3 imports these three
+# helpers rather than repeating them: the coupling already exists for the
+# palette, and one place to change the garden's look is the point of it.
+#
+# FIGURE_SCALE is the one number worth knowing. The schematic figures these
+# replaced stood about 35 pixels tall, which is fine for a stick and useless
+# for a drawn body — there is nowhere to put a shoulder. The pair stand on
+# their own ground line, so enlarging them moves nothing else in the plan.
+
+FIGURE_SCALE = 1.8
+
+
+def _mix(a, b, t):
+    return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
+
+
+def garden_paint(lit, dead=False):
+    """The garden's palette as a figure paint table: crown green, trunk
+    brown, fruit gold. One geometry, the scene's own colours."""
+    sheet = dict(F.palette(HL if lit else GREEN, BG))
+    sheet["wood"] = (_mix(BG, BROWN, 0.62), GOLD if lit else BROWN, 1.4)
+    sheet["fleece"] = (_mix(BG, EARTH if dead else GREEN, 0.55),
+                       HL if lit else GREEN_DIM, 2.5 if lit else 1.5)
+    sheet["fruit"] = (GOLD if lit else _mix(BG, GOLD, 0.75), GOLD, 1.0)
+    return sheet
+
+
+def put_tree(c, x, base, height, lit, dead=False, fruit=3):
+    """A tree standing on `base`, drawn to the overall `height` the layout
+    expects, so the garden's spacing does not move."""
+    parts = F.tree(fruit=0 if dead else fruit, bare=dead)
+    y0, y1 = F.bbox((parts, 0))[2:]
+    F.draw(c, parts, x, base, height / (y1 - y0), GREEN, BG,
+           style=garden_paint(lit, dead))
+
+
+def put_person(c, x, feet, height, col, woman=False, covering=None):
+    parts = F.unclothed(woman=woman, covering=covering)
+    y0, y1 = F.bbox((parts, 0))[2:]
+    F.draw(c, parts, x, feet, height / (y1 - y0), col, BG)
 
 
 # ---------------------------------------------------------------------------
@@ -118,10 +166,7 @@ def tree(c, x, y, live, lit, forbidden=False, label=None, sub=None,
     if not live:
         c.circle(x, y - 26, 20, fill=None, stroke=SAND_DIM, width=1.5)
         return
-    canopy = GREEN if not lit else GREEN
-    c.rect(x - 3, y - 22, 6, 24, fill=BROWN if not lit else GOLD)
-    c.circle(x, y - 30, 21, fill=canopy, stroke=HL if lit else GREEN_DIM,
-             width=2.5 if lit else 1.5)
+    put_tree(c, x, y + 2, 50, lit)      # canopy r 21 at y-30 => 50 overall
     if lit:
         c.circle(x, y - 30, 27, stroke=g(0.85), width=2)
     if forbidden:
@@ -135,15 +180,12 @@ def tree(c, x, y, live, lit, forbidden=False, label=None, sub=None,
         c.text((x + 36, y - 30), sub, 11, RED, "lm", italic=True)
 
 
-def figure(c, x, y, lit, label, scale=1.0):
-    """A schematic standing figure (head + body + arms)."""
+def figure(c, x, y, lit, label, scale=1.0, woman=False):
+    """The man, or — with `woman` — the woman. `y` is the waist the schematic
+    figure hung from; the drawn one stands on its feet, so the feet go where
+    that figure's feet were and nothing in the plan has to move."""
     col = HL if lit else TEXT_DIM
-    h = 13 * scale
-    c.circle(x, y - h - 6 * scale, 5 * scale, fill=col)
-    c.line((x, y - h), (x, y), col, 2.5)
-    c.line((x - 6 * scale, y - h + 4), (x + 6 * scale, y - h + 4), col, 2.5)
-    c.line((x, y), (x - 5 * scale, y + 9 * scale), col, 2.5)
-    c.line((x, y), (x + 5 * scale, y + 9 * scale), col, 2.5)
+    put_person(c, x, y + 9 * scale, 33 * scale * FIGURE_SCALE, col, woman)
     if lit:
         c.circle(x, y - 8 * scale, 24 * scale, stroke=g(0.8), width=2)
     if label:
@@ -258,7 +300,7 @@ def draw_people(c, v):
     figure(c, mx, my, lit=solo or v in (16, 17, 18, 19, 20, 21, 23),
            label="the man")
     if v >= 22:
-        figure(c, mx + 78, my, lit=(v >= 22), label="the woman")
+        figure(c, mx + 78, my, lit=(v >= 22), label="the woman", woman=True)
         c.line((mx + 16, my - 14), (mx + 62, my - 14), GOLD, 2)
         if v >= 24:
             c.text((mx + 39, my + 40), "one flesh", 13, HL, "mt", bold=True)
@@ -268,14 +310,25 @@ def draw_animals(c, v):
     if v < 19:
         return
     lit = v in (19, 20)
+    col = HL if lit else TEXT_DIM
     y = GY + 152
-    for i in range(6):
+    # Six different creatures, not one creature six times: the verse is about
+    # variety — every beast of the field and every fowl of the air — and six
+    # of one shape says a herd where six shapes say a creation.
+    #
+    # They are fitted to a common HEIGHT rather than a common scale. This is a
+    # label row, not the scale diagram, and an ox drawn truly against a bird
+    # here would leave the bird three pixels tall.
+    for i, parts in enumerate([F.ox(), F.donkey(), F.sheep(), F.lion(),
+                               F.serpent(), F.bird()]):
         x = GX - 96 + i * 34
-        col = HL if lit else TEXT_DIM
-        c.ellipse(x, y, 9, 6, fill=dim(col, 150), stroke=col, width=1.2)
-        c.line((x - 4, y + 6), (x - 4, y + 11), col, 1.5)
-        c.line((x + 4, y + 6), (x + 4, y + 11), col, 1.5)
-        c.line((x + 9, y - 3), (x + 15, y - 7), col, 1.5)
+        x0, x1, y0, y1 = F.bbox((parts, 0))
+        s = 21 / (y1 - y0)
+        # A creature whose body runs below its own origin is a flying or a
+        # swimming one; it is centred in the row rather than stood on the
+        # ground line, which is where the fowl of the air belongs anyway.
+        gy = (y + 11 - y0 * s) if y0 >= -1 else (y + 1 - (y0 + y1) / 2 * s)
+        F.draw(c, parts, x - (x0 + x1) / 2 * s, gy, s, col, BG)
     c.text((GX + 96, y - 2), "the animals", 12, GOLD if lit else TEXT_DIM,
            "lm", italic=True)
 

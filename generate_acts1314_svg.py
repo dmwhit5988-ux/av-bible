@@ -9,18 +9,20 @@ the house animation rules). Sea crossings (Seleucia->Cyprus, Paphos->Perga,
 Attalia->Antioch) read as dotted "sailing" lines; land legs are solid.
 
 A side panel gives the itinerary as a vertical route strip — the eleven
-waypoints in order, the current one lit — plus a two-line scene note, so the
-long stationary stretches (the Lystra scene) still have per-verse movement in
-the panel while the map holds steady.
+waypoints in order, the current one lit — so the shorter stationary stretches
+(Paphos, Iconium) still have per-verse movement in the panel while the map
+holds steady.
 
-Two stretches are too long for that, and they are consecutive. From 13:16 to
-13:50 the journey does not move an inch — Paul preaches for twenty-six
-verses, and nine more pass in the aftermath before they leave. So the map
-window breaks away twice: the sermon gets its own picture (`draw_sermon`),
-then the two Sabbaths that follow get theirs (`draw_aftermath`). The map
-returns at 13:51, where they shake off the dust and go to Iconium. The frame
-and the itinerary panel stay put across both breaks, so it reads as the same
-graphic looking at something else.
+Three stretches are too long for that, and they are where most of these two
+chapters actually live. The map window breaks away for each:
+
+    13:16-41  the sermon at Pisidian Antioch   `draw_sermon`
+    13:42-50  the two Sabbaths that follow     `draw_aftermath`
+    14:7-19   Lystra                           `draw_lystra`
+
+The map returns at 13:51 (they shake off the dust and go to Iconium) and at
+14:20 (on to Derbe). The frame and the itinerary panel stay put across every
+break, so each reads as the same graphic looking at something else.
 
 Coordinates are approximate; ancient site identifications (Lystra, Derbe) are
 scholarly reconstructions and the footer says so. Geometry is hand-encoded
@@ -34,9 +36,10 @@ Run inside the project venv:
 import math
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
-                                 TEXT_DIM, HL, out_path)
+                                 TEXT_DIM, HL, RED, out_path)
 from generate_tribal_maps import MapFrame, SEA, LAND, RIVER, WATER_TXT
 
 # ---------------------------------------------------------------------------
@@ -722,12 +725,156 @@ def draw_aftermath(c, v):
 
 
 # ---------------------------------------------------------------------------
+# Lystra (14:7-19)
+#
+# Thirteen verses without a step taken, and every one of them is about
+# height. A man who never walked is told to stand upright and leaps up. The
+# crowd answers by putting the two of them where they do not belong —
+# Jupiter and Mercury, with a priest bringing oxen and garlands — and the
+# two tear their clothes to push that back down: "we also are men of like
+# passions with you." Then Paul is stoned and dragged out of the city, as
+# low as the man he raised.
+#
+# So the picture is a height: three bands, and a path that keeps being put
+# at the wrong one and corrected.
+# ---------------------------------------------------------------------------
+
+LYSTRA = (7, 19)
+
+LX0, LX1 = 160, 602
+LBASE, LRISE = 500, 320
+BANDS = [(0.92, "AS GODS"), (0.50, "AS MEN"), (0.09, "ON THE GROUND")]
+
+# verse -> (word, height)
+LY = {
+    7:  ("Good News",        0.50),
+    8:  ("Never walked",     0.08),
+    9:  ("Faith",            0.13),
+    10: ("Stand upright",    0.50),
+    11: ("Come down to us",  0.86),
+    12: ("Jupiter, Mercury", 0.92),
+    13: ("Oxen and garlands", 0.95),
+    14: ("Tore their clothes", 0.62),
+    15: ("We also are men",  0.50),
+    16: ("Their own ways",   0.44),
+    17: ("Fruitful seasons", 0.57),
+    18: ("Hardly stopped them", 0.52),
+    19: ("Dragged him out",  0.06),
+}
+LSTEP = (LX1 - LX0) / (LYSTRA[1] - LYSTRA[0])
+
+
+def lnode(v):
+    return (LX0 + (v - LYSTRA[0]) * LSTEP, LBASE - LY[v][1] * LRISE)
+
+
+def band_y(h):
+    return LBASE - h * LRISE
+
+
+# The people come from svg_figures. The crowd of 13:44 does NOT — sixty
+# people who "came together to hear the word" are drawn as sixty dots, and
+# sixty drawn bodies at three pixels each would be a smudge where a mass of
+# dots is exactly right. Only the figures the text singles out are drawn.
+
+MAN_UNITS = F.bbox((F.man(), 0))[3] - F.bbox((F.man(), 0))[2]
+_paint_cache = {}
+
+
+def _fade(col, a):
+    if col is None or a >= 1.0:
+        return col
+    had = (col[3] / 255.0) if len(col) > 3 else 1.0
+    return (col[0], col[1], col[2], int(255 * had * a))
+
+
+def _paint(col, lw):
+    key = (tuple(col), lw)
+    if key not in _paint_cache:
+        a = (col[3] / 255.0) if len(col) > 3 else 1.0
+        k = lw / 1.8
+        _paint_cache[key] = {
+            m: (_fade(f, a), _fade(s, a), w * k)
+            for m, (f, s, w) in F.palette(tuple(col[:3]), BG).items()}
+    return _paint_cache[key]
+
+
+def person(c, x, y, s, col, lw=1.8, seated=False, arms="down"):
+    """A person `s` tall, centred on `y` — which is where the stick figure
+    this replaces hung from, so no scene had to move. Its feet were at
+    y + 0.46s and the drawn one stands on the same line."""
+    parts = F.man(pose="sit" if seated else "stand", arms=arms)
+    F.draw(c, parts, x, y + s * 0.46, s / MAN_UNITS, col, BG,
+           style=_paint(col, lw))
+
+
+def draw_lystra(c, v):
+    c.rect(MF.px, MF.py, MF.mw, MF.mh, fill=PANEL)
+
+    # the three heights this passage keeps moving between
+    for h, name in BANDS:
+        y = band_y(h)
+        live = abs(LY[v][1] - h) < 0.16
+        c.line((LX0 - 8, y), (LX1 + 10, y),
+               g(0.5) if live else dim(SAND_DIM, 0.85), 1, dash="2,7")
+        c.text((SX0, y), name, 12, HL if live else TEXT_DIM, "lm", bold=live)
+
+    pts = [lnode(i) for i in range(LYSTRA[0], LYSTRA[1] + 1)]
+    c.polyline(pts, stroke=SAND_DIM + (255,), width=1.5, dash=DASH_UP)
+    said = pts[:v - LYSTRA[0]]
+    if len(said) > 1:
+        c.polyline(said, stroke=SAND + (255,), width=3)
+    if v > LYSTRA[0]:
+        c.traced([lnode(v - 1), lnode(v)], stroke=g(0.95), width=4,
+                 dur="1.2s")
+
+    # The man who never walked, and then did. The whole verse is a change of
+    # posture, so it is drawn as one: seated at v8, on his feet with his arms
+    # up at v10, on the same ground line — "he leaped up and walked". At 40
+    # pixels the seat and the stand were the same handful of strokes; at 56 a
+    # drawn body can tell them apart.
+    if v >= 8:
+        up = v >= 10
+        col = HL if v in (8, 10) else dim(SAND, 0.85)
+        person(c, 214, 512, 56, col, seated=not up,
+               arms="up" if up else "down")
+
+    # the two names the crowd put on them, struck through when refused
+    if v >= 12:
+        for i, name in enumerate(("Jupiter", "Mercury")):
+            nx = 468 + i * 76
+            live = (v in (12, 13))
+            col = HL if live else dim(SAND, 0.8 if v < 14 else 0.5)
+            person(c, nx, 224, 50, col)
+            c.text((nx, 254), name, 13, col, "mm", bold=live)
+            if v >= 14:
+                strike = HL if v == 14 else dim(RED, 0.8)
+                c.line((nx - 30, 258), (nx + 30, 200), strike, 2.2)
+
+    for i in range(LYSTRA[0], LYSTRA[1] + 1):
+        if i == v:
+            continue
+        x, y = lnode(i)
+        if i < v:
+            c.circle(x, y, 4, fill=SAND, stroke=PANEL, width=1)
+        else:
+            c.circle(x, y, 3.5, fill=PANEL, stroke=SAND_DIM, width=1.5)
+
+    x, y = lnode(v)
+    c.circle(x, y, 7, fill=HL, stroke=PANEL, width=2)
+    c.pulse_ellipse(x, y, 11, 11, g(0.9), width=2, first=True)
+    c.text((x, y + 20), str(v), 12, TEXT_DIM, "mm")
+    word_label(c, x, y - 30, LY[v][0])
+
+
+# ---------------------------------------------------------------------------
 # Assemble one verse
 # ---------------------------------------------------------------------------
 
 def render(ch, v):
     preaching = (ch == 13 and SERMON[0] <= v <= SERMON[1])
     after = (ch == 13 and AFTER[0] <= v <= AFTER[1])
+    lystra = (ch == 14 and LYSTRA[0] <= v <= LYSTRA[1])
     c = SvgCanvas(W, H, bg=BG)
 
     if preaching:
@@ -742,6 +889,12 @@ def render(ch, v):
         c.text((28, 54), "after the sermon  ·  verses 42–50", 13, TEXT_DIM,
                "la", italic=True)
         draw_aftermath(c, v)
+    elif lystra:
+        c.text((28, 24), "Taken for Gods at Lystra — Acts 14",
+               24, TEXT, "la", bold=True)
+        c.text((28, 54), "a cripple healed  ·  verses 7–19", 13, TEXT_DIM,
+               "la", italic=True)
+        draw_lystra(c, v)
     else:
         c.text((28, 24), f"Paul’s First Missionary Journey — Acts {ch}",
                24, TEXT, "la", bold=True)
@@ -758,12 +911,16 @@ def render(ch, v):
             draw_legs(c, ch, v)
             # coming back off the sermon, the focus ring pulses once so the
             # map re-announces where we still are
-            draw_cities(c, ch, v, pulse=(ch == 13 and v == AFTER[1] + 1))
+            # coming back off any break-away, the focus ring pulses once
+            draw_cities(c, ch, v,
+                        pulse=(ch == 13 and v == AFTER[1] + 1)
+                        or (ch == 14 and v == LYSTRA[1] + 1))
             compass_scale(c)
     c.rect(MF.px - 1, MF.py - 1, MF.mw + 1, MF.mh + 1, stroke=SAND_DIM, width=1)
 
     draw_panel(c, ch, v, "the sermon" if preaching else
-               ("two Sabbaths" if after else None))
+               ("two Sabbaths" if after else
+                ("taken for gods" if lystra else None)))
     return c
 
 

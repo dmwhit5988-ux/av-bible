@@ -19,6 +19,8 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
+import svg_figures as F
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 VISUALS = os.path.join(BASE, "visuals")
 
@@ -118,6 +120,152 @@ def dashed_rect(dr, box, fill, width=2):
 
 
 # ---------------------------------------------------------------------------
+# Paint
+# ---------------------------------------------------------------------------
+#
+# The furniture is drawn as opaque material masses with a contour, out of
+# svg_figures' style tables, so the ark and the lampstand here are in the same
+# key as every figure elsewhere in the canon. One sheet per material of the
+# sanctuary, all built by F.palette from the panel colour.
+#
+# Everything below draws through the same handful of calls the rest of this
+# file uses — polygon / rectangle / ellipse / line — so the insets stay
+# surface-agnostic and run against SvgLayer exactly as they did.
+
+ACACIA = (156, 118, 74)
+
+
+def sheet(ink, page=PANEL, wmul=1.5, **over):
+    """A style table at this file's scale. F's widths are set for icons; these
+    objects are drawn half a panel wide, where a 1.3 contour disappears."""
+    s = {k: (v[0], v[1], v[2] * wmul) for k, v in F.palette(ink, page).items()}
+    s.update(over)
+    return s
+
+
+# Gold is drawn MUTED: a dark mass carrying a full-strength contour. On a thin
+# thing — a pole, a branch, a ring — that reads as solid gold; on a broad one —
+# the chest, the table top — as gold-overlaid wood in shadow. Which leaves the
+# pulsing highlight the brightest thing in the frame, where it belongs.
+_G = F.palette(GOLD, PANEL)
+GOLDS = sheet(GOLD,
+              metal=(_G["wing"][0], GOLD, 2.0),      # the mass
+              horn=(_G["fleece"][0], GOLD, 2.0),     # the lit face
+              wing=(_G["wing"][0], GOLD, 1.8),       # a cherub's wing
+              fire=(_G["fire"][0], GOLD, 1.2))
+BRONZES = sheet(BRONZE)
+SILVERS = sheet(SILVER)
+WOODS = sheet(ACACIA)
+LINENS = sheet(WHITE_LINEN)
+# The tables of the testimony are stone in a gold box — the one thing inside
+# the ark that is not gold, so they are painted out of the linen key.
+STONES = sheet(WHITE_LINEN, wmul=1.3)
+
+
+class Pen:
+    """SvgCanvas-shaped adapter over this file's drawing surface, so the
+    svg_figures part lists (a jar, a cup, a coin stack) can be drawn straight
+    onto an inset."""
+
+    def __init__(self, layer):
+        self.d = layer
+
+    def polygon(self, pts, fill=None, stroke=None, width=1):
+        self.d.polygon(pts, fill=fill, outline=stroke, width=width)
+
+    def polyline(self, pts, stroke=None, width=1, fill=None, **kw):
+        self.d.line(pts, fill=stroke, width=width)
+
+    def circle(self, cx, cy, r, fill=None, stroke=None, width=1):
+        self.d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill,
+                       outline=stroke, width=width)
+
+    def line(self, p0, p1, stroke, width=1, **kw):
+        self.d.line([p0, p1], fill=stroke, width=width)
+
+
+def mass(d, pts, sh, mat="metal"):
+    """One closed material mass, in canvas coordinates."""
+    fill, stroke, w = sh[mat]
+    d.polygon(pts, fill=fill, outline=stroke, width=w)
+
+
+def rule(d, pts, sh, mat="rule"):
+    d.line(pts, fill=sh[mat][1], width=sh[mat][2])
+
+
+def bar(d, p0, p1, w, sh, mat="metal"):
+    """A carrying pole, a bar: a straight rod with its ends chamfered. Not
+    F.taper — a two-joint taper is smoothed into a lens, and a pole that comes
+    to a point is a spear."""
+    L = math.hypot(p1[0] - p0[0], p1[1] - p0[1]) or 1.0
+    ux, uy = (p1[0] - p0[0]) / L, (p1[1] - p0[1]) / L
+    nx, ny = -uy * w / 2, ux * w / 2
+    c = min(w * 0.4, L * 0.08)
+
+    def P(t, s):
+        return (p0[0] + ux * t + nx * s, p0[1] + uy * t + ny * s)
+    mass(d, [P(c, 1), P(L - c, 1), P(L, 0.55), P(L, -0.55),
+             P(L - c, -1), P(c, -1), P(0, -0.55), P(0, 0.55)], sh, mat)
+
+
+def post(d, x, y0, y1, w0, w1, sh, mat="metal"):
+    """An upright with flat ends — a table leg, a pillar, a shaft."""
+    mass(d, [(x - w0 / 2, y0), (x + w0 / 2, y0),
+             (x + w1 / 2, y1), (x - w1 / 2, y1)], sh, mat)
+
+
+def box(d, x0, y0, x1, y1, sh, mat="metal"):
+    mass(d, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], sh, mat)
+
+
+def ring(d, cx, cy, r, sh, hole=0.5):
+    """A ring, not a circle: the hole is punched with the panel colour, so a
+    pole run through it passes behind."""
+    fill, stroke, w = sh["metal"]
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill, outline=stroke,
+              width=w)
+    d.ellipse([cx - r * hole, cy - r * hole, cx + r * hole, cy + r * hole],
+              fill=PANEL, outline=None)
+
+
+def grain(d, x0, y0, x1, y1, sh, n=3):
+    """Wood grain: a few slack lines down a plank."""
+    for i in range(1, n + 1):
+        x = x0 + (x1 - x0) * i / (n + 1)
+        d.line(F.smooth([(x, y0 + 6), (x + 1.6, (y0 + y1) / 2), (x, y1 - 6)],
+                        closed=False, n=4), fill=sh["rule"][1], width=1)
+
+
+def seams(d, x0, y0, x1, y1, sh, n=5):
+    """Board joints: straight, evenly spaced. Grain wanders; a joint does not,
+    and the altar is boards rather than a single baulk."""
+    for i in range(1, n + 1):
+        x = x0 + (x1 - x0) * i / (n + 1)
+        d.line([(x, y0), (x, y1)], fill=sh["rule"][1], width=1)
+
+
+def hatchwork(d, poly, sh, step=9):
+    """The bronze network of the altar grate: real crossed rules clipped to
+    the shape, so they scale and animate like every other mark."""
+    col = sh["rule"][1]
+    for deg in (45, -45):
+        for seg in F.hatch_poly(poly, deg, step):
+            d.line(seg, fill=col, width=1)
+
+
+def put(d, parts, x, gy, s, sh, flip=1, rot=0.0):
+    """An svg_figures object at canvas (x, gy), 1 local unit = s."""
+    F.draw(Pen(d), parts, x, gy, s, None, None, flip=flip, rot=rot, style=sh)
+
+
+def fit(parts, w):
+    """The scale factor that makes `parts` w wide."""
+    x0, x1 = F.bbox((parts, 0))[:2]
+    return w / (x1 - x0)
+
+
+# ---------------------------------------------------------------------------
 # Static plan (drawn once per frame, optionally dimmed)
 # ---------------------------------------------------------------------------
 
@@ -125,6 +273,20 @@ def draw_plan(d, dim=False):
     line = SAND_DIM if dim else SAND
     text = TEXT_DIM if dim else TEXT
     linen = tuple(c // 2 for c in WHITE_LINEN) if dim else WHITE_LINEN
+    k = 0.5 if dim else 1.0
+
+    def tone(col, f):
+        """`col` at `f` strength over the panel — the plan's fills, which
+        dim with the rest of it when an inset holds the attention."""
+        return tuple(int(PANEL[i] + (col[i] - PANEL[i]) * f * k)
+                     for i in range(3))
+
+    # The plan stays a plan: line, dimension and label are untouched. What
+    # the fills add is that the tent reads as a building standing in a court,
+    # and a glance finds the furniture inside it.
+    d.rectangle([cub(0, 0), cub(100, 50)], fill=tone(SAND, 0.06))
+    d.rectangle([cub(10, 20), cub(40, 30)], fill=tone(SAND, 0.16))
+    d.rectangle([cub(10, 20), cub(20, 30)], fill=tone(GOLD, 0.13))
 
     d.line([cub(0, 0), cub(100, 0)], fill=linen, width=3)      # north
     d.line([cub(0, 50), cub(100, 50)], fill=linen, width=3)    # south
@@ -148,14 +310,19 @@ def draw_plan(d, dim=False):
 
     d.rectangle([cub(10, 20), cub(40, 30)], outline=line, width=3)
     d.line([cub(20, 20), cub(20, 30)], fill=line, width=2)   # veil
-    d.rectangle([cub(13.75, 24.25), cub(16.25, 25.75)], outline=text, width=2)
-    d.rectangle([cub(22, 24.5), cub(23, 25.5)], outline=line, width=1)
-    d.rectangle([cub(29, 21.2), cub(31, 22.2)], outline=line, width=1)
+    d.rectangle([cub(13.75, 24.25), cub(16.25, 25.75)],      # the ark
+                fill=tone(GOLD, 0.72), outline=text, width=2)
+    d.rectangle([cub(22, 24.5), cub(23, 25.5)],              # incense altar
+                fill=tone(GOLD, 0.55), outline=line, width=1)
+    d.rectangle([cub(29, 21.2), cub(31, 22.2)],              # the table
+                fill=tone(GOLD, 0.55), outline=line, width=1)
     lx, ly = cub(30, 28)
-    d.ellipse([lx - 4, ly - 4, lx + 4, ly + 4], outline=line, width=2)
+    d.ellipse([lx - 4.4, ly - 4.4, lx + 4.4, ly + 4.4],      # the lampstand
+              fill=tone(GOLD, 0.62), outline=line, width=1)
     vx, vy = cub(50, 25)
-    d.ellipse([vx - 6, vy - 6, vx + 6, vy + 6], outline=line, width=2)
-    d.rectangle([cub(62.5, 22.5), cub(67.5, 27.5)],
+    d.ellipse([vx - 6, vy - 6, vx + 6, vy + 6],              # the laver
+              fill=tone(SILVER, 0.42), outline=line, width=2)
+    d.rectangle([cub(62.5, 22.5), cub(67.5, 27.5)], fill=tone(BRONZE, 0.46),
                 outline=BRONZE if not dim else tuple(c // 2 for c in BRONZE),
                 width=3)
 
@@ -356,28 +523,53 @@ AY = IY + 92
 AW, AH = 5 * AS, 3 * AS
 
 
+# One horn, given once and mirrored, so the pair on a corner cannot drift
+# apart. (u, v) runs from the OUTER foot along the base to the inner one; u is
+# across the base, v up from it. The outer edge rises almost straight and
+# bellies out a little, the tip is blunt and leans outward, and the inner edge
+# sweeps back down to the body — a horn, not a spike and not a cone.
+#
+# Only this curve is smoothed. Smoothing the closed outline instead rounds the
+# two feet away as well, and the horn lifts off the altar into a lozenge.
+_HORN = [(0.00, 0.07), (-0.03, 0.46), (0.06, 0.80), (0.20, 0.97),
+         (0.40, 0.90), (0.53, 0.60), (0.74, 0.26), (1.00, 0.07)]
+
+
+def horn_points(hx0, hy0, hx1, hy1, out):
+    """`out` = -1 when the horn's outer side is hx0 (a left corner), +1 when
+    it is hx1. hy0 is the tip line, hy1 the base."""
+    w, h = hx1 - hx0, hy1 - hy0
+
+    def X(u):
+        return (hx0 + u * w) if out < 0 else (hx1 - u * w)
+    return ([(X(0.0), hy1)]
+            + F.smooth([(X(u), hy1 - v * h) for u, v in _HORN],
+                       closed=False, n=3, k=0.5)
+            + [(X(1.0), hy1)])
+
+
 def inset_altar(d, od, part, alpha, frac):
     panel(d, "THE BRONZE ALTAR", "acacia wood overlaid with bronze")
     body = [AX, AY, AX + AW, AY + AH]
-    d.rectangle(body, outline=BRONZE, width=3)
     horns = [[AX - 6, AY - 22, AX + 16, AY],
              [AX + AW - 16, AY - 22, AX + AW + 6, AY]]
-    for hx0, hy0, hx1, hy1 in horns:
-        d.polygon([(hx0, hy1), (hx1, hy1), ((hx0 + hx1) / 2, hy0)],
-                  outline=BRONZE, width=2)
     my = AY + AH / 2
-    d.line([(AX - 14, my), (AX + AW + 14, my)], fill=SAND, width=2)
-    step, right = 13, AX + AW
-    for x in range(int(AX), int(right), step):
-        run = min(AH / 2, right - x)
-        d.line([(x, my), (x + run, my + run)], fill=SAND_DIM, width=1)
-        d.line([(x, AY + AH), (x + run, AY + AH - run)], fill=SAND_DIM,
-               width=1)
-    py = AY + AH / 2 - 8
-    d.line([(AX - 46, py), (AX - 6, py)], fill=SAND, width=4)
-    d.line([(AX + AW + 6, py), (AX + AW + 46, py)], fill=SAND, width=4)
+    py = my - 8
+
+    bar(d, (AX - 46, py), (AX - 6, py), 8, BRONZES)
+    bar(d, (AX + AW + 6, py), (AX + AW + 46, py), 8, BRONZES)
+    for hx0, hy0, hx1, hy1 in horns:
+        mass(d, horn_points(hx0, hy0, hx1, hy1, -1 if hx0 < AX else 1),
+             BRONZES)
+    box(d, AX, AY, AX + AW, AY + AH, BRONZES)               # the hollow body
+    seams(d, AX, AY + 3, AX + AW, my - 5, WOODS, n=6)       # boards, within
+    mass(d, [(AX - 14, my - 4), (AX + AW + 14, my - 4),     # the ledge
+             (AX + AW + 14, my + 4), (AX - 14, my + 4)], BRONZES, "horn")
+    hatchwork(d, [(AX + 2, my + 6), (AX + AW - 2, my + 6),  # the network
+                  (AX + AW - 2, AY + AH - 2), (AX + 2, AY + AH - 2)],
+              BRONZES)
     for rx in (AX - 6, AX + AW + 6):
-        d.ellipse([rx - 6, py - 6, rx + 6, py + 6], outline=BRONZE, width=2)
+        ring(d, rx, py, 8, BRONZES)
     d.text((ICX, CAPY2), "5 × 5 cubits square, 3 cubits high", font=F_SMALL,
            fill=TEXT_DIM, anchor="mm")
 
@@ -387,8 +579,8 @@ def inset_altar(d, od, part, alpha, frac):
         cap(od, alpha, "5 wide × 5 deep × 3 high")
     elif part == "horns":
         for hx0, hy0, hx1, hy1 in horns:
-            od.polygon([(hx0, hy1), (hx1, hy1), ((hx0 + hx1) / 2, hy0)],
-                       outline=a, width=4)
+            od.polygon(horn_points(hx0, hy0, hx1, hy1, -1 if hx0 < AX else 1),
+                       fill=None, outline=a, width=4)
         cap(od, alpha, "horns on its four corners, of one piece")
     elif part == "utensils":
         cap(od, alpha, "pots · shovels · basins · forks · firepans")
@@ -404,7 +596,8 @@ def inset_altar(d, od, part, alpha, frac):
         cap(od, alpha, "poles of acacia wood, overlaid with bronze")
     elif part == "rings":
         for rx in (AX - 6, AX + AW + 6):
-            od.ellipse([rx - 9, py - 9, rx + 9, py + 9], outline=a, width=4)
+            od.ellipse([rx - 11, py - 11, rx + 11, py + 11], outline=a,
+                       width=4)
         cap(od, alpha, "poles through rings, for carrying")
     elif part == "hollow":
         od.rectangle([AX + 14, AY + 14, AX + AW - 14, AY + AH - 14],
@@ -414,28 +607,60 @@ def inset_altar(d, od, part, alpha, frac):
 
 # --- materials list (Exodus 25:3-7) ----------------------------------------
 
+# Each row is a drawn thing with a label, not a bullet with a sentence: the
+# swatches say blue, purple and scarlet, the jar and the censer say oil and
+# incense. The labels lost the words the drawings took over — which is also
+# what keeps them inside the panel now that there is an icon gutter.
 MATERIAL_ROWS = [
     ("metals", "gold, silver, and bronze"),
-    ("fabrics", "blue, purple, scarlet · fine linen · goats' hair"),
-    ("skins_wood", "rams' skins dyed red · fine leather · acacia"),
-    ("oil_spice", "oil for the light · spices for oil and incense"),
-    ("stones", "onyx and setting stones, for ephod and breastpiece"),
+    ("fabrics", "blue, purple, scarlet · linen · goats' hair"),
+    ("skins_wood", "rams' skins · fine leather · acacia"),
+    ("oil_spice", "oil for the light · spices"),
+    ("stones", "onyx and setting stones"),
 ]
+
+
+def _swatches(d, x, y, cols, w=13, h=17):
+    """Dyed cloth, shown rather than named."""
+    for i, col in enumerate(cols):
+        d.rectangle([x + i * (w + 2), y - h / 2, x + i * (w + 2) + w,
+                     y + h / 2], fill=tuple(c * 2 // 3 for c in col),
+                    outline=SAND_DIM, width=1)
+
+
+def _gem(d, x, y, r, col):
+    """A cut stone: a table facet above, a point below."""
+    mass(d, [(x - r, y - r * 0.3), (x - r * 0.5, y - r), (x + r * 0.5, y - r),
+             (x + r, y - r * 0.3), (x, y + r)], sheet(col), "stone")
 
 
 def inset_materials(d, od, part, alpha, frac):
     panel(d, "MATERIALS FOR THE SANCTUARY", "a freewill offering")
+    x = IX + 22
     for i, (key, text) in enumerate(MATERIAL_ROWS):
         y = IY + 96 + i * 46
-        d.ellipse([IX + 26, y - 3, IX + 32, y + 3], fill=SAND_DIM)
-        if key == part:
-            od.ellipse([IX + 23, y - 6, IX + 35, y + 6], outline=g(alpha),
-                       width=2)
-            od.text((IX + 44, y), text, font=F_DIM, fill=g(alpha),
-                    anchor="lm")
+        if key == "metals":
+            for j, col in enumerate((GOLD, SILVER, BRONZE)):
+                p = F.coins(n=2, face=False)
+                put(d, p, x + 8 + j * 15, y + 8, fit(p, 13), sheet(col))
+        elif key == "fabrics":
+            _swatches(d, x, y, GATE_COLORS, w=9)
+        elif key == "skins_wood":
+            _swatches(d, x, y, (RED, BROWN), w=11)
+            p = F.tree()
+            put(d, p, x + 36, y + 9, fit(p, 18), sheet(ACACIA))
+        elif key == "oil_spice":
+            for j, (make, wd) in enumerate(((F.jar, 13), (F.censer, 17))):
+                p = make()
+                put(d, p, x + 8 + j * 22, y + 9, fit(p, wd), sheet(GOLD))
         else:
-            d.text((IX + 44, y), text, font=F_SMALL, fill=TEXT_DIM,
-                   anchor="lm")
+            for j, col in enumerate((SILVER, GOLD, WHITE_LINEN)):
+                _gem(d, x + 8 + j * 16, y, 6.5, col)
+        tx = x + 54
+        if key == part:
+            od.text((tx, y), text, font=F_DIM, fill=g(alpha), anchor="lm")
+        else:
+            d.text((tx, y), text, font=F_SMALL, fill=TEXT_DIM, anchor="lm")
 
 
 # --- the ark & mercy seat (Exodus 25:10-22) ---------------------------------
@@ -449,31 +674,213 @@ KSY0, KSY1 = KY0 - 14, KY0                       # mercy seat slab
 KCX = IX + IW // 2
 
 
-def _cherubs():
-    """[(body_box, wing_polygon), ...] for the two cherubim."""
-    out = []
+# --- the cherubim -----------------------------------------------------------
+#
+# Built from point lists drawn with polygon/line/ellipse — the three primitives
+# this module shares with svg_surface.SvgLayer — so the same geometry renders
+# unchanged as animated WebP and as vector SVG. Local units below run x inward
+# (toward the middle of the mercy seat) and y up from the seat's top surface: a
+# cherub is 44 tall to the crown, 64 to the wing tips, and reaches 38 inward,
+# so the two covering wings vault over the seat with a gap left between the
+# tips — where 25:22 puts the voice from between the cherubim.
+
+CH_BODY = [(-11, 0), (-10.5, 7), (-9.5, 14), (-8.5, 22), (-7, 28), (-5.5, 31),
+           (-2.5, 33), (2.5, 33), (5.5, 31), (6.5, 28), (7, 22), (8, 14),
+           (9.5, 7), (11, 0)]
+CH_HEAD = ((1.6, 38.2), 4.6, 5.1)                     # centre, rx, ry
+CH_FACE = [(4.2, 39.8), (6.2, 38.2), (4.6, 36.6)]     # brow and nose, bowed
+CH_ARM = [(4.6, 29.8), (7.6, 25.4), (5.8, 20.8)]      # forearm at the breast
+CH_MANTLE = [(-6.6, 29.6), (-3, 27.4), (2, 27.0), (6.2, 28.6)]
+CH_BELT = [(-8.4, 21.5), (-4, 20.8), (2, 20.6), (7.1, 21.2)]
+CH_FOLDS = [[(-4.5, 19.5), (-5.5, 10), (-5, 0.5)],
+            [(2.5, 19.8), (2.0, 10), (2.5, 0.5)]]
+
+# Both wings spring from the shoulder blades, behind the head — the covering
+# wing then arches up and over it toward the middle of the seat, so no wing
+# line ever crosses the bowed face.
+CH_WING_IN = dict(root=(-5, 34), lc1=(-13, 52), lc2=(10, 76), tip=(38, 64),
+                  tc1=(22, 56), tc2=(-9, 53), heel=(-5, 27),
+                  feathers=8, lobe=1.3, quills=(2, 4, 6))
+CH_WING_OUT = dict(root=(-7, 28), lc1=(-15, 40), lc2=(-24, 50), tip=(-28, 52),
+                   tc1=(-20, 34), tc2=(-12, 24), heel=(-8, 20),
+                   feathers=6, lobe=1.3, quills=(2, 4))
+
+LEAD_N = 16
+
+
+def _bez(p0, p1, p2, p3, n):
+    """Cubic bezier sampled to n+1 points, so curves ride on the shared
+    polygon/line primitives with no new surface support."""
+    pts = []
+    for i in range(n + 1):
+        t = i / n
+        u = 1 - t
+        pts.append((u*u*u*p0[0] + 3*u*u*t*p1[0] + 3*u*t*t*p2[0] + t*t*t*p3[0],
+                    u*u*u*p0[1] + 3*u*u*t*p1[1] + 3*u*t*t*p2[1] + t*t*t*p3[1]))
+    return pts
+
+
+def _quad(p0, p1, p2, n):
+    pts = []
+    for i in range(n + 1):
+        t = i / n
+        u = 1 - t
+        pts.append((u*u*p0[0] + 2*u*t*p1[0] + t*t*p2[0],
+                    u*u*p0[1] + 2*u*t*p1[1] + t*t*p2[1]))
+    return pts
+
+
+def _lerp(a, b, t):
+    return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+
+
+def feathered_wing(root, lc1, lc2, tip, tc1, tc2, heel, feathers, lobe,
+                   quills):
+    """One wing in local units: a smooth leading edge and a trailing edge
+    broken into `feathers` rounded pinions, plus quill lines running in from
+    the cusps between them. Returns (outline, [quill lines]).
+
+    Shared: generate_genesis3_svg builds the guardians at the east gate from
+    this same wing, so the two chapters' cherubim read as the same creature.
+    """
+    lead = _bez(root, lc1, lc2, tip, LEAD_N)
+    base = _bez(tip, tc1, tc2, heel, feathers)       # one cusp per feather
+    mid = lead[LEAD_N // 2]
+
+    out = list(lead)
+    for i in range(len(base) - 1):
+        a, b = base[i], base[i + 1]
+        m = _lerp(a, b, 0.5)
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        L = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / L, dx / L
+        # bulge away from the wing's interior: a feather belly, not a notch
+        if (m[0] + nx - mid[0])**2 + (m[1] + ny - mid[1])**2 < \
+           (m[0] - nx - mid[0])**2 + (m[1] - ny - mid[1])**2:
+            nx, ny = -nx, -ny
+        k = lobe * (1.0 + 0.5 * (1 - i / max(1, len(base) - 2)))
+        out += _quad(a, (m[0] + nx * k * 2, m[1] + ny * k * 2), b, 4)[1:]
+
+    lines = []
+    for i in quills:
+        cusp = base[i]
+        lp = lead[min(LEAD_N, round(LEAD_N * (1 - i / feathers)))]
+        lines.append([cusp, _lerp(cusp, lp, 0.55)])
+    return out, lines
+
+
+def cherub_parts(bx, by, dr, s=1.0):
+    """Line-work for one cherub standing at (bx, by) on the mercy seat, facing
+    dr (+1 = inward to the right, -1 = inward to the left).
+
+    Keyed by part so a verse can highlight the wings alone (25:20), the two
+    figures alone (25:19), or the whole pair (25:18). Each op is one of
+    ("poly", points) | ("line", points) | ("ellipse", box).
+    """
+    def P(pts):
+        return [(bx + dr * x * s, by - y * s) for x, y in pts]
+
+    parts = {}
+    for name, spec in (("wing_out", CH_WING_OUT), ("wing_in", CH_WING_IN)):
+        outline, quills = feathered_wing(**spec)
+        parts[name] = [("poly", P(outline))] + [("line", P(q)) for q in quills]
+
+    (hx, hy), rx, ry = CH_HEAD
+    cx, cy = bx + dr * hx * s, by - hy * s
+    parts["body"] = [
+        ("poly", P(CH_BODY)),
+        ("ellipse", [cx - rx * s, cy - ry * s, cx + rx * s, cy + ry * s]),
+        ("line", P(CH_FACE)), ("line", P(CH_MANTLE)), ("line", P(CH_ARM)),
+        ("line", P(CH_BELT)),
+    ] + [("line", P(f)) for f in CH_FOLDS]
+    return parts
+
+
+def cherubim(d, color, width, only=None):
+    """Draw both cherubim standing on the mercy seat. only=None draws the whole
+    pair; only=("body",) just the figures; only=("wing_in", "wing_out") just
+    the wings."""
     for bx, dr in ((KX0 + 30, 1), (KX0 + KW - 30, -1)):
-        body = [bx - 8, KSY0 - 26, bx + 8, KSY0]
-        wing = [(bx + dr * 2, KSY0 - 18), (bx + dr * 42, KSY0 - 58),
-                (bx + dr * 16, KSY0 - 4)]
-        out.append((body, wing))
-    return out
+        for name, ops in cherub_parts(bx, KSY0, dr).items():
+            if only is not None and name not in only:
+                continue
+            for kind, data in ops:
+                if kind == "poly":
+                    d.polygon(data, outline=color, width=width)
+                elif kind == "line":
+                    d.line(data, fill=color, width=width)
+                else:
+                    d.ellipse(data, outline=color, width=width)
+
+
+CH_WINGS = ("wing_in", "wing_out")
+
+
+def cherub_filled(d, bx, by, dr, s, sh, only=None):
+    """The same cherub, painted rather than stroked: the wing outline becomes
+    a wing-material mass, the body a gold one, the seams stay as rules.
+
+    Both wings go down BEHIND the body. The covering wing vaults over the head
+    by construction, so filled and drawn in front it closes over the face.
+    """
+    parts = cherub_parts(bx, by, dr, s)
+    for name in ("wing_out", "wing_in", "body"):
+        if only is not None and name not in only:
+            continue
+        for kind, data in parts[name]:
+            if kind == "poly":
+                mass(d, data, sh, "wing" if name.startswith("wing")
+                     else "metal")
+            elif kind == "line":
+                rule(d, data, sh)
+            else:
+                fill, stroke, w = sh["metal"]
+                d.ellipse(data, fill=fill, outline=stroke, width=w)
+
+
+def cherubim_filled(d, sh, only=None):
+    """Both cherubim on the mercy seat, painted."""
+    for bx, dr in ((KX0 + 30, 1), (KX0 + KW - 30, -1)):
+        cherub_filled(d, bx, KSY0, dr, 1.0, sh, only)
+
+
+def tablet_points(cx, cy, w, h):
+    """The two tables of the testimony: straight sides, square feet, and a
+    round head struck as a real arc. Run through smooth() they come out as
+    eggs, and no two of them the same egg."""
+    a, arch = w * 0.20, h * 0.34
+    ytop = cy - h / 2 + arch
+    head = [(a * math.cos(math.pi + i / 10 * math.pi),
+             arch * math.sin(math.pi + i / 10 * math.pi)) for i in range(11)]
+    return [[(cx + sx * w * 0.26 - a, cy + h / 2),
+             (cx + sx * w * 0.26 - a, ytop)]
+            + [(cx + sx * w * 0.26 + dx, ytop + dy) for dx, dy in head]
+            + [(cx + sx * w * 0.26 + a, cy + h / 2)]
+            for sx in (-1, 1)]
 
 
 def inset_ark(d, od, part, alpha, frac):
     panel(d, "THE ARK OF THE TESTIMONY", "with the mercy seat and cherubim")
-    d.rectangle([KX0, KY0, KX0 + KW, KY1], outline=SAND, width=3)
-    d.rectangle([KX0 - 4, KSY0, KX0 + KW + 4, KSY1], outline=SAND, width=2)
-    for fx in (KX0 + 8, KX0 + KW - 20):
-        d.rectangle([fx, KY1, fx + 12, KY1 + 9], outline=SAND, width=2)
     ry = KY1 - 10
-    d.line([(KX0 - 44, ry), (KX0 + KW + 44, ry)], fill=SAND, width=4)
+
+    # The poles go down FIRST, so the chest covers their middle and only the
+    # carrying ends show — the mark of the one piece of furniture that is
+    # commanded never to have its staves drawn out.
+    bar(d, (KX0 - 44, ry), (KX0 + KW + 44, ry), 8, GOLDS)
+    for fx in (KX0 + 8, KX0 + KW - 20):                     # the four feet
+        box(d, fx, KY1, fx + 12, KY1 + 9, GOLDS, "wing")
+    box(d, KX0, KY0, KX0 + KW, KY1, GOLDS)                  # the chest
+    rule(d, [(KX0 + 3, KY0 + 9), (KX0 + KW - 3, KY0 + 9)], GOLDS)  # molding
     for rx in (KX0 + 6, KX0 + KW - 6):
-        d.ellipse([rx - 7, ry - 7, rx + 7, ry + 7], outline=SAND, width=2)
-    dashed_rect(d, [KCX - 22, KY0 + 20, KCX + 22, KY0 + 68], SAND_DIM)
-    for body, wing in _cherubs():
-        d.ellipse(body, outline=SAND, width=2)
-        d.polygon(wing, outline=SAND, width=2)
+        ring(d, rx, ry, 8, GOLDS)
+    for tab in tablet_points(KCX, KY0 + 44, 74, 50):        # the testimony,
+        mass(d, tab, STONES, "stone")                       # seen within
+    for gx in (KCX - 24, KCX + 24):
+        for i in range(3):                                  # what is written
+            rule(d, [(gx - 8, KY0 + 36 + i * 9),
+                     (gx + 8, KY0 + 36 + i * 9)], STONES)
+    box(d, KX0 - 5, KSY0 - 1, KX0 + KW + 5, KSY1, GOLDS, "horn")  # mercy seat
+    cherubim_filled(d, GOLDS)
 
     a = g(alpha)
     if part == "body":
@@ -486,7 +893,7 @@ def inset_ark(d, od, part, alpha, frac):
             "with a molding of gold around it")
     elif part == "rings":
         for rx in (KX0 + 6, KX0 + KW - 6):
-            od.ellipse([rx - 10, ry - 10, rx + 10, ry + 10], outline=a,
+            od.ellipse([rx - 11, ry - 11, rx + 11, ry + 11], outline=a,
                        width=4)
         cap(od, alpha, "four rings of cast gold, on its four feet")
     elif part == "poles":
@@ -495,38 +902,36 @@ def inset_ark(d, od, part, alpha, frac):
     elif part == "poles_in":
         od.line([(KX0 - 44, ry), (KX0 + KW + 44, ry)], fill=a, width=6)
         for rx in (KX0 + 6, KX0 + KW - 6):
-            od.ellipse([rx - 10, ry - 10, rx + 10, ry + 10], outline=a,
+            od.ellipse([rx - 11, ry - 11, rx + 11, ry + 11], outline=a,
                        width=3)
         cap(od, alpha, "the poles in the rings, to carry the ark")
     elif part == "poles_stay":
         od.line([(KX0 - 44, ry), (KX0 + KW + 44, ry)], fill=a, width=6)
         cap(od, alpha, "the poles remain in the rings", "never removed")
     elif part == "testimony":
-        dashed_rect(od, [KCX - 24, KY0 + 18, KCX + 24, KY0 + 70], a, 3)
+        for tab in tablet_points(KCX, KY0 + 44, 74, 50):
+            od.polygon(tab, fill=None, outline=a, width=3)
         cap(od, alpha, "the testimony, placed within the ark")
     elif part == "mercy":
-        od.rectangle([KX0 - 5, KSY0 - 2, KX0 + KW + 5, KSY1 + 2], outline=a,
+        od.rectangle([KX0 - 6, KSY0 - 3, KX0 + KW + 6, KSY1 + 1], outline=a,
                      width=4)
         cap(od, alpha, "the mercy seat: pure gold", "2½ × 1½ cubits")
     elif part == "cherub_two":
-        for body, wing in _cherubs():
-            od.ellipse(body, outline=a, width=3)
-            od.polygon(wing, outline=a, width=3)
+        cherubim(od, a, 3)
         cap(od, alpha, "two cherubim of hammered gold")
     elif part == "cherub_ends":
-        for body, wing in _cherubs():
-            od.ellipse(body, outline=a, width=3)
+        cherubim(od, a, 3, ("body",))
         cap(od, alpha, "one at each end",
             "of one piece with the mercy seat")
     elif part == "wings":
-        for body, wing in _cherubs():
-            od.polygon(wing, outline=a, width=4)
+        cherubim(od, a, 3, CH_WINGS)
         cap(od, alpha, "wings spread upward",
             "faces toward the mercy seat")
     elif part == "seat_on_ark":
-        od.rectangle([KX0 - 5, KSY0 - 2, KX0 + KW + 5, KSY1 + 2], outline=a,
+        od.rectangle([KX0 - 6, KSY0 - 3, KX0 + KW + 6, KSY1 + 1], outline=a,
                      width=3)
-        dashed_rect(od, [KCX - 24, KY0 + 18, KCX + 24, KY0 + 70], a, 2)
+        for tab in tablet_points(KCX, KY0 + 44, 74, 50):
+            od.polygon(tab, fill=None, outline=a, width=2)
         cap(od, alpha, "the mercy seat above, the testimony within")
     elif part == "meet":
         mx, my2 = KCX, KSY0 - 62
@@ -546,30 +951,40 @@ TY0 = IY + 196
 TLEG = 78
 
 
-def inset_table(d, od, part, alpha, frac):
-    panel(d, "THE TABLE FOR THE BREAD", "of the Presence")
-    d.rectangle([TX0, TY0, TX0 + TW, TY0 + 10], outline=SAND, width=3)
-    rim = [TX0 - 5, TY0 + 12, TX0 + TW + 5, TY0 + 21]
-    d.rectangle(rim, outline=SAND, width=2)
-    for lx in (TX0 + 7, TX0 + TW - 17):
-        d.rectangle([lx, TY0 + 21, lx + 10, TY0 + 21 + TLEG], outline=SAND,
-                    width=2)
-    ry = TY0 + 30
-    rings = [(TX0 + 12, ry), (TX0 + TW - 12, ry)]
-    for rx, ryy in rings:
-        d.ellipse([rx - 6, ryy - 6, rx + 6, ryy + 6], outline=SAND, width=2)
-    d.line([(TX0 - 42, ry), (TX0 - 8, ry)], fill=SAND, width=4)
-    d.line([(TX0 + TW + 8, ry), (TX0 + TW + 42, ry)], fill=SAND, width=4)
-    bread = []
+def loaf_points():
+    """Twelve cakes in two stacks of six, set in order on the table."""
+    out = []
     for sx in (TX0 + 14, TX0 + 52):
         for i in range(3):
-            bread.append([sx, TY0 - 9 - i * 7, sx + 26, TY0 - 3 - i * 7])
-    for b in bread:
-        d.rectangle(b, outline=SAND, width=1)
-    vessels = [[TX0 + TW - 34, TY0 - 15, TX0 + TW - 24, TY0 - 2],
-               [TX0 + TW - 18, TY0 - 9, TX0 + TW - 4, TY0 - 2]]
-    d.rectangle(vessels[0], outline=SAND, width=1)
-    d.arc(vessels[1], 180, 360, fill=SAND, width=2)
+            y = TY0 - 3 - i * 8
+            out.append(F.smooth([(sx, y), (sx + 26, y), (sx + 25, y - 5),
+                                 (sx + 13, y - 7), (sx + 1, y - 5)], n=3))
+    return out
+
+
+def inset_table(d, od, part, alpha, frac):
+    panel(d, "THE TABLE FOR THE BREAD", "of the Presence")
+    ry = TY0 + 30
+    rings = [(TX0 + 12, ry), (TX0 + TW - 12, ry)]
+    rim = [TX0 - 5, TY0 + 12, TX0 + TW + 5, TY0 + 21]
+
+    bar(d, (TX0 - 42, ry), (TX0 - 8, ry), 7, GOLDS)
+    bar(d, (TX0 + TW + 8, ry), (TX0 + TW + 42, ry), 7, GOLDS)
+    for lx in (TX0 + 7, TX0 + TW - 17):                     # the legs
+        post(d, lx + 5, TY0 + 21, TY0 + 21 + TLEG, 13, 10, GOLDS)
+        box(d, lx - 1, TY0 + 21 + TLEG - 6, lx + 11, TY0 + 21 + TLEG,
+            GOLDS, "horn")                                  # standing on foot
+    box(d, *rim, GOLDS)                                     # the handbreadth
+    box(d, TX0, TY0, TX0 + TW, TY0 + 12, GOLDS, "horn")     # the top
+    for rx, ryy in rings:
+        ring(d, rx, ryy, 7, GOLDS)
+    for b in loaf_points():
+        mass(d, b, sheet(TEXT), "clay")
+    # the dish and the pitcher are the vocabulary's own, so the vessels here
+    # match the ones drawn anywhere else in the canon
+    for make, w, dx in ((F.jar, 15, TW - 40), (F.cup, 12, TW - 16)):
+        parts = make()
+        put(d, parts, TX0 + dx, TY0 - 1, fit(parts, w), GOLDS)
 
     a = g(alpha)
     if part == "body":
@@ -585,12 +1000,12 @@ def inset_table(d, od, part, alpha, frac):
         cap(od, alpha, "a rim a handbreadth wide", "with a gold molding")
     elif part == "rings":
         for rx, ryy in rings:
-            od.ellipse([rx - 9, ryy - 9, rx + 9, ryy + 9], outline=a,
+            od.ellipse([rx - 10, ryy - 10, rx + 10, ryy + 10], outline=a,
                        width=4)
         cap(od, alpha, "four rings of gold, at the four corners")
     elif part == "rings_frame":
         for rx, ryy in rings:
-            od.ellipse([rx - 9, ryy - 9, rx + 9, ryy + 9], outline=a,
+            od.ellipse([rx - 10, ryy - 10, rx + 10, ryy + 10], outline=a,
                        width=3)
         od.rectangle(rim, outline=a, width=3)
         cap(od, alpha, "rings close by the rim", "holders for the poles")
@@ -600,14 +1015,13 @@ def inset_table(d, od, part, alpha, frac):
         cap(od, alpha, "poles of acacia, overlaid with gold",
             "to carry the table")
     elif part == "vessels":
-        for v in vessels:
-            od.rectangle([v[0] - 3, v[1] - 3, v[2] + 3, v[3] + 3], outline=a,
-                         width=2)
+        od.ellipse([TX0 + TW - 50, TY0 - 24, TX0 + TW - 4, TY0 + 4],
+                   outline=a, width=3)
         cap(od, alpha, "plates, dishes, pitchers, and bowls",
             "all of pure gold")
     elif part == "bread":
-        for b in bread:
-            od.rectangle(b, outline=a, width=2)
+        for b in loaf_points():
+            od.polygon(b, fill=None, outline=a, width=2)
         cap(od, alpha, "the bread of the Presence",
             "before the LORD always")
 
@@ -634,16 +1048,46 @@ def _flame_points():
                             for s in (1, -1)]
 
 
+def _branch_joints(r, s):
+    """The quarter-arc branch of radius r on side s, as a spine — the same
+    curve _branch_arcs() strokes, so every highlight still lands on it."""
+    cx, cy = LCX + s * r, LTOP + r
+    return [(cx - s * r * math.cos(t * math.pi / 2),
+             cy - r * math.sin(t * math.pi / 2))
+            for t in [i / 8 for i in range(9)]]
+
+
 def inset_lampstand(d, od, part, alpha, frac):
     panel(d, "THE GOLDEN LAMPSTAND", "hammered from one talent of pure gold")
-    d.line([(LCX, LBASE), (LCX, LTOP)], fill=SAND, width=4)
-    d.polygon([(LCX - 26, LBASE), (LCX + 26, LBASE), (LCX + 12, LBASE - 13),
-               (LCX - 12, LBASE - 13)], outline=SAND, width=2)
-    for bbox, a0, a1 in _branch_arcs():
-        d.arc(bbox, a0, a1, fill=SAND, width=3)
-    for fx, fy in _flame_points():
-        d.line([(fx, fy), (fx, fy - 7)], fill=SAND, width=3)
-        d.ellipse([fx - 4, fy - 17, fx + 4, fy - 6], outline=BRONZE, width=2)
+
+    # A lampstand is a slender thing: the branches are drawn thin, and the
+    # shaft goes down AFTER them so the six roots tuck behind it instead of
+    # piling into one wedge where they all meet.
+    mass(d, [(LCX - 25, LBASE), (LCX + 25, LBASE), (LCX + 20, LBASE - 7),
+             (LCX + 8, LBASE - 13), (LCX - 8, LBASE - 13),
+             (LCX - 20, LBASE - 7)], GOLDS)                  # the foot
+    for r in LRS:
+        for s in (1, -1):
+            mass(d, F.taper(_branch_joints(r, s),
+                            [5.6, 5.3, 5.0, 4.8, 4.6, 4.4, 4.2, 4.1, 4.0],
+                            round_end=False), GOLDS)
+    post(d, LCX, LTOP, LBASE - 10, 6.6, 9.6, GOLDS)          # the shaft
+    for r in LRS:                                            # knop under each
+        fill, stroke, w = GOLDS["horn"]                      # pair of branches
+        d.ellipse([LCX - 6, LTOP + r - 6, LCX + 6, LTOP + r + 6], fill=fill,
+                  outline=stroke, width=w)
+    for i in range(4):                                       # cups on the
+        y = LTOP + 22 + i * 24                               # shaft itself
+        if all(abs(y - (LTOP + r)) > 12 for r in LRS):
+            fill, stroke, w = GOLDS["horn"]
+            d.ellipse([LCX - 4.6, y - 4.6, LCX + 4.6, y + 4.6], fill=fill,
+                      outline=stroke, width=w)
+    for fx, fy in _flame_points():                           # the seven lamps
+        mass(d, [(fx - 6.6, fy + 1), (fx + 6.6, fy + 1), (fx + 4.6, fy - 6),
+                 (fx - 4.6, fy - 6)], GOLDS, "horn")
+        mass(d, F.smooth([(fx - 2.8, fy - 6), (fx - 3.2, fy - 11),
+                          (fx - 0.4, fy - 17), (fx + 2.0, fy - 12),
+                          (fx + 2.8, fy - 6)], n=4), GOLDS, "fire")
 
     a = g(alpha)
     if part in ("whole", "one_piece"):
@@ -662,29 +1106,26 @@ def inset_lampstand(d, od, part, alpha, frac):
         cap(od, alpha, "six branches — three on each side")
     elif part == "cups_branches":
         for r in LRS:
-            ys = LTOP + r
-            for base_ang, s in ((0, 1), (0, -1)):
-                for ang in (200, 228, 255):
-                    th = math.radians(ang if s == 1 else 540 - ang)
-                    px = LCX + s * r + r * math.cos(th)
-                    py = ys + r * math.sin(th)
-                    od.ellipse([px - 4, py - 4, px + 4, py + 4], outline=a,
+            for s in (1, -1):
+                for k in (0.30, 0.55, 0.80):
+                    px, py = _branch_joints(r, s)[round(k * 8)]
+                    od.ellipse([px - 5, py - 5, px + 5, py + 5], outline=a,
                                width=2)
         cap(od, alpha, "three cups like almond blossoms",
             "on every branch")
     elif part == "cups_shaft":
         for i in range(4):
             y = LTOP + 22 + i * 24
-            od.ellipse([LCX - 5, y - 5, LCX + 5, y + 5], outline=a, width=2)
+            od.ellipse([LCX - 7, y - 7, LCX + 7, y + 7], outline=a, width=2)
         cap(od, alpha, "and four cups on the lampstand itself")
     elif part == "buds":
         for r in LRS:
             y = LTOP + r
-            od.ellipse([LCX - 6, y - 6, LCX + 6, y + 6], outline=a, width=3)
+            od.ellipse([LCX - 9, y - 9, LCX + 9, y + 9], outline=a, width=3)
         cap(od, alpha, "a bud under each pair of branches")
     elif part == "lamps":
         for fx, fy in _flame_points():
-            od.ellipse([fx - 7, fy - 20, fx + 7, fy - 3], outline=a, width=3)
+            od.ellipse([fx - 9, fy - 23, fx + 9, fy + 4], outline=a, width=3)
         cap(od, alpha, "seven lamps, giving light in front of it")
     elif part == "tools":
         cap(od, alpha, "its snuffers and their trays", "of pure gold")
@@ -799,9 +1240,9 @@ def inset_coverings(d, od, part, alpha, frac):
     boxes = []
     for i, (name, col) in enumerate(layers):
         y = IY + 92 + i * 50
-        box = [IX + 40, y, IX + IW - 40, y + 34]
-        boxes.append(box)
-        d.rectangle(box, fill=col, outline=SAND_DIM)
+        layer = [IX + 40, y, IX + IW - 40, y + 34]
+        boxes.append(layer)
+        d.rectangle(layer, fill=col, outline=SAND_DIM)
         d.text((ICX, y + 17), name, font=F_SMALL, fill=WHITE_LINEN,
                anchor="mm")
     od.rectangle([b - 3 for b in boxes[0][:2]] + [b + 3 for b in boxes[0][2:]],
@@ -825,10 +1266,11 @@ def _board_boxes(n):
 
 def _draw_boards(d, boxes, w):
     for b in boxes:
-        d.rectangle(b, outline=SAND, width=2)
-        bw = max(3, w // 3)
-        d.rectangle([b[0], b[3] + 3, b[0] + bw, b[3] + 10], fill=SILVER)
-        d.rectangle([b[2] - bw, b[3] + 3, b[2], b[3] + 10], fill=SILVER)
+        box(d, b[0], b[1], b[2], b[3], WOODS, "fleece")
+        grain(d, b[0], b[1], b[2], b[3], WOODS, n=1)
+        bw = max(4, w // 3)
+        box(d, b[0], b[3] + 3, b[0] + bw, b[3] + 11, SILVERS)
+        box(d, b[2] - bw, b[3] + 3, b[2], b[3] + 11, SILVERS)
 
 
 BAR_ROWS = (0.16, 0.33, 0.5, 0.67, 0.84)
@@ -840,12 +1282,14 @@ def inset_boards(d, od, part, alpha, frac):
     a = g(alpha)
     if part in ("dims", "tenons"):
         b = [ICX - 26, IY + 82, ICX + 26, IY + 282]
-        d.rectangle(b, outline=SAND, width=3)
-        d.line([(b[0], b[3] - 40), (b[2], b[3] - 40)], fill=SAND_DIM, width=1)
+        box(d, *b, WOODS, "fleece")
+        grain(d, b[0], b[1], b[2], b[3], WOODS, n=2)
         tabs = [[ICX - 20, b[3], ICX - 8, b[3] + 16],
                 [ICX + 8, b[3], ICX + 20, b[3] + 16]]
         for tb in tabs:
-            d.rectangle(tb, outline=SAND, width=2)
+            box(d, *tb, WOODS, "fleece")
+        for tb in tabs:                                     # into their bases
+            box(d, tb[0] - 4, tb[3] - 4, tb[2] + 4, tb[3] + 8, SILVERS)
         if part == "dims":
             od.rectangle(b, outline=a, width=4)
             cap(od, alpha, "each board ten cubits long",
@@ -864,6 +1308,15 @@ def inset_boards(d, od, part, alpha, frac):
     _draw_boards(d, boxes, w)
     y0, y1 = boxes[0][1], boxes[0][3]
     x0, x1 = boxes[0][0], boxes[-1][2]
+
+    if part in ("bars", "middle_bar", "gold"):               # the bars, laid
+        for i, fy in enumerate(BAR_ROWS):                    # across the face
+            y = y0 + (y1 - y0) * fy
+            full = (i == 2)
+            bx0 = x0 if (full or i in (0, 3)) else (x0 + x1) / 2
+            bx1 = x1 if (full or i in (1, 4)) else (x0 + x1) / 2
+            bar(d, (bx0, y), (bx1, y), 7 if full else 5.5,
+                GOLDS if part == "gold" else WOODS)
 
     if part == "generic":
         for b in boxes[2:6]:
@@ -903,11 +1356,11 @@ def inset_boards(d, od, part, alpha, frac):
         for i, fy in enumerate(BAR_ROWS):
             y = y0 + (y1 - y0) * fy
             full = (i == 2)
-            bx0 = x0 if (full or i in (0, 3)) else (x0 + x1) / 2
+            if part == "middle_bar" and not full:
+                continue          # the bars are drawn; only the middle one is
+            bx0 = x0 if (full or i in (0, 3)) else (x0 + x1) / 2   # called out
             bx1 = x1 if (full or i in (1, 4)) else (x0 + x1) / 2
-            col = a if (part == "bars" or full) else SAND + (200,)
-            width = 5 if (part == "middle_bar" and full) else 3
-            od.line([(bx0, y), (bx1, y)], fill=col, width=width)
+            od.line([(bx0, y), (bx1, y)], fill=a, width=5 if full else 3)
         if part == "bars":
             cap(od, alpha, "five bars of acacia for the boards")
         else:
@@ -925,7 +1378,8 @@ def inset_boards(d, od, part, alpha, frac):
 # --- the veil and the screen (Exodus 26:31-37) --------------------------------
 
 def inset_hanging(d, od, part, alpha, frac, npillars=4, base_col=SILVER,
-                  title="THE VEIL", subtitle="before the Most Holy Place"):
+                  title="THE VEIL", subtitle="before the Most Holy Place",
+                  cherubim=True):
     panel(d, title, subtitle)
     cx0, cy0 = IX + 68, IY + 84
     cw, ch = 220, 150
@@ -935,13 +1389,22 @@ def inset_hanging(d, od, part, alpha, frac, npillars=4, base_col=SILVER,
                     fill=tuple(c // 2 for c in GATE_COLORS[i]),
                     outline=SAND_DIM)
     d.rectangle([cx0, cy0, cx0 + cw, cy0 + ch], outline=WHITE_LINEN, width=2)
-    d.text((cx0 + cw / 2, cy0 + ch / 2), "· cherubim ·", font=F_SMALL,
-           fill=WHITE_LINEN, anchor="mm")
+    # The cherubim of skilful work are drawn on it — the same creature as the
+    # pair on the mercy seat, at three-quarter size. A veil that says the word
+    # "cherubim" has not got any on it.
+    #
+    # The VEIL only. The screen for the door of the tent (26:36) is the same
+    # four colours of embroidered work but no cherubim are named on it, so it
+    # does not get them — this is the one place the two hangings differ, and
+    # drawing them alike would flatten it.
+    if cherubim:
+        for ox, dr in ((-30, 1), (30, -1)):
+            cherub_filled(d, cx0 + cw / 2 + ox * 1.15, cy0 + ch * 0.84, dr,
+                          0.74, LINENS)
     pxs = [cx0 + cw * (i + 0.5) / npillars for i in range(npillars)]
     for px in pxs:
-        d.line([(px, cy0 + ch), (px, cy0 + ch + 34)], fill=SAND, width=4)
-        d.rectangle([px - 7, cy0 + ch + 34, px + 7, cy0 + ch + 44],
-                    fill=base_col)
+        post(d, px, cy0 + ch + 4, cy0 + ch + 36, 8, 7, GOLDS)
+        box(d, px - 8, cy0 + ch + 36, px + 8, cy0 + ch + 46, sheet(base_col))
 
     a = g(alpha)
     if part in ("veil", "colors"):
@@ -955,8 +1418,9 @@ def inset_hanging(d, od, part, alpha, frac, npillars=4, base_col=SILVER,
                 "the screen for the door of the tent")
     elif part in ("pillars4", "pillars5"):
         for px in pxs:
-            od.line([(px, cy0 + ch), (px, cy0 + ch + 34)], fill=a, width=6)
-            od.rectangle([px - 9, cy0 + ch + 32, px + 9, cy0 + ch + 46],
+            od.line([(px, cy0 + ch + 4), (px, cy0 + ch + 36)], fill=a,
+                    width=6)
+            od.rectangle([px - 10, cy0 + ch + 34, px + 10, cy0 + ch + 48],
                          outline=a, width=2)
         if part == "pillars4":
             cap(od, alpha, "four pillars of acacia, overlaid with gold",
@@ -988,7 +1452,8 @@ INSETS = {
     "veil": inset_hanging,
     "screen": lambda d, od, p, a, f: inset_hanging(
         d, od, p, a, f, npillars=5, base_col=BRONZE,
-        title="THE SCREEN FOR THE DOOR", subtitle="the entrance of the tent"),
+        title="THE SCREEN FOR THE DOOR", subtitle="the entrance of the tent",
+        cherubim=False),
 }
 
 
@@ -1165,54 +1630,8 @@ CHAPTERS = {25: CH25, 26: CH26, 27: CH27}
 # Frame renderer
 # ---------------------------------------------------------------------------
 
-def render_verse(chapter, verse):
-    caption, highlights, inset, labels = CHAPTERS[chapter][verse]
-    frames = []
-    for i in range(FRAMES):
-        t = i / FRAMES
-        alpha = 0.62 + 0.38 * pulse(t)
-        grow = ease(min(1.0, t / 0.55)) if FRAMES > 1 else 1.0
-
-        img = Image.new("RGB", (W, H), BG)
-        d = ImageDraw.Draw(img)
-        draw_plan(d, dim=bool(inset))
-        draw_chrome(d, chapter, verse, caption)
-
-        overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        od = ImageDraw.Draw(overlay)
-
-        if inset:
-            name, part = inset
-            INSETS[name](d, od, part, alpha, grow)
-        for fn, kwargs, grows in highlights:
-            fn(od, alpha=alpha, frac=grow if grows else 1.0, **kwargs)
-        la = int(255 * min(1.0, grow * 1.4))
-        for text, x, y in labels:
-            od.text(cub(x, y), text, font=F_DIM, fill=HL + (la,),
-                    anchor="mm")
-        if chapter == 27 and verse == 18:
-            for text, x, y in DIM_LABELS:
-                od.text(cub(x, y), text, font=F_DIM,
-                        fill=HL + (int(255 * alpha),), anchor="mm")
-
-        img = Image.alpha_composite(img.convert("RGBA"), overlay)
-        frames.append(img.convert("RGB"))
-
-    out = out_path("Exodus", chapter, f"Exodus_{chapter}_{verse}.webp")
-    frames[0].save(out, save_all=True, append_images=frames[1:],
-                   duration=FRAME_MS, loop=0, quality=82, method=4)
-    return out
-
-
-if __name__ == "__main__":
-    grand = 0
-    for chapter in sorted(CHAPTERS):
-        total = 0
-        for v in sorted(CHAPTERS[chapter]):
-            out = render_verse(chapter, v)
-            total += os.path.getsize(out)
-        print(f"Exodus {chapter}: {len(CHAPTERS[chapter])} animations, "
-              f"{total/1e6:.1f} MB")
-        grand += total
-    print(f"TOTAL: {sum(len(c) for c in CHAPTERS.values())} files, "
-          f"{grand/1e6:.1f} MB")
+# The WebP rendering that used to close this file has been removed: the app
+# reads the SVGs natively, and generate_exodus2527_svg.py already draws every
+# verse of Exodus 25-27 from the INSETS / highlight functions above. This file
+# remains what the rest of the project actually imports it for — the palette,
+# the fonts, out_path, and the tabernacle's own plan and inset drawings.

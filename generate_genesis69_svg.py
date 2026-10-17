@@ -14,18 +14,33 @@ once:
 
 The water level is a function of the verse: it rises through chapter 7 until
 the mountains are covered, holds, then recedes through chapter 8. The ark
-floats with it, grounds on Ararat's summit at 8:4 while the water is still
-above the peak (as the text has it — the tops only appear at 8:5), and stays
-perched there as the water drops away. Animals queue to the door while the ship
-is loading; the raven and the dove fly from the window; the rainbow arcs over
-the sky from 9:13.
+floats with it. Animals queue to the door while the ship is loading; the raven
+and the dove fly from the window; the rainbow arcs over the sky from 9:13.
+
+There are two camera positions, and the ark grounding is the cut between them:
+
+* the flood view (6:1 - 8:3) — the side elevation square on, the water rising
+  across the whole frame;
+* the rested view (8:4 - 9:29) — the camera comes round and down. Ararat is a
+  whole massif with its summit to the right and a broad rock shoulder under it,
+  the hull is seen three-quarter and tilted along the shoulder it settled on,
+  and the flank falls away to the left toward the plain the household walks
+  down to. The water table works exactly as before; it just drains down a
+  mountainside instead of past a row of peaks.
+
+The door follows the text and nothing else: set in the side at 6:16, standing
+open through the whole loading, shut at 7:16 ("and the LORD shut him in") and
+still shut through every verse of the flood, opened again only at 8:18 when
+they go out.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_genesis69_svg.py
 """
 
+import math
 import os
 
+import svg_figures as F
 from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, BROWN, GRAY, out_path)
@@ -82,12 +97,101 @@ END_W, END_H = 50 * CUBIT, 30 * CUBIT
 BAR_Y = 496                     # the dated timeline strip
 
 # ---------------------------------------------------------------------------
+# The hull's shape
+#
+# The given measurements are a box — 300 x 50 x 30 — and the elevation is drawn
+# to that scale, but a plain rectangle does not read as a ship. Rounding the
+# two bottom corners costs nothing in accuracy (the cubits along and up are
+# unchanged) and buys the whole silhouette: flat deck, straight sides, a bilge
+# turning into a flat keel.
+# ---------------------------------------------------------------------------
+
+BILGE_RX = 0.09                 # of the length, at each end
+BILGE_RY = 0.45                 # of the height
+
+
+def hull_points(x0, top, length, height, steps=9):
+    """The side elevation traced as a closed outline."""
+    x1, bot = x0 + length, top + height
+    rx, ry = length * BILGE_RX, height * BILGE_RY
+    pts = [(x0, top), (x1, top), (x1, bot - ry)]
+    for cx, a0 in ((x1 - rx, 0.0), (x0 + rx, 90.0)):
+        for i in range(steps + 1):
+            a = math.radians(a0 + 90.0 * i / steps)
+            pts.append((cx + rx * math.cos(a), bot - ry + ry * math.sin(a)))
+    return pts
+
+
+def hull_bottom(x, x0, top, length, height):
+    """How far down the hull reaches at `x` — so the room dividers stop at the
+    planking instead of poking out through the turn of the bilge."""
+    x1, bot = x0 + length, top + height
+    rx, ry = length * BILGE_RX, height * BILGE_RY
+    if x0 + rx <= x <= x1 - rx:
+        return bot
+    cx = x0 + rx if x < x0 + rx else x1 - rx
+    t = min(1.0, abs(x - cx) / rx)
+    return bot - ry + ry * math.sqrt(max(0.0, 1.0 - t * t))
+
+
+def clip_below(points, y):
+    """The part of a closed outline at or below `y` — used to tint the hull's
+    draft, so the ship sits in the water instead of on it."""
+    out = []
+    for i, a in enumerate(points):
+        b = points[(i + 1) % len(points)]
+        a_in, b_in = a[1] >= y, b[1] >= y
+        if a_in:
+            out.append(a)
+        if a_in != b_in:
+            t = (y - a[1]) / (b[1] - a[1])
+            out.append((a[0] + (b[0] - a[0]) * t, y))
+    return out
+
+
+def hull_inset(y, top, length, height):
+    """How far in from each end the hull has drawn at `y` — the same trim for
+    the deck lines."""
+    ry = height * BILGE_RY
+    bot = top + height
+    if y <= bot - ry:
+        return 0.0
+    t = min(1.0, (y - (bot - ry)) / ry)
+    return length * BILGE_RX * (1.0 - math.sqrt(max(0.0, 1.0 - t * t)))
+
+
+def draw_door(c, x, y, w, h, st, lit, xf=None):
+    """The door in the ark's side. `xf` maps the corners into place, so the
+    same door serves the square-on elevation and the tilted rested view."""
+    if st == "none":
+        return
+    xf = xf or (lambda p: p)
+    box = [xf((x, y)), xf((x + w, y)), xf((x + w, y + h)), xf((x, y + h))]
+    edge = HL if lit else SAND
+    if st == "shut":
+        c.polyline(box, stroke=edge, width=2, closed=True, fill=dim(SAND, 210))
+        for f in (0.34, 0.67):                  # planked across
+            c.line(xf((x + w * f, y + 1.5)), xf((x + w * f, y + h - 1.5)),
+                   dim(BROWN, 200), 1.2)
+        c.line(xf((x - 2, y + h * 0.44)), xf((x + w + 2, y + h * 0.44)),
+               edge, 2)                          # and barred
+    else:
+        c.polyline(box, stroke=edge, width=2, closed=True, fill=BG)
+    if lit:
+        pad = 3
+        c.pulse_outline([xf((x - pad, y - pad)), xf((x + w + pad, y - pad)),
+                         xf((x + w + pad, y + h + pad)),
+                         xf((x - pad, y + h + pad))], g(0.9), width=2)
+
+# ---------------------------------------------------------------------------
 # Water level by reading position (last breakpoint at or before the verse)
 # ---------------------------------------------------------------------------
 
 WATER = [
     ((6, 1), 0.0),
-    ((7, 10), 0.05), ((7, 11), 0.12), ((7, 12), 0.22), ((7, 17), 0.50),
+    # it climbs the hull's side while the ark is still aground, then 7:17 is
+    # where "the waters increased, and bare up the ark" and it lifts
+    ((7, 10), 0.02), ((7, 11), 0.06), ((7, 12), 0.12), ((7, 17), 0.50),
     ((7, 18), 0.66), ((7, 19), 0.86), ((7, 20), 1.00),
     ((8, 1), 0.95), ((8, 3), 0.86), ((8, 4), 0.78), ((8, 5), 0.62),
     ((8, 6), 0.50), ((8, 8), 0.42), ((8, 10), 0.34), ((8, 12), 0.26),
@@ -106,6 +210,11 @@ def water_level(ch, v):
 
 def water_y(ch, v):
     return GROUND_Y - water_level(ch, v) * (GROUND_Y - TOP_WATER_Y)
+
+
+def ground_dry(ch, v):
+    """Whether there is still plain to stand on beside the ark."""
+    return water_level(ch, v) <= 0.06
 
 
 # ark state -> badge text
@@ -129,22 +238,57 @@ def state(ch, v):
     return chosen[1], chosen[2]
 
 
-def afloat(ch, v):
-    return (7, 17) <= (ch, v) < (8, 4) if ch in (7, 8) else False
+REST_AT = (8, 4)             # "the ark rested upon the mountains of Ararat"
 
 
-def grounded(ch, v):
-    return pos(ch, v) >= pos(8, 4)
+def rested(ch, v):
+    """True once the ark grounds — which is also where the camera cuts from
+    the flood view to the rested view."""
+    return pos(ch, v) >= pos(*REST_AT)
+
+
+DRAFT = 0.24                 # how much of the hull rides under the surface
 
 
 def ark_top(ch, v):
-    """The ark's top edge: on the ground before the flood, riding the water
-    while afloat, perched on Ararat's summit once grounded."""
-    if grounded(ch, v):
-        return ARARAT_Y - ARK_H
+    """The ark's top edge in the flood view: on the ground before the flood,
+    riding the water once there is enough of it to float on — and riding *in*
+    it, drawing its draft, rather than perched on the surface."""
     if water_level(ch, v) >= 0.5:
-        return water_y(ch, v) - ARK_H - 2
+        return water_y(ch, v) - ARK_H * (1 - DRAFT)
     return GROUND_Y - ARK_H
+
+
+# ---------------------------------------------------------------------------
+# The door
+# ---------------------------------------------------------------------------
+
+# Where in the side it sits, in both views: along at 0.28 of the length, and
+# up on the middle storey — the lower one is under water for the whole flood,
+# and a door that reads as shut is the point.
+DOOR_AT = 0.28
+DOOR_MADE = (6, 16)          # "the door of the ark shalt thou set in the side"
+DOOR_SHUT = (7, 16)          # "and the LORD shut him in"
+DOOR_OPEN = (8, 18)          # "and Noah went forth"
+
+DOOR_LABEL = {DOOR_MADE: "the door", DOOR_SHUT: "shut", DOOR_OPEN: "opened"}
+
+
+def door_state(ch, v):
+    """none / open / shut. It is not there before it is commanded, stands open
+    for the whole loading, and once the LORD shuts it at 7:16 it stays shut
+    through every verse of the flood — it opens again only at 8:18."""
+    p = pos(ch, v)
+    if p < pos(*DOOR_MADE):
+        return "none"
+    if pos(*DOOR_SHUT) <= p < pos(*DOOR_OPEN):
+        return "shut"
+    return "open"
+
+
+def door_lit(ch, v):
+    """Lit on the verses that act on the door itself."""
+    return (ch, v) in (DOOR_MADE, DOOR_SHUT, DOOR_OPEN, (8, 19))
 
 
 # ---------------------------------------------------------------------------
@@ -346,9 +490,11 @@ def draw_before_flood(c, ch, v):
                "120 years", 13, HL, "mb", bold=True)
 
     if v == 4:      # taller among them
+        # at the crowd's own scale, so the head-and-shoulders over them is the
+        # unit's doing and not a number picked to look right
         for x in (CROWD_X0 + 3 * CROWD_STEP, CROWD_X0 + 8 * CROWD_STEP):
-            figure(c, x, GROUND_Y - 6, HL, scale=1.5)
-        c.text((CROWD_X0 + 5.5 * CROWD_STEP, GROUND_Y - 44), "the Nephilim",
+            figure(c, x, GROUND_Y - 6, HL, scale=0.8, kind="nephilim")
+        c.text((CROWD_X0 + 5.5 * CROWD_STEP, GROUND_Y - 86), "the Nephilim",
                13, HL, "mb", bold=True)
 
     if v >= 8:      # the one man
@@ -374,10 +520,6 @@ def draw_mountains(c, ch, v):
     c.polygon(pts, fill=dim(GRAY, 110), stroke=SAND_DIM, width=1.5)
     c.rect(SCENE[0], GROUND_Y, SCENE[2] - SCENE[0], SCENE[3] - GROUND_Y,
            fill=dim(BROWN, 130))
-    if grounded(ch, v):
-        lit = (ch == 8 and v in (4, 5))
-        c.text((ARARAT_X, ARARAT_Y - 12), "Ararat", 14,
-               HL if lit else TEXT_DIM, "mb", bold=lit, italic=not lit)
 
 
 def draw_water(c, ch, v):
@@ -412,7 +554,7 @@ def draw_water(c, ch, v):
 
 
 def draw_ark(c, ch, v):
-    """The side elevation: hull, three decks, door, roof ridge, window.
+    """The flood view's side elevation: hull, three decks, door, roof ridge.
 
     Whenever the water level has changed the whole hull rides with it: the
     group starts at the previous verse's height and glides to this one's,
@@ -423,11 +565,10 @@ def draw_ark(c, ch, v):
     bot = top + ARK_H
 
     if not built:
-        # A slim placeholder rather than the full hull: verses 1-13 have not
-        # reached the command yet, and the ground below belongs to the
-        # pre-flood scene (draw_before_flood).
-        c.rect(ARK_X0, PRE_ARK_Y, ARK_L, 30, fill=None,
-               stroke=dim(SAND_DIM, 200), width=1.5)
+        # Nothing. Verses 6:1-13 have not reached the command to make an ark,
+        # and an empty outline standing in the sky over the plain reads as a
+        # stray box rather than as a thing not yet built — it says nothing the
+        # absence of a ship does not say better.
         return
 
     lift = prev_ark_top(ch, v) - top
@@ -438,9 +579,8 @@ def draw_ark(c, ch, v):
                f'dur="{_RISE_DUR}" begin="0s" fill="freeze" '
                f'calcMode="spline" keyTimes="0;1" keySplines="{_EASE}"/>'])
 
-    building = p < pos(7, 1)
-    c.rect(ARK_X0, top, ARK_L, ARK_H, fill=dim(HULL, 235), stroke=SAND,
-           width=2, rx=3)
+    hull = hull_points(ARK_X0, top, ARK_L, ARK_H)
+    c.polyline(hull, stroke=SAND, width=2, closed=True, fill=dim(HULL, 235))
     # roof "finished to a cubit upward"
     roof_lit = (ch == 6 and v == 16)
     c.polyline([(ARK_X0 + 6, top), (ARK_X0 + 30, top - 6),
@@ -451,28 +591,40 @@ def draw_ark(c, ch, v):
     for i, name in ((1, "third"), (2, "second"), (3, "lower")):
         dy = top + (i - 1) * (ARK_H / 3)
         if i > 1:
-            c.line((ARK_X0 + 3, dy), (ARK_X1 - 3, dy),
+            ins = hull_inset(dy, top, ARK_L, ARK_H)
+            c.line((ARK_X0 + ins + 3, dy), (ARK_X1 - ins - 3, dy),
                    HL if lv_lit else dim(DECK, 220), 2 if lv_lit else 1.5)
-        c.text((ARK_X0 + 12, dy + ARK_H / 6), name, 11,
-               GOLD if lv_lit else TEXT_DIM, "lm", italic=True)
+        # Set in from the planking at the label's OWN height, not from the
+        # ark's squared-off end. The hull draws in through the turn of the
+        # bilge, so a fixed offset that clears the side on the third deck
+        # sits out through it on the lower one.
+        ly = dy + ARK_H / 6
+        c.text((ARK_X0 + hull_inset(ly, top, ARK_L, ARK_H) + 12, ly), name,
+               11, GOLD if lv_lit else TEXT_DIM, "lm", italic=True)
     # rooms
     for i in range(1, 12):
         x = ARK_X0 + i * (ARK_L / 12)
-        c.line((x, top + 2), (x, bot - 2), dim(DECK, 150), 1)
+        c.line((x, top + 2),
+               (x, hull_bottom(x, ARK_X0, top, ARK_L, ARK_H) - 2),
+               dim(DECK, 150), 1)
     # the door in the side
-    door_lit = (ch == 6 and v == 16) or (ch == 7 and v == 16)
-    dx0 = ARK_X0 + ARK_L * 0.13
-    c.rect(dx0, bot - ARK_H / 3 + 4, 26, ARK_H / 3 - 8,
-           fill=BG if not (ch == 7 and v >= 16) else dim(SAND, 220),
-           stroke=HL if door_lit else SAND, width=2)
+    dst = door_state(ch, v)
+    dlit = door_lit(ch, v)
+    dx0, dw = ARK_X0 + ARK_L * DOOR_AT, 26
+    dy0, dh = top + ARK_H / 3 + 5, ARK_H / 3 - 10
+    draw_door(c, dx0, dy0, dw, dh, dst, dlit)
+    if dlit and (ch, v) in DOOR_LABEL:
+        c.text((dx0 + dw / 2, top - 14), DOOR_LABEL[(ch, v)], 12, HL, "mb",
+               italic=True)
 
-    # the window Noah opens in 8:6
-    if pos(ch, v) >= pos(8, 6):
-        wx = ARK_X1 - 120
-        c.rect(wx, top + 8, 18, 14, fill=BG, stroke=GOLD, width=2)
-        if ch == 8 and v == 6:
-            c.text((wx + 9, top - 10), "the window", 12, HL, "mb",
-                   italic=True)
+    # everything below the surface, seen through it
+    wy = water_y(ch, v)
+    if water_level(ch, v) > 0 and top < wy < bot:
+        c.polygon(clip_below(hull, wy), fill=dim(FLOOD, 128))
+        c.line((ARK_X0 + hull_inset(wy, top, ARK_L, ARK_H), wy),
+               (ARK_X1 - hull_inset(wy, top, ARK_L, ARK_H), wy),
+               dim(FLOOD_TOP, 210), 2)
+
     if riding:
         c.raw(["</g>"])
 
@@ -519,90 +671,329 @@ def draw_end_view(c, ch, v):
            "50 × 30 cubits", 12, HL if lit else TEXT_DIM, "mt", bold=lit)
 
 
-def creature(c, x, y, col):
-    c.ellipse(x, y, 6.5, 4, fill=dim(col, 150), stroke=col, width=1.2)
-    c.line((x - 3, y + 4), (x - 3, y + 9), col, 1.4)
-    c.line((x + 3, y + 4), (x + 3, y + 9), col, 1.4)
-    c.line((x + 6.5, y - 2), (x + 11, y - 6), col, 1.4)
+# Of every sort, two of every sort. The queue at the door is the one place
+# in these four chapters where variety IS the subject, so the creature drawn
+# is chosen from its place in the line rather than being the same blob each
+# time — and the choice is made from x, so a verse redrawn tomorrow has the
+# same beasts in the same order as today.
+
+# Two of every sort is the text, but a queue of six different sorts is a
+# menagerie and it fights the ark for the eye. Two kinds, walking in pairs.
+# Nothing that flies or creeps: at this size a bird on the ground reads as
+# debris and a serpent reads as a crack.
+_KINDS = (F.ox, F.sheep)
 
 
-def figure(c, x, y, col, scale=0.85):
-    h = 13 * scale
-    c.circle(x, y - h - 6 * scale, 4.6 * scale, fill=col)
-    c.line((x, y - h), (x, y), col, 2.2)
-    c.line((x - 5.5 * scale, y - h + 4), (x + 5.5 * scale, y - h + 4), col, 2)
-    c.line((x, y), (x - 4.5 * scale, y + 8 * scale), col, 2)
-    c.line((x, y), (x + 4.5 * scale, y + 8 * scale), col, 2)
+def creature(c, x, y, col, height=17.0):
+    """One beast of the queue. Which sort it is comes from where it stands in
+    the line — by pairs, so the two of every sort are seen to be two — and it
+    is taken from x, so a verse redrawn tomorrow has the same beasts in the
+    same order as today."""
+    parts = _KINDS[(int(abs(x) / 24) // 2) % len(_KINDS)]()
+    x0, x1, y0, y1 = F.bbox((parts, 0))
+    s = height / (y1 - y0)
+    F.draw(c, parts, x - (x0 + x1) / 2 * s, y + 9 - y0 * s, s, col, BG)
+
+
+# The schematic figure these replace stood about 27 pixels tall, which is
+# enough for a stick and not enough for a drawn body. They stand on their own
+# feet, so enlarging them moves nothing else in the scene.
+
+FIGURE_SCALE = 1.6
+
+
+def figure(c, x, y, col, scale=0.85, kind="man"):
+    """`y` is the waist the schematic figure hung from; the drawn one stands
+    on its feet, so the feet go where that figure's feet were.
+
+    `kind` is "man", "woman", or "nephilim" — and the Nephilim of 6:4 are a
+    build, not a bigger man, which is the whole of what that verse says about
+    them."""
+    parts = (F.nephilim() if kind == "nephilim" else
+             F.woman() if kind == "woman" else F.man())
+    # Pixels per unit, NOT a fitted height: fitting each figure to one height
+    # makes a giant the size of a man, which is the only thing 6:4 says about
+    # him. At this scale a man comes out 31.6*scale*FIGURE_SCALE tall and a
+    # Nephilim comes out half again that, because the unit says so.
+    s = 31.6 * scale * FIGURE_SCALE / 98.0
+    F.draw(c, parts, x, y + 8 * scale, s, col, BG)
 
 
 def draw_loading(c, ch, v):
     """The queue at the door: the animals by pairs, then the household of
-    eight. Both stay west of the hull (x < 190) and route along the ground
-    up into the door, so nothing is drawn over the ship."""
+    eight. Both wait west of the hull (x < 190) and route along the ground to
+    the gangplank, which climbs the side to the door on the middle storey."""
+    if rested(ch, v) or not ground_dry(ch, v):
+        return
     key = (ch, v)
-    door_x = ARK_X0 + ARK_L * 0.13 + 13
+    door_x = ARK_X0 + ARK_L * DOOR_AT
+    sill_y = ark_top(ch, v) + ARK_H / 3 + ARK_H / 3 - 5
     ramp_y = GROUND_Y + 12
     if key in LOADING:
         n, label = LOADING[key]
         y = GROUND_Y - 14
-        for i in range(n):
-            bx = 52 + i * 24
+        # Three pairs, not eight. A drawn beast is twice the width the old
+        # blob was, so the queue that used to read as a line reads as a heap
+        # at the same spacing — and the verse says two and two, which three
+        # pairs say and a crowd does not.
+        pairs = min(n, 3)
+        for i in range(pairs):
+            bx = 52 + i * 46
             creature(c, bx, y, HL)
-            creature(c, bx + 9, y + 3, GOLD)
+            creature(c, bx + 20, y + 3, GOLD)
         c.text((52, GROUND_Y + 26), label, 12, HL, "la", italic=True)
-        c.polyline([(52 + n * 24, y), (188, y), (188, ramp_y),
-                    (door_x, ramp_y), (door_x, GROUND_Y - 6)],
+        c.polyline([(52 + pairs * 46, y), (188, y), (188, ramp_y),
+                    (door_x - 96, ramp_y), (door_x - 2, sill_y)],
                    stroke=GOLD, width=1.5, dash="5,5")
     if key in HOUSEHOLD:
-        going_out = (ch == 8)
         for i in range(8):
             figure(c, 50 + i * 20, GROUND_Y - 10, HL, scale=0.7)
         c.text((50, GROUND_Y + 26), "eight", 12, HL, "la", italic=True)
-        path = [(214, GROUND_Y - 16), (188, GROUND_Y - 16)]
-        c.polyline(path if going_out else path[::-1], stroke=GOLD, width=2,
-                   dash="4,5")
+        c.polyline([(188, GROUND_Y - 16), (214, GROUND_Y - 16)], stroke=GOLD,
+                   width=2, dash="4,5")
 
 
-def bird(c, x, y, col, leaf=False):
-    c.polyline([(x - 9, y), (x - 3, y - 6), (x + 2, y - 1)], stroke=col,
-               width=2)
-    c.polyline([(x + 2, y - 1), (x + 7, y - 7), (x + 12, y)], stroke=col,
-               width=2)
+def draw_aboard(c, ch, v):
+    """7:13-16 recount the boarding, but by then the rain has been falling for
+    forty days — so on those verses the household and the pairs are drawn
+    where they now are, inside, rather than standing in the rising water."""
+    if rested(ch, v) or ground_dry(ch, v):
+        return
+    if (ch, v) not in HOUSEHOLD | set(LOADING):
+        return
+    top = ark_top(ch, v)
+    deck = top + ARK_H / 3                   # the second storey, above the
+    for i in range(8):                       # water climbing the hull's side
+        figure(c, ARK_X0 + 84 + i * 26, deck + 22, HL, scale=0.52)
+    if (ch, v) in LOADING:
+        n, label = LOADING[(ch, v)]
+        for i in range(n):
+            bx = ARK_X0 + 340 + i * 34
+            creature(c, bx, deck + 14, HL)
+            creature(c, bx + 11, deck + 17, GOLD)
+        c.text((ARK_X0 + 340, top - 10), label, 12, HL, "lb", italic=True)
+
+
+def bird(c, x, y, col, leaf=False, pose="up", flip=1):
+    """The raven and the dove. Drawn in profile: these two are the one case
+    in the chapter where a bird has somewhere to be — sent forth, and come
+    back again — and a bird seen from below has a spread but no heading."""
+    F.draw(c, F.bird(pose=pose, view="profile"), x, y, 0.42, col, BG,
+           flip=flip)
     if leaf:
-        c.ellipse(x + 14, y + 3, 5, 2.6, fill=GREEN, stroke=GREEN)
+        c.ellipse(x + flip * 15, y + 2, 5, 2.6, fill=GREEN, stroke=GREEN)
 
 
 def draw_birds(c, ch, v):
-    """The raven and the dove, out of the window Noah opened."""
+    """The raven and the dove, out of the window Noah opened. Every one of
+    these verses falls after the grounding, so the window they leave from is
+    the rested view's."""
     if ch != 8 or not (7 <= v <= 12):
         return
-    top = ark_top(ch, v)
-    wx, wy = ARK_X1 - 111, top + 15
+    wx, wy = rest_window()          # they fly out over the open western sky
     if v == 7:
-        path = [(wx, wy), (wx + 60, wy - 34), (wx + 20, wy - 58),
-                (wx - 30, wy - 30), (wx + 34, wy - 12)]
+        path = [(wx, wy), (wx - 78, wy - 30), (wx - 40, wy - 68),
+                (wx + 4, wy - 44), (wx - 52, wy - 40)]
         c.polyline(path, stroke=dim(SILVER, 150), width=1.5, dash="4,5")
-        bird(c, wx + 34, wy - 12, SILVER)
-        c.text((wx + 60, wy - 66), "the raven", 12, HL, "lm", italic=True)
+        bird(c, wx - 52, wy - 40, SILVER)
+        c.text((wx - 74, wy - 74), "the raven", 12, HL, "rm", italic=True)
         return
-    out = [(wx, wy), (wx + 46, wy - 26), (wx + 96, wy - 34)]
+    out = [(wx, wy), (wx - 52, wy - 30), (wx - 108, wy - 40)]
     if v in (8, 9):
         c.polyline(out, stroke=dim(HL, 150), width=1.5, dash="4,5")
-        c.polyline([(wx + 96, wy - 30), (wx + 46, wy - 20), (wx, wy + 4)],
+        c.polyline([(wx - 108, wy - 36), (wx - 52, wy - 24), (wx, wy + 4)],
                    stroke=dim(HL, 110), width=1.5, dash="2,5")
-        bird(c, wx + 18, wy - 6, HL)
-        c.text((wx + 106, wy - 38), "the dove", 12, HL, "lm", italic=True)
+        bird(c, wx - 46, wy - 26, HL)
+        c.text((wx - 120, wy - 44), "the dove", 12, HL, "rm", italic=True)
     elif v in (10, 11):
         c.polyline(out, stroke=dim(HL, 150), width=1.5, dash="4,5")
-        bird(c, wx + 24, wy - 10, HL, leaf=(v == 11))
+        bird(c, wx - 62, wy - 32, HL, leaf=(v == 11))
         if v == 11:
-            c.text((wx + 106, wy - 38), "the olive leaf", 12, HL, "lm",
+            c.text((wx - 120, wy - 44), "the olive leaf", 12, HL, "rm",
                    italic=True)
     else:      # v == 12, she does not return
-        far = [(wx, wy), (wx + 50, wy - 30), (wx + 120, wy - 48)]
+        far = [(wx, wy), (wx - 58, wy - 34), (wx - 136, wy - 56)]
         c.polyline(far, stroke=dim(HL, 150), width=1.5, dash="4,5")
-        bird(c, wx + 120, wy - 48, HL)
+        bird(c, wx - 136, wy - 56, HL)
 
+
+
+# ---------------------------------------------------------------------------
+# The rested view (8:4 onward)
+#
+# A 300-cubit hull balanced on a needle, with people stepping off into thin
+# air, was the wrong picture. From the grounding the camera comes round and
+# down: Ararat is a whole massif with its summit to the right and a broad rock
+# shoulder beneath it, the hull lies three-quarter and tilted along that
+# shoulder, and the flank falls away west to the plain. The water table is the
+# same device as before — one surface across the frame, dropping verse by
+# verse — it just drains down a mountainside now.
+# ---------------------------------------------------------------------------
+
+# The ridge, west base to east base. SHOULDER is the long shallow stretch the
+# hull came to rest along; the flank steps down sharply off its western end, so
+# the ark reads as having stopped somewhere rather than as sliding down a ramp.
+SHOULDER = [(452, 234), (560, 228), (680, 220), (776, 212)]
+RIDGE = ([(300, 400), (336, 366), (372, 330), (400, 300), (410, 286),
+          (432, 262), (444, 240)] + SHOULDER +
+         [(806, 180), (842, 150), (880, 132), (918, 176), (952, 244),
+          (984, 320), (1000, 372), (1000, 400)])
+
+# The range behind and below it, whose tops are the ones seen at 8:5.
+FAR_RIDGE = [(24, 400), (72, 328), (120, 276), (168, 246), (214, 294),
+             (252, 256), (290, 300), (332, 250), (374, 308), (416, 400)]
+
+R_X0, R_L, R_H = 452.0, 331.0, 33.0          # the hull, at 0.46 of the elevation
+R_BOT = 230.0                                # bedded into the shoulder's face
+R_TOP = R_BOT - R_H
+R_CX, R_CY = R_X0 + R_L / 2, R_BOT
+R_TILT = -4.0                                # settled along the shoulder's fall
+DECK_DX, DECK_DY = 21.0, -14.0               # the deck, seen from below
+LEDGE = 18                                   # how deep the shoulder's face is
+
+SUMMIT = (880, 132)
+
+# Off the plank, west along the shoulder, down the step, then the flank.
+TRAIL = [(496, 250), (460, 252), (432, 274), (410, 296), (378, 324),
+         (344, 352), (310, 376), (280, 392)]
+
+WINDOW_AT = 0.07             # forward and high, well clear of the door
+
+
+def rot(p):
+    """Into the tilted hull's place on the shoulder."""
+    a = math.radians(R_TILT)
+    dx, dy = p[0] - R_CX, p[1] - R_CY
+    return (R_CX + dx * math.cos(a) - dy * math.sin(a),
+            R_CY + dx * math.sin(a) + dy * math.cos(a))
+
+
+def rest_window():
+    """The window's outer edge, in final coordinates — where the birds go
+    out from."""
+    return rot((R_X0 + R_L * WINDOW_AT, R_TOP + 9))
+
+
+# Water in this view is set as a height on the mountain rather than as a
+# fraction of the plain: 8:4 is the surface the hull grounds against, 8:5 is
+# the line the lesser tops break through, 8:14 is gone.
+REST_WATER = [((8, 4), 216), ((8, 5), 262), ((8, 6), 292), ((8, 8), 310),
+              ((8, 10), 328), ((8, 12), 346), ((8, 13), 380), ((8, 14), 433)]
+
+
+def rest_water_y(ch, v):
+    p = pos(ch, v)
+    y = REST_WATER[0][1]
+    for (bc, bv), value in REST_WATER:
+        if pos(bc, bv) <= p:
+            y = value
+    return y
+
+
+def draw_massif(c, ch, v):
+    c.polygon(FAR_RIDGE, fill=dim(GRAY, 58))
+    c.polygon(RIDGE, fill=dim(GRAY, 150), stroke=SAND_DIM, width=1.5)
+    # a lit band along the shoulder, so it reads as a ledge the hull is sitting
+    # on rather than as the edge of a flat grey field
+    c.polygon(SHOULDER + [(x, y + LEDGE) for x, y in reversed(SHOULDER)],
+              fill=dim(SAND_DIM, 62))
+    # two spurs off the summit, to give the face some form
+    for spur in ([(880, 136), (846, 232), (826, 330), (836, 400)],
+                 [(880, 136), (924, 226), (946, 320)]):
+        c.polyline(spur, stroke=dim(SAND_DIM, 46), width=1.5)
+    c.rect(SCENE[0], GROUND_Y, SCENE[2] - SCENE[0], SCENE[3] - GROUND_Y,
+           fill=dim(BROWN, 130))
+    lit = (ch == 8 and v in (4, 5))
+    c.text((SUMMIT[0] - 22, SUMMIT[1] + 34), "Ararat", 14,
+           HL if lit else SAND, "rm", bold=lit, italic=not lit)
+
+
+def draw_rest_water(c, ch, v):
+    wy = rest_water_y(ch, v)
+    prev_y = wy if (ch, v) == REST_AT else rest_water_y(*prev_verse(ch, v))
+    if wy >= SCENE[3] and prev_y >= SCENE[3]:
+        return
+    if abs(prev_y - wy) > 0.5:
+        _rise_rect(c, SCENE[0], SCENE[2] - SCENE[0], prev_y, wy,
+                   dim(FLOOD, 205))
+        _rise_line(c, SCENE[0], SCENE[2], prev_y, wy, FLOOD_TOP, 2.5)
+    else:
+        c.rect(SCENE[0], wy, SCENE[2] - SCENE[0], SCENE[3] - wy,
+               fill=dim(FLOOD, 205))
+        c.line((SCENE[0], wy), (SCENE[2], wy), FLOOD_TOP, 2.5)
+
+
+def draw_rest_ark(c, ch, v):
+    """The hull on the shoulder: the long side, a sliver of deck above it to
+    give the angle, and the door low in the side."""
+    x1 = R_X0 + R_L
+    deck = [rot((R_X0, R_TOP)), rot((x1, R_TOP)),
+            rot((x1 + DECK_DX, R_TOP + DECK_DY)),
+            rot((R_X0 + DECK_DX, R_TOP + DECK_DY))]
+    c.polyline(deck, stroke=SAND, width=2, closed=True, fill=dim(DECK, 225))
+    c.polyline([rot(p) for p in hull_points(R_X0, R_TOP, R_L, R_H)],
+               stroke=SAND, width=2, closed=True, fill=dim(HULL, 240))
+    for i in (1, 2):                     # the three levels
+        y = R_TOP + i * (R_H / 3)
+        ins = hull_inset(y, R_TOP, R_L, R_H) + 3
+        c.line(rot((R_X0 + ins, y)), rot((x1 - ins, y)), dim(DECK, 210), 1.2)
+    for i in range(1, 8):                # the rooms
+        x = R_X0 + i * (R_L / 8)
+        c.line(rot((x, R_TOP + 2)),
+               rot((x, hull_bottom(x, R_X0, R_TOP, R_L, R_H) - 2)),
+               dim(DECK, 140), 1)
+
+    dw, dh = 15.0, 10.0
+    dx0, dy0 = R_X0 + R_L * DOOR_AT, R_TOP + R_H / 3 + 1
+    draw_door(c, dx0, dy0, dw, dh, door_state(ch, v), door_lit(ch, v), rot)
+    if door_lit(ch, v) and (ch, v) in DOOR_LABEL:
+        c.text(rot((dx0 + dw / 2, R_TOP + DECK_DY - 9)), DOOR_LABEL[(ch, v)],
+               12, HL, "mb", italic=True)
+
+    if pos(ch, v) >= pos(8, 6):          # the window Noah opens
+        wx, wy = R_X0 + R_L * WINDOW_AT, R_TOP + 4
+        c.polyline([rot((wx, wy)), rot((wx + 14, wy)), rot((wx + 14, wy + 10)),
+                    rot((wx, wy + 10))], stroke=GOLD, width=1.8, closed=True,
+                   fill=BG)
+        if ch == 8 and v == 6:
+            lx, ly = rot((wx - 4, wy + 5))
+            c.text((lx, ly), "the window", 12, HL, "rm", italic=True)
+
+
+def _along(pts, t):
+    """The point a fraction `t` of the way down a polyline."""
+    segs = [(a, b, math.hypot(b[0] - a[0], b[1] - a[1]))
+            for a, b in zip(pts, pts[1:])]
+    d = t * sum(s[2] for s in segs)
+    for a, b, ln in segs:
+        if d <= ln:
+            k = d / ln if ln else 0.0
+            return (a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k)
+        d -= ln
+    return pts[-1]
+
+
+def draw_disembark(c, ch, v):
+    """8:18-19 — the plank down onto the shoulder, and the household and the
+    beasts strung out along the path down the flank to the plain."""
+    if ch != 8 or v < 18:
+        return
+    sill = rot((R_X0 + R_L * DOOR_AT - 1, R_TOP + R_H / 3 + 11))
+    foot = TRAIL[0]
+    c.polygon([sill, (sill[0] + 5, sill[1] + 7), (foot[0] + 5, foot[1] + 7),
+               (foot[0], foot[1])], fill=dim(DECK, 240), stroke=SAND,
+              width=1.2)
+    c.polyline(TRAIL, stroke=dim(GOLD, 160), width=1.5, dash="5,5")
+    for i in range(8):
+        x, y = _along(TRAIL, 0.08 + i * 0.115)
+        figure(c, x, y, HL, scale=0.5)
+    if v <= 19:
+        end = TRAIL[-1]
+        c.text((end[0] - 10, end[1] + 10), "eight", 12, HL, "rm", italic=True)
+    if v == 19:
+        for i in range(6):
+            x, y = _along(TRAIL, 0.15 + i * 0.14)
+            creature(c, x + 17, y + 4, GOLD)
 
 
 def draw_altar(c, ch, v):
@@ -610,12 +1001,14 @@ def draw_altar(c, ch, v):
     if pos(ch, v) < pos(8, 20):
         return
     lit = (ch == 8 and 20 <= v <= 22)
-    x, y = 400, GROUND_Y - 8
-    c.polygon([(x - 20, y + 8), (x + 20, y + 8), (x + 14, y - 6),
-               (x - 14, y - 6)], fill=dim(SAND_DIM, 210),
-              stroke=HL if lit else SAND_DIM, width=1.5)
-    c.polygon([(x, y - 30), (x + 8, y - 12), (x - 8, y - 12)],
-              fill=GOLD if lit else dim(GOLD, 150), stroke=GOLD, width=1.5)
+    x, y = 170, GROUND_Y
+    # The unhewn heap, not a hewn block: this is the altar a man raises out of
+    # what is lying about him, which is what Noah does the moment he lands.
+    parts = F.altar("stone", fire=True)
+    y0, y1 = F.bbox((parts, 0))[2:]
+    sheet = dict(F.palette(HL if lit else SAND_DIM, BG))
+    sheet["fire"] = (GOLD if lit else dim(GOLD, 150), GOLD, 1.2)
+    F.draw(c, parts, x, y, 46.0 / (y1 - y0), HL, BG, style=sheet)
     if lit:
         c.text((x, y + 24), "the altar", 12, HL, "mt", italic=True)
 
@@ -706,16 +1099,24 @@ def render(ch, v):
 
     draw_sky_and_rain(c, ch, v)
     draw_rainbow(c, ch, v)
-    draw_mountains(c, ch, v)
-    draw_water(c, ch, v)
-    draw_ark(c, ch, v)
-    draw_before_flood(c, ch, v)
-    draw_dimensions(c, ch, v)
-    draw_loading(c, ch, v)
+    if rested(ch, v):
+        draw_massif(c, ch, v)
+        # the hull goes under the surface, so at 8:4 it is still awash
+        draw_rest_ark(c, ch, v)
+        draw_rest_water(c, ch, v)
+        draw_disembark(c, ch, v)
+    else:
+        draw_mountains(c, ch, v)
+        draw_water(c, ch, v)
+        draw_ark(c, ch, v)
+        draw_before_flood(c, ch, v)
+        draw_dimensions(c, ch, v)
+        draw_loading(c, ch, v)
+        draw_aboard(c, ch, v)
+        draw_end_view(c, ch, v)
     draw_birds(c, ch, v)
     draw_altar(c, ch, v)
     draw_sons(c, ch, v)
-    draw_end_view(c, ch, v)
     draw_badge(c, ch, v)
     draw_timeline(c, ch, v)
     return c
