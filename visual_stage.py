@@ -66,14 +66,12 @@ def _rtf_to_text(rtf: str) -> str:
 class VerseContext:
     book: str
     chapter: int
-    verse: int          # 0 means "whole chapter" (intro/narration)
+    verse: int          # 0 means "whole chapter" (the chapter intro)
     text: str           # verse text (not drawn by the default renderer,
                         # but available to custom renderers)
-    reference: str      # e.g. "John 3:16 (KJV)"
+    reference: str      # e.g. "John 3:16"
     index: int          # 0-based position within the playlist
     total: int
-    translation: str
-    notes: list = None  # translator notes to display, or None/empty
     show_reference: bool = True  # draw the reference line at the bottom
 
 
@@ -194,22 +192,17 @@ class DefaultRenderer(Renderer):
         # SVG first (the vector master, shown via the embedded web view —
         # dropped from the list if that view is broken on this machine),
         # then animated formats, so an added .gif/.webp wins over an
-        # existing .png for the same verse. A translation-suffixed file
-        # (e.g. Genesis_5_3.KJV.webp) wins over the generic one, letting
-        # visuals that contain text match the translation being read.
-        # Text files (.txt/.rtf) come last so any real image wins; they
-        # render as a centered text panel styled like the notes overlay.
+        # existing .png for the same verse. Text files (.txt/.rtf) come
+        # last so any real image wins; they render as a centered text panel.
         exts = ((".gif", ".webp", ".png", ".jpg", ".jpeg", ".txt", ".rtf")
                 if _HAS_PIL else (".png", ".txt", ".rtf"))
         if svg_stage.available():
             exts = (".svg",) + exts
-        suffixes = [f".{ctx.translation}", ""] if ctx.translation else [""]
         for directory, base in locations:
-            for suffix in suffixes:
-                for ext in exts:
-                    path = os.path.join(directory, base + suffix + ext)
-                    if os.path.exists(path):
-                        return path
+            for ext in exts:
+                path = os.path.join(directory, base + ext)
+                if os.path.exists(path):
+                    return path
         return None
 
     def find_svg(self, ctx: VerseContext) -> str | None:
@@ -331,7 +324,7 @@ class DefaultRenderer(Renderer):
 
     def render(self, canvas, ctx, width, height):
         # A new verse restarts play-once animations from their first frame.
-        vkey = (ctx.book, ctx.chapter, ctx.verse, ctx.translation)
+        vkey = (ctx.book, ctx.chapter, ctx.verse)
         if vkey != self._last_verse_key:
             self._last_verse_key = vkey
             for anim in self._anim_cache.values():
@@ -340,7 +333,7 @@ class DefaultRenderer(Renderer):
         drew_image = False
         next_frame_ms = None
         # Text visuals (.txt/.rtf): book gradient plus a centered text
-        # panel, styled like the translator-notes overlay.
+        # panel on a translucent black box.
         if image_path and image_path.lower().endswith((".txt", ".rtf")):
             top, bottom = self._book_colors(ctx.book)
             self._draw_gradient(canvas, width, height, top, bottom)
@@ -400,32 +393,6 @@ class DefaultRenderer(Renderer):
             self._draw_gradient(canvas, width, height, top, bottom)
 
         ref_size = max(12, min(26, width // 42))
-        margin = max(30, width // 14)
-
-        # Translator notes (when provided) sit above the reference line.
-        if ctx.notes:
-            note_size = max(10, min(18, width // 60))
-            note_text = ("Translator-supplied words:  "
-                         + "   ".join(f"“{n}”" for n in ctx.notes))
-            text_id = canvas.create_text(
-                width // 2, height - max(70, height // 5),
-                text=note_text,
-                width=width - 2 * margin,
-                font=("Georgia", note_size, "italic"),
-                fill="#e8e0cc",
-                justify="center",
-                anchor="s",
-            )
-            bbox = canvas.bbox(text_id)
-            if bbox:
-                pad = 10
-                rect = canvas.create_rectangle(
-                    bbox[0] - pad, bbox[1] - pad,
-                    bbox[2] + pad, bbox[3] + pad,
-                    fill="#000000", outline="", stipple="gray50",
-                )
-                canvas.tag_lower(rect, text_id)
-
         if ctx.show_reference:
             ref_id = canvas.create_text(
                 width // 2, height - max(28, height // 12),
@@ -463,9 +430,9 @@ class StageView:
     def _show_svg(self, svg_path: str, ctx: VerseContext):
         server = self.controller.svg_server()
         key = (svg_path, os.path.getmtime(svg_path),
-               ctx.book, ctx.chapter, ctx.verse, ctx.translation)
+               ctx.book, ctx.chapter, ctx.verse)
         ref = ctx.reference if ctx.show_reference else ""
-        server.set_verse(key, svg_path, ref, ctx.notes)
+        server.set_verse(key, svg_path, ref)
         if self._web_panel is None:
             self._web_panel = svg_stage.WebPanel(
                 self.canvas, server.url, on_fail=self._on_svg_fail)

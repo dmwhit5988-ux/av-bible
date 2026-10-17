@@ -40,12 +40,10 @@ Judah, Dan, Naphtali, Gad, Asher, Issachar, Zebulun, Joseph, Benjamin. And
 v21 gives the breastplate no order at all, so it is drawn in the same one —
 noted here because the drawing cannot show a hedge.
 
-Translation: WEB throughout, per config.json. The stone names of vv17-20
-differ materially between versions (WEB ruby/turquoise/jacinth/chrysolite
-against AV sardius/carbuncle/ligure/beryl), and the graphics are
-translation-generic, so the WEB names are what is lettered — the same call
-2 Peter made for its ladder. The tribe names, which carry the chapter's
-argument, are stable across versions.
+WEB is the only text (passages.TRANSLATION), so the stones of vv17-20 are
+lettered with WEB's names (ruby/turquoise/jacinth/chrysolite, where the AV
+has sardius/carbuncle/ligure/beryl) — the same call 2 Peter made for its
+ladder.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_exodus28_svg.py
@@ -57,6 +55,7 @@ import svg_figures as F
 import svg_priest as G
 from svg_surface import SvgCanvas
 from svg_vocab import dim, text_w, arrow
+from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, GOLD, RED, BROWN,
                                  SILVER, GATE_COLORS, out_path)
@@ -805,11 +804,12 @@ def render(v):
 
 def main():
     total = 0
-    for v in range(1, CH_LEN[CHAPTER] + 1):
+    verses = verse_numbers(BOOK, CHAPTER)
+    for v in verses:
         out = out_path(BOOK, CHAPTER, f"{SLUG}_{v}.svg")
         render(v).save(out)
         total += os.path.getsize(out)
-    print(f"Exodus 28: {CH_LEN[CHAPTER]} SVG files, {total / 1e3:.0f} KB")
+    print(f"Exodus 28: {len(verses)} SVG files, {total / 1e3:.0f} KB")
 
 
 if __name__ == "__main__":

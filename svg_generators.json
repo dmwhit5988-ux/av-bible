@@ -14,7 +14,6 @@
           "edit": "DAYS cards, ROW_PAIRS, CAPTIONS, NOTES - all in this one file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "chart"
     },
     {
@@ -30,7 +29,6 @@
           "edit": "HEADS (the four rivers), BEATS, CAPTIONS, garden geometry - all here"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -50,7 +48,6 @@
           "edit": "GREEN/GREEN_DIM/EARTH/RED - the garden palette shared with chapter 2"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -66,7 +63,6 @@
           "edit": "NODES/CHILDREN/EDGES, CHIPS, LIT, BEATS, CAPTIONS - all here"
         }
       ],
-      "translation_suffixed": false,
       "kind": "genealogy"
     },
     {
@@ -79,10 +75,9 @@
       "spec": [
         {
           "file": "generate_genealogy.py",
-          "edit": "CHAPTER5 verse specs, name-variant tables used by resolve_names()"
+          "edit": "G5_KEYS (the names), G5_LINE (ages and years), build_g5_specs() verse specs"
         }
       ],
-      "translation_suffixed": true,
       "kind": "genealogy"
     },
     {
@@ -101,7 +96,6 @@
           "edit": "WATER level table, STOPS (the dated timeline), STATES, LOADING, CAPTIONS - all here"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -117,7 +111,6 @@
           "edit": "ANCHORS/CITIES placements, REGIONS, BANDS, VERSES, CAPTIONS - all here"
         }
       ],
-      "translation_suffixed": false,
       "kind": "map"
     },
     {
@@ -142,7 +135,6 @@
           "edit": "the coastlines, bands and line colours the map inset reuses"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -159,10 +151,9 @@
       "spec": [
         {
           "file": "generate_genealogy.py",
-          "edit": "CHAPTER11 verse specs, name-variant tables used by resolve_names()"
+          "edit": "G11_KEYS (the names), G11_LINE (ages and years), build_g11_specs() verse specs"
         }
       ],
-      "translation_suffixed": true,
       "kind": "genealogy"
     },
     {
@@ -179,7 +170,6 @@
           "edit": "CHAPTERS spec + draw/hl functions"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -195,7 +185,6 @@
           "edit": "per-verse spec in this file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -216,7 +205,6 @@
           "edit": "Form landmarks (where each garment hangs), silhouette/body/coat/robe/ephod/sash/turban/plate_on, hem_ring (the bells and pomegranates of vv33-34), weave (the five materials as warp stripes), breastplate_plate and onyx_stone (the working drawings). Shared with Hebrews - editing one changes both books."
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -249,7 +237,6 @@
           "edit": "the vested high priest of 2:17 and the whole priesthood thread through ch10 - shared with Exodus 28, so editing one changes both books. The balance of 11:26 and 12:16 comes from svg_figures.scales(tilt)/scales_pans(tilt) instead."
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -266,7 +253,6 @@
           "edit": "TRIBES (counts, princes, camp side), CAMPS, CENSUS_PAIRS, CAPTIONS, NOTES, the plan layout constants - all in this one file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -283,7 +269,6 @@
           "edit": "CLANS (families, princes, duties, burdens, counts and the verse each is revealed on), SONS, HOLY (the six covered things), LEDGER, FOCUS, CAPTIONS - all in this one file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "chart"
     },
     {
@@ -303,7 +288,6 @@
           "edit": "chapter-32 verse assembly"
         }
       ],
-      "translation_suffixed": false,
       "kind": "map"
     },
     {
@@ -319,7 +303,6 @@
           "edit": "BORDER_SEGS, LANDMARKS34, CAPTIONS_34A/B, PANEL_34A, TRIBES, PRINCES"
         }
       ],
-      "translation_suffixed": false,
       "kind": "map"
     },
     {
@@ -351,7 +334,6 @@
           "edit": "tree layout (arrange_spine) and colours shared with the OT wall chart and 1 Chronicles"
         }
       ],
-      "translation_suffixed": false,
       "kind": "genealogy"
     },
     {
@@ -364,10 +346,9 @@
       "spec": [
         {
           "file": "generate_luke3.py",
-          "edit": "chapter spec + name variants"
+          "edit": "chapter spec; names come from the WEB text (extract_line)"
         }
       ],
-      "translation_suffixed": true,
       "kind": "genealogy"
     },
     {
@@ -407,7 +388,6 @@
           "edit": "tree layout and house colours shared with the OT wall chart and Matthew 1 - editing one changes all three"
         }
       ],
-      "translation_suffixed": false,
       "kind": "genealogy"
     },
     {
@@ -424,7 +404,6 @@
           "edit": "CITIES, ROUTE, LEGS, SCENES for the map; MOVES/POINTS for the sermon outline that replaces it at 13:16-41; AFTER_NODES for the two-Sabbaths picture at 13:42-50 - all in this one file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "map"
     },
     {
@@ -444,7 +423,6 @@
           "edit": "MED/PELOPONNESE/ISLANDS for the coastline, CITIES/LEGS/STAGES/MAP_WORDS for the route and panel; the five break-aways are COUNCIL_ROWS+DECREE (15:1-35), PLACES (16:13-40), THESS_ROWS/BEREA_ROWS (17:2-14), AREO/BRANCH (17:16-34), SHOPS/CORINTH_AT (18:2-17); BREAKS maps verse ranges to views"
         }
       ],
-      "translation_suffixed": false,
       "kind": "map"
     },
     {
@@ -476,7 +454,6 @@
           "edit": "SCENES (chapter -> draw function) and draw_ch1..draw_ch16 (plus draw_ch14_doxology for WEB's 14:24-26) - the function of the chapter being changed - all in this one file"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -503,7 +480,6 @@
           "edit": "the shared figure vocabulary (people, creatures, objects) - editing a figure changes every book that draws it"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     },
     {
@@ -530,7 +506,6 @@
           "edit": "the shared figure vocabulary (people, creatures, objects) - editing a figure changes every book that draws it"
         }
       ],
-      "translation_suffixed": false,
       "kind": "diagram"
     }
   ]

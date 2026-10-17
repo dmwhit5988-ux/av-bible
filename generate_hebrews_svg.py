@@ -61,9 +61,8 @@ as Romans: short engraved phrases, 2-7 words, ALL-CAPS, at hinge verses only
 (`ENGRAVED`) — twenty-two across 303 verses. Never sentences, never captions,
 never per-verse prose.
 
-TRANSLATION. WEB throughout, per config.json, read off bibles/WEB. No
-versification variance: all nine translations agree on every chapter's verse
-count, so CH_LEN is exact and one set of files serves every version.
+TEXT. WEB is the only text (passages.TRANSLATION), and CH_LEN is WEB's
+verse count for every chapter.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_hebrews_svg.py
@@ -76,6 +75,7 @@ import svg_figures as F
 import svg_priest as G
 from svg_surface import SvgCanvas
 from svg_vocab import dim, mix, text_w, reading_position, arrow, cross, hatch
+from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, GOLD, RED, BROWN, GRAY,
                                  SILVER, WHITE_LINEN, GATE_COLORS, out_path)
@@ -2529,7 +2529,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in sorted(SCENES):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers(BOOK, ch):
             out = out_path(BOOK, ch, f"{SLUG}_{ch}_{v}.svg")
             render(ch, v).save(out)
             total += os.path.getsize(out)

@@ -483,9 +483,8 @@ MOVES = [
 
 # verse -> (word, height of the argument, quotes the scriptures)
 #
-# Every word is lifted from the WEB text of its own verse (the app's default
-# translation), not paraphrased and not KJV — the graphic is shared by all
-# translations, so it follows the primary one.
+# Every word is lifted from the WEB text of its own verse (WEB is the only
+# text, passages.TRANSLATION), not paraphrased.
 POINTS = {
     16: ("Listen",         0.10, False),
     17: ("Egypt",          0.18, False),

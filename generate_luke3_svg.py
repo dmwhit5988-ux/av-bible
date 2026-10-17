@@ -19,7 +19,6 @@ Run inside the project venv:
 
 import math
 import os
-import time
 
 import svg_figures as F
 
@@ -32,7 +31,6 @@ from generate_luke3 import (
     GA_X, GA_Y0, GA_Y1, V23_LIFT, STRATA_LINE, STRATA,
     F_ROOT, F_ROOT_B, F_ERA,
 )
-from passages import PassageError, TRANSLATIONS
 
 DUR = "5.5s"                        # slow crawl — most of a verse's narration
 SAMPLES = 25                        # keyframes for tip-tracking animations
@@ -529,50 +527,26 @@ def render_verse_svg(verse, slots, ranges):
     return c
 
 
-def render_chapter(line, suffix):
+def render_chapter(line):
     slots, ranges = build_grid(line)
     total = 0
     # 3:1-22 above ground, 3:23-38 down the root — one chapter, one plant
     for verse in range(1, 23):
         c = render_above_svg(verse)
-        out = out_path("Luke", 3, f"Luke_3_{verse}{suffix}.svg")
+        out = out_path("Luke", 3, f"Luke_3_{verse}.svg")
         c.save(out)
         total += os.path.getsize(out)
     for verse in sorted(ranges):
         c = render_verse_svg(verse, slots, ranges)
-        out = out_path("Luke", 3, f"Luke_3_{verse}{suffix}.svg")
+        out = out_path("Luke", 3, f"Luke_3_{verse}.svg")
         c.save(out)
         total += os.path.getsize(out)
     return len(ranges) + 22, total
 
 
 def main():
-    codes = [code for code, *_ in TRANSLATIONS]
-    resolved = {}
-    for code in codes:
-        try:
-            resolved[code] = extract_line(code)
-        except (ValueError, PassageError) as e:
-            print(f"{code}: extraction failed ({e}) — will use generic")
-            resolved[code] = None
-        time.sleep(0.2)
-
-    generic = resolved["WEB"]
-    if generic is None:
-        raise SystemExit("WEB extraction failed; cannot build generic set")
-    grand_files, grand_bytes = render_chapter(generic, "")
-    print(f"Luke 3 generic: {grand_files} files")
-    for code in codes:
-        if code == "WEB" or resolved[code] is None:
-            continue
-        if resolved[code] == generic:
-            print(f"  {code}: matches generic — skipped")
-            continue
-        n_files, n_bytes = render_chapter(resolved[code], f".{code}")
-        grand_files += n_files
-        grand_bytes += n_bytes
-        print(f"  {code}: {n_files} translation-specific files")
-    print(f"TOTAL: {grand_files} SVG files, {grand_bytes/1e3:.0f} KB")
+    n_files, n_bytes = render_chapter(extract_line())
+    print(f"Luke 3: {n_files} SVG files, {n_bytes/1e3:.0f} KB")
 
 
 if __name__ == "__main__":

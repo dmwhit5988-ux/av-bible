@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scan visuals/ and generate manifest.json — schema v2.
 
-v2 keeps v1's keys (exact file stems: "Genesis_5_3.KJV", "Genesis_5_3",
+v2 keeps v1's keys (exact file stems: "Genesis_5_3", "Genesis_5_3.mobile",
 "default") but each entry is a list of per-file records instead of bare
 paths, so the web app can filter/present by metadata without re-deriving it:
 
@@ -33,6 +33,10 @@ Record fields:
 
 Only web/js/visuals.js consumes this file; the desktop app probes the
 filesystem directly (visual_stage.py).
+
+WEB is the only translation, so visual files carry no translation suffix. A
+suffixed name (Genesis_5_3.KJV.svg) is a leftover that nothing serves;
+build_manifest() warns about any it finds under visuals/.
 """
 
 import json
@@ -47,8 +51,7 @@ VISUALS_DIR = Path("visuals")
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
 # Extensions supported: vector diagrams (.svg), raster images, plus text
-# files (.txt/.rtf), which the app renders as an on-stage text panel styled
-# like the translator notes.
+# files (.txt/.rtf), which the app renders as an on-stage text panel.
 IMAGE_EXTS = {".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg", ".txt", ".rtf"}
 
 STILL_SUFFIX = ".still"
@@ -60,16 +63,20 @@ _KIND_BY_EXT = {
 _DEFAULT_KIND = "infographic"
 
 _DATA_KIND_RE = re.compile(r'<svg\b[^>]*\bdata-kind="([^"]+)"')
-# Verse-key shape after stripping variant suffixes: Book_ch or Book_ch_v,
+# Verse-key shape after stripping a .mobile suffix: Book_ch or Book_ch_v,
 # where Book may itself contain underscores (Song_of_Solomon).
 _KEY_RE = re.compile(r"^(.+?)_(\d+)(?:_(\d+))?$")
+# A retired translation suffix anywhere in a file name: Genesis_5_3.KJV.svg,
+# Genesis_5_3.BSB.still.svg, or a .WEB.svg that would shadow the plain file.
+_TRANSLATION_SUFFIX_RE = re.compile(
+    r"\.(KJV|ASV|BBE|BSB|DARBY|DRA|YLT|OEB|WEB)\.")
 
 
 def _book_chapter_verse(stem: str) -> tuple[str, int, int | None] | None:
-    """(book, chapter, verse) parsed from a verse-key stem (translation/mobile
-    suffixes already stripped), or None for non-verse keys ("default"). The
-    verse is None for a chapter-level key ("Genesis_1"); it matters because a
-    chapter can be split between two generator families (Genesis 11)."""
+    """(book, chapter, verse) parsed from a verse-key stem (.mobile suffix
+    already stripped), or None for non-verse keys ("default"). The verse is
+    None for a chapter-level key ("Genesis_1"); it matters because a chapter
+    can be split between two generator families (Genesis 11)."""
     m = _KEY_RE.match(stem)
     if not m:
         return None
@@ -78,8 +85,8 @@ def _book_chapter_verse(stem: str) -> tuple[str, int, int | None] | None:
 
 
 def _base_stem(stem: str) -> str:
-    """Strip variant suffixes (.KJV / .mobile / …) down to the verse key:
-    "Genesis_5_3.KJV.mobile" -> "Genesis_5_3"."""
+    """Strip a .mobile suffix down to the verse key:
+    "Genesis_5_3.mobile" -> "Genesis_5_3"."""
     return stem.split(".", 1)[0]
 
 
@@ -118,7 +125,7 @@ def _classify(path: Path, rel_path: str, stem: str) -> dict:
 def _scan_files():
     """Yield every manifest-relevant file: (path, rel_path, stem)."""
     seen = set()
-    # Nested layout: visuals/<Book>/<chapter>/<Book>_<ch>_<v>[.CODE].ext
+    # Nested layout: visuals/<Book>/<chapter>/<Book>_<ch>_<v>.ext
     for book_dir in VISUALS_DIR.glob("*"):
         if not book_dir.is_dir() or book_dir.name.startswith("."):
             continue
@@ -130,12 +137,20 @@ def _scan_files():
                     rel = f.relative_to(VISUALS_DIR).as_posix()
                     seen.add(rel)
                     yield f, rel, f.stem
-    # Flat layout: visuals/<Book>_<ch>[_<v>][.CODE].ext and visuals/default.*
+    # Flat layout: visuals/<Book>_<ch>[_<v>].ext and visuals/default.*
     for f in VISUALS_DIR.glob("*"):
         if f.is_file() and f.suffix.lower() in IMAGE_EXTS:
             rel = f.name
             if rel not in seen:
                 yield f, rel, f.stem
+
+
+def _suffixed_leftovers() -> list[str]:
+    """Every file anywhere under visuals/ whose name carries a translation
+    suffix, as sorted visuals/-relative paths."""
+    return sorted(f.relative_to(VISUALS_DIR).as_posix()
+                  for f in VISUALS_DIR.rglob("*")
+                  if f.is_file() and _TRANSLATION_SUFFIX_RE.search(f.name))
 
 
 def build_manifest():
@@ -150,10 +165,9 @@ def build_manifest():
             base_rel = rel_path[: -len(STILL_SUFFIX + ".svg")] + ".svg"
             stills[base_rel] = rel_path
             continue
-        # Key by the exact stem: "Genesis_5_3.KJV" for a translation-suffixed
-        # file, "Genesis_5_3" for a plain one. Do NOT also add suffixed files
-        # under the plain key — that would make the generic (no-translation)
-        # lookup randomly pick up another translation's file.
+        # Key by the exact stem: "Genesis_5_3", or "Genesis_5_3.mobile" for a
+        # phone cut. Do NOT also add suffixed files under the plain key — that
+        # would make the plain lookup randomly pick up the phone file.
         entries[stem].append(_classify(path, rel_path, stem))
 
     for records in entries.values():
@@ -168,6 +182,16 @@ def build_manifest():
               f"base SVG (run build_stills.py to clean up):")
         for still in sorted(stills.values()):
             print(f"  - {still}")
+
+    suffixed = _suffixed_leftovers()
+    if suffixed:
+        print(f"[WARN] {len(suffixed)} translation-suffixed file(s) under "
+              f"visuals/ - WEB is the only translation, so nothing serves "
+              f"them (a stale backup copied back in?):")
+        for rel in suffixed[:20]:
+            print(f"  - {rel}")
+        if len(suffixed) > 20:
+            print(f"  ... and {len(suffixed) - 20} more")
 
     manifest = {"version": 2, "entries": dict(entries)}
     with open(MANIFEST_PATH, "w") as f:

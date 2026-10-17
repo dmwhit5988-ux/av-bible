@@ -24,26 +24,20 @@ Data mini-language (kept terse — there are ~1,100 rows):
 A label starting with "~" is a heading row: italic, dim, no dot, never
 text-matched (highlightable only via `explicit`).
 
-Spellings are the WEB's; the family ships translation-generic files
-(translation_suffixed: false in svg_generators.json) — hand-building
-variant tables for ~700 names across eight translations isn't worth it.
+Spellings are the WEB's (WEB is the only text, passages.TRANSLATION).
 
 Rendered by generate_1chronicles_svg.py.
 """
 
-import json
-import os
 import re
 
+from passages import load_chapter
+
 BOOK = "1 Chronicles"
-REPO = os.path.dirname(os.path.abspath(__file__))
 
 
 def web_verses(chapter):
-    path = os.path.join(REPO, "bibles", "WEB",
-                        f"1_Chronicles_{chapter}.json")
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)["verses"]
+    return load_chapter(BOOK, chapter).verses
 
 
 # ---------------------------------------------------------------------------

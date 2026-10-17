@@ -7,22 +7,22 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 AUDIO_CACHE_DIR = os.path.join(CACHE_DIR, "audio")
-PASSAGE_CACHE_DIR = os.path.join(CACHE_DIR, "passages")
 VISUALS_DIR = os.path.join(BASE_DIR, "visuals")
-# Read-only, ships with the app: pre-converted local translations, one JSON
-# per chapter (kept out of CACHE_DIR so it is never evicted or cleared).
+# Read-only, ships with the app: the World English Bible, one JSON per
+# chapter under bibles/WEB/ (kept out of CACHE_DIR so it is never cleared).
 BIBLES_DIR = os.path.join(BASE_DIR, "bibles")
 
 DEFAULTS = {
-    "esv_api_key": "",     # kept for when ESV support returns
-    "translation": "WEB",
     "voice": "en-US-AndrewNeural",
     "rate": 0,             # speech rate offset in percent, -50..50
     "last_book": "John",
     "last_chapter": 3,
-    "show_notes": True,    # show translator notes on the visual stage
     "show_reference": True,  # show the verse reference on the visual stage
 }
+
+# Settings from the multi-translation / ESV era. Dropped on load so an old
+# config.json can't resurrect them; the next save writes the file without.
+OBSOLETE_KEYS = ("esv_api_key", "translation", "show_notes", "mode")
 
 
 def load() -> dict:
@@ -32,6 +32,8 @@ def load() -> dict:
             cfg.update(json.load(f))
     except (OSError, ValueError):
         pass
+    for key in OBSOLETE_KEYS:
+        cfg.pop(key, None)
     return cfg
 
 
@@ -44,5 +46,5 @@ def save(cfg: dict) -> None:
 
 
 def ensure_dirs() -> None:
-    for d in (CACHE_DIR, AUDIO_CACHE_DIR, PASSAGE_CACHE_DIR, VISUALS_DIR):
+    for d in (CACHE_DIR, AUDIO_CACHE_DIR, VISUALS_DIR):
         os.makedirs(d, exist_ok=True)

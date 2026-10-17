@@ -36,7 +36,6 @@ class FamilyInfo:
     chapters: tuple
     generator: str  # repo-relative path of the generate_*_svg.py module
     spec: tuple     # tuple[SpecPointer]
-    translation_suffixed: bool
     kind: str | None = None  # visual classification for the manifest
                              # (genealogy / map / diagram / ...)
     verses: tuple | None = None  # (lo, hi) when the family owns only part of
@@ -63,7 +62,6 @@ def _load_families():
             chapters=tuple(fam["chapters"]),
             generator=fam["generator"],
             spec=tuple(SpecPointer(p["file"], p["edit"]) for p in fam["spec"]),
-            translation_suffixed=bool(fam.get("translation_suffixed")),
             kind=fam.get("kind"),
             verses=(tuple(fam["verses"]) if fam.get("verses") else None),
         ))

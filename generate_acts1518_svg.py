@@ -2,7 +2,7 @@
 SVGs.
 
 The first-journey generator could hold one map for eighty verses because the
-party kept moving. These four chapters do not: of their 143 verses only about
+party kept moving. These four chapters do not: of their 142 verses only about
 thirty are travel. The rest are five long stops where the map would sit
 frozen — the council at Jerusalem, the night at Philippi, the two synagogues
 of Thessalonica and Beroea, the Areopagus, and a year and a half at Corinth.
@@ -23,8 +23,8 @@ what is past is solid, what is happening now traces itself in gold. Text
 budget follows the house rule: named parts and numbers, no sentences, and one
 word for the verse being read.
 
-Words on the graphic are taken from the WEB text of their own verse (the
-app's default translation), since one drawing serves every translation.
+Words on the graphic are taken from the WEB text of their own verse (WEB is
+the only text, passages.TRANSLATION).
 
 Coordinates are approximate and the coastline is a stylised atlas trace.
 A few sites are nudged apart where the scale would otherwise merge them
@@ -43,6 +43,7 @@ from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, RED, out_path)
 from generate_tribal_maps import MapFrame, SEA, LAND, WATER_TXT
+from passages import verse_numbers
 
 BOOK = "Acts"
 
@@ -58,6 +59,9 @@ DASH_UP = "5,6"          # not yet travelled
 DASH_SEA = "2,6"         # a travelled sea crossing
 DASH_OTHER = "1,5"       # someone else's road (Barnabas, Apollos)
 
+# The last verse number of each chapter, for the reading-position maths.
+# WEB has no Acts 15:34, so main() writes the verses
+# passages.verse_numbers() lists rather than counting up to CH_LEN.
 CH_LEN = {15: 41, 16: 40, 17: 34, 18: 28}
 _OFFSET, _run = {}, 0
 for _ch in (15, 16, 17, 18):
@@ -812,7 +816,7 @@ COUNCIL_WORDS = {
     23: "Greetings", 24: "No commandment", 25: "One accord",
     26: "Risked their lives", 27: "By word of mouth", 28: "And to us",
     29: "Farewell", 30: "Delivered", 31: "They rejoiced", 32: "Strengthened",
-    33: "Sent back", 34: "", 35: "Stayed in Antioch",
+    33: "Sent back", 35: "Stayed in Antioch",
 }
 
 
@@ -1237,7 +1241,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in (15, 16, 17, 18):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers(BOOK, ch):
             out = out_path(BOOK, ch, f"Acts_{ch}_{v}.svg")
             render(ch, v).save(out)
             total += os.path.getsize(out)

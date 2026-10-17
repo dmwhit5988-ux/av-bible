@@ -31,13 +31,11 @@ a child, on one ground line, with the bond between the two of them betrothed,
 cut, and made — and the last inch of the genealogy's thread coming down onto
 Joseph, lit on the verse that calls him "son of David".
 
-TRANSLATIONS. The previous design emitted a variant per translation because
-its boxes carried Matthew's spellings and the KJV reads Booz, Roboam, Ozias,
-Salathiel. This one carries the TREE's names, which are the Old Testament's,
-and gives the four that differ most the doubled label the chart already uses
-for Abram · Abraham — Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah,
-Azariah · Uzziah. So one set of files serves every translation, and any
-listener hears a name they can find on the sheet.
+NAMES. WEB is the only text (passages.TRANSLATION). The boxes carry the
+TREE's names, which are the Old Testament's, and give the four where
+Matthew's differ most the doubled label the chart already uses for
+Abram · Abraham — Jacob · Israel, Salma · Salmon, Jeconiah · Jechoniah,
+Azariah · Uzziah. So any listener hears a name they can find on the sheet.
 
 (The fractal-tree design this replaces is in backups/matthew1_fractal_tree/,
 with its rendered files. See the README there to restore it.)
@@ -53,23 +51,6 @@ from svg_matthew_world import (BOOK, CHAPTER, MatthewFrame,
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 BACKUP = os.path.join(REPO, "backups", "matthew1_fractal_tree")
-
-
-def stale_files(out_dir):
-    """Files the previous design left behind that this one does not write.
-
-    The old renderer emitted a variant per translation (Matthew_1_5.KJV.svg
-    and seven more) and a still twin for each. The app resolves a verse's
-    picture most-specific-first, so leaving those in place would serve a KJV
-    reader the OLD graphic and everyone else the new one — the two designs
-    interleaved, verse by verse. They go.
-    """
-    keep = {f"Matthew_{CHAPTER}_{v}.svg" for v in range(1, 26)}
-    keep |= {f"Matthew_{CHAPTER}_{v}.still.svg" for v in range(1, 26)}
-    if not os.path.isdir(out_dir):
-        return []
-    return [f for f in sorted(os.listdir(out_dir))
-            if f.endswith(".svg") and f not in keep]
 
 
 def main(argv):
@@ -96,10 +77,6 @@ def main(argv):
     nativity = NativityFrame(narr={
         v: world.narr.get((CHAPTER, v)) for v in NATIVITY_VERSES})
 
-    target = out_dir or os.path.dirname(
-        out_path(BOOK, CHAPTER, "Matthew_1_1.svg"))
-    stale = stale_files(target)
-
     total = bytes_ = 0
     first = True
     canvases = []
@@ -120,13 +97,6 @@ def main(argv):
         c.save(path)
         bytes_ += os.path.getsize(path)
         total += 1
-
-    if stale:
-        print(f"{len(stale)} file(s) from the previous design"
-              + ("" if dry else " removed") + f": {stale[0]} and others")
-        if not dry:
-            for f in stale:
-                os.remove(os.path.join(target, f))
 
     print(f"TOTAL: {total} SVG files, {bytes_ / 1e6:.1f} MB "
           f"({bytes_ / max(total, 1) / 1e3:.0f} KB each)")

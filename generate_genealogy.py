@@ -11,18 +11,13 @@ Nothing textual flashes: all text is drawn at full opacity. The only pulsing
 element is the small ring marking the current person; all other animation is
 bars/edges extending once per loop.
 
-Because the visuals contain names, and translations spell them differently
-(KJV "Enos/Cainan", WEB "Enosh/Kenan", Douay-Rheims "Henoch/Mathusala"),
-this script fetches each translation's actual chapter text, detects which
-spelling it uses, and writes translation-suffixed files (Genesis_5_3.KJV.webp)
-only for translations that differ from the generic (WEB-spelling) set.
-
-Run inside the project venv:  .venv\\Scripts\\python.exe generate_genealogy.py
+The names drawn are WEB's spellings (WEB is the only text,
+passages.TRANSLATION). This module holds the chapter data and the drawing;
+generate_genealogy_svg.py renders the files:
+    .venv\\Scripts\\python.exe generate_genealogy_svg.py
 """
 
 import os
-import re
-import time
 
 
 import svg_figures as F
@@ -31,7 +26,6 @@ from generate_tabernacle import (W, H, BG, PANEL, SAND,
                                  SAND_DIM, TEXT, TEXT_DIM, HL,
                                  F_LABEL, F_SMALL, F_DIM, F_VERSE, F_TITLE,
                                  font, ease, g, dashed_line, out_path)
-from passages import fetch_passage, PassageError, TRANSLATIONS
 
 F_CHAIN = font(17)                  # chain names
 F_CHAIN_CUR = font(17, bold=True)   # current person pops from the chain
@@ -44,68 +38,13 @@ G_FRAMES = 24
 G_FRAME_MS = 120
 
 # ---------------------------------------------------------------------------
-# Name spellings, verified against each translation's own text
+# Names, in WEB's spelling
 # ---------------------------------------------------------------------------
-
-NAME_VARIANTS = {
-    "Adam": ["Adam"], "Seth": ["Seth"],
-    "Enosh": ["Enosh", "Enos"],
-    "Kenan": ["Kenan", "Cainan"],
-    "Mahalalel": ["Mahalalel", "Mahalaleel", "Malaleel"],
-    "Jared": ["Jared", "Jered"],
-    "Enoch": ["Enoch", "Henoch"],
-    "Methuselah": ["Methuselah", "Methushelah", "Mathusala"],
-    "Lamech": ["Lamech", "Lemech"],
-    "Noah": ["Noah", "Noe"],
-    "Shem": ["Shem", "Sem"],
-    "Ham": ["Ham", "Cham"],
-    "Japheth": ["Japheth", "Japhet"],
-    "Arpachshad": ["Arpachshad", "Arphaxad"],
-    "Shelah": ["Shelah", "Salah", "Sale"],
-    "Eber": ["Eber", "Heber"],
-    "Peleg": ["Peleg", "Phaleg"],
-    "Reu": ["Reu", "Ragau"],
-    "Serug": ["Serug", "Sarug"],
-    "Nahor": ["Nahor", "Nachor"],
-    "Terah": ["Terah", "Thare"],
-    "Abram": ["Abram"],
-    "Haran": ["Haran", "Aran"],
-    "Sarai": ["Sarai"],
-    "Lot": ["Lot"],
-}
 
 G5_KEYS = ["Adam", "Seth", "Enosh", "Kenan", "Mahalalel", "Jared", "Enoch",
            "Methuselah", "Lamech", "Noah", "Shem", "Ham", "Japheth"]
 G11_KEYS = ["Shem", "Arpachshad", "Shelah", "Eber", "Peleg", "Reu", "Serug",
             "Nahor", "Terah", "Abram", "Haran", "Sarai", "Lot"]
-
-
-def resolve_names(code, chapter, keys, book="Genesis", variants=None):
-    variants = variants or NAME_VARIANTS
-    for attempt in range(2):
-        try:
-            # fetch_passage prefers local bundles (bibles/<CODE>/), which is
-            # the only path for BSB/YLT/OEB; API translations fall through
-            # to bible-api.com (usually already disk-cached).
-            p = fetch_passage("", book, chapter, code)
-            break
-        except PassageError as e:
-            if attempt == 0 and "rate limit" in str(e).lower():
-                time.sleep(32)
-            else:
-                raise
-    text = " ".join(t for _, t in p.verses)
-    out = {}
-    for key in keys:
-        for variant in variants[key]:
-            if re.search(rf"\b{variant}\b", text):
-                out[key] = variant
-                break
-        else:
-            out[key] = variants[key][0]
-            print(f"  !! {code} {book} {chapter}: no variant of {key} "
-                  f"found; using {out[key]}")
-    return out
 
 
 # ---------------------------------------------------------------------------
@@ -664,43 +603,3 @@ def draw_frame_on(d, od, cd, verse, spec, names, t):
 
     d.text((28, H - 26), "years as given in the text", font=F_SMALL,
            fill=TEXT_DIM)
-
-
-if __name__ == "__main__":
-    codes = [code for code, *_ in TRANSLATIONS]
-    resolved = {}
-    for code in codes:
-        try:
-            g5 = resolve_names(code, 5, G5_KEYS)
-            time.sleep(2.5)
-            g11 = resolve_names(code, 11, G11_KEYS)
-            time.sleep(2.5)
-        except PassageError as e:
-            # e.g. OEB has no Old Testament — that translation simply
-            # falls back to the generic files at runtime.
-            print(f"{code}: chapters unavailable ({e}) — skipped")
-            continue
-        resolved[code] = {5: g5, 11: g11}
-        print(f"{code}: Gen5 {g5['Enosh']}/{g5['Kenan']}/{g5['Methuselah']}"
-              f" · Gen11 {g11['Arpachshad']}/{g11['Shelah']}/{g11['Terah']}")
-
-    generic = resolved["WEB"]
-    grand_files = grand_bytes = 0
-    for chapter in (5, 11):
-        n_files, n_bytes = render_chapter(chapter, generic[chapter], "")
-        grand_files += n_files
-        grand_bytes += n_bytes
-        print(f"Genesis {chapter} generic: {n_files} files")
-        for code in codes:
-            if code == "WEB" or code not in resolved:
-                continue
-            if resolved[code][chapter] == generic[chapter]:
-                print(f"  {code}: matches generic spellings — skipped")
-                continue
-            n_files, n_bytes = render_chapter(chapter,
-                                              resolved[code][chapter],
-                                              f".{code}")
-            grand_files += n_files
-            grand_bytes += n_bytes
-            print(f"  {code}: {n_files} translation-specific files")
-    print(f"TOTAL: {grand_files} files, {grand_bytes/1e6:.1f} MB")

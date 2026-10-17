@@ -21,14 +21,7 @@ entry: tune "Nahor" in Genesis 11 and it's already tuned when it turns up in
 Genesis 22. Preview uses the same edge-tts voice the web/desktop audio uses, so
 what you hear is what will be rendered.
 
-A translation picker lets you scan a chapter as WEB, KJV, etc. Some names are
-spelled differently across translations (e.g. KJV "Cainan" where WEB has
-"Kenan") -- switch translation and the differently-spelled name shows up as a
-new row. There's still just one shared pronunciations.json: each spelling is
-its own key, so "Cainan" and "Kenan" sit side by side rather than needing a
-separate list per translation.
-
-    python pronunciation_tool.py
+    python pronunciation_tool.py [book] [chapter]
 """
 
 import copy
@@ -38,10 +31,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 import books
+import passages
 import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
-from passages import fetch_passage, PassageError, TRANSLATIONS, TRANSLATION_LABELS
 
 RATE = 0
 
@@ -87,7 +80,7 @@ class Row:
 
 
 class App:
-    def __init__(self, root, start_book="Genesis", start_chapter=5, start_translation="WEB"):
+    def __init__(self, root, start_book="Genesis", start_chapter=5):
         self.root = root
         self.player = AudioPlayer()
         self.names = copy.deepcopy(pronunciation.load(force=True))
@@ -116,7 +109,6 @@ class App:
         n = books.chapters_in(start_book)
         start_chapter = max(1, min(int(start_chapter or 1), n))
         self.ch_var.set(str(start_chapter))
-        self.trans_var.set(TRANSLATION_LABELS.get(start_translation, TRANSLATION_LABELS["WEB"]))
         self.load_chapter()
 
     # ----- top controls -------------------------------------------------
@@ -136,15 +128,6 @@ class App:
         self.ch_cb = ttk.Combobox(bar, textvariable=self.ch_var, width=5,
                                   state="readonly")
         self.ch_cb.pack(side="left", padx=(4, 10))
-
-        ttk.Label(bar, text="   Translation:").pack(side="left")
-        self._trans_label_to_code = {label: code for code, label, *_ in TRANSLATIONS}
-        self.trans_var = tk.StringVar()
-        trans_cb = ttk.Combobox(bar, textvariable=self.trans_var, width=18,
-                                state="readonly",
-                                values=[label for _, label, *_ in TRANSLATIONS])
-        trans_cb.pack(side="left", padx=(4, 10))
-        trans_cb.bind("<<ComboboxSelected>>", lambda e: self.load_chapter())
 
         ttk.Button(bar, text="Load chapter", command=self.load_chapter).pack(side="left")
 
@@ -205,10 +188,9 @@ class App:
     def load_chapter(self):
         self._commit_rows()  # keep edits from the chapter we're leaving
         book, ch = self.book_var.get(), int(self.ch_var.get() or 1)
-        translation = self._trans_label_to_code.get(self.trans_var.get(), "WEB")
         try:
-            passage = fetch_passage("", book, ch, translation)
-        except PassageError as e:
+            passage = passages.load_chapter(book, ch)
+        except passages.PassageError as e:
             messagebox.showerror("Can't load chapter", str(e))
             return
         self.cur_book, self.cur_ch, self.cur_verses = book, ch, passage.verses
@@ -283,8 +265,8 @@ class App:
                 f"{counts[s]} {pronunciation.STATUS_LABELS[s]}"
                 for s in pronunciation.STATUS_ORDER if counts.get(s))
             self.status_var.set(
-                f"{self.cur_book} {self.cur_ch} ({self.trans_var.get()}): "
-                f"{len(self.rows)} shown" + (f" — {summary}" if summary else ""))
+                f"{self.cur_book} {self.cur_ch}: {len(self.rows)} shown"
+                + (f" — {summary}" if summary else ""))
         self.canvas.yview_moveto(0)
 
     def _passes(self, mode, existing, status):
@@ -426,26 +408,21 @@ class App:
 
 
 def main():
-    # Optional argv: <book> <chapter> [translation] -- lets the desktop app open
-    # the tool on whatever passage (and version) is currently loaded there.
-    # Multi-word book names (e.g. "1 Samuel") arrive as separate argv entries
-    # when launched via subprocess.Popen([..., book, chapter, translation]), so
-    # join everything but the last one or two (chapter, optional translation)
-    # back into the book name.
-    start_book, start_chapter, start_translation = "Genesis", 5, "WEB"
+    # Optional argv: <book> <chapter> -- lets the desktop app open the tool on
+    # whatever passage is currently loaded there. Multi-word book names (e.g.
+    # "1 Samuel") may arrive as separate argv entries, so join everything but
+    # the last one (the chapter) back into the book name.
+    start_book, start_chapter = "Genesis", 5
     argv = sys.argv[1:]
     if argv:
         try:
-            if argv[-1].upper() in TRANSLATION_LABELS:
-                start_translation = argv[-1].upper()
-                argv = argv[:-1]
             start_chapter = int(argv[-1])
             start_book = " ".join(argv[:-1]) or start_book
         except ValueError:
             pass  # malformed args -- fall back to the Genesis 5 default
 
     root = tk.Tk()
-    App(root, start_book, start_chapter, start_translation)
+    App(root, start_book, start_chapter)
     root.mainloop()
 
 

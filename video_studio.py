@@ -24,12 +24,9 @@ from tkinter import ttk, filedialog, messagebox
 import books
 import tts_engine
 import video_render as vr
-from passages import PassageError, TRANSLATION_LABELS, fetch_passage
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 RENDERS_DIR = os.path.join(REPO_ROOT, "renders")
-
-_LABEL_TO_CODE = {label: code for code, label in TRANSLATION_LABELS.items()}
 
 
 class App:
@@ -113,23 +110,15 @@ class App:
         ttk.Label(to_frame, text=" (blank = end)",
                   foreground="#888888").pack(side="left")
 
-        ttk.Label(passage, text="Translation:").grid(row=1, column=0,
-                                                     sticky="w", pady=(6, 0))
-        self.translation_var = tk.StringVar(value=TRANSLATION_LABELS["WEB"])
-        ttk.Combobox(passage, textvariable=self.translation_var, width=22,
-                     state="readonly",
-                     values=list(TRANSLATION_LABELS.values())).grid(
-            row=1, column=1, sticky="w", **pad)
-
-        ttk.Label(passage, text="Voice:").grid(row=2, column=0, sticky="w",
+        ttk.Label(passage, text="Voice:").grid(row=1, column=0, sticky="w",
                                                pady=(6, 0))
         self.voice_var = tk.StringVar(value=tts_engine.EDGE_VOICES[0])
         ttk.Combobox(passage, textvariable=self.voice_var, width=22,
                      state="readonly", values=tts_engine.EDGE_VOICES).grid(
-            row=2, column=1, sticky="w", **pad)
+            row=1, column=1, sticky="w", **pad)
         ttk.Label(passage, foreground="#888888",
                   text="Verses without a published MP3 are narrated on the fly.").grid(
-            row=2, column=2, columnspan=2, sticky="w", pady=(6, 0))
+            row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
         # -- output ---------------------------------------------------------
         out = ttk.LabelFrame(self.root, text="Video", padding=(10, 8))
@@ -288,7 +277,6 @@ class App:
             start_chapter=from_ch, start_verse=from_v,
             end_chapter=to_ch, end_verse=to_v,
             out_path=out_path,
-            translation=_LABEL_TO_CODE.get(self.translation_var.get(), "WEB"),
             voice=self.voice_var.get(),
             width=width, height=height, fps=int(self.fps_var.get()),
             gap=float(self.gap_var.get()),

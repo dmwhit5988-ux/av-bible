@@ -31,13 +31,10 @@ Built into a poster by generate_chronicles_master_svg.py.
 Run `python chronicles_tree.py` for a structural audit.
 """
 
-import json
-import os
 import re
 
 from generate_1chronicles import CHAPTERS, _node
-
-REPO = os.path.dirname(os.path.abspath(__file__))
+from passages import load_chapter
 
 
 # ---------------------------------------------------------------------------
@@ -1342,9 +1339,7 @@ def _coverage(nodes):
             have.add(part.strip())
     missing_by_ch = {}
     for ch in range(1, 10):
-        path = os.path.join(REPO, "bibles", "WEB", f"1_Chronicles_{ch}.json")
-        with open(path, encoding="utf-8") as f:
-            verses = json.load(f)["verses"]
+        verses = load_chapter("1 Chronicles", ch).verses
         caps = set()
         for _, text in verses:
             for m in re.finditer(r"(?<![.?!“] )\b([A-Z][a-z]{2,})\b", text):

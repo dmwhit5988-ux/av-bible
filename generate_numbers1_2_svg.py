@@ -39,6 +39,7 @@ import math
 import os
 
 from svg_surface import SvgCanvas
+from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, RED, BROWN, WHITE_LINEN,
                                  out_path)
@@ -464,7 +465,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in (1, 2):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers("Numbers", ch):
             c = render(ch, v)
             out = out_path("Numbers", ch, f"Numbers_{ch}_{v}.svg")
             c.save(out)

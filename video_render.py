@@ -7,14 +7,14 @@ is importable, scriptable, and testable on its own:
 
 What it assembles, per verse, from assets the project already produces:
 
-    narration   web/audio/<Book>_<ch>_<v>[.CODE].mp3, exactly what the web
-                player uses. Missing verses are synthesized on the fly through
+    narration   web/audio/<Book>_<ch>_<v>.mp3, exactly what the web player
+                uses. Missing verses are synthesized on the fly through
                 tts_engine.synthesize() -- the same production path (and the
                 same pronunciation respelling) the desktop reader uses -- so a
                 range that was never published still renders.
     visual      visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg, resolved through the
                 same most-specific-wins chain as the stage (visual_stage.py
-                _find_image), including the .<TRANSLATION> suffix.
+                _find_image).
 
 Ranges cross chapters freely (Genesis 1:1 -> Genesis 3:24), which is the point:
 a video is a *passage*, not a chapter.
@@ -74,7 +74,7 @@ import books
 import generate_showcase_audio as showcase_audio
 import tts_engine
 from config import VISUALS_DIR
-from passages import (PassageError, TRANSLATION_ATTRIBUTION, fetch_passage)
+from passages import ATTRIBUTION, PassageError, load_chapter
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -296,14 +296,12 @@ def motion_end(svg_text: str, cap: float) -> float:
 # Asset resolution
 # ---------------------------------------------------------------------------
 
-def resolve_svg(book: str, chapter: int, verse: int,
-                translation: str) -> str | None:
+def resolve_svg(book: str, chapter: int, verse: int) -> str | None:
     """The SVG the stage would show for this verse, or None.
 
     Mirrors visual_stage.DefaultRenderer._find_image's most-specific-wins
     chain, narrowed to .svg: verse file, then chapter file, then book file,
-    then the global default -- each tried translation-suffixed first, so a
-    visual containing translation-specific wording wins for that translation.
+    then the global default.
     """
     safe = book.replace(" ", "_")
     chapter_dir = os.path.join(VISUALS_DIR, safe, str(chapter))
@@ -317,31 +315,29 @@ def resolve_svg(book: str, chapter: int, verse: int,
         (VISUALS_DIR, safe),
         (VISUALS_DIR, "default"),
     ]
-    suffixes = [f".{translation}", ""] if translation else [""]
     for directory, base in locations:
-        for suffix in suffixes:
-            path = os.path.join(directory, base + suffix + ".svg")
-            if os.path.exists(path):
-                return path
+        path = os.path.join(directory, base + ".svg")
+        if os.path.exists(path):
+            return path
     return None
 
 
 def resolve_audio(book: str, chapter: int, verse: int, text: str,
-                  translation: str, voice: str, rate: int) -> tuple[str, bool]:
+                  voice: str, rate: int) -> tuple[str, bool]:
     """(path, was_synthesized). Prefers the published web/audio MP3 -- the
     exact file the site plays -- and falls back to synthesizing through the
     production TTS path, which caches, so a second render is instant."""
     safe = book.replace(" ", "_")
     base = f"{safe}_{chapter}_{verse}"
     published = os.path.join(showcase_audio.AUDIO_DIR,
-                             showcase_audio._audio_filename(base, translation))
+                             showcase_audio._audio_filename(base))
     if os.path.exists(published) and os.path.getsize(published) > 500:
         return published, False
     return tts_engine.synthesize(text, voice, rate), True
 
 
 def publish_audio(book: str, chapter: int, verse: int, src: str,
-                  translation: str, manifest: dict) -> None:
+                  manifest: dict) -> None:
     """Copy a freshly synthesized verse into web/audio/ and register it, so a
     render doubles as an Audio Renderer pass. Only real neural MP3s ship --
     the offline SAPI .wav fallback is never published (same rule as
@@ -350,10 +346,10 @@ def publish_audio(book: str, chapter: int, verse: int, src: str,
         return
     safe = book.replace(" ", "_")
     base = f"{safe}_{chapter}_{verse}"
-    filename = showcase_audio._audio_filename(base, translation)
+    filename = showcase_audio._audio_filename(base)
     os.makedirs(showcase_audio.AUDIO_DIR, exist_ok=True)
     shutil.copyfile(src, os.path.join(showcase_audio.AUDIO_DIR, filename))
-    manifest[showcase_audio._manifest_key(base, translation)] = filename
+    manifest[showcase_audio._manifest_key(base)] = filename
 
 
 # ---------------------------------------------------------------------------
@@ -409,7 +405,6 @@ class RenderSpec:
     end_chapter: int
     end_verse: int | None          # None = to the end of end_chapter
     out_path: str
-    translation: str = "WEB"
     voice: str = tts_engine.EDGE_VOICES[0]
     rate: int = 0
     width: int = 3840
@@ -421,7 +416,7 @@ class RenderSpec:
     publish_new_audio: bool = False
     workers: int = 0               # concurrent ffmpeg encodes; 0 = default
 
-    # Set once the passage is fetched, so an open-ended range ("to the end of
+    # Set once the passage is loaded, so an open-ended range ("to the end of
     # the chapter") can name its real last verse everywhere it is displayed.
     resolved_end: tuple | None = None
 
@@ -462,7 +457,7 @@ class Item:
 
 
 def build_plan(spec: RenderSpec, on_status=None, cancel=None):
-    """Fetch the passage, resolve every verse's audio and visual, and return
+    """Load the passage, resolve every verse's audio and visual, and return
     (items, warnings). Durations are not known yet -- the audio pass fills
     them in, because the decoded PCM length is the authoritative duration."""
     warnings: list[str] = []
@@ -477,9 +472,9 @@ def build_plan(spec: RenderSpec, on_status=None, cancel=None):
     for chapter in range(spec.start_chapter, end_chapter + 1):
         if cancel and cancel():
             break
-        say(f"Fetching {spec.book} {chapter}…")
+        say(f"Loading {spec.book} {chapter}…")
         try:
-            passage = fetch_passage("", spec.book, chapter, spec.translation)
+            passage = load_chapter(spec.book, chapter)
         except PassageError as e:
             warnings.append(f"{spec.book} {chapter}: {e}")
             continue
@@ -493,7 +488,7 @@ def build_plan(spec: RenderSpec, on_status=None, cancel=None):
                 continue
             ref = f"{spec.book} {chapter}:{num}"
             say(f"Preparing {ref}…")
-            svg_path = resolve_svg(spec.book, chapter, num, spec.translation)
+            svg_path = resolve_svg(spec.book, chapter, num)
             if svg_path is None:
                 # Hold the previous verse's artwork rather than cutting to
                 # black; a passage whose visuals stop partway still reads.
@@ -504,16 +499,14 @@ def build_plan(spec: RenderSpec, on_status=None, cancel=None):
                 last_svg = svg_path
             try:
                 audio_path, fresh = resolve_audio(
-                    spec.book, chapter, num, text, spec.translation,
-                    spec.voice, spec.rate)
+                    spec.book, chapter, num, text, spec.voice, spec.rate)
             except Exception as e:                      # TTS unreachable
                 raise RenderError(f"{ref}: could not get narration — {e}")
             if fresh and not audio_path.lower().endswith(".mp3"):
                 warnings.append(
                     f"{ref}: edge-tts unavailable, using the offline voice")
             if fresh and manifest is not None:
-                publish_audio(spec.book, chapter, num, audio_path,
-                              spec.translation, manifest)
+                publish_audio(spec.book, chapter, num, audio_path, manifest)
             items.append(Item(
                 kind="verse", ref=ref, text=text, chapter=chapter, verse=num,
                 svg_path=svg_path, audio_path=audio_path,
@@ -534,7 +527,7 @@ def build_plan(spec: RenderSpec, on_status=None, cancel=None):
             svg_text=title_card_svg(
                 spec.book,
                 spec.reference.replace(spec.book + " ", ""),
-                TRANSLATION_ATTRIBUTION.get(spec.translation, ""))))
+                ATTRIBUTION)))
     return items, warnings
 
 
@@ -1154,7 +1147,7 @@ def write_description(items, spec: RenderSpec, path: str,
         f"{spec.reference}, read aloud with an illustrated diagram for every "
         f"verse.",
         "",
-        TRANSLATION_ATTRIBUTION.get(spec.translation, ""),
+        ATTRIBUTION,
         f"Narration: Microsoft neural voice ({spec.voice}).",
         "Visuals: original vector infographics, one per verse.",
     ]
@@ -1260,7 +1253,6 @@ def main() -> int:
     ap.add_argument("start", help="chapter or chapter:verse")
     ap.add_argument("end", nargs="?", help="chapter or chapter:verse")
     ap.add_argument("--out", default=None)
-    ap.add_argument("--translation", default="WEB")
     ap.add_argument("--voice", default=tts_engine.EDGE_VOICES[0])
     ap.add_argument("--resolution", default=DEFAULT_RESOLUTION,
                     choices=list(RESOLUTIONS))
@@ -1283,9 +1275,9 @@ def main() -> int:
 
     spec = RenderSpec(
         book=args.book, start_chapter=sc, start_verse=sv, end_chapter=ec,
-        end_verse=ev, out_path=out, translation=args.translation,
-        voice=args.voice, width=width, height=height, fps=args.fps,
-        gap=args.gap, workers=args.workers, title_card=not args.no_title)
+        end_verse=ev, out_path=out, voice=args.voice, width=width,
+        height=height, fps=args.fps, gap=args.gap, workers=args.workers,
+        title_card=not args.no_title)
 
     def progress(phase, done, total, label):
         print(f"\r  {phase}: {done}/{total}  {label}".ljust(70), end="")

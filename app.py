@@ -1,4 +1,4 @@
-"""AV Bible — reads the Bible (ESV) aloud with a per-verse visual stage.
+"""AV Bible — reads the World English Bible aloud with a per-verse visual stage.
 
 Run with:  python app.py   (or double-click run.bat)
 """
@@ -9,7 +9,6 @@ import subprocess
 import sys
 import threading
 import time
-import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 
 import tkinter as tk
@@ -22,9 +21,7 @@ import publish_studio
 import svg_studio
 import video_studio
 from books import BOOK_NAMES, chapters_in
-from passages import (Passage, PassageError, fetch_passage, fetch_esv_audio,
-                      TRANSLATIONS, TRANSLATION_LABELS,
-                      TRANSLATION_ATTRIBUTION)
+from passages import ATTRIBUTION, Passage, PassageError, load_chapter
 from tts_engine import EDGE_VOICES, synthesize
 from audio_player import AudioPlayer
 from visual_stage import (StageController, StageView, FullscreenStage,
@@ -44,14 +41,13 @@ class PlaybackSession(threading.Thread):
     ('error', sid, message)
     ('verse', sid, index)           index into passage.verses
     ('intro', sid)                  chapter announcement is playing
-    ('narration', sid)              whole-chapter ESV mp3 is playing
     ('done', sid, completed)        completed=False when stopped early
     """
 
     _next_sid = 0
 
     def __init__(self, events: queue.Queue, passage: Passage, start_index: int,
-                 voice: str, rate: int, mode: str, api_key: str):
+                 voice: str, rate: int):
         super().__init__(daemon=True)
         PlaybackSession._next_sid += 1
         self.sid = PlaybackSession._next_sid
@@ -60,8 +56,6 @@ class PlaybackSession(threading.Thread):
         self.start_index = max(0, min(start_index, len(passage.verses) - 1))
         self.voice = voice
         self.rate = rate
-        self.mode = mode
-        self.api_key = api_key
         self.player = AudioPlayer()
         self._stop = threading.Event()
         self._jump = None
@@ -77,8 +71,6 @@ class PlaybackSession(threading.Thread):
         self.player.stop()
 
     def request_jump(self, index: int):
-        if self.mode != "tts":
-            return
         with self._jump_lock:
             self._jump = max(0, min(index, len(self.passage.verses) - 1))
         self.player.stop()  # breaks the poll loop quickly
@@ -123,13 +115,7 @@ class PlaybackSession(threading.Thread):
 
     def run(self):
         try:
-            if self.mode == "narration":
-                self._run_narration()
-            else:
-                self._run_tts()
-        except PassageError as e:
-            self.emit("error", self.sid, str(e))
-            self.emit("done", self.sid, False)
+            self._run_tts()
         except Exception as e:  # surface anything unexpected to the UI
             self.emit("error", self.sid, f"Playback error: {e}")
             self.emit("done", self.sid, False)
@@ -170,81 +156,6 @@ class PlaybackSession(threading.Thread):
 
         self.emit("done", self.sid, not self._stop.is_set())
 
-    def _run_narration(self):
-        if not self.api_key.strip():
-            raise PassageError(
-                "ESV narration needs a free ESV API key — add one in Settings, "
-                "or switch to Text-to-speech mode.")
-        if self.passage.translation != "ESV":
-            raise PassageError(
-                "ESV narration plays the official ESV recording, so it is "
-                "only offered with the ESV version selected. Switch Version "
-                "to ESV or use Text-to-speech mode.")
-        p = self.passage
-        self.emit("status", self.sid,
-                  f"Downloading ESV narration for {p.canonical}…")
-        path = fetch_esv_audio(self.api_key.strip(), p.book, p.chapter)
-        if self._stop.is_set():
-            self.emit("done", self.sid, False)
-            return
-        self.emit("narration", self.sid)
-        self.emit("status", self.sid, f"Playing ESV narration — {p.canonical}")
-        completed = self._play_and_wait(path)
-        self.emit("done", self.sid, completed and not self._stop.is_set())
-
-
-# ---------------------------------------------------------------------------
-# Settings dialog — currently dormant (ESV is removed from the version list
-# for the proof of concept). Kept so ESV support can be re-enabled later by
-# restoring the Settings button and the ESV entry in passages.TRANSLATIONS.
-# ---------------------------------------------------------------------------
-
-class SettingsDialog(tk.Toplevel):
-    def __init__(self, app):
-        super().__init__(app.root)
-        self.app = app
-        self.title("Settings")
-        self.resizable(False, False)
-        self.transient(app.root)
-        self.grab_set()
-
-        frame = ttk.Frame(self, padding=16)
-        frame.pack(fill="both", expand=True)
-
-        ttk.Label(frame, text="ESV API key (free for personal use):").grid(
-            row=0, column=0, columnspan=2, sticky="w")
-        self.key_var = tk.StringVar(value=app.cfg.get("esv_api_key", ""))
-        entry = ttk.Entry(frame, textvariable=self.key_var, width=52)
-        entry.grid(row=1, column=0, columnspan=2, sticky="we", pady=(4, 8))
-        entry.focus_set()
-
-        link = ttk.Label(
-            frame, foreground="#2255cc", cursor="hand2",
-            text="Get a free key at api.esv.org (sign up → create application)")
-        link.grid(row=2, column=0, columnspan=2, sticky="w")
-        link.bind("<Button-1>", lambda e: webbrowser.open(
-            "https://api.esv.org/account/create-application/"))
-
-        ttk.Label(frame, foreground="#666666", wraplength=380, justify="left",
-                  text=("Without a key the app plays the public-domain World "
-                        "English Bible so you can try everything out. With a "
-                        "key you get the ESV text plus the official ESV "
-                        "narration mode.")).grid(
-            row=3, column=0, columnspan=2, sticky="w", pady=(8, 12))
-
-        btns = ttk.Frame(frame)
-        btns.grid(row=4, column=0, columnspan=2, sticky="e")
-        ttk.Button(btns, text="Cancel", command=self.destroy).pack(
-            side="right", padx=(6, 0))
-        ttk.Button(btns, text="Save", command=self._save).pack(side="right")
-
-    def _save(self):
-        self.app.cfg["esv_api_key"] = self.key_var.get().strip()
-        config.save(self.app.cfg)
-        self.app.refresh_attribution()
-        self.app.set_status("Settings saved.")
-        self.destroy()
-
 
 # ---------------------------------------------------------------------------
 # Main application
@@ -255,10 +166,6 @@ class App:
         self.root = root
         self.cfg = config.load()
         config.ensure_dirs()
-        # Migrate configs saved when ESV (or another removed code) was
-        # selectable.
-        if self.cfg.get("translation") not in TRANSLATION_LABELS:
-            self.cfg["translation"] = "WEB"
 
         self.events: queue.Queue = queue.Queue()
         self.session: PlaybackSession | None = None
@@ -310,19 +217,6 @@ class App:
             top, textvariable=self.verse_var, values=["1"], width=5)
         self.verse_combo.pack(side="left", padx=(4, 14))
 
-        ttk.Label(top, text="Version:").pack(side="left")
-        self._label_to_code = {label: code for code, label, *_ in TRANSLATIONS}
-        start_code = self.cfg.get("translation", "WEB")
-        self.version_var = tk.StringVar(
-            value=TRANSLATION_LABELS.get(start_code,
-                                         TRANSLATION_LABELS["WEB"]))
-        version_combo = ttk.Combobox(
-            top, textvariable=self.version_var,
-            values=[label for _, label, *_ in TRANSLATIONS],
-            state="readonly", width=22)
-        version_combo.pack(side="left", padx=(4, 14))
-        version_combo.bind("<<ComboboxSelected>>", self._on_version_change)
-
         ttk.Label(top, text="Voice:").pack(side="left")
         self.voice_var = tk.StringVar(value=self.cfg["voice"])
         voice_combo = ttk.Combobox(
@@ -352,19 +246,12 @@ class App:
         ttk.Checkbutton(bar, text="Auto-continue",
                         variable=self.auto_var).pack(side="left")
 
-        self.notes_var = tk.BooleanVar(value=bool(self.cfg.get("show_notes",
-                                                               True)))
-        ttk.Checkbutton(bar, text="Translator notes",
-                        variable=self.notes_var,
-                        command=self._on_display_toggle).pack(side="left",
-                                                              padx=(14, 0))
-
         self.ref_var = tk.BooleanVar(
             value=bool(self.cfg.get("show_reference", True)))
         ttk.Checkbutton(bar, text="Reference",
                         variable=self.ref_var,
                         command=self._on_display_toggle).pack(side="left",
-                                                              padx=(8, 0))
+                                                              padx=(14, 0))
 
         ttk.Button(bar, text="🚀 Publish",
                    command=self.open_publish).pack(side="right", padx=(0, 6))
@@ -402,8 +289,6 @@ class App:
         self.text.tag_configure("current", background="#fdeeba")
         self.text.tag_configure("title", font=("Georgia", 15, "bold"),
                                 spacing3=12)
-        self.text.tag_configure("hint", foreground="#888888",
-                                font=("Georgia", 11, "italic"))
 
         stage_frame = ttk.Frame(main)
         self.stage_view = StageView(stage_frame, self.stage)
@@ -414,56 +299,21 @@ class App:
         bottom.pack(fill="x")
         self.status_var = tk.StringVar(value="Ready.")
         ttk.Label(bottom, textvariable=self.status_var).pack(side="left")
-        self.attr_var = tk.StringVar()
-        ttk.Label(bottom, textvariable=self.attr_var, foreground="#777777",
+        ttk.Label(bottom, text=ATTRIBUTION, foreground="#777777",
                   font=("Segoe UI", 8)).pack(side="right")
-        self.refresh_attribution()
-
-        self._show_hint()
-
-    def _show_hint(self):
-        self.text.configure(state="normal")
-        self.text.delete("1.0", "end")
-        self.text.insert("end", "Welcome to AV Bible\n", "title")
-        self.text.insert(
-            "end",
-            "Pick a book, chapter, and version above, then press Play.\n\n"
-            "While it reads, the current verse is highlighted here and its "
-            "artwork is shown on the visual stage to the right. Click any "
-            "verse to jump to it.\n\nAll six versions are public domain and "
-            "need no setup. ASV and Darby include translator notes (words "
-            "supplied for clarity) — turn on \"Show translator notes\" to "
-            "see them on the display while the verse is read.",
-            "hint")
-        self.text.configure(state="disabled")
 
     # -- small UI helpers ----------------------------------------------------
 
     def set_status(self, msg: str):
         self.status_var.set(msg)
 
-    def selected_translation(self) -> str:
-        return self._label_to_code.get(self.version_var.get(), "WEB")
-
-    def _on_version_change(self, _event=None):
-        code = self.selected_translation()
-        self.cfg["translation"] = code
-        config.save(self.cfg)
-        self.refresh_attribution()
-        self.set_status(f"Version: {self.version_var.get()}")
-
     def _on_display_toggle(self):
-        self.cfg["show_notes"] = bool(self.notes_var.get())
         self.cfg["show_reference"] = bool(self.ref_var.get())
         config.save(self.cfg)
         # Refresh the stage immediately if a verse is showing.
         ctx = self.stage.current
         if ctx is not None and self.passage is not None and ctx.verse:
             self.stage.show_verse(self._verse_context(ctx.index))
-
-    def refresh_attribution(self):
-        code = self.selected_translation()
-        self.attr_var.set(TRANSLATION_ATTRIBUTION.get(code, ""))
 
     def _refresh_chapters(self):
         book = self.book_var.get()
@@ -483,9 +333,6 @@ class App:
         self.chapter_var.set("1")
         self.verse_var.set("1")
 
-    def open_settings(self):
-        SettingsDialog(self)
-
     def open_fullscreen(self):
         if self.fullscreen_stage and self.fullscreen_stage.top.winfo_exists():
             self.fullscreen_stage.close()
@@ -501,9 +348,8 @@ class App:
             )
             book = self.book_var.get()
             chapter = self._chapter()
-            translation = self.selected_translation()
-            subprocess.Popen([sys.executable, script_path, book, str(chapter), translation])
-            self.set_status(f"Pronunciation Studio launched on {book} {chapter} ({translation}).")
+            subprocess.Popen([sys.executable, script_path, book, str(chapter)])
+            self.set_status(f"Pronunciation Studio launched on {book} {chapter}.")
         except Exception as e:
             self.set_status(f"Error launching Pronunciation Studio: {e}")
 
@@ -627,15 +473,12 @@ class App:
         book = self.book_var.get()
         chapter = self._chapter()
         verse_number = self._selected_verse_number()
-        self.set_status(f"Fetching {book} {chapter}…")
+        self.set_status(f"Loading {book} {chapter}…")
         self.play_btn.configure(state="disabled")
-
-        api_key = self.cfg.get("esv_api_key", "")
-        translation = self.selected_translation()
 
         def worker():
             try:
-                passage = fetch_passage(api_key, book, chapter, translation)
+                passage = load_chapter(book, chapter)
                 self.events.put(("fetched", passage, start_index,
                                  verse_number))
             except PassageError as e:
@@ -654,8 +497,6 @@ class App:
             self.events, passage, start,
             voice=self.voice_var.get(),
             rate=int(self.rate_var.get()),
-            mode="tts",
-            api_key=self.cfg.get("esv_api_key", ""),
         )
         self.current_sid = self.session.sid
         self._save_position()
@@ -675,26 +516,20 @@ class App:
         self.set_status("Stopped.")
 
     def next_item(self):
-        if self.session and self.session.is_alive() \
-                and self.session.mode == "tts":
+        if self.session and self.session.is_alive():
             idx = self._current_index()
             if idx is not None:
                 self.session.request_jump(idx + 1)
             return
         self._step_chapter(+1)
-        if self.session and self.session.is_alive():
-            self.play()
 
     def prev_item(self):
-        if self.session and self.session.is_alive() \
-                and self.session.mode == "tts":
+        if self.session and self.session.is_alive():
             idx = self._current_index()
             if idx is not None:
                 self.session.request_jump(idx - 1)
             return
         self._step_chapter(-1)
-        if self.session and self.session.is_alive():
-            self.play()
 
     def _current_index(self):
         ctx = self.stage.current
@@ -728,10 +563,8 @@ class App:
         self.cfg.update({
             "last_book": self.book_var.get(),
             "last_chapter": self._chapter(),
-            "translation": self.selected_translation(),
             "voice": self.voice_var.get(),
             "rate": int(self.rate_var.get()),
-            "show_notes": bool(self.notes_var.get()),
             "show_reference": bool(self.ref_var.get()),
         })
         config.save(self.cfg)
@@ -741,9 +574,7 @@ class App:
     def _render_passage(self, passage: Passage):
         self.text.configure(state="normal")
         self.text.delete("1.0", "end")
-        self.text.insert("end",
-                         f"{passage.canonical} ({passage.translation})\n",
-                         "title")
+        self.text.insert("end", f"{passage.canonical}\n", "title")
         for idx, (num, verse_text) in enumerate(passage.verses):
             tag = f"verse{idx}"
             self.text.insert("end", f"{num} ", ("vnum", tag))
@@ -753,8 +584,7 @@ class App:
         self.text.configure(state="disabled")
 
     def _on_verse_click(self, idx: int):
-        if self.session and self.session.is_alive() \
-                and self.session.mode == "tts":
+        if self.session and self.session.is_alive():
             self.session.request_jump(idx)
         else:
             self.play(start_index=idx)
@@ -771,14 +601,11 @@ class App:
     def _verse_context(self, idx: int) -> VerseContext:
         p = self.passage
         num, verse_text = p.verses[idx]
-        notes = []
-        if self.notes_var.get() and idx < len(p.notes or []):
-            notes = p.notes[idx]
         return VerseContext(
             book=p.book, chapter=p.chapter, verse=num, text=verse_text,
-            reference=f"{p.canonical}:{num}  ({p.translation})",
-            index=idx, total=len(p.verses), translation=p.translation,
-            notes=notes, show_reference=bool(self.ref_var.get()))
+            reference=f"{p.canonical}:{num}",
+            index=idx, total=len(p.verses),
+            show_reference=bool(self.ref_var.get()))
 
     # -- event pump ------------------------------------------------------------
 
@@ -821,13 +648,13 @@ class App:
             # read instead of restarting the chapter.
             self.verse_var.set(str(self.passage.verses[idx][0]))
             self.stage.show_verse(self._verse_context(idx))
-        elif kind in ("intro", "narration"):
+        elif kind == "intro":
             p = self.passage
             self._highlight_verse(None)
             self.stage.show_verse(VerseContext(
                 book=p.book, chapter=p.chapter, verse=0, text="",
-                reference=f"{p.canonical}  ({p.translation})",
-                index=0, total=len(p.verses), translation=p.translation,
+                reference=p.canonical,
+                index=0, total=len(p.verses),
                 show_reference=bool(self.ref_var.get())))
         elif kind == "done":
             completed = event[2]

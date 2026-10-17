@@ -49,6 +49,7 @@ from svg_chronicles_world import (AUDIO_DIR, BG, HL, HUD_H, READABLE,
                                   SAND_DIM, TEXT, VIEW_BOT, VerseFrame,
                                   World, _fade_group, _fit, _grow_min,
                                   _mp3_seconds, _union, dim, node_box)
+from passages import load_chapter
 from svg_surface import SvgCanvas, SvgLayer, _fmt
 
 BOOK, CHAPTER = "Matthew", 1
@@ -79,11 +80,7 @@ def section_of(v):
 
 
 def _web_verses():
-    import json
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                        "bibles", "WEB", "Matthew_1.json")
-    with open(path, encoding="utf-8") as f:
-        return dict((v, t) for v, t in json.load(f)["verses"])
+    return dict(load_chapter(BOOK, CHAPTER).verses)
 
 
 # ---------------------------------------------------------------------------

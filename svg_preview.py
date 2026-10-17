@@ -110,22 +110,13 @@ PAGE = """<!DOCTYPE html>
 """
 
 
-def resolve_audio(book: str, chapter: int, verse: int,
-                  variant: str) -> str | None:
-    """The narration MP3 for a verse, honoring the audio manifest's naming:
-    translation-suffixed files (Book_c_v.KJV.mp3) for non-WEB narration,
-    plain Book_c_v.mp3 for WEB. A translation variant prefers its own
-    narration and falls back to the plain (WEB) file; the generic variant
-    plays the plain file."""
-    base = f"{book.replace(' ', '_')}_{chapter}_{verse}"
-    candidates = [f"{base}.mp3"]
-    if variant not in ("generic", "", None, "WEB"):
-        candidates.insert(0, f"{base}.{variant}.mp3")
-    for name in candidates:
-        path = os.path.join(AUDIO_DIR, name)
-        if os.path.exists(path):
-            return path
-    return None
+def resolve_audio(book: str, chapter: int, verse: int) -> str | None:
+    """The narration MP3 for a verse: web/audio/Book_c_v.mp3, the file the
+    audio manifest's "Book_c_v.WEB" key names. None when it isn't
+    rendered yet."""
+    path = os.path.join(AUDIO_DIR,
+                        f"{book.replace(' ', '_')}_{chapter}_{verse}.mp3")
+    return path if os.path.exists(path) else None
 
 
 class PreviewServer:

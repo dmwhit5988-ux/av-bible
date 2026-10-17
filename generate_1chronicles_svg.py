@@ -1,7 +1,7 @@
 """Render the 1 Chronicles 1-9 genealogies as per-verse SVGs.
 
 Scene data + verse matching live in generate_1chronicles.py; drawing lives
-in svg_1chronicles_render.py. Files are translation-generic (WEB spellings):
+in svg_1chronicles_render.py. Spellings are WEB's (passages.TRANSLATION):
 visuals/1_Chronicles/<ch>/1_Chronicles_<ch>_<v>.svg
 
 Run inside the project venv:

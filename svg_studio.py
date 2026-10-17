@@ -1,10 +1,10 @@
 """SVG Studio — verse-aware orchestrator for the visuals pipeline.
 
-The studio owns the verse workflow (navigate, see which translation variants
-exist, know when a file is generator-owned), the XML editing pane, and the
-pipeline glue (save into visuals/<Book>/<chapter>/, manifest rebuild, deploy
-staging). It deliberately does NOT own vector drawing — that is the XML pane
-and/or Inkscape (SVG_STUDIO_DESIGN.md, "Option 3").
+The studio owns the verse workflow (navigate, know when a file is
+generator-owned), the XML editing pane, and the pipeline glue (save into
+visuals/<Book>/<chapter>/, manifest rebuild, deploy staging). It
+deliberately does NOT own vector drawing — that is the XML pane and/or
+Inkscape (SVG_STUDIO_DESIGN.md, "Option 3").
 
 Usable standalone or as a Toplevel from app.py (same constructor contract as
 audio_studio.App):
@@ -30,7 +30,6 @@ import config
 import svg_freeze
 import svg_preview
 import svg_registry
-from passages import TRANSLATIONS
 
 # How soon a preview-subprocess exit counts as "pywebview is broken" rather
 # than "the user closed the window" (SVG_STUDIO_DESIGN.md section 2.5).
@@ -60,9 +59,6 @@ SKELETON = (
     f'</svg>\n'
 )
 
-TRANSLATION_CODES = [code for code, *_ in TRANSLATIONS]
-GENERIC = "generic"
-
 
 def pretty_svg(text: str) -> str:
     """Indent single-line generator output for the editor pane. Preserves
@@ -87,32 +83,10 @@ def chapter_dir(book: str, chapter: int) -> str:
     return os.path.join(VISUALS_DIR, book.replace(" ", "_"), str(chapter))
 
 
-def variant_path(book: str, chapter: int, verse: int, variant: str) -> str:
-    """Path of one variant's file. variant is GENERIC or a translation code."""
-    base = verse_base(book, chapter, verse)
-    suffix = "" if variant == GENERIC else f".{variant}"
-    return os.path.join(chapter_dir(book, chapter), f"{base}{suffix}.svg")
-
-
-def existing_variants(book: str, chapter: int, verse: int) -> set:
-    """Which variants (GENERIC / translation codes) have a file on disk."""
-    found = set()
-    for variant in [GENERIC] + TRANSLATION_CODES:
-        if os.path.exists(variant_path(book, chapter, verse, variant)):
-            found.add(variant)
-    return found
-
-
-def resolve_for_translation(code: str, found: set) -> str | None:
-    """Which variant a reader on translation `code` actually gets — the
-    suffix chain .CODE.svg -> .svg, mirroring web/js/visuals.js findImage
-    and visual_stage._find_image (verse key only; the chapter/book/default
-    fallbacks are irrelevant to an authoring tool)."""
-    if code in found:
-        return code
-    if GENERIC in found:
-        return GENERIC
-    return None
+def verse_path(book: str, chapter: int, verse: int) -> str:
+    """The verse's one SVG: visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg."""
+    return os.path.join(chapter_dir(book, chapter),
+                        f"{verse_base(book, chapter, verse)}.svg")
 
 
 class App:
@@ -178,16 +152,6 @@ class App:
         verse_sb.pack(side="left", padx=(4, 12))
         verse_sb.bind("<Return>", lambda e: self._on_selection_change())
         verse_sb.bind("<FocusOut>", lambda e: self._on_selection_change())
-
-        ttk.Label(nav, text="Variant:").pack(side="left")
-        self.variant_frame = ttk.Frame(nav)
-        self.variant_frame.pack(side="left", padx=(4, 0))
-        self.variant_var = tk.StringVar(value=GENERIC)
-
-        # What each reader translation would actually load (suffix chain).
-        self.resolution_var = tk.StringVar()
-        ttk.Label(self.root, textvariable=self.resolution_var,
-                  foreground="#888888", padding=(10, 0)).pack(anchor="w")
 
         # Generator-ownership banner — hidden for hand-authored verses.
         self.banner = ttk.Frame(self.root, padding=(10, 6))
@@ -310,21 +274,9 @@ class App:
 
     def _on_selection_change(self):
         book, chapter, verse = self._selection()
-        new_variant_default = self.variant_var.get()
         if not self._confirm_discard():
             return
         self.family = svg_registry.owner_of(book, chapter, verse)
-        found = existing_variants(book, chapter, verse)
-        # Keep the chosen variant if it still exists; otherwise prefer the
-        # generic file, else the first existing variant, else generic-new.
-        if new_variant_default not in found:
-            if GENERIC in found or not found:
-                new_variant_default = GENERIC
-            else:
-                new_variant_default = sorted(found)[0]
-        self.variant_var.set(new_variant_default)
-        self._rebuild_variant_chips(found)
-        self._update_resolution_readout(found)
         self._update_banner()
         # Generator families build cumulatively from their spec already —
         # freeze-and-continue is a hand-authoring affordance only.
@@ -332,35 +284,6 @@ class App:
             state="disabled" if self.family is not None else "normal")
         self._load_selected_file()
         self._push_preview("nav")
-
-    def _rebuild_variant_chips(self, found):
-        for child in self.variant_frame.winfo_children():
-            child.destroy()
-        for variant in [GENERIC] + TRANSLATION_CODES:
-            mark = "●" if variant in found else "○"
-            rb = ttk.Radiobutton(
-                self.variant_frame, text=f"{variant} {mark}",
-                value=variant, variable=self.variant_var,
-                command=self._on_variant_change)
-            rb.pack(side="left", padx=(0, 4))
-
-    def _on_variant_change(self):
-        if not self._confirm_discard():
-            return
-        self._load_selected_file()
-        self._push_preview("nav")
-
-    def _update_resolution_readout(self, found):
-        parts = []
-        for code in TRANSLATION_CODES:
-            got = resolve_for_translation(code, found)
-            if got is None:
-                parts.append(f"{code} → —")
-            elif got == GENERIC:
-                parts.append(f"{code} → generic")
-            else:
-                parts.append(f"{code} → .{code}.svg")
-        self.resolution_var.set("readers get:  " + "   ".join(parts))
 
     def _update_banner(self):
         if self.family is None:
@@ -391,8 +314,7 @@ class App:
 
     def _load_selected_file(self):
         book, chapter, verse = self._selection()
-        variant = self.variant_var.get()
-        path = variant_path(book, chapter, verse, variant)
+        path = verse_path(book, chapter, verse)
         self.current_path = path
         self._hand_edit_mode = False
         base = os.path.basename(path)
@@ -414,21 +336,10 @@ class App:
                 self._set_pane(content, editable=True)
                 self.status_var.set(f"{base} — loaded.")
         else:
-            generic = variant_path(book, chapter, verse, GENERIC)
-            if variant != GENERIC and os.path.exists(generic):
-                # New translation variant: start from the generic file — the
-                # usual reason a variant exists is a respelled name, so most
-                # of the drawing carries over.
-                with open(generic, encoding="utf-8") as f:
-                    self._set_pane(f.read(), editable=True)
-                self.status_var.set(
-                    f"{base} — no file yet; copied from the generic SVG, "
-                    f"Save creates the {variant} variant.")
-            else:
-                self._set_pane(SKELETON, editable=True)
-                self.status_var.set(
-                    f"{base} — no file yet; skeleton loaded, Save creates "
-                    f"it. (Or: Start from prev. frame.)")
+            self._set_pane(SKELETON, editable=True)
+            self.status_var.set(
+                f"{base} — no file yet; skeleton loaded, Save creates "
+                f"it. (Or: Start from prev. frame.)")
 
     def _on_text_modified(self, _event):
         if self._loading:
@@ -486,10 +397,6 @@ class App:
             f.write(content)
         self.dirty = False
         self._update_title()
-        book, chapter, verse = self._selection()
-        self._rebuild_variant_chips(existing_variants(book, chapter, verse))
-        self._update_resolution_readout(
-            existing_variants(book, chapter, verse))
         self.status_var.set(f"Saved {os.path.basename(self.current_path)}.")
 
     # ----- generator routing -------------------------------------------------
@@ -551,13 +458,10 @@ class App:
             shown = ", ".join(marked[:6]) + ("…" if len(marked) > 6 else "")
             note = (f"\n\n⚠ {len(marked)} file(s) carry one-off hand edits "
                     f"that will be DISCARDED:\n{shown}\n")
-        extra = ("\n(This family renders per-translation files; the "
-                 "generator fetches passages for name resolution.)"
-                 if self.family.translation_suffixed else "")
         if not messagebox.askyesno(
                 "Re-run generator",
                 f"Run {self.family.generator}? It rewrites every "
-                f"{self.family.label} SVG from the Python spec.{extra}{note}"
+                f"{self.family.label} SVG from the Python spec.{note}"
                 f"\nContinue?",
                 icon="warning" if marked else "question", parent=self.root):
             return
@@ -634,9 +538,9 @@ class App:
     # ----- freeze and continue ------------------------------------------------
 
     def start_from_previous(self):
-        """Load verse N-1's file (same variant chain), freeze its play-once
-        animations to their end state, demote to a static base group, and
-        put the result in the pane as verse N's unsaved starting point."""
+        """Load verse N-1's file, freeze its play-once animations to their
+        end state, demote to a static base group, and put the result in the
+        pane as verse N's unsaved starting point."""
         if self.family is not None:
             self.status_var.set(
                 "This family is generated; the generator already carries "
@@ -649,18 +553,12 @@ class App:
             return
         if not self._confirm_discard():
             return
-        variant = self.variant_var.get()
-        prev_found = existing_variants(book, chapter, verse - 1)
-        prev_variant = (variant if variant in prev_found
-                        else resolve_for_translation(
-                            variant if variant != GENERIC else "WEB",
-                            prev_found))
-        if prev_variant is None:
+        prev_path = verse_path(book, chapter, verse - 1)
+        if not os.path.exists(prev_path):
             self.status_var.set(
                 f"No SVG exists for {book} {chapter}:{verse - 1} to "
                 f"continue from.")
             return
-        prev_path = variant_path(book, chapter, verse - 1, prev_variant)
         with open(prev_path, encoding="utf-8") as f:
             prev_text = f.read()
         from_key = verse_base(book, chapter, verse - 1)
@@ -685,9 +583,7 @@ class App:
         if self.preview_server is None:
             return
         book, chapter, verse = self._selection()
-        variant = self.variant_var.get()
-        audio = svg_preview.resolve_audio(book, chapter, verse, variant)
-        label = "" if variant == GENERIC else f" · {variant}"
+        audio = svg_preview.resolve_audio(book, chapter, verse)
         # XML validity feedback without blocking the live preview — the
         # browser shows whatever it gets, which is honest live feedback.
         parse_note = ""
@@ -696,7 +592,7 @@ class App:
         except ET.ParseError as e:
             parse_note = f" — XML error: {e}"
         self.preview_server.set_content(
-            self.pane_text(), audio, f"{book} {chapter}:{verse}{label}", cause)
+            self.pane_text(), audio, f"{book} {chapter}:{verse}", cause)
         if parse_note:
             self.status_var.set(f"Preview updated{parse_note}")
 

@@ -1,18 +1,16 @@
 """Audio Renderer -- batch-render chapter narration MP3s for the web app.
 
 Generalizes generate_showcase_audio.py into a GUI: pick a book, a chapter
-range, a translation, and a voice, and render neural narration through the
-same production path the desktop reader uses (tts_engine.synthesize, which
-applies pronunciation respelling). Output lands in web/audio/ and
+range and a voice, and render neural narration through the same production
+path the desktop reader uses (tts_engine.synthesize, which applies
+pronunciation respelling). Output lands in web/audio/ and
 web/audio/manifest.json exactly as generate_showcase_audio.py writes them
-(translation-suffixed keys/filenames, see that module's docstring), so the
-web player picks it up for whichever translation the visitor has selected.
+(see that module's docstring for the key and filename format), so the web
+player picks it up.
 
 Before rendering, shows the projected new-file count against the ~20k
 Cloudflare Pages file-count ceiling (STUDIO_PLAN.md Feature C caveat 2),
-counting the same files prepare-deploy.ps1 actually bundles. Every
-translation you render multiplies the deploy file count, so render
-selectively.
+counting the same files prepare-deploy.ps1 actually bundles.
 
     python audio_studio.py
 """
@@ -27,31 +25,28 @@ from tkinter import ttk, messagebox
 import books
 import generate_showcase_audio as showcase_audio
 import tts_engine
-from passages import fetch_passage, PassageError, TRANSLATION_LABELS
+from passages import load_chapter, PassageError
 
 RATE = 0
 CLOUDFLARE_PAGES_FILE_LIMIT = 20000
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# TRANSLATION_LABELS is {code: label}; the combobox shows labels, so keep the
-# reverse lookup handy for turning a UI selection back into a code.
-_LABEL_TO_CODE = {label: code for code, label in TRANSLATION_LABELS.items()}
-
 
 def count_deploy_files() -> int:
     """Count files that would ship to Cloudflare Pages, mirroring the bundle
-    prepare-deploy.ps1 actually builds: all of web/, bibles/<code>/*.json
-    (one level, not recursive), and visuals/ minus *.xml."""
+    prepare-deploy.ps1 actually builds: all of web/, the *.json in each
+    bibles/ subfolder (one level, not recursive; only WEB exists), and
+    visuals/ minus *.xml."""
     count = 0
     web_dir = os.path.join(REPO_ROOT, "web")
     for _, _, files in os.walk(web_dir):
         count += len(files)
     bibles_dir = os.path.join(REPO_ROOT, "bibles")
     if os.path.isdir(bibles_dir):
-        for code in os.listdir(bibles_dir):
-            code_dir = os.path.join(bibles_dir, code)
-            if os.path.isdir(code_dir):
-                count += sum(1 for f in os.listdir(code_dir)
+        for sub in os.listdir(bibles_dir):
+            sub_dir = os.path.join(bibles_dir, sub)
+            if os.path.isdir(sub_dir):
+                count += sum(1 for f in os.listdir(sub_dir)
                              if f.lower().endswith(".json"))
     visuals_dir = os.path.join(REPO_ROOT, "visuals")
     for _, _, files in os.walk(visuals_dir):
@@ -115,27 +110,12 @@ class App:
                      values=tts_engine.EDGE_VOICES).grid(
             row=1, column=1, padx=(4, 14), pady=(8, 0), sticky="w")
 
-        ttk.Label(top, text="Translation:").grid(row=1, column=2, sticky="w",
-                                                  pady=(8, 0))
-        self.translation_var = tk.StringVar(
-            value=TRANSLATION_LABELS.get(showcase_audio.TRANSLATION, "WEB"))
-        ttk.Combobox(top, textvariable=self.translation_var, width=24,
-                     state="readonly",
-                     values=list(TRANSLATION_LABELS.values())).grid(
-            row=1, column=3, sticky="w", padx=(4, 0), pady=(8, 0))
-
         self.force_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(
             top, variable=self.force_var,
             text="Overwrite existing files (re-render after a pronunciation "
                  "or voice change)").grid(
             row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
-
-        ttk.Label(top, foreground="#888888", wraplength=600, justify="left",
-                  text="Every translation you render is a separate set of files "
-                       "on top of any others already rendered for the same "
-                       "verses — watch the file-count guardrail below.").grid(
-            row=3, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
         btns = ttk.Frame(self.root, padding=(10, 6))
         btns.pack(fill="x")
@@ -199,29 +179,27 @@ class App:
                                  parent=self.root)
             return
         voice = self.voice_var.get()
-        translation = _LABEL_TO_CODE.get(self.translation_var.get(),
-                                          showcase_audio.TRANSLATION)
         force = self.force_var.get()
         self.busy = True
         self.render_btn.configure(state="disabled")
         self.status_var.set(f"Scanning {book} {chapters[0]}-{chapters[-1]}…")
         threading.Thread(target=self._scan,
-                         args=(book, chapters, voice, translation, force),
+                         args=(book, chapters, voice, force),
                          daemon=True).start()
 
-    def _scan(self, book, chapters, voice, translation, force):
-        """Pre-fetch each chapter to count new-vs-existing verses, so the
-        confirm dialog can show the real projected file count. Passages
-        fetched here are reused by the render pass -- no double fetch.
-        Overwrites (force) don't add files, so they never count against the
-        ceiling -- only genuinely new files do."""
+    def _scan(self, book, chapters, voice, force):
+        """Load each chapter to count new-vs-existing verses, so the confirm
+        dialog can show the real projected file count. Passages loaded here
+        are reused by the render pass -- no double load. Overwrites (force)
+        don't add files, so they never count against the ceiling -- only
+        genuinely new files do."""
         manifest = showcase_audio._load_manifest()
         passages = {}
         new_files = 0
         total_verses = 0
         for ch in chapters:
             try:
-                passage = fetch_passage("", book, ch, translation)
+                passage = load_chapter(book, ch)
             except PassageError as e:
                 self.events.put(("scan_error", f"{book} {ch}: {e}"))
                 continue
@@ -230,28 +208,26 @@ class App:
             for num, _ in passage.verses:
                 total_verses += 1
                 base = f"{safe_book}_{ch}_{num}"
-                key = showcase_audio._manifest_key(base, translation)
-                out_path = os.path.join(
-                    showcase_audio.AUDIO_DIR,
-                    showcase_audio._audio_filename(base, translation))
+                key = showcase_audio._manifest_key(base)
+                out_path = os.path.join(showcase_audio.AUDIO_DIR,
+                                        showcase_audio._audio_filename(base))
                 if not (key in manifest and os.path.exists(out_path)):
                     new_files += 1
         if not passages:
             self.events.put(("render_done", 0, 0, 0))
             return
         current_total = count_deploy_files()
-        self.events.put(("confirm", book, chapters, voice, translation, passages,
-                         manifest, new_files, current_total, total_verses,
-                         force))
+        self.events.put(("confirm", book, chapters, voice, passages, manifest,
+                         new_files, current_total, total_verses, force))
 
-    def _do_confirm(self, book, chapters, voice, translation, passages, manifest,
+    def _do_confirm(self, book, chapters, voice, passages, manifest,
                      new_files, current_total, total_verses, force):
         resulting = current_total + new_files
         over = resulting > CLOUDFLARE_PAGES_FILE_LIMIT
         overwrites = total_verses - new_files if force else 0
         work = (f"{new_files} new file(s), {overwrites} overwrite(s)"
                 if force else f"{new_files} new file(s)")
-        msg = (f"{book} {chapters[0]}-{chapters[-1]} ({translation}): "
+        msg = (f"{book} {chapters[0]}-{chapters[-1]}: "
                f"{total_verses} verse(s), {work} to render.\n\n"
                f"Current deploy bundle: {current_total:,} files\n"
                f"Resulting total: {resulting:,} files "
@@ -276,12 +252,11 @@ class App:
         self.cancel_btn.configure(state="normal")
         self.progress.configure(maximum=max(total_verses, 1), value=0)
         threading.Thread(target=self._render_worker,
-                         args=(book, chapters, voice, translation, passages,
-                               manifest, force),
+                         args=(book, chapters, voice, passages, manifest,
+                               force),
                          daemon=True).start()
 
-    def _render_worker(self, book, chapters, voice, translation, passages,
-                       manifest, force):
+    def _render_worker(self, book, chapters, voice, passages, manifest, force):
         done = 0
         totals = {"written": 0, "skipped": 0, "degraded": 0}
 
@@ -298,8 +273,7 @@ class App:
             if passage is None:
                 continue
             showcase_audio.generate_chapter(
-                book, ch, manifest, voice=voice, rate=RATE,
-                translation=translation, passage=passage,
+                book, ch, manifest, voice=voice, rate=RATE, passage=passage,
                 on_verse=lambda num, status, ch=ch: on_verse(num, status, ch),
                 should_stop=self._cancel.is_set, force=force)
             showcase_audio._save_manifest(manifest)  # per-chapter, resumable

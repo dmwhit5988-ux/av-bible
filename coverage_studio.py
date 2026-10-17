@@ -7,7 +7,7 @@ chapter:
               complete for the whole canon, no network)
   Visuals     verses with a visual / total, plus the kinds present
               (visuals/manifest.json schema v2)
-  Audio       pre-rendered narration per translation, e.g. "WEB 31/31"
+  Audio       verses with pre-rendered narration / total, e.g. "31/31"
               (web/audio/manifest.json)
   Names       likely proper nouns not yet in pronunciations.json — an
               unreviewed-pronunciation count (pronunciation.scan_proper_nouns
@@ -32,9 +32,9 @@ from tkinter import ttk
 
 import books
 import pronunciation
+from passages import PassageError, TRANSLATION, load_chapter
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-BIBLES_WEB = os.path.join(REPO_ROOT, "bibles", "WEB")
 VISUALS_MANIFEST = os.path.join(REPO_ROOT, "visuals", "manifest.json")
 AUDIO_MANIFEST = os.path.join(REPO_ROOT, "web", "audio", "manifest.json")
 CANDIDATES_MD = os.path.join(REPO_ROOT, "INFOGRAPHIC_CANDIDATES.md")
@@ -133,7 +133,7 @@ def _scan_visuals():
 
 
 def _scan_audio():
-    """{book: {chapter: {translation: verse_count}}}."""
+    """{book: {chapter: verse_count}} from the "Book_ch_v.WEB" keys."""
     try:
         with open(AUDIO_MANIFEST, encoding="utf-8") as f:
             manifest = json.load(f)
@@ -141,14 +141,14 @@ def _scan_audio():
         return {}
     out = {}
     for key in manifest:
-        base, _, code = key.rpartition(".")
+        base, _, suffix = key.rpartition(".")
         m = _VERSE_KEY_RE.match(base)
-        if not m:
+        if not m or suffix != TRANSLATION:
             continue
         book = m.group(1).replace("_", " ")
         ch = int(m.group(2))
-        per = out.setdefault(book, {}).setdefault(ch, {})
-        per[code] = per.get(code, 0) + 1
+        per = out.setdefault(book, {})
+        per[ch] = per.get(ch, 0) + 1
     return out
 
 
@@ -159,7 +159,7 @@ def scan_coverage(on_book=None, on_names=None):
     on_book(book, chapters_dict) per book so a UI fills in immediately.
     Pass 2 (the proper-noun sweep is regex-heavy, ~30s canon-wide): fills
     each row's "unreviewed" count and calls on_names(book, {ch: count}).
-    row_dict keys: verses, vis_count, kinds, audio (dict), unreviewed
+    row_dict keys: verses, vis_count, kinds, audio (int), unreviewed
     (int|None while pending), candidate ((prio, types, label)|None)."""
     visuals = _scan_visuals()
     audio = _scan_audio()
@@ -170,22 +170,19 @@ def scan_coverage(on_book=None, on_names=None):
     verse_texts = {}  # (book, ch) -> verses, reused by pass 2
     for book in books.BOOK_NAMES:
         chapters = {}
-        safe = book.replace(" ", "_")
         for ch in range(1, books.chapters_in(book) + 1):
             row = {"verses": None, "vis_count": 0, "kinds": set(),
-                   "audio": audio.get(book, {}).get(ch, {}),
+                   "audio": audio.get(book, {}).get(ch, 0),
                    "unreviewed": None,
                    "candidate": candidates.get(book, {}).get(ch)}
             vis = visuals.get(book, {}).get(ch)
             if vis:
                 row["vis_count"], row["kinds"] = len(vis[0]), vis[1]
             try:
-                with open(os.path.join(BIBLES_WEB, f"{safe}_{ch}.json"),
-                          encoding="utf-8") as f:
-                    verses = json.load(f).get("verses", [])
+                verses = load_chapter(book, ch).verses
                 row["verses"] = len(verses)
                 verse_texts[(book, ch)] = verses
-            except (OSError, ValueError):
+            except PassageError:
                 pass  # chapter text missing locally — leave counts unknown
             chapters[ch] = row
         result[book] = chapters
@@ -218,9 +215,9 @@ def _fmt_chapter(row):
         vis = (f"{row['vis_count']}/{total}" if total else str(row["vis_count"]))
         if row["kinds"]:
             vis += "  " + "+".join(sorted(row["kinds"]))
-    aud = " · ".join(
-        f"{code} {n}/{total}" if total else f"{code} {n}"
-        for code, n in sorted(row["audio"].items()))
+    aud = ""
+    if row["audio"]:
+        aud = (f"{row['audio']}/{total}" if total else str(row["audio"]))
     names = "" if not row["unreviewed"] else str(row["unreviewed"])
     cand = ""
     if row["candidate"]:

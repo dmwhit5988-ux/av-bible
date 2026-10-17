@@ -1,5 +1,5 @@
 edge-tts>=6.1
-requests>=2.31
+aiohttp>=3.8
 Pillow>=11.0
 # Optional: embedded web views (WebView2) — the SVG Studio preview and
 # the stage's SVG visuals. The studio degrades to the system browser and

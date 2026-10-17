@@ -43,6 +43,7 @@ from svg_surface import SvgCanvas
 # it is now for.
 from svg_vocab import (dim, mix, text_w, reading_position, arrow, cross,
                        struck, tick_row, hatch)
+from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, GOLD, RED, BROWN, GRAY,
                                  SILVER, out_path)
@@ -1641,7 +1642,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in (1, 2, 3):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers(BOOK, ch):
             out = out_path(BOOK, ch, f"{SLUG}_{ch}_{v}.svg")
             render(ch, v).save(out)
             total += os.path.getsize(out)

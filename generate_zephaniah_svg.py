@@ -30,8 +30,8 @@ Nineveh (2:14) and the remnant that lies down with no one to make it afraid
 (3:13) share a posture; and the morning that never fails (3:5) is set against
 the morning they rose early to corrupt (3:7).
 
-Text is WEB (the project's shipping translation, config.json), so the divine
-name is Yahweh and the labels follow WEB wording.
+WEB is the only text (passages.TRANSLATION), so the divine name is Yahweh
+and the labels follow WEB wording.
 
 Text budget: names, numbers and labelled parts, plus short engraved phrases
 (2-7 words, WEB wording) at hinge verses only. Nothing counts the verses.
@@ -55,6 +55,7 @@ from svg_surface import SvgCanvas
 from svg_vocab import (dim, mix, text_w, reading_position, arrow, cross,
                        struck, tick_row, hatch, flame,
                        beast as generic_beast)
+from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, GOLD, RED, BROWN, GRAY,
                                  SILVER, out_path)
@@ -1434,7 +1435,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in (1, 2, 3):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers(BOOK, ch):
             out = out_path(BOOK, ch, f"{SLUG}_{ch}_{v}.svg")
             render(ch, v).save(out)
             total += os.path.getsize(out)

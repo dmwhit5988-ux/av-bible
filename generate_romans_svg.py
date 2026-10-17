@@ -25,6 +25,7 @@ from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, TEXT,
                                  TEXT_DIM, HL, GOLD, RED, BROWN, GRAY,
                                  out_path)
+from passages import verse_numbers
 
 BOOK = "Romans"
 
@@ -80,14 +81,14 @@ def text_w(s, size, bold=False, italic=False):
     return _width_cache[key] * size
 
 
-# Verse counts are the MAXIMUM across every translation the app carries, not
-# one version's numbering. Romans 14 is the trap: the WEB (following the
-# manuscripts that place the closing doxology early) prints Romans 16:25-27
-# as 14:24-26, so chapter 14 runs to 26 there and to 23 everywhere else.
-# Files are generated for the maximum; a version simply never asks for the
-# verses it does not have. See scratchpad versification_scan.py.
+# Verse counts are WEB's (WEB is the only text, passages.TRANSLATION); they
+# place each verse on the letter's one reading line, and main() writes the
+# verses passages.verse_numbers() lists. Romans 14 is the trap: the WEB,
+# following the manuscripts that place the closing doxology early, prints the
+# familiar Romans 16:25-27 as 14:24-26, so chapter 14 runs to 26 and
+# chapter 16 ends at 24.
 CH_LEN = {1: 32, 2: 29, 3: 31, 4: 25, 5: 21, 6: 23, 7: 25, 8: 39,
-          9: 33, 10: 21, 11: 36, 12: 21, 13: 14, 14: 26, 15: 33, 16: 27}
+          9: 33, 10: 21, 11: 36, 12: 21, 13: 14, 14: 26, 15: 33, 16: 24}
 
 _OFFSET = {}
 _run = 0
@@ -2443,7 +2444,6 @@ def draw_ch16(c, v, pos):
         if v == gv:
             fresh_idx.update(idxs)
 
-    dox_on, dox_first = since(pos, 16, 25)
     for i, (x, y, w2) in enumerate(HOUSES16):
         on = i in lit_idx
         col = dim(GOLD, 0.9) if on else dim(SAND_DIM, 1.0)
@@ -2456,13 +2456,8 @@ def draw_ch16(c, v, pos):
         if i in fresh_idx:
             c.pulse_ellipse(x, y - w2 * 0.3, 17, 17, dim(HL, 0.9),
                             width=2, first=True)
-    if dox_on:
-        # every window alight: one glow over the whole city
-        c.ellipse(590, 262, 380, 168, stroke=dim(GOLD, 0.30), width=1.8)
-        c.ellipse(590, 262, 430, 200, stroke=dim(GOLD, 0.16), width=1.4)
-    else:
-        c.text((590, 130), "THE CHURCH AT ROME", 14,
-               dim(TEXT, 0.9), "mm", italic=True)
+    c.text((590, 130), "THE CHURCH AT ROME", 14,
+           dim(TEXT, 0.9), "mm", italic=True)
 
     # Phoebe arrives with the letter (vv1-2)
     ph_on, ph_first = since(pos, 16, 1)
@@ -2515,11 +2510,6 @@ def draw_ch16(c, v, pos):
         c.line((fx3 + 10, fy3 + 2), (fx3 + 16, fy3 - 8), dim(SAND, 0.95), 3)
         c.text((fx3, fy3 + 40), "SATAN CRUSHED UNDERFOOT", 12,
                HL if v == 20 else TEXT_DIM, "mm", bold=v == 20)
-    if dox_on:
-        phrase(c, (W / 2, 66), "TO GOD, ALONE WISE, BE GLORY FOREVER",
-               21, HL, first=dox_first)
-        c.text((W / 2, 100), "through Jesus Christ", 13,
-               dim(TEXT, 0.85), "mm", italic=True)
 
 
 # ---------------------------------------------------------------------------
@@ -2542,7 +2532,7 @@ def render(ch, v):
 def main():
     total = count = 0
     for ch in range(1, 17):
-        for v in range(1, CH_LEN[ch] + 1):
+        for v in verse_numbers(BOOK, ch):
             out = out_path(BOOK, ch, f"{BOOK}_{ch}_{v}.svg")
             render(ch, v).save(out)
             total += os.path.getsize(out)

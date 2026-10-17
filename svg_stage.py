@@ -73,15 +73,11 @@ PAGE = """<!DOCTYPE html>
           padding: 4px 16px; border-radius: 3px; white-space: nowrap;
           max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
   #ref { bottom: 4vh; font-style: italic; font-size: calc(11px + 0.8vw); }
-  #notes { bottom: 12vh; color: #e8e0cc; font-style: italic;
-           font-size: calc(9px + 0.5vw); white-space: normal;
-           text-align: center; }
   .hidden { display: none; }
 </style>
 </head>
 <body>
 <div id="stage"></div>
-<div id="notes" class="band hidden"></div>
 <div id="ref" class="band hidden"></div>
 <script>
   let gen = -1;
@@ -107,14 +103,6 @@ PAGE = """<!DOCTYPE html>
     const ref = document.getElementById("ref");
     ref.textContent = s.ref || "";
     ref.classList.toggle("hidden", !s.ref);
-    const notes = document.getElementById("notes");
-    if (s.notes && s.notes.length) {
-      notes.textContent = "Translator-supplied words:  "
-        + s.notes.map(n => "\\u201C" + n + "\\u201D").join("   ");
-      notes.classList.remove("hidden");
-    } else {
-      notes.classList.add("hidden");
-    }
   }
   setInterval(tick, 250);
   tick();
@@ -136,11 +124,10 @@ class StageServer:
         self._key = None
         self._svg = b"<svg xmlns='http://www.w3.org/2000/svg'/>"
         self._ref = ""
-        self._notes = []
         self._httpd = None
         self._thread = None
 
-    def set_verse(self, key, svg_path: str, ref: str, notes) -> bool:
+    def set_verse(self, key, svg_path: str, ref: str) -> bool:
         """Publish a verse's SVG. `key` identifies the (verse, file)
         combination — repeat calls with the same key (window resizes,
         the second stage view redrawing) do NOT bump the generation, so
@@ -154,7 +141,6 @@ class StageServer:
             self._gen += 1
             self._svg = svg
             self._ref = ref or ""
-            self._notes = list(notes or [])
             return True
 
     def clear(self):
@@ -165,7 +151,7 @@ class StageServer:
 
     def snapshot(self):
         with self._lock:
-            return self._gen, self._svg, self._ref, self._notes
+            return self._gen, self._svg, self._ref
 
     @property
     def url(self) -> str:
@@ -191,7 +177,7 @@ class StageServer:
 
             def do_GET(self):
                 path = self.path.split("?")[0]
-                gen, svg, ref, notes = server.snapshot()
+                gen, svg, ref = server.snapshot()
                 try:
                     if path in ("/", "/stage.html"):
                         self._send(200, "text/html; charset=utf-8",
@@ -199,8 +185,8 @@ class StageServer:
                     elif path == "/verse.svg":
                         self._send(200, "image/svg+xml; charset=utf-8", svg)
                     elif path == "/state":
-                        body = json.dumps({"gen": gen, "ref": ref,
-                                           "notes": notes}).encode("utf-8")
+                        body = json.dumps({"gen": gen,
+                                           "ref": ref}).encode("utf-8")
                         self._send(200, "application/json", body)
                     else:
                         self._send(404, "text/plain", b"not found")

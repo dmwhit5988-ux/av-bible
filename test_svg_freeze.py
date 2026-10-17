@@ -268,7 +268,7 @@ class RealOutputRoundTrips(unittest.TestCase):
 
     def test_genealogy_verse(self):
         root = self._roundtrip(os.path.join("Genesis", "5",
-                                            "Genesis_5_3.KJV.svg"),
+                                            "Genesis_5_3.svg"),
                                "Genesis_5_3")
         base_group(root)
 
