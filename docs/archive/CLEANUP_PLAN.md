@@ -859,7 +859,7 @@ Expect about 147 MiB. All SHAs change, and any other clone must re-clone.
 
 ### WS6 — Docs cleanup
 
-> **Status (2026-10-17): done, committed locally as `3601be4e`…`824d2f66`, with this plan archived after them.**
+> **Status (2026-10-17): done, committed locally as `3601be4e`…`824d2f66`, with this plan archived after them; pushed as `2efd4d40`, and Cloudflare's Workers Build succeeded.**
 > - **Moves:** 15 docs moved into `docs/`, one `git mv` per commit with its pointers. `STUDIO_COMMANDS.md` and `visuals/README.txt` were deleted. The Matthew 1 alternates were split into `docs/archive/`. The three `visuals/*.txt` files left the deploy bundle (5,805 → 5,802 files). `mockups/luke3` and `mockups/matthew1` went to `C:\Dev\Theoria-archive\mockups\`.
 > - **New:** a rewritten README, ROADMAP.md, CLAUDE.md, CREDITS.md, `docs/architecture.md`, `docs/studio.md`, `docs/visuals.md`, `docs/pronunciation.md` and `docs/archive/README.md`.
 > - **Checks:**
