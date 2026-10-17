@@ -1,5 +1,5 @@
 """Render the epistle to the Hebrews (13 chapters, 303 verses) as per-verse
-vector SVGs. Design and reasoning: HEBREWS_IDEAS.md.
+vector SVGs. Design and reasoning: docs/design/hebrews.md.
 
 THE FRAME. One vertical section, drawn twice. The heavenly sanctuary stands
 solid at the top with the throne in it; the earthly sanctuary hangs below as

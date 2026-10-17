@@ -188,7 +188,7 @@
       "kind": "diagram"
     },
     {
-      "_comment": "One family for one chapter. Exodus 28 is a build list - v4 names the six garments, then the chapter makes them in that order - so the frame is a priest dressed a garment per verse, v4's manifest ticking off down the left edge as the whole progress indicator, and a working drawing on the right. Garments are drawn in WEARING order and gated by the verse that makes them, so the coat of v39 comes out underneath the robe of v31. The garment geometry lives in svg_priest.py because Hebrews needs it too - see HEBREWS_IDEAS.md.",
+      "_comment": "One family for one chapter. Exodus 28 is a build list - v4 names the six garments, then the chapter makes them in that order - so the frame is a priest dressed a garment per verse, v4's manifest ticking off down the left edge as the whole progress indicator, and a working drawing on the right. Garments are drawn in WEARING order and gated by the verse that makes them, so the coat of v39 comes out underneath the robe of v31. The garment geometry lives in svg_priest.py because Hebrews needs it too - see docs/design/hebrews.md.",
       "label": "The priestly garments (Exodus 28)",
       "book": "Exodus",
       "chapters": [
@@ -208,7 +208,7 @@
       "kind": "diagram"
     },
     {
-      "_comment": "Complete - 13 chapters, 303 verses. One vertical section drawn twice: the heavenly sanctuary solid at the top, the earthly hanging below as the shadow its light casts (8:5, 9:24, 10:1). The column is 0-1000 in its own units and no verse sees all of it - each chapter sets a viewport and the gauge down the left margin says where the slice sits, which is the whole progress indicator. Chapters 7, 11 and 12 break away and set no viewport. See HEBREWS_IDEAS.md.",
+      "_comment": "Complete - 13 chapters, 303 verses. One vertical section drawn twice: the heavenly sanctuary solid at the top, the earthly hanging below as the shadow its light casts (8:5, 9:24, 10:1). The column is 0-1000 in its own units and no verse sees all of it - each chapter sets a viewport and the gauge down the left margin says where the slice sits, which is the whole progress indicator. Chapters 7, 11 and 12 break away and set no viewport. See docs/design/hebrews.md.",
       "label": "The two sanctuaries, the road and the city (Hebrews 1-13)",
       "book": "Hebrews",
       "chapters": [
