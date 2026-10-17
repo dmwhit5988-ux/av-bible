@@ -20,7 +20,8 @@ continuous descent.
 (The previous designs are preserved: the straight-road tracking camera in
 backups/luke3_road/ (under config.ARCHIVE_DIR), the "whole serpentine path at once" original in
 backups/luke3_journey/ there — copy one back to revert. Concept mocks for the
-designs that were considered are in mockups/luke3/ + LUKE3_IDEAS.md.)
+designs that were considered are in mockups/luke3/ under
+config.ARCHIVE_DIR, with docs/archive/LUKE3_IDEAS.md.)
 
 Names are extracted directly from WEB's verse text (WEB is the only text,
 passages.TRANSLATION) — its "the son of X, of Y" phrasing. Animations play
