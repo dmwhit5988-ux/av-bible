@@ -1,11 +1,10 @@
 """Publish — one-click author→deploy pipeline for the web app.
 
-Runs the whole publish chain that used to be four manual steps:
+Runs the whole publish chain that used to be three manual steps:
 
-    1. build_stills        refresh reduced-motion .still.svg twins
-    2. build_manifest.py   rebuild visuals/manifest.json (schema v2)
-    3. prepare-deploy.ps1  mirror web/ + bibles/ + visuals/ into deploy_bundle/
-    4. git add/commit/push CONTENT paths only (web/audio, bibles, visuals
+    1. build_manifest.py   rebuild visuals/manifest.json (schema v2)
+    2. prepare-deploy.ps1  mirror web/ + bibles/ + visuals/ into deploy_bundle/
+    3. git add/commit/push CONTENT paths only (web/audio, bibles, visuals
                            and their deploy_bundle/ copies) — pushing is the
                            deploy: the GitHub-side integration uploads to
                            Cloudflare (local wrangler can't run on ARM64)
@@ -16,7 +15,7 @@ publish never sweeps up half-finished code. Both the add and the commit
 are limited to CONTENT_PATHS, so anything you had staged elsewhere stays
 staged and uncommitted.
 
-Between steps 3 and 4 you get a confirm dialog with the change summary and
+Between steps 2 and 3 you get a confirm dialog with the change summary and
 the file-count budget: files, not bytes, are the Cloudflare ceiling
 (~20k, STUDIO_PLAN.md Feature C caveat 2). A persistent budget meter at the
 top of the window tracks the same number while you author.
@@ -33,7 +32,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 import audio_studio
-import build_stills
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 FILE_LIMIT = audio_studio.CLOUDFLARE_PAGES_FILE_LIMIT
@@ -193,20 +191,10 @@ class App:
         threading.Thread(target=self._prepare_worker, daemon=True).start()
 
     def _prepare_worker(self):
-        """Steps 1–3 + change scan, then hand off to the confirm dialog."""
+        """Steps 1–2 + change scan, then hand off to the confirm dialog."""
         put = self.events.put
         try:
-            put(("log", "— Step 1/4: reduced-motion stills —"))
-            stats = build_stills.build_stills(
-                on_progress=lambda line: put(("log", "  " + line)))
-            put(("log", f"  {stats.summary()}"))
-            for rel, msg in stats.warnings[:10]:
-                put(("log", f"  [warn] {rel}: {msg}"))
-            if len(stats.warnings) > 10:
-                put(("log", f"  … and {len(stats.warnings) - 10} more "
-                            f"warning(s)"))
-
-            put(("log", "— Step 2/4: visuals manifest —"))
+            put(("log", "— Step 1/3: visuals manifest —"))
             proc = _run([sys.executable,
                          os.path.join(REPO_ROOT, "build_manifest.py")],
                         timeout=120)
@@ -215,7 +203,7 @@ class App:
                                    + proc.stderr.strip()[:300])
             put(("log", "  " + (proc.stdout.strip().splitlines() or ["ok"])[0]))
 
-            put(("log", "— Step 3/4: deploy bundle —"))
+            put(("log", "— Step 2/3: deploy bundle —"))
             proc = _run(["powershell", "-NoProfile", "-ExecutionPolicy",
                          "Bypass", "-File",
                          os.path.join(REPO_ROOT, "prepare-deploy.ps1")])
@@ -225,7 +213,7 @@ class App:
             for line in (proc.stdout or "").strip().splitlines()[-2:]:
                 put(("log", "  " + line))
 
-            put(("log", "— Step 4/4: git —"))
+            put(("log", "— Step 3/3: git —"))
             put(("log", "  scanning content changes "
                         "(large bundle rebuilds take a moment)…"))
             changes = git_content_changes()

@@ -692,10 +692,6 @@ class App:
 
     def _manifest_worker(self):
         try:
-            # Refresh reduced-motion stills first (incremental — only the
-            # just-saved file is stale) so the manifest sees them.
-            import build_stills
-            still_stats = build_stills.build_stills()
             proc = subprocess.run(
                 [sys.executable, os.path.join(REPO_ROOT, "build_manifest.py")],
                 cwd=REPO_ROOT, capture_output=True, text=True, timeout=120)
@@ -709,11 +705,9 @@ class App:
                 data = json.load(f)
             # Schema v2 wraps the key map in {version, entries}.
             keys = len(data.get("entries", data))
-            still_note = (f", {still_stats.written} still(s) refreshed"
-                          if still_stats.written else "")
             self.events.put(("manifest_done",
                              f"visuals/manifest.json rebuilt — {keys} verse "
-                             f"keys{still_note}."))
+                             "keys."))
         except Exception as e:
             self.events.put(("manifest_done", f"manifest rebuild failed: {e}"))
 

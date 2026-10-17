@@ -101,7 +101,7 @@ def main(argv):
     print(f"TOTAL: {total} SVG files, {bytes_ / 1e6:.1f} MB "
           f"({bytes_ / max(total, 1) / 1e3:.0f} KB each)")
     if not dry:
-        print("next: python build_stills.py && python build_manifest.py")
+        print("next: python build_manifest.py")
     return 0
 
 

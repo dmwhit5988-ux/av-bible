@@ -5,9 +5,8 @@ generate_1chronicles.py becomes a top-down tree (children under parents,
 bus connectors, big sibling sets wrapped into rows; heading-only blocks
 become stacked text panels), scenes standing side by side under large
 in-world titles. Every verse's SVG shows that world through a CAMERA — a
-nested translate+scale animateTransform pair (the Luke 3 dolly pattern,
-which svg_freeze knows how to freeze for the reduced-motion stills). The
-camera starts where the previous verse's camera rested and glides to the
+nested translate+scale animateTransform pair (the Luke 3 dolly pattern).
+The camera starts where the previous verse's camera rested and glides to the
 current verse's family; on scene changes and long jumps it pulls back
 through a mid-keyframe for context, on summary verses it frames the whole
 scene, and each chapter's first verse opens from a wide establishing view.

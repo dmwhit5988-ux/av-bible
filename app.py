@@ -416,8 +416,8 @@ class App:
         self.set_status(f"Video Studio opened on {book} {chapter}.")
 
     def open_publish(self):
-        """Open the Publish tool (stills → manifest → deploy bundle → git
-        push) as a Toplevel."""
+        """Open the Publish tool (manifest → deploy bundle → git push) as a
+        Toplevel."""
         if self.publish_win is not None and self.publish_win.winfo_exists():
             self.publish_win.deiconify()
             self.publish_win.lift()
