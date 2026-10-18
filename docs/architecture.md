@@ -80,7 +80,7 @@ Further rules:
   - GitHub triggers Cloudflare Workers Builds, which deploys the Worker `av-bible`.
   - `wrangler.toml` serves `web/` as static assets (`[assets] directory = "./web"`), so the app sits at `/`, with `/audio/`, `/bibles/WEB/` and `/visuals/` beside it.
   - `web/.assetsignore` (gitignore syntax) lists what wrangler leaves out of the upload: the file itself, `*.tmp`, `*.xml`, `.DS_Store`, `Thumbs.db` and `desktop.ini`. Everything else under `web/` is public, so nothing private or scratch belongs there.
-  - The build settings live in the Cloudflare dashboard, not in the repo. Today every push builds and deploys (watch paths `*`). The next step is watch paths limited to `web/*`, `wrangler.toml`, `package.json` and `package-lock.json`, and no automatic pip install ([ROADMAP.md](../ROADMAP.md), "Cloudflare build settings").
+  - The build settings live in Cloudflare, not in the repo: branch `main`; watch paths `web/*`, `wrangler.toml`, `package.json` and `package-lock.json` (a push of 3,000+ files or 20+ commits always builds); build command `npm clean-install --progress=false`; deploy command `npx wrangler deploy`; build variable `SKIP_DEPENDENCY_INSTALL=1`, so the build image doesn't also pip-install `requirements.txt`. Read them with `cf builds workers get <script tag>`.
 - **No local deploys.** Local `wrangler` can't run on this Windows ARM64 PC, so deploys go only through GitHub.
 - **Each content file is tracked once**, in the folder it is served from.
 

@@ -84,7 +84,7 @@ Studio's **Save + manifest** before you look.
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
 | `tools/` | Reference scripts: `audit_heb.py` (a text-overlap audit of the Hebrews SVGs) and `layout_lab.py` (a family-tree layout study). |
-| `branding/` | Logo sources. |
+| `branding/` | Logo sources, and `theoria_studio.ico`, the Studio's desktop-shortcut icon. |
 | `cache/` | Ignored: the TTS cache and the Studio's error log. |
 | Root files | The Python modules (below), `run.bat`, `requirements.txt`, `svg_generators.json` (the generator registry), `pronunciations.json`, `pronunciations_archive.json` and `isbe_harvest.json` (pronunciation data), and the deploy files `wrangler.toml`, `package.json` and `package-lock.json`. |
 
@@ -201,10 +201,10 @@ Windows ARM64, because it needs `workerd`, which has no build for that platform.
 every deploy goes through GitHub. `package.json` pins wrangler 4.107.0, and the build
 installs it from `package-lock.json`.
 
-Today every push builds and deploys, docs-only and Python-only pushes included. The
-next step is to build only for pushes that touch `web/`, `wrangler.toml`,
-`package.json` or `package-lock.json` ([ROADMAP.md](ROADMAP.md), "Cloudflare build
-settings").
+**Build settings** (in Cloudflare, not in the repo). Cloudflare builds only for pushes that touch `web/`, `wrangler.toml`, `package.json` or `package-lock.json` (its build watch paths). A push of 3,000 or more files, or of 20 or more commits, always builds. The build
+runs `npm clean-install` from the lockfile, then `npx wrangler deploy`. The build
+variable `SKIP_DEPENDENCY_INSTALL=1` stops Cloudflare also pip-installing
+`requirements.txt`, which the site doesn't need.
 
 **Publish** is the deploy button. Open it with the Publish button in the Studio's
 Ship group, or run `publish_studio.py`. It has two steps:
@@ -236,8 +236,8 @@ example `git add web/js/app.js`, then `git commit`) and run `git push`. Because
 `web/` is served as it is, the push deploys the change, and there are no copies to
 refresh. Publish's own `git push` also pushes any local commits like this one.
 
-Python, docs and other code are committed by hand the same way. Only `web/` is
-served, but until the build settings change, a push of them still triggers a build.
+Python, docs and other code are committed by hand the same way. A push of only
+those doesn't trigger a build, because only `web/` is served.
 
 **Rollback.** Either `git revert` the bad commit and push, which redeploys the
 previous content, or roll the Worker back to an earlier version from its deployments
