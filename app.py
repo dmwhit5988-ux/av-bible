@@ -32,7 +32,7 @@ from visual_stage import StageController, StageView, VerseContext
 
 APP_TITLE = "Theoria Studio"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-ICON_PATH = os.path.join(REPO_ROOT, "web", "icons", "icon-192.png")
+ICON_PATH = os.path.join(config.WEB_DIR, "icons", "icon-192.png")
 ERROR_LOG = os.path.join(config.CACHE_DIR, "studio_error.log")
 
 
@@ -718,7 +718,7 @@ class App:
     def recount_deploy_files(self):
         """Count the files Publish would deploy against the file limit of
         Cloudflare's Workers static assets (publish_studio's count and
-        limit), on a worker thread (it walks web/, bibles/ and visuals/)."""
+        limit), on a worker thread (it walks web/, the site root)."""
         if self._counting:
             self._recount_again = True  # the running count may predate it
             return

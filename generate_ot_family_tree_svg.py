@@ -19,7 +19,7 @@ Layout notes
   descent the text states, dashed is a join the text implies, doubled is a
   wife. The legend says so on the sheet.
 
-Output: visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
+Output: web/visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
 """
 
 import math
@@ -29,12 +29,12 @@ import textwrap
 
 import chronicles_tree as CT
 from chronicles_tree import walk
+from config import VISUALS_DIR
 from generate_tabernacle import font
 from svg_surface import SvgCanvas, _fmt, _rgb
 import svg_figures as F
 
-REPO = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(REPO, "visuals", "reference")
+OUT_DIR = os.path.join(VISUALS_DIR, "reference")
 STEM = "Old_Testament_family_tree"
 
 # -- palette ---------------------------------------------------------------

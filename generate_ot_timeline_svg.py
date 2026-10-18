@@ -25,7 +25,7 @@ How it differs from the wall chart, and why
   ancestor and descendant on their line, in proportion to the generations
   between; with no dated descendant, a generation below the parent.
 
-Output: visuals/reference/Old_Testament_timeline.svg (+ a viewer page).
+Output: web/visuals/reference/Old_Testament_timeline.svg (+ a viewer page).
 """
 
 import math

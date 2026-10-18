@@ -47,7 +47,7 @@ from audio_player import AudioPlayer
 
 CACHE_PATH = config.IPA_CHECKS_PATH
 # The Studio's icon, the same one the shell (app.py) sets.
-ICON_PATH = os.path.join(config.BASE_DIR, "web", "icons", "icon-192.png")
+ICON_PATH = os.path.join(config.WEB_DIR, "icons", "icon-192.png")
 
 # Score bands. Deliberately loose: the transcriber's own error rate means a
 # perfect respelling routinely lands around 0.8, so only the bottom band is

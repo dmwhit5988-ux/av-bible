@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan visuals/ and generate manifest.json — schema v2.
+"""Scan web/visuals/ and generate its manifest.json — schema v2.
 
 Keys are verse keys ("Genesis_5_3"), or "Genesis_5" for a whole-chapter
 graphic; each entry is a list of per-file records, so readers can
@@ -41,7 +41,7 @@ video_render.resolve_svg find files on disk instead.
 
 WEB is the only translation, so visual files carry no translation suffix. A
 suffixed name (Genesis_5_3.KJV.svg) is a leftover that nothing serves;
-build_manifest() warns about any it finds under visuals/.
+build_manifest() warns about any it finds under web/visuals/.
 """
 
 import hashlib
@@ -50,12 +50,14 @@ import re
 from pathlib import Path
 from collections import defaultdict
 
+import config
 import passages
 import svg_registry
 from svg_freeze import svg_is_animated
 
-# Beside this file, not under the cwd, so it runs from any folder.
-VISUALS_DIR = Path(__file__).resolve().parent / "visuals"
+# config.VISUALS_DIR, anchored on the repo rather than the cwd, so it runs
+# from any folder.
+VISUALS_DIR = Path(config.VISUALS_DIR)
 MANIFEST_PATH = VISUALS_DIR / "manifest.json"
 
 # Extensions indexed: vector diagrams (.svg) and raster images. Anything
@@ -207,7 +209,8 @@ def _share_identical_runs(entries) -> int:
 
 
 def build_manifest():
-    """Scan visuals/ and build the v2 manifest. Returns the entries dict."""
+    """Scan web/visuals/ and build the v2 manifest. Returns the entries
+    dict."""
     entries = defaultdict(list)
     ranges = []  # (range stem, path, rel_path) from Book_c_v1-v2 files
 
@@ -270,9 +273,9 @@ def build_manifest():
 
     retired = _retired_leftovers()
     if retired:
-        print(f"[WARN] {len(retired)} retired variant file(s) under visuals/ "
-              f"(translation-suffixed or .still.svg) - nothing serves them "
-              f"(a stale backup copied back in?):")
+        print(f"[WARN] {len(retired)} retired variant file(s) under "
+              f"web/visuals/ (translation-suffixed or .still.svg) - nothing "
+              f"serves them (a stale backup copied back in?):")
         for rel in retired[:20]:
             print(f"  - {rel}")
         if len(retired) > 20:

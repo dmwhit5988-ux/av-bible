@@ -22,8 +22,9 @@ import threading
 import time
 import urllib.request
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-AUDIO_DIR = os.path.join(REPO_ROOT, "web", "audio")
+import config
+
+AUDIO_DIR = config.WEB_AUDIO_DIR
 
 PAGE = """<!DOCTYPE html>
 <html>

@@ -32,6 +32,7 @@ import shutil
 import threading
 import time
 
+import config
 from passages import load_chapter, PassageError
 import tts_engine
 
@@ -49,8 +50,7 @@ SHOWCASE_CHAPTERS = [
     ("Acts", 13), ("Acts", 14),
 ]
 
-WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
-AUDIO_DIR = os.path.join(WEB_DIR, "audio")
+AUDIO_DIR = config.WEB_AUDIO_DIR
 MANIFEST_PATH = os.path.join(AUDIO_DIR, "manifest.json")
 
 # Serialises the read-merge-write in _save_manifest across threads: the Audio

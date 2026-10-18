@@ -1,8 +1,9 @@
 """Re-import the World English Bible from its eBible.org USFX source.
 
-Turns ``bibles/eng-web.usfx.xml`` into ``bibles/WEB/<Book>_<Chapter>.json``,
-one file per chapter, in the shape ``passages.load_chapter`` reads. This keeps
-XML parsing off the playback thread -- the app only ever reads small JSON files.
+Turns ``sources/eng-web.usfx.xml`` (an ignored file) into
+``web/bibles/WEB/<Book>_<Chapter>.json``, one file per chapter, in the shape
+``passages.load_chapter`` reads. This keeps XML parsing off the playback
+thread -- the app only ever reads small JSON files.
 
 USFX marks chapters and verses with milestones (``<c id/>``, ``<v id/>`` ...
 ``<ve/>``) and lets the text flow between them, so anything outside a verse
@@ -15,7 +16,8 @@ but writing them means a re-import reproduces the committed files byte for byte.
 Usage:
     python import_translation.py [xml_path] [--out DIR]
 
-``--out`` defaults to bibles/WEB; point it at a temp dir to dry-run and diff.
+``--out`` defaults to web/bibles/WEB; point it at a temp dir to dry-run and
+diff.
 """
 
 import argparse
@@ -26,10 +28,10 @@ import sys
 import xml.etree.ElementTree as ET
 
 from books import BOOK_NAMES, CHAPTER_COUNTS
-from config import BIBLES_DIR
+from config import BIBLES_DIR, SOURCES_DIR
 from passages import TRANSLATION
 
-SOURCE_XML = os.path.join(BIBLES_DIR, "eng-web.usfx.xml")
+SOURCE_XML = os.path.join(SOURCES_DIR, "eng-web.usfx.xml")
 OUT_DIR = os.path.join(BIBLES_DIR, TRANSLATION)
 
 # The 66-book Protestant canon in order, so it zips straight onto books.py
@@ -217,9 +219,9 @@ def report_coverage(parsed: dict) -> None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("xml_path", nargs="?", default=SOURCE_XML,
-                    help="the WEB USFX file (default: bibles/eng-web.usfx.xml)")
+                    help="the WEB USFX file (default: sources/eng-web.usfx.xml)")
     ap.add_argument("--out", default=OUT_DIR,
-                    help="output directory (default: bibles/WEB)")
+                    help="output directory (default: web/bibles/WEB)")
     args = ap.parse_args(argv)
 
     if not os.path.isfile(args.xml_path):

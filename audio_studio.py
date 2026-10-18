@@ -243,7 +243,7 @@ class App:
         try:
             n = count_deploy_files()
             self.count_var.set(
-                f"Current deploy bundle: {n:,} files "
+                f"Current deploy: {n:,} files under web/ "
                 f"(~{DEPLOY_FILE_LIMIT:,} Cloudflare limit)")
         except OSError:
             self.count_var.set("")
@@ -299,7 +299,7 @@ class App:
                 if force else f"{new_files} new file(s)")
         msg = (f"{book} {chapters[0]}-{chapters[-1]}: "
                f"{total_verses} verse(s), {work} to render.\n\n"
-               f"Current deploy bundle: {current_total:,} files\n"
+               f"Current deploy: {current_total:,} files under web/\n"
                f"Resulting total: {resulting:,} files "
                f"(limit ~{DEPLOY_FILE_LIMIT:,})\n\n")
         if voice != tts_engine.HOUSE_VOICE:

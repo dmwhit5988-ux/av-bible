@@ -4,7 +4,7 @@ A library, not a script; it has two jobs:
 
 * The palette and helpers most generators import: the canvas size (W, H),
   the colours (BG, PANEL, SAND, TEXT, HL ...), font() and the F_* sizes,
-  and out_path(), which files a visual under visuals/<Book>/<chapter>/.
+  and out_path(), which files a visual under web/visuals/<Book>/<chapter>/.
 
 * The tabernacle's own drawing: a to-scale top-down plan of the courtyard
   (dimensions taken from the text: courtyard 100x50 cubits, tent 30x10,
@@ -25,14 +25,13 @@ import os
 from PIL import ImageFont
 
 import svg_figures as F
-
-BASE = os.path.dirname(os.path.abspath(__file__))
-VISUALS = os.path.join(BASE, "visuals")
+from config import VISUALS_DIR
 
 
 def out_path(book: str, chapter, filename: str) -> str:
-    """Visuals live in visuals/<Book>/<chapter>/ for easy human navigation."""
-    d = os.path.join(VISUALS, book.replace(" ", "_"), str(chapter))
+    """Visuals live in web/visuals/<Book>/<chapter>/ for easy human
+    navigation."""
+    d = os.path.join(VISUALS_DIR, book.replace(" ", "_"), str(chapter))
     os.makedirs(d, exist_ok=True)
     return os.path.join(d, filename)
 

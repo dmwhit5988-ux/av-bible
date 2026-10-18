@@ -6,11 +6,11 @@ once a Preview pane embeds the real web app (ROADMAP.md, Studio).
 - Playback emits a `VerseContext` every time the spoken verse changes.
 - A `StageController` broadcasts that context to every registered `StageView`
   (today the one panel in the Studio window).
-- A verse's visual is the most specific SVG under visuals/ (the generators'
-  output, the same vector masters the web app serves):
-      visuals/John/3/John_3_16.svg   (exact verse)
-      visuals/John/3/John_3.svg      (whole chapter)
-      visuals/John/John.svg          (whole book)
+- A verse's visual is the most specific SVG under web/visuals/ (the
+  generators' output, the same vector masters the web app serves):
+      web/visuals/John/3/John_3_16.svg   (exact verse)
+      web/visuals/John/3/John_3.svg      (whole chapter)
+      web/visuals/John/John.svg          (whole book)
 - SVGs, SMIL animation and all, render in an embedded WebView2 panel via
   svg_stage.py, so pywebview is required. A verse without an SVG, or a
   machine where the web view failed, shows the book gradient in the same
@@ -42,8 +42,9 @@ def find_svg(ctx: VerseContext) -> str | None:
     book = ctx.book.replace(" ", "_")
     chapter_dir = os.path.join(VISUALS_DIR, book, str(ctx.chapter))
     book_dir = os.path.join(VISUALS_DIR, book)
-    # Preferred layout is visuals/<Book>/<chapter>/; flat files directly
-    # in visuals/ are still honored as a fallback. Most specific wins.
+    # Preferred layout is web/visuals/<Book>/<chapter>/; flat files
+    # directly in web/visuals/ are still honored as a fallback. Most
+    # specific wins.
     locations = [
         (chapter_dir, f"{book}_{ctx.chapter}_{ctx.verse}"),
         (VISUALS_DIR, f"{book}_{ctx.chapter}_{ctx.verse}"),

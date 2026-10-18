@@ -12,7 +12,7 @@ What it assembles, per verse, from assets the project already produces:
                 tts_engine.synthesize() -- the same production path (and the
                 same pronunciation respelling) the desktop reader uses -- so a
                 range that was never published still renders.
-    visual      visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg, resolved by
+    visual      web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg, resolved by
                 resolve_svg(): the verse's own file, then a range file
                 covering it, then the chapter file -- most specific first,
                 as the web manifest does (visual_stage.find_svg, the interim

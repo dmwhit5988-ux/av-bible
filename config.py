@@ -12,14 +12,23 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 BACKUP_PATH = CONFIG_PATH + ".bak"
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 AUDIO_CACHE_DIR = os.path.join(CACHE_DIR, "audio")
-VISUALS_DIR = os.path.join(BASE_DIR, "visuals")
-# Read-only, ships with the app: the World English Bible, one JSON per
-# chapter under bibles/WEB/ (kept out of CACHE_DIR so it is never cleared).
-BIBLES_DIR = os.path.join(BASE_DIR, "bibles")
-# The web app (served from deploy_bundle/, a copy of web/ + bibles/ + visuals/)
-# and its pre-rendered narration.
+# The site root, served as-is: wrangler.toml's [assets] directory, minus what
+# web/.assetsignore leaves out. The web app's own files (index.html, js/,
+# css/, icons/) sit at its top, and the content folders below are its
+# /visuals, /bibles and /audio URLs.
 WEB_DIR = os.path.join(BASE_DIR, "web")
+# The verse visuals and their manifest.json (build_manifest.py).
+VISUALS_DIR = os.path.join(WEB_DIR, "visuals")
+# Read-only, ships with the app and the site: the World English Bible, one
+# JSON per chapter under web/bibles/WEB/ (kept out of CACHE_DIR so it is
+# never cleared).
+BIBLES_DIR = os.path.join(WEB_DIR, "bibles")
+# The pre-rendered narration MP3s and their manifest.json.
 WEB_AUDIO_DIR = os.path.join(WEB_DIR, "audio")
+# Ignored source files the tracked data is built from: the WEB's USFX text
+# (sources/eng-web.usfx.xml), which import_translation.py turns into
+# web/bibles/WEB/.
+SOURCES_DIR = os.path.join(BASE_DIR, "sources")
 # Tracked data the tools keep: the Verifier's whole-canon verdict store, which
 # would take a full ASR sweep to rebuild.
 DATA_DIR = os.path.join(BASE_DIR, "data")

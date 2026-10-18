@@ -5,7 +5,7 @@ route "edit this verse" to the generator that owns it.
 
 - every generator and spec file it names exists (and imports, for .py);
 - no two families claim the same verse;
-- every published verse SVG under visuals/<Book>/<ch>/ has an owner. This
+- every published verse SVG under web/visuals/<Book>/<ch>/ has an owner. This
   is the check that would have caught 2 Peter and Zephaniah shipping with no
   family at all;
 - no retired variant file is back: no translation code (WEB is the only
@@ -17,10 +17,11 @@ import os
 import re
 import unittest
 
+import config
 import svg_registry
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VISUALS = os.path.join(HERE, "visuals")
+VISUALS = config.VISUALS_DIR
 
 # <Book>_<ch>_<v>.svg, or a range file <Book>_<ch>_<v>-<v2>.svg (D17)
 VERSE_SVG = re.compile(

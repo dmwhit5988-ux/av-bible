@@ -1,6 +1,7 @@
 import glob, os, re, sys
 # Run from anywhere: the repo is this file's parent folder.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import VISUALS_DIR
 from svg_vocab import text_w
 W, H = 1024, 576
 CH = {1: 14, 2: 18, 3: 19, 4: 16, 5: 14, 6: 20, 7: 28, 8: 13, 9: 28,
@@ -36,7 +37,7 @@ runs = []
 run = 1
 runstart = None
 for ch in sorted(CH):
-    d = f'visuals/Hebrews/{ch}'
+    d = os.path.join(VISUALS_DIR, 'Hebrews', str(ch))
     if not os.path.isdir(d):
         continue
     for v in range(1, CH[ch] + 1):

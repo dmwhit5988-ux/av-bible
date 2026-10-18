@@ -1,37 +1,41 @@
 """Publish — one-click author→deploy pipeline for the web app.
 
-Runs the whole publish chain that used to be three manual steps:
+web/ is the site root, served as-is (wrangler.toml [assets]) minus what
+web/.assetsignore leaves out, so there is nothing to build or copy. The
+publish chain is two steps:
 
-    1. build_manifest.py   rebuild visuals/manifest.json (schema v2)
-    2. prepare-deploy.ps1  mirror web/ + bibles/ + visuals/ into deploy_bundle/
-    3. git add/commit/push CONTENT paths only (web/audio, bibles, visuals
-                           and their deploy_bundle/ copies) — pushing is the
-                           deploy: the GitHub-side integration uploads to
-                           Cloudflare (local wrangler can't run on ARM64)
+    1. build_manifest.py   rebuild web/visuals/manifest.json (schema v2)
+    2. git add/commit/push CONTENT paths only (web/audio, web/visuals and
+                           web/bibles) — pushing is the deploy: Cloudflare's
+                           Workers Builds deploys web/ from the pushed commit
+                           (local wrangler can't run on ARM64)
 
 Code changes (*.py, docs, the web app's own js/css/html) are deliberately
 left out of the publish commit — commit those yourself, so a content
 publish never sweeps up half-finished code. Both the add and the commit
 are limited to CONTENT_PATHS, so anything you had staged elsewhere stays
 staged and uncommitted. When the web app's own files have uncommitted
-changes, Publish says so: they (and the copies step 2 makes of them in
-deploy_bundle/) stay unpublished until you commit them by hand.
+changes, Publish says so: they stay unpublished until you commit them by
+hand, and then they ship on that push like any other commit.
 
-Between steps 2 and 3 you get a confirm dialog with the change summary and
+Between steps 1 and 2 Publish scans the content paths (git status) and
+shows a confirm dialog with the change summary and
 the file-count budget: files, not bytes, are the ceiling of Cloudflare's
 Workers static assets (DEPLOY_FILE_LIMIT; docs/architecture.md, "File
 budget"). A persistent budget meter at the top of the window tracks the same
 number while you author; count_deploy_files() is also the count behind the
 Studio's meter and the Audio Renderer's projection.
 
-"Dry run (no commit / push)" runs steps 1 and 2, logs the change summary,
-the commit message and the budget, and stops before git: nothing is staged,
-committed or pushed. Steps 1 and 2 still rewrite visuals/manifest.json and
-deploy_bundle/, as a real publish would; that is what the summary describes.
+"Dry run (no commit / push)" runs step 1 and the change scan, logs the
+change summary, the commit message and the budget, and stops before
+git add / commit / push: nothing is staged,
+committed or pushed. Step 1 still rewrites web/visuals/manifest.json, as a
+real publish would; that is what the summary describes.
 
     python publish_studio.py
 """
 
+import fnmatch
 import os
 import queue
 import subprocess
@@ -46,25 +50,41 @@ REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Cloudflare's Workers static assets take at most this many files in one
 # deployed version (20,000 on the Free plan). It is not a Pages limit: the
-# site deploys as a Worker serving deploy_bundle/ (wrangler.toml [assets]).
+# site deploys as a Worker serving web/ (wrangler.toml [assets]).
 # The Studio's meter (app.py) and the Audio Renderer read it from here.
 DEPLOY_FILE_LIMIT = 20000
 
-# Only these paths go into a publish commit. Content folders only, never the
-# web app shell: prepare-deploy.ps1 copies web/* (js, css, index.html) into
-# the deploy_bundle root, so listing plain "web" or "deploy_bundle" would ship
-# half-finished web code under "Publish: …".
-CONTENT_PATHS = ["web/audio", "bibles", "visuals",
-                 "deploy_bundle/audio", "deploy_bundle/bibles",
-                 "deploy_bundle/visuals"]
+# What wrangler leaves out of the upload. The file is in gitignore syntax,
+# but every pattern in it is a basename glob (no "/" and no "!"), which is
+# all count_deploy_files() understands.
+ASSETSIGNORE_PATH = os.path.join(config.WEB_DIR, ".assetsignore")
 
-# The web app's own files: everything under web/ but the narration (js, css,
-# index.html, icons, manifest.webmanifest). Never in a publish commit;
-# web_app_changes() finds the uncommitted ones so Publish can warn.
-WEB_APP_PATHS = ["web", ":(exclude)web/audio"]
+def _repo_rel(path: str) -> str:
+    """A folder under the repo as a git pathspec: relative to REPO_ROOT,
+    with forward slashes."""
+    return os.path.relpath(path, REPO_ROOT).replace(os.sep, "/")
+
+
+# The content folders, taken from config so a publish follows them wherever
+# config puts them: web/audio, web/visuals and web/bibles.
+AUDIO_PATH = _repo_rel(config.WEB_AUDIO_DIR)
+VISUALS_PATH = _repo_rel(config.VISUALS_DIR)
+BIBLES_PATH = _repo_rel(config.BIBLES_DIR)
+
+# Only these paths go into a publish commit. Content folders only, never the
+# web app shell: web/ is the site root, so listing plain "web" would ship
+# half-finished web code (js, css, index.html) under "Publish: …".
+CONTENT_PATHS = [AUDIO_PATH, VISUALS_PATH, BIBLES_PATH]
+
+# The web app's own files: everything under web/ but the content folders
+# (js, css, index.html, icons, manifest.webmanifest, .assetsignore). Never in
+# a publish commit; web_app_changes() finds the uncommitted ones so Publish
+# can warn.
+WEB_APP_PATHS = ([_repo_rel(config.WEB_DIR)]
+                 + [f":(exclude){p}" for p in CONTENT_PATHS])
 
 # The visual files a change summary counts: the set build_manifest.IMAGE_EXTS
-# indexes. The rest of visuals/ (manifest.json, the reference pages) is
+# indexes. The rest of web/visuals/ (manifest.json, the reference pages) is
 # committed too but counted as "other".
 _PICTURE_EXTS = (".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg")
 
@@ -74,23 +94,34 @@ _COUNTED = (("visuals", "visual", "visuals"),
             ("chapters", "Bible chapter", "Bible chapters"))
 
 
+def assetsignore_patterns() -> list[str]:
+    """The patterns in web/.assetsignore, one per line, less blank and
+    comment lines; [] when there is no such file (wrangler then uploads all
+    of web/)."""
+    try:
+        with open(ASSETSIGNORE_PATH, encoding="utf-8") as f:
+            lines = [line.strip() for line in f]
+    except FileNotFoundError:
+        return []
+    return [line for line in lines if line and not line.startswith("#")]
+
+
 def count_deploy_files() -> int:
-    """Count the files a deploy would ship, mirroring the bundle
-    prepare-deploy.ps1 builds: all of web/, the *.json in each bibles/
-    subfolder (one level, not recursive; only WEB exists), and visuals/
-    minus *.xml. Counted from those sources rather than deploy_bundle/,
-    which is only rebuilt by a publish."""
+    """Count the files a deploy would ship: every file under web/ (the site
+    root) that web/.assetsignore doesn't exclude. Its patterns are basename
+    globs, matched with fnmatch and ignoring case; a folder that matches one
+    is left out whole, as in gitignore. Counted from the working tree, so it
+    includes content not yet published."""
+    patterns = [p.lower() for p in assetsignore_patterns()]
+
+    def ignored(name: str) -> bool:
+        name = name.lower()
+        return any(fnmatch.fnmatchcase(name, p) for p in patterns)
+
     count = 0
-    for _, _, files in os.walk(config.WEB_DIR):
-        count += len(files)
-    if os.path.isdir(config.BIBLES_DIR):
-        for sub in os.listdir(config.BIBLES_DIR):
-            sub_dir = os.path.join(config.BIBLES_DIR, sub)
-            if os.path.isdir(sub_dir):
-                count += sum(1 for f in os.listdir(sub_dir)
-                             if f.lower().endswith(".json"))
-    for _, _, files in os.walk(config.VISUALS_DIR):
-        count += sum(1 for f in files if not f.lower().endswith(".xml"))
+    for _, dirs, files in os.walk(config.WEB_DIR):
+        dirs[:] = [d for d in dirs if not ignored(d)]
+        count += sum(1 for f in files if not ignored(f))
     return count
 
 
@@ -157,18 +188,17 @@ def web_app_changes() -> list[str]:
 
 def _area(path: str) -> str:
     """The tally a changed content path counts towards: "visuals" (a
-    picture under visuals/), "mp3s" (narration under web/audio/),
-    "chapters" (a Bible chapter, bibles/<code>/<chapter>.json), "bundle"
-    (anything under deploy_bundle/, the served copies of those) or "other"
-    (the two manifests and the like)."""
+    picture under web/visuals/), "mp3s" (narration, web/audio/*.mp3),
+    "chapters" (a Bible chapter, web/bibles/<code>/<chapter>.json) or
+    "other" (the two manifests and the like)."""
     low = path.lower()
-    if path.startswith("deploy_bundle/"):
-        return "bundle"
-    if path.startswith("visuals/") and low.endswith(_PICTURE_EXTS):
+    if path.startswith(VISUALS_PATH + "/") and low.endswith(_PICTURE_EXTS):
         return "visuals"
-    if path.startswith("web/audio/") and low.endswith(".mp3"):
+    if path.startswith(AUDIO_PATH + "/") and low.endswith(".mp3"):
         return "mp3s"
-    if (path.startswith("bibles/") and path.count("/") == 2
+    # <code>/<chapter>.json: two levels below the bibles folder.
+    if (path.startswith(BIBLES_PATH + "/")
+            and path.count("/") == BIBLES_PATH.count("/") + 2
             and low.endswith(".json")):
         return "chapters"
     return "other"
@@ -178,7 +208,7 @@ def tally_changes(changes) -> dict[str, dict[str, int]]:
     """{area: {"changed": n, "deleted": n}} for a git_content_changes()
     list, with every area _area() names present."""
     tally = {area: {"changed": 0, "deleted": 0}
-             for area in ("visuals", "mp3s", "chapters", "bundle", "other")}
+             for area in ("visuals", "mp3s", "chapters", "other")}
     for change, path in changes:
         tally[_area(path)][change] += 1
     return tally
@@ -198,9 +228,9 @@ def _counted(tally, change: str) -> str:
 def commit_message(changes) -> str:
     """The publish commit's message: the visuals, MP3s and Bible chapters
     it adds or changes, then the ones it deletes, e.g. "Publish: 12
-    visuals, 30 MP3s; deleted 2 visuals". The manifests and the
-    deploy_bundle/ copies that go along aren't counted; a commit of only
-    those is a "content update"."""
+    visuals, 30 MP3s; deleted 2 visuals". The manifests and the like
+    that go along aren't counted; a commit of only those is a "content
+    update"."""
     tally = tally_changes(changes)
     changed, deleted = _counted(tally, "changed"), _counted(tally, "deleted")
     detail = "; ".join(filter(None, [changed,
@@ -223,10 +253,6 @@ def summarize_changes(changes) -> str:
     if other:
         lines.append(_count(other, "other content file", "other content files")
                      + " (the manifests and the like)")
-    bundle = sum(tally["bundle"].values())
-    if bundle:
-        lines.append(_count(bundle, "file", "files")
-                     + " under deploy_bundle/ (the copies Cloudflare serves)")
     return "\n".join(lines)
 
 
@@ -240,8 +266,8 @@ def web_app_warning(paths) -> str:
         shown += f" and {len(paths) - 3} more"
     return (f"The web app's own files have uncommitted changes ({shown}). "
             f"Publish doesn't commit them (its commit takes content paths "
-            f"only), so they stay unpublished until you commit them, and "
-            f"their deploy_bundle/ copies, by hand.")
+            f"only), so they stay unpublished until you commit them by hand; "
+            f"that commit's push then ships them.")
 
 
 class App:
@@ -280,7 +306,7 @@ class App:
             msg = ("Publish is asking whether to commit and push. Answer it, "
                    "then close.")
         else:
-            msg = ("Publish is still preparing (manifest and deploy bundle). "
+            msg = ("Publish is still preparing (manifest and change scan). "
                    "Wait for it to finish, then close.")
         messagebox.showinfo("Publish", msg, parent=self.root)
         return False
@@ -315,9 +341,10 @@ class App:
             variable=self.dry_run_var)
         self.dry_run_check.pack(side="left", padx=(12, 0))
         ttk.Label(self.root, foreground="#888888", padding=(10, 2, 10, 4),
-                  text="Publishes content only (web/audio, bibles, visuals "
-                       "and their deploy_bundle/ copies) — code commits stay "
-                       "yours.").pack(anchor="w")
+                  text=f"Publishes content only ({AUDIO_PATH}, "
+                       f"{VISUALS_PATH} and {BIBLES_PATH}) — code commits "
+                       f"stay yours.").pack(
+                           anchor="w")
 
         logframe = ttk.LabelFrame(self.root, text="Log", padding=(6, 4))
         logframe.pack(fill="both", expand=True, padx=10, pady=(4, 4))
@@ -371,11 +398,11 @@ class App:
                          daemon=True).start()
 
     def _prepare_worker(self, dry_run):
-        """Steps 1–2 + change scan, then hand off to the confirm dialog (or,
+        """Step 1 + change scan, then hand off to the confirm dialog (or,
         for a dry run, to the report)."""
         put = self.events.put
         try:
-            put(("log", "— Step 1/3: visuals manifest —"))
+            put(("log", "— Step 1/2: visuals manifest —"))
             proc = _run([sys.executable,
                          os.path.join(REPO_ROOT, "build_manifest.py")],
                         timeout=120,
@@ -387,20 +414,7 @@ class App:
             for line in lines or ["ok"]:
                 put(("log", "  " + line))
 
-            put(("log", "— Step 2/3: deploy bundle —"))
-            proc = _run(["powershell", "-NoProfile", "-ExecutionPolicy",
-                         "Bypass", "-File",
-                         os.path.join(REPO_ROOT, "prepare-deploy.ps1")])
-            if proc.returncode != 0:
-                raise RuntimeError("prepare-deploy.ps1 failed: "
-                                   + (proc.stderr or "").strip()[:300])
-            for line in (proc.stdout or "").strip().splitlines()[-2:]:
-                put(("log", "  " + line))
-
-            put(("log", "— Step 3/3: git (dry run: status only) —" if dry_run
-                 else "— Step 3/3: git —"))
-            put(("log", "  scanning content changes "
-                        "(large bundle rebuilds take a moment)…"))
+            put(("log", "— Change scan (git status) —"))
             changes = git_content_changes()
             try:
                 web_app = web_app_changes()
@@ -408,16 +422,13 @@ class App:
                 put(("log", f"  could not check the web app's own files: "
                             f"{type(e).__name__}: {e}"))
                 web_app = []
-            bundle_files = sum(
-                len(files) for _, _, files
-                in os.walk(os.path.join(REPO_ROOT, "deploy_bundle")))
-            put(("confirm", changes, bundle_files, web_app, dry_run))
+            put(("confirm", changes, count_deploy_files(), web_app, dry_run))
         except Exception as e:
             put(("fail", str(e)))
 
-    def _do_confirm(self, changes, bundle_files, web_app, dry_run):
-        over = bundle_files > DEPLOY_FILE_LIMIT
-        budget = (f"Deploy bundle: {bundle_files:,} files "
+    def _do_confirm(self, changes, deploy_files, web_app, dry_run):
+        over = deploy_files > DEPLOY_FILE_LIMIT
+        budget = (f"Deploy: {deploy_files:,} files under web/ "
                   f"(limit ~{DEPLOY_FILE_LIMIT:,})")
         over_note = ("This EXCEEDS Cloudflare's file-count ceiling — the "
                      "deploy will likely fail.") if over else ""
@@ -441,7 +452,7 @@ class App:
             if note:
                 msg += f"{note}\n\n"
         msg += ("Commit and push to GitHub now? The push is the deploy — "
-                "GitHub uploads the bundle to Cloudflare.")
+                "Cloudflare deploys web/ from the pushed commit.")
         self._confirming = True
         try:
             proceed = messagebox.askyesno(
@@ -477,6 +488,7 @@ class App:
     def _push_worker(self, changes):
         put = self.events.put
         try:
+            put(("log", "— Step 2/2: git add / commit / push —"))
             proc = _run(add_argv(), timeout=300)
             if proc.returncode != 0:
                 raise RuntimeError("git add failed: " + proc.stderr.strip())
@@ -493,7 +505,8 @@ class App:
                     "git push failed (the commit is safe locally — fix the "
                     "connection/credentials and push manually): "
                     + (proc.stderr or "").strip()[:300])
-            put(("log", "  pushed — GitHub will deploy to Cloudflare."))
+            put(("log", "  pushed — Cloudflare Workers Builds deploys web/ "
+                        "from this commit."))
             put(("done", f"Published: {msg}"))
         except Exception as e:
             put(("fail", str(e)))

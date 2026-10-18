@@ -2,7 +2,7 @@
   "name": "av-bible",
   "version": "1.0.0",
   "private": true,
-  "description": "Deploy tooling for Theoria, a visual Bible. It pins wrangler for the Cloudflare Worker av-bible, which serves deploy_bundle/ as static assets (wrangler.toml). Deploys run in Cloudflare Workers Builds on a push to main, never from a local wrangler.",
+  "description": "Deploy tooling for Theoria, a visual Bible. It pins wrangler for the Cloudflare Worker av-bible, which serves web/ as static assets (wrangler.toml). Deploys run in Cloudflare Workers Builds on a push to main, never from a local wrangler.",
   "keywords": [],
   "author": "",
   "license": "ISC",

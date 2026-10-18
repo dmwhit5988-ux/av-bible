@@ -15,8 +15,13 @@ cache/
 PRONUNCIATIONS.md
 PRONUNCIATION_TODO.md
 
-# Source text: bibles/WEB is built from it by import_translation.py
-bibles/*.xml
+# Source text: web/bibles/WEB is built from sources/eng-web.usfx.xml by
+# import_translation.py
+/sources/
+
+# The old deploy copy of web/, bibles/ and visuals/. web/ is served directly
+# now, so a stale local copy must never come back into a commit.
+/deploy_bundle/
 
 # Kept outside the repo now (C:\Dev\Theoria-archive); ignored in case they reappear
 backups/

@@ -1,0 +1,7 @@
+# Files wrangler leaves out of the upload of web/ (gitignore syntax; basename globs only)
+.assetsignore
+*.tmp
+*.xml
+.DS_Store
+Thumbs.db
+desktop.ini

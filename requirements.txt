@@ -24,5 +24,4 @@ pywebview>=6.0
 #                                    or ffmpeg.exe/ffprobe.exe in tools/ffmpeg/bin/)
 #   Google Chrome or Microsoft Edge  Video Studio draws its frames in a browser
 #   Inkscape                         optional; SVG Studio's "Open in Inkscape"
-#   Windows PowerShell               Publish runs prepare-deploy.ps1; also the
-#                                    offline SAPI voice fallback (built in)
+#   Windows PowerShell               the offline SAPI voice fallback (built in)

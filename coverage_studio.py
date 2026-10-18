@@ -3,10 +3,10 @@
 One tree over the whole canon (66 books -> 1,189 chapters) showing, per
 chapter:
 
-  Verses      chapter length (from the local bibles/WEB/*.json bundle —
+  Verses      chapter length (from the local web/bibles/WEB/*.json —
               complete for the whole canon, no network)
   Visuals     verses with a visual / total, plus the kinds present
-              (visuals/manifest.json schema v2)
+              (web/visuals/manifest.json schema v2)
   Audio       verses with pre-rendered narration / total, e.g. "31/31"
               (web/audio/manifest.json)
   Names       likely proper nouns not yet in pronunciations.json — an
@@ -31,12 +31,13 @@ import tkinter as tk
 from tkinter import ttk
 
 import books
+import config
 import pronunciation
 from passages import PassageError, TRANSLATION, load_chapter
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-VISUALS_MANIFEST = os.path.join(REPO_ROOT, "visuals", "manifest.json")
-AUDIO_MANIFEST = os.path.join(REPO_ROOT, "web", "audio", "manifest.json")
+VISUALS_MANIFEST = os.path.join(config.VISUALS_DIR, "manifest.json")
+AUDIO_MANIFEST = os.path.join(config.WEB_AUDIO_DIR, "manifest.json")
 CANDIDATES_MD = os.path.join(REPO_ROOT, "docs", "content-catalog.md")
 
 _VERSE_KEY_RE = re.compile(r"^(.+?)_(\d+)_(\d+)$")

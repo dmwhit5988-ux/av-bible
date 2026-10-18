@@ -2,7 +2,7 @@
 
 The studio owns the verse workflow (navigate, know when a file is
 generator-owned), the XML editing pane, and the pipeline glue (save into
-visuals/<Book>/<chapter>/, manifest rebuild). Deploying is Publish's job
+web/visuals/<Book>/<chapter>/, manifest rebuild). Deploying is Publish's job
 (publish_studio.py). It deliberately does NOT own vector drawing — that is
 the XML pane and/or Inkscape (docs/svg-studio.md, "Option 3").
 
@@ -43,7 +43,8 @@ EMBEDDED_FAIL_WINDOW_MS = 10_000
 HAND_EDIT_MARK = "<!-- hand-edited"
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-VISUALS_DIR = os.path.join(REPO_ROOT, "visuals")
+VISUALS_DIR = config.VISUALS_DIR
+MANIFEST_PATH = os.path.join(VISUALS_DIR, "manifest.json")
 
 # House canvas size (generate_tabernacle.W/H — not imported: that module
 # loads PIL fonts at import time, which the studio doesn't need).
@@ -86,7 +87,7 @@ def chapter_dir(book: str, chapter: int) -> str:
 
 
 def verse_path(book: str, chapter: int, verse: int) -> str:
-    """The verse's one SVG: visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg."""
+    """The verse's one SVG: web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg."""
     return os.path.join(chapter_dir(book, chapter),
                         f"{verse_base(book, chapter, verse)}.svg")
 
@@ -736,8 +737,8 @@ class App:
     # ----- publish glue + Inkscape --------------------------------------------
 
     def save_and_manifest(self):
-        """Save, then rebuild visuals/manifest.json so the web app can see
-        the file. The manifest only feeds the web app, so plain Save skips
+        """Save, then rebuild web/visuals/manifest.json so the web app can
+        see the file. The manifest only feeds the web app, so plain Save skips
         this while iterating."""
         before_dirty = self.dirty
         self.save()
@@ -755,14 +756,13 @@ class App:
                                  f"manifest rebuild failed: "
                                  f"{proc.stderr.strip()[:200]}"))
                 return
-            with open(os.path.join(REPO_ROOT, "visuals", "manifest.json"),
-                      encoding="utf-8") as f:
+            with open(MANIFEST_PATH, encoding="utf-8") as f:
                 data = json.load(f)
             # Schema v2 wraps the key map in {version, entries}.
             keys = len(data.get("entries", data))
             self.events.put(("manifest_done",
-                             f"visuals/manifest.json rebuilt — {keys} verse "
-                             "keys."))
+                             f"web/visuals/manifest.json rebuilt — {keys} "
+                             "verse keys."))
         except Exception as e:
             self.events.put(("manifest_done", f"manifest rebuild failed: {e}"))
 

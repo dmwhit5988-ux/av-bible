@@ -34,14 +34,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 import books
+import config
 import passages
 import pronunciation
 import tts_engine
 from audio_player import AudioPlayer
 
 # The Studio's icon, the same one the shell (app.py) sets.
-ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "web", "icons", "icon-192.png")
+ICON_PATH = os.path.join(config.WEB_DIR, "icons", "icon-192.png")
 
 
 # How each verdict is shown. Unchecked is deliberately the attention-getting

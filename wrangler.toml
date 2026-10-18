@@ -1,8 +1,10 @@
 # Theoria - Cloudflare Workers static assets deployment
-# Serves deploy_bundle/ as a static site:
-#   web app at /, bibles JSON at /bibles/WEB/, visuals at /visuals/
+# Serves web/ as-is as a static site (web/.assetsignore lists what is left
+# out of the upload):
+#   web app at /, bibles JSON at /bibles/WEB/, visuals at /visuals/,
+#   narration at /audio/
 name = "av-bible"
 compatibility_date = "2026-01-01"
 
 [assets]
-directory = "./deploy_bundle"
+directory = "./web"

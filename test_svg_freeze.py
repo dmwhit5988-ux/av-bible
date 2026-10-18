@@ -8,9 +8,8 @@ import os
 import unittest
 import xml.etree.ElementTree as ET
 
+from config import VISUALS_DIR
 from svg_freeze import SVGNS, FreezeResult, freeze_to_base, svg_is_animated
-
-HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def wrap(inner):
@@ -173,7 +172,7 @@ class RealOutputRoundTrips(unittest.TestCase):
     generators emit only table-covered cases)."""
 
     def _roundtrip(self, rel_path, from_key):
-        path = os.path.join(HERE, "visuals", rel_path)
+        path = os.path.join(VISUALS_DIR, rel_path)
         with open(path, encoding="utf-8") as f:
             result = freeze_to_base(f.read(), from_key)
         self.assertEqual(result.warnings, [])
@@ -199,7 +198,7 @@ class RealOutputRoundTrips(unittest.TestCase):
 
     def test_tabernacle_pulse_survives(self):
         # svg_is_animated sets the manifest's "animated" flag (D11).
-        with open(os.path.join(HERE, "visuals", "Exodus", "26",
+        with open(os.path.join(VISUALS_DIR, "Exodus", "26",
                                "Exodus_26_1.svg"), encoding="utf-8") as f:
             self.assertTrue(svg_is_animated(f.read()))
         self.assertFalse(svg_is_animated(wrap('<rect width="5" height="5"/>')))
