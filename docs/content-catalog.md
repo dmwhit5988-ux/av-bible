@@ -2,7 +2,7 @@
 
 A book-by-book pass over the entire canon (per the 66-book list in `books.py`) identifying which passages best support an infographic — map, timeline, genealogy, architectural diagram, process diagram, comparison chart, or symbolic diagram — and why. Chapters already produced are included inline, marked `✅ Built`, so this is a single complete reference rather than just a gap list.
 
-Not every chapter is a candidate. Long stretches of law, poetry, and personal correspondence resist visual treatment; those books get a one-line note instead of forced entries. Names and quotations in the entries describe the subject; anything lettered on a graphic is taken from the WEB text in `bibles/WEB/`.
+Not every chapter is a candidate. Long stretches of law, poetry, and personal correspondence resist visual treatment; those books get a one-line note instead of forced entries. Names and quotations in the entries describe the subject; anything lettered on a graphic is taken from the WEB text in `web/bibles/WEB/`.
 
 **This file is machine-read.** The Studio's Coverage tool (`coverage_studio._parse_candidates`) reads every `- **<Book> <chapters> …** — <status> · <types> …` line under a `### <Book>` heading and marks those chapters with the entry's priority. Keep these rules when editing:
 - The chapters go in the bold label. A label with no chapter number is invisible to Coverage, so a whole-book entry spells out its span (`Psalms 1–150`). In a label like `3:1–8` only the chapter (3) counts.
@@ -12,7 +12,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ## Legend
 
 **Status**
-- `✅ Built` — the chapter has entries in `visuals/manifest.json` (its SVGs are in `visuals/<Book>/<chapter>/`, spaces in the book name as underscores). 73 chapters in 11 books, every verse covered.
+- `✅ Built` — the chapter has entries in `web/visuals/manifest.json` (its SVGs are in `web/visuals/<Book>/<chapter>/`, spaces in the book name as underscores). 73 chapters in 11 books, every verse covered.
 - `🆕 Candidate` — not yet built
 
 **Priority** (for candidates)

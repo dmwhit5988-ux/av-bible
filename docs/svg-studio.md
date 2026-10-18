@@ -9,7 +9,7 @@ SVG Studio is a *verse-aware orchestrator*: Option 3 of the original Studio plan
 - **What it owns:**
   - the verse workflow: navigate, and know when a file is generator-owned;
   - a faithful SMIL preview timed to the narration;
-  - the pipeline glue: save into `visuals/`, rebuild the manifest.
+  - the pipeline glue: save into `web/visuals/`, rebuild the manifest.
 - **What it doesn't own:** vector drawing. That is the XML pane, or Inkscape. Deploying is Publish's job.
 
 **Every shipped SVG is generator-owned.** Each `generate_*_svg.py` encodes its geometry in Python and rewrites all of its family's files when re-run. `test_registry` checks that every published verse SVG has a registry owner.
@@ -266,7 +266,7 @@ A verse with no owner opens straight into an editable pane, with no banner. A ve
 ## 5. The verse navigator
 
 - **Pickers.** Book and Chapter pickers, from `books.BOOK_NAMES` and `books.chapters_in`, plus a Verse spinbox from 1 to 176. The spinbox is not bounded by the chapter: the main window clamps the shared passage to WEB's verses, but the spinbox doesn't.
-- **One file per verse.** A verse is one file, `visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg` (`verse_path()`). There are no variants: WEB is the only translation, and visual files carry no suffix.
+- **One file per verse.** A verse is one file, `web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg` (`verse_path()`). There are no variants: WEB is the only translation, and visual files carry no suffix.
 - **Not shown yet.** Range files (`Book_c_v1-v2.svg`) and identical copies shared through the manifest are planned (§8).
 - **Unsaved edits.** Moving a picker with unsaved edits asks first. "No" puts the pickers back on the verse in the pane.
 - **What a move does.** Each move re-checks the registry (verse included), updates the banner, and loads the file and its MP3 into the preview.

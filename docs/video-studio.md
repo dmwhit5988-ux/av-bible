@@ -2,7 +2,7 @@
 
 Video Studio renders a verse range to a single YouTube-ready MP4, built from assets the project already produces:
 - the narration MP3s in `web/audio/`;
-- the animated SVG pictures in `visuals/`.
+- the animated SVG pictures in `web/visuals/`.
 
 Ranges cross chapters freely: a video is a *passage*, not a chapter.
 

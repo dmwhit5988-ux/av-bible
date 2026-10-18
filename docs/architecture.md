@@ -1,36 +1,36 @@
 # Architecture
 
-Theoria is a static website: the World English Bible (WEB) read aloud, with an animated SVG picture for each verse. Its content (the text, the pictures, the narration and their manifests) is made ahead of time on the PC by Python, mostly from Theoria Studio ([studio.md](studio.md)). The web app in `web/` is hand-written static HTML, JS and CSS, with no build step. Verses with no neural MP3 are read by the browser's own Web Speech. Publishing commits the content and pushes it to GitHub; the web app's code is committed by hand ([Deploy](#deploy)). Cloudflare then deploys the site as static assets of the `av-bible` Worker, served at <https://theoria-bible.net/>.
+Theoria is a static website: the World English Bible (WEB) read aloud, with an animated SVG picture for each verse. Its content (the text, the pictures, the narration and their manifests) is made ahead of time on the PC by Python, mostly from Theoria Studio ([studio.md](studio.md)). The web app in `web/` is hand-written static HTML, JS and CSS, with no build step. Verses with no neural MP3 are read by the browser's own Web Speech. `web/` is also the site root: the content folders `web/bibles/`, `web/visuals/` and `web/audio/` are the site's `/bibles/`, `/visuals/` and `/audio/`. Publishing commits the content and pushes it to GitHub; the web app's code is committed by hand ([Deploy](#deploy)). Cloudflare then deploys `web/` as it stands in the pushed commit, as static assets of the `av-bible` Worker, served at <https://theoria-bible.net/>.
 
 ```
-bibles/eng-web.usfx.xml --import_translation.py--> bibles/WEB/<Book>_<ch>.json
+sources/eng-web.usfx.xml --import_translation.py--> web/bibles/WEB/<Book>_<ch>.json
         |                                                    |
         |            passages.load_chapter / verse_numbers   |
         v                                                    v
 generate_*_svg.py (svg_generators.json)      tts_engine.synthesize (pronunciation.respell)
         |                                                    |
-visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg      web/audio/<Book>_<ch>_<v>.mp3
+web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg  web/audio/<Book>_<ch>_<v>.mp3
         | build_manifest.py                                  |
-visuals/manifest.json (v2)                   web/audio/manifest.json
+web/visuals/manifest.json (v2)               web/audio/manifest.json
         |                                                    |
-        +---------- Publish: prepare-deploy.ps1 -> deploy_bundle/ -> git push ----------+
-                                                                                       v
-                         GitHub -> Cloudflare Workers Builds -> Worker "av-bible" (static assets)
-                                                                                       |
-                                    web app (web/js): /bibles/WEB/, /visuals/, /audio/
+        +---------- Publish: git add/commit/push of CONTENT_PATHS ----------+
+                                                                            v
+                  GitHub -> Cloudflare Workers Builds -> Worker "av-bible" serves web/
+                                                                            |
+                           web app (web/js): /bibles/WEB/, /visuals/, /audio/
 ```
 
 ## Text
 
-- The source is `bibles/eng-web.usfx.xml`, the eBible.org USFX file. Git ignores it.
-- `import_translation.py` turns it into `bibles/WEB/<Book>_<ch>.json`: 1,189 files, one per chapter. Each holds `book`, `chapter`, `canonical` and `verses` (`[[number, text], ...]`). The files also carry `translation` and `notes` fields, which keep the re-import byte-identical; nothing reads them.
+- The source is `sources/eng-web.usfx.xml`, the eBible.org USFX file (`config.SOURCES_DIR`). Git ignores `sources/`.
+- `import_translation.py` turns it into `web/bibles/WEB/<Book>_<ch>.json` (`config.BIBLES_DIR`): 1,189 files, one per chapter. Each holds `book`, `chapter`, `canonical` and `verses` (`[[number, text], ...]`). The files also carry `translation` and `notes` fields, which keep the re-import byte-identical; nothing reads them.
 - In Python, `passages.load_chapter()` reads a chapter, and `passages.verse_numbers()` gives its verse numbers. That is the versification every picture follows: newer generators call `verse_numbers()`, and older ones carry their own verse tables that match it. Today the visual keys of all 73 illustrated chapters equal WEB's verses exactly.
 - On the web, `web/js/bible.js` fetches `/bibles/WEB/<Book>_<ch>.json`.
 
 ## Visuals
 
-1. **Generators.** Each `generate_*_svg.py` writes one family of pictures through `generate_tabernacle.out_path()`, as `visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg` (1024×576, SMIL animation). The generator is the source of truth, so its output is never edited by hand. `svg_generators.json`, read by `svg_registry.py`, records which generator owns each chapter or verse range. `test_registry` checks that every published verse SVG has an owner. House rules for the pictures are in [visuals.md](visuals.md).
-2. **Manifest.** `build_manifest.py` scans `visuals/` and writes `visuals/manifest.json`:
+1. **Generators.** Each `generate_*_svg.py` writes one family of pictures through `generate_tabernacle.out_path()`, as `web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg` under `config.VISUALS_DIR` (1024×576, SMIL animation). The generator is the source of truth, so its output is never edited by hand. `svg_generators.json`, read by `svg_registry.py`, records which generator owns each chapter or verse range. `test_registry` checks that every published verse SVG has an owner. House rules for the pictures are in [visuals.md](visuals.md).
+2. **Manifest.** `build_manifest.py` scans `web/visuals/` and writes `web/visuals/manifest.json`:
 
    ```json
    {"version": 2,
@@ -43,7 +43,7 @@ visuals/manifest.json (v2)                   web/audio/manifest.json
      - **Range file.** `Book_c_v1-v2.svg` supplies every WEB verse in its range that has no file of its own.
      - **Identical copy.** A verse whose SVG is byte-identical to the previous verse's points at the first file of that run, unless its family sets `"replay_identical": true`.
    - Today the manifest has 2,241 verse keys in 73 chapters of 11 books. They point at 2,116 distinct files: 125 verses share the previous verse's picture, and there are no range files yet.
-   - `visuals/reference/` holds the wall charts. They are not in the manifest: they deploy, but nothing links to them (D14; [reference-charts.md](reference-charts.md)).
+   - `web/visuals/reference/` holds the wall charts. They are not in the manifest: they deploy, but nothing links to them (D14; [reference-charts.md](reference-charts.md)).
 3. **Web.**
    - `web/js/visuals.js` loads `/visuals/manifest.json` (revalidated with `cache: "no-cache"`). `findVisual()` looks up the verse key, then the chapter key.
    - The stage is an `<img>`. When the next verse shows the same file, the `<img>` is left alone, so the picture keeps playing or stays finished. Pressing Play on the verse already shown restarts it with a fresh `?r=` URL.
@@ -65,41 +65,37 @@ visuals/manifest.json (v2)                   web/audio/manifest.json
 
 ## Deploy
 
-**Publish** in the Studio (`publish_studio.py`) is the only deploy path (D7):
+**Publish** in the Studio (`publish_studio.py`) is the only deploy path (D7). `web/` is served as it is, so there is nothing to build or copy, and Publish has two steps:
 
-1. `build_manifest.py` rebuilds `visuals/manifest.json`.
-2. `prepare-deploy.ps1` rebuilds `deploy_bundle/`:
-   - `web/*` goes to its root;
-   - the `*.json` in each `bibles/` subfolder go to `bibles/<subfolder>/` (today only `bibles/WEB/`);
-   - `visuals/` is copied without `*.xml` or `*.tmp`.
-
-   A confirm dialog then shows the change summary, the commit message and the bundle's file count against the limit.
-3. Git:
-   - `git add -A` and `git commit` run on `publish_studio.CONTENT_PATHS` only: `web/audio`, `bibles`, `visuals` and their `deploy_bundle/` copies. Anything staged elsewhere stays staged and uncommitted.
+1. `build_manifest.py` rebuilds `web/visuals/manifest.json`. Publish then scans the content paths for changes (`git status`), and a confirm dialog shows the change summary, the commit message and the deploy's file count against the limit.
+2. Git:
+   - `git add -A` and `git commit` run on `publish_studio.CONTENT_PATHS` only: `web/audio`, `web/visuals` and `web/bibles`. Anything staged elsewhere stays staged and uncommitted.
    - `git push` follows. The push is the deploy.
 
 Further rules:
 
-- **Web-app code is committed by hand.** Publish never commits the web app's own files (`web/` except `web/audio`). It warns when they have uncommitted changes, because those changes, and their `deploy_bundle/` copies, stay unpublished until you commit them.
-- **Dry run.** "Dry run (no commit / push)" runs steps 1 and 2, logs what would be committed and stops before git. Steps 1 and 2 still rewrite the manifest and `deploy_bundle/`.
+- **Web-app code is committed by hand.** Publish never commits the web app's own files: everything in `web/` outside the three content folders, which is `index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest` and `.assetsignore` (`publish_studio.WEB_APP_PATHS`). It warns when they have uncommitted changes, because those changes stay unpublished until you commit them. Once committed, they ship on the next push as they are; there are no copies to refresh.
+- **Dry run.** "Dry run (no commit / push)" runs step 1 and the change scan, logs what would be committed, and stops before `git add`, `git commit` and `git push`: nothing is staged, committed or pushed. Step 1 still rewrites the manifest.
 - **Cloudflare side.**
   - GitHub triggers Cloudflare Workers Builds, which deploys the Worker `av-bible`.
-  - `wrangler.toml` serves `deploy_bundle/` as static assets (`[assets] directory = "./deploy_bundle"`), so the app sits at `/`, with `/audio/`, `/bibles/WEB/` and `/visuals/` beside it.
-  - The build settings live in the Cloudflare dashboard, not in the repo.
+  - `wrangler.toml` serves `web/` as static assets (`[assets] directory = "./web"`), so the app sits at `/`, with `/audio/`, `/bibles/WEB/` and `/visuals/` beside it.
+  - `web/.assetsignore` (gitignore syntax) lists what wrangler leaves out of the upload: the file itself, `*.tmp`, `*.xml`, `.DS_Store`, `Thumbs.db` and `desktop.ini`. Everything else under `web/` is public, so nothing private or scratch belongs there.
+  - The build settings live in the Cloudflare dashboard, not in the repo. Today every push builds and deploys (watch paths `*`). The next step is watch paths limited to `web/*`, `wrangler.toml`, `package.json` and `package-lock.json`, and no automatic pip install ([ROADMAP.md](../ROADMAP.md), "Cloudflare build settings").
 - **No local deploys.** Local `wrangler` can't run on this Windows ARM64 PC, so deploys go only through GitHub.
-- **`deploy_bundle/` is tracked**, so each content file is in the repo twice. Serving `web/` directly and untracking the bundle is optional future work (D7(c), in [ROADMAP.md](../ROADMAP.md)).
+- **Each content file is tracked once**, in the folder it is served from.
 
 ## File budget
 
 On the Free plan, Cloudflare's Workers static assets take at most 20,000 files in one deployed version (`publish_studio.DEPLOY_FILE_LIMIT`). Files, not bytes, are the ceiling.
 
-`publish_studio.count_deploy_files()` counts what a deploy ships, from the source folders rather than `deploy_bundle/`:
+`publish_studio.count_deploy_files()` counts what a deploy ships: every file under `web/` that `web/.assetsignore` doesn't exclude. It reads that file, whose patterns are basename globs, and matches them with `fnmatch`. It counts the working tree, so content not yet published is included.
 
 | Counted | Today |
 |---|---|
-| Every file under `web/`, including the MP3s and manifest in `web/audio/` | 2,363 |
-| The `*.json` in each `bibles/` subfolder (only `WEB`) | 1,189 |
-| Every file under `visuals/` except `*.xml`: the verse SVGs, `manifest.json` and the 8 reference-chart files | 2,250 |
+| The web app's own files: `index.html`, `manifest.webmanifest`, `js/`, `css/`, `icons/` | 14 |
+| `web/audio/`: the narration MP3s and `manifest.json` | 2,349 |
+| `web/bibles/WEB/`: one JSON per chapter | 1,189 |
+| `web/visuals/`: the verse SVGs, `manifest.json` and the 8 reference-chart files | 2,250 |
 | **Total** | **5,802** |
 
 - **Cost.** A fully produced verse costs about 2 files: 1 SVG and 1 MP3.
@@ -109,7 +105,7 @@ On the Free plan, Cloudflare's Workers static assets take at most 20,000 files i
   - The main window's meter, `Files n / 20,000`. It turns amber above 90% and red over the limit, and recounts at startup, when a tool window closes and when clicked.
   - Publish's meter.
   - The Audio Renderer's confirm dialog, which adds the new files a render would create.
-  - Publish's confirm dialog counts the files actually in `deploy_bundle/` after step 2.
+  - Publish's confirm dialog, counted after step 1.
 - **When it fills up.** The ways to make room are listed in [ROADMAP.md](../ROADMAP.md).
 
 ## Where state lives
@@ -122,8 +118,9 @@ On the Free plan, Cloudflare's Workers static assets take at most 20,000 files i
 | Pronunciation list; retired entries | `pronunciations.json`; `pronunciations_archive.json` | yes |
 | Generated pronunciation reports | `PRONUNCIATIONS.md`, `PRONUNCIATION_TODO.md` | no (ignored) |
 | Generator registry | `svg_generators.json` | yes |
-| Content: text, pictures, narration and their manifests | `bibles/WEB/`, `visuals/`, `web/audio/` | yes |
-| The deployed copy | `deploy_bundle/` | yes |
+| Content: text, pictures, narration and their manifests | `web/bibles/WEB/`, `web/visuals/`, `web/audio/` | yes |
+| What the site serves | `web/` in the pushed commit, less what `web/.assetsignore` excludes | yes |
+| The WEB source text | `sources/eng-web.usfx.xml` (`config.SOURCES_DIR`) | no (ignored) |
 | Superseded designs, mockups, scratch work, the `pre-cleanup` bundle | `C:\Dev\Theoria-archive\` beside the repo (`config.ARCHIVE_DIR`): `backups/`, `mockups/`, `_scratch/`, `pre-cleanup.bundle` | no (outside the repo) |
 | Video renders | `config.RENDERS_DIR` = `Theoria-archive\renders\` | no (outside the repo) |
 

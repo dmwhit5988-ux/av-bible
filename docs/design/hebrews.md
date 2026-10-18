@@ -73,7 +73,7 @@
 > reading — most consequentially **"copy and shadow"** (8:5), **"collateral
 > of a better covenant"** (7:22), **"sawn apart"** (11:37), **"festal
 > gathering"** (12:23), and **"the Italians greet you"** (13:24). Check every
-> phrase against `bibles/WEB/Hebrews_*.json` before lettering it.
+> phrase against `web/bibles/WEB/Hebrews_*.json` before lettering it.
 
 ---
 

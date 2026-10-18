@@ -12,7 +12,7 @@ dating stops.
 | what | where |
 |---|---|
 | the data, the binding, the audit | `chronology.py` — run it for the coverage report |
-| the sheet | `generate_ot_timeline_svg.py` → `visuals/reference/Old_Testament_timeline.svg` + `.html` |
+| the sheet | `generate_ot_timeline_svg.py` → `web/visuals/reference/Old_Testament_timeline.svg` + `.html` |
 
 The sheet is deployed with the other reference charts but not linked from
 the app; [reference-charts.md](../reference-charts.md) covers all of them.

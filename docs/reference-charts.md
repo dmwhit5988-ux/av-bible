@@ -1,14 +1,14 @@
 # Reference charts
 
-`visuals/reference/` holds the standalone wall charts. Nothing in them is tied to a verse.
+`web/visuals/reference/` holds the standalone wall charts. Nothing in them is tied to a verse.
 
 Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, wheel zoom, fit / + / − buttons, and a name search that steps through the hits (↑ ↓). All four viewers are the same page; the two generators write theirs from `generate_ot_family_tree_svg.VIEWER`. You can also open an `.svg` directly in a browser.
 
 ## Status (D14)
 
-- **Deployed.** All four charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `prepare-deploy.ps1` copies all of `visuals/`, and Publish commits `visuals/`, so a change to a chart ships like any other visuals change.
+- **Deployed.** All four charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
 - **Not linked.** Nothing in the web app links to them, because which family-tree version belongs in the app hasn't been chosen. Anyone with the exact URL can open one.
-- **Not indexed.** `build_manifest.py` only indexes `visuals/<Book>/<chapter>/` and the flat `visuals/` root, so the charts never become manifest keys.
+- **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
 - **None is archived.** The V6 heir-spine variant stays until the choice is made.
 - **Cost.** The charts are 8 deploy files.
 - **Later.** A Charts entry in the app is on the [roadmap](../ROADMAP.md), once the version is chosen.

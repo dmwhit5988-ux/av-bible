@@ -9,12 +9,12 @@ Everything that *produces* Theoria's assets is Python and can't run in a browser
 - the `generate_*_svg.py` generators;
 - `pronunciation.respell()`.
 
-The website is a deliberately simple consumer. It reads `visuals/manifest.json` and `web/audio/manifest.json` and plays whatever is there. So authoring happens in the Studio, and the website is the product.
+The website is a deliberately simple consumer. It reads `web/visuals/manifest.json` and `web/audio/manifest.json` and plays whatever is there. So authoring happens in the Studio, and the website is the product.
 
 ```
 Studio  = author, render, check, publish   (tkinter on the PC)
 Website = static, manifest-driven, no build step
-Bridge  = visuals/, web/audio/, bibles/WEB/ and their manifests -> deploy_bundle/ -> git push
+Bridge  = web/visuals/, web/audio/, web/bibles/WEB/ and their manifests -> git push (web/ is the site)
 ```
 
 Principles:
@@ -95,7 +95,7 @@ The backlog. One tree over the canon (66 books, 1,189 chapters) shows, per chapt
 The Filter box offers: All chapters, Has content, Candidate gaps (no visuals), Unreviewed names. "Go to chapter" or a double-click sets the shared passage.
 
 - **Reads:**
-  - `bibles/WEB/`, `visuals/manifest.json`, `web/audio/manifest.json`;
+  - `web/bibles/WEB/`, `web/visuals/manifest.json`, `web/audio/manifest.json`;
   - `pronunciations.json` (`pronunciation.load`, with `scan_proper_nouns` over the WEB text);
   - [content-catalog.md](content-catalog.md). Coverage machine-reads it: it parses `### <Book>` headings and `- **<Book> <chapters>** — …` entries, and skips an entry with no chapter number.
 - **Writes:** nothing.
@@ -107,13 +107,13 @@ The Filter box offers: All chapters, Has content, Candidate gaps (no visuals), U
   - routes edits of a generator-owned verse to the generator's spec;
   - re-runs the generator;
   - previews the working SVG with its narration;
-  - saves into `visuals/`.
+  - saves into `web/visuals/`.
 
   Design: [svg-studio.md](svg-studio.md).
-- **Reads:** `visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg`, `svg_generators.json`, the verse's MP3 in `web/audio/` (for the preview), and the `editor` and `svg_preview_host` settings.
+- **Reads:** `web/visuals/<Book>/<ch>/<Book>_<ch>_<v>.svg`, `svg_generators.json`, the verse's MP3 in `web/audio/` (for the preview), and the `editor` and `svg_preview_host` settings.
 - **Writes:**
   - the verse's SVG (Save);
-  - `visuals/manifest.json`, by running `build_manifest.py` (Save + manifest);
+  - `web/visuals/manifest.json`, by running `build_manifest.py` (Save + manifest);
   - every SVG of a family, by running its generator (Re-run generator);
   - the `svg_preview_host` setting.
 - **Passage:**
@@ -130,7 +130,7 @@ The Filter box offers: All chapters, Has content, Candidate gaps (no visuals), U
   - mark it Custom or "✓ Fine".
 
   Names are keyed by WEB spelling, so a fix applies everywhere the name occurs.
-- **Reads:** `bibles/WEB/`, `pronunciations.json`.
+- **Reads:** `web/bibles/WEB/`, `pronunciations.json`.
 - **Writes:**
   - `pronunciations.json`, via `pronunciation.save_names`, which merges per name with a fresh read;
   - the generated `PRONUNCIATIONS.md`;
@@ -157,7 +157,7 @@ See [pronunciation.md](pronunciation.md).
   - "Voice override" is the one voice picker in the Studio. It applies to one render and is not saved.
   - Before rendering, a confirm dialog shows the new-file count against the deploy budget.
   - A verse is skipped when edge-tts is unreachable, so the offline voice never ships.
-- **Reads:** `bibles/WEB/`, `pronunciations.json` (via `respell()`), `web/audio/manifest.json`.
+- **Reads:** `web/bibles/WEB/`, `pronunciations.json` (via `respell()`), `web/audio/manifest.json`.
 - **Writes:**
   - `web/audio/<Book>_<ch>_<v>.mp3`;
   - `web/audio/manifest.json`, merged and saved after every chapter, so an interrupted render resumes;
@@ -170,7 +170,7 @@ See [pronunciation.md](pronunciation.md).
 ### Video: Video Studio (`video_studio.py`)
 
 - **What it does:** renders a verse range to a 4K MP4 with captions, a description and a thumbnail. Design: [video-studio.md](video-studio.md).
-- **Reads:** `web/audio/` MP3s (it synthesizes any that are missing), `visuals/`, `bibles/WEB/`, `svg_generators.json` (the `replay_identical` opt-out).
+- **Reads:** `web/audio/` MP3s (it synthesizes any that are missing), `web/visuals/`, `web/bibles/WEB/`, `svg_generators.json` (the `replay_identical` opt-out).
 - **Writes:**
   - the MP4 and its sidecars, in `config.RENDERS_DIR` by default;
   - with "Also publish new narration to web/audio" ticked, newly synthesized MP3s, into `web/audio/` and its manifest.
@@ -181,9 +181,9 @@ See [pronunciation.md](pronunciation.md).
 
 ### Publish (`publish_studio.py`)
 
-- **What it does:** runs the manifest, the deploy bundle, and a content-only commit and push. It has a "Dry run (no commit / push)" box. The steps, the content paths and the web-code warning are in [architecture.md](architecture.md#deploy).
+- **What it does:** rebuilds the visuals manifest, then makes a content-only commit and push. It has a "Dry run (no commit / push)" box. The steps, the content paths and the web-code warning are in [architecture.md](architecture.md#deploy).
 - **Reads:** git status, the content folders.
-- **Writes:** `visuals/manifest.json`, `deploy_bundle/`, one commit of `CONTENT_PATHS`, and the push.
+- **Writes:** `web/visuals/manifest.json`, one commit of `CONTENT_PATHS`, and the push.
 - **Passage:** `set_passage()` does nothing and returns True. `can_close()` refuses while a publish runs.
 
 ## The chapter workflow
@@ -203,7 +203,7 @@ What the Studio is built around, from catalog entry to published chapter. Steps 
    - *(planned, S5)* **New visual family…** writes a generator from a template, plus its registry entry, and copies a ready-to-paste Claude prompt: the catalog entry, design notes, WEB text and house rules. The template iterates `verse_numbers()`.
    - *(planned, S5)* **Regenerate to scratch → compare → Accept.**
 5. **Preview.**
-   - Today: the main window's interim player, or the web app served locally from `deploy_bundle/` after a Publish dry run (`.claude/launch.json`, `web-static`).
+   - Today: the main window's interim player, or the web app served locally from `web/` (`python -m http.server 8000 -d web`, the `web-static` entry in `.claude/launch.json`). It serves the working tree, so rebuild the manifest first when pictures changed.
    - *(planned, S4)* the Preview pane: the chapter end to end, exactly as the website shows it.
 6. **Publish.** *(planned, S3)* lint runs first, and an optional separate commit of the sources follows the content commit.
 7. **Video** (optional): a 4K MP4 in Video Studio.
@@ -212,7 +212,7 @@ What the Studio is built around, from catalog entry to published chapter. Steps 
 
 Every generator should accept the same three flags:
 - `--only CH[:V]`: write one chapter or verse;
-- `--out DIR`: write into a scratch folder instead of `visuals/`;
+- `--out DIR`: write into a scratch folder instead of `web/visuals/`;
 - `--dry`: report without writing.
 
 A `cli` capability field in the registry says which generators support them, so SVG Studio and Regenerate-to-scratch know what they can ask for.
@@ -257,7 +257,7 @@ Today, of the 24 distinct registered generators:
 
 **The Preview pane (S4).**
 - **How it works.** A daemon `http.server` on 127.0.0.1 plus embedded WebView2, showing the real web app at `/?b=&c=&v=`. It uses the `--autoplay-policy=no-user-gesture-required` flag `svg_preview.py` already sets, with "Rebuild manifest" beside it.
-- **Serving.** It must serve the production layout at `/`, because the web app fetches root-absolute paths (`/visuals/…`, `/bibles/WEB/…`). Until D7(c), a `translate_path` override maps `/visuals/*` to `visuals/`, `/bibles/*` to `bibles/`, and everything else to `web/`.
+- **Serving.** It must serve the production layout at `/`, because the web app fetches root-absolute paths (`/visuals/…`, `/bibles/WEB/…`). That layout is `web/` itself (`config.WEB_DIR`), so a plain `http.server` handler rooted there is enough.
 - **Depends on** web deep links, which `web/js` doesn't have yet.
 - **Before the old player goes,** a parity checklist runs on this PC:
   - deep links land on the verse;

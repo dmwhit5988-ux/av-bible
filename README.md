@@ -21,28 +21,30 @@ consecutive verses share a picture, it keeps playing and doesn't restart.
 
 ## How it's made
 
-1. **Text.** `bibles/WEB/<Book>_<chapter>.json` holds one file per chapter (1,189).
-   `import_translation.py` rebuilds them from the eBible.org USFX file
-   `bibles/eng-web.usfx.xml`, which is gitignored.
+1. **Text.** `web/bibles/WEB/<Book>_<chapter>.json` holds one file per chapter
+   (1,189). `import_translation.py` rebuilds them from the eBible.org USFX file
+   `sources/eng-web.usfx.xml`. The `sources/` folder is gitignored.
 2. **Pictures.** The generator scripts registered in `svg_generators.json` draw the
-   per-verse SVGs, animated with SMIL, into `visuals/<Book>/<chapter>/`. Each script
-   draws one or more families, and the registry records which generator owns which
-   chapters. The generators are the source of truth, and generated SVGs are never
-   edited by hand. `build_manifest.py` indexes the SVGs into `visuals/manifest.json`.
-   Two other scripts, `generate_ot_family_tree_svg.py` and
-   `generate_ot_timeline_svg.py`, draw wall charts into `visuals/reference/`.
+   per-verse SVGs, animated with SMIL, into `web/visuals/<Book>/<chapter>/`. Each
+   script draws one or more families, and the registry records which generator owns
+   which chapters. The generators are the source of truth, and generated SVGs are
+   never edited by hand. `build_manifest.py` indexes the SVGs into
+   `web/visuals/manifest.json`. Two other scripts, `generate_ot_family_tree_svg.py`
+   and `generate_ot_timeline_svg.py`, draw wall charts into `web/visuals/reference/`.
 3. **Narration.** The Studio's Audio Renderer synthesizes one MP3 per verse into
    `web/audio/`, listed in `web/audio/manifest.json`. It uses the house voice
    `en-US-AndrewNeural` through edge-tts, with proper nouns respelled from
    `pronunciations.json`.
-4. **Publish.** The Studio's Publish tool rebuilds the manifest, copies `web/`,
-   `bibles/` and `visuals/` into `deploy_bundle/`, then commits the content and
-   pushes it. The push is the deploy: Cloudflare Workers Builds deploys
-   `deploy_bundle/` as the av-bible Worker's static assets (`wrangler.toml`).
+4. **Publish.** The Studio's Publish tool rebuilds the visuals manifest, then
+   commits the content and pushes it. The push is the deploy: Cloudflare Workers
+   Builds deploys `web/` from the pushed commit as the av-bible Worker's static
+   assets (`wrangler.toml`). Nothing is copied or built first.
 
-The web app in `web/` is plain JavaScript with no build step and no framework. It
-fetches the chapter JSON and both manifests, then plays each verse's MP3, falling
-back to Web Speech where there is none.
+The web app in `web/` is plain JavaScript with no build step and no framework.
+`web/` is also the site root, so the content folders inside it are the site's
+`/bibles/`, `/visuals/` and `/audio/`. The app fetches the chapter JSON and both
+manifests, then plays each verse's MP3, falling back to Web Speech where there is
+none.
 [docs/architecture.md](docs/architecture.md) covers the whole flow.
 
 ## Quick start
@@ -63,25 +65,28 @@ with `pythonw`. If the Studio can't load, `run.bat` runs it in the console so th
 traceback stays on screen. After the Studio starts, its errors go to
 `cache/studio_error.log`.
 
-**Run the web app locally:** serve `deploy_bundle/` at the site root, for example
-`.venv\Scripts\python.exe -m http.server 8000 -d deploy_bundle`, then open
-`http://localhost:8000/`. The bundle is only as fresh as the last Publish (or Publish
-dry run), which is what rebuilds it.
+**Run the web app locally:** serve `web/` at the site root. From the repo root, run
+`python -m http.server 8000 -d web` (any Python works, `.venv\Scripts\python.exe`
+included), then open `http://localhost:8000/`. The `web-static` entry in
+`.claude/launch.json` runs the same server. It shows the working tree as it is, so
+after changing pictures, rebuild the manifest with `build_manifest.py` or SVG
+Studio's **Save + manifest** before you look.
 
 ## Repo map
 
 | Path | What it holds |
 |---|---|
-| `web/` | The web app: `index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`. `web/audio/` holds the narration MP3s and their manifest. |
-| `bibles/WEB/` | The WEB text, one JSON file per chapter. |
-| `visuals/` | Per-verse SVGs in `visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. The charts are deployed but nothing on the site links to them ([docs/reference-charts.md](docs/reference-charts.md)). |
-| `deploy_bundle/` | What Cloudflare serves. `prepare-deploy.ps1` rebuilds it, and it is tracked in git. |
+| `web/` | The site root, which Cloudflare serves as it is. It holds the web app (`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`) and the three content folders below. `web/.assetsignore` lists the files the upload leaves out. |
+| `web/audio/` | The narration MP3s and their manifest. |
+| `web/bibles/WEB/` | The WEB text, one JSON file per chapter. |
+| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. The charts are deployed but nothing on the site links to them ([docs/reference-charts.md](docs/reference-charts.md)). |
+| `sources/` | Ignored: `eng-web.usfx.xml`, the source text that `import_translation.py` turns into `web/bibles/WEB/`. |
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
 | `tools/` | Reference scripts: `audit_heb.py` (a text-overlap audit of the Hebrews SVGs) and `layout_lab.py` (a family-tree layout study). |
 | `branding/` | Logo sources. |
 | `cache/` | Ignored: the TTS cache and the Studio's error log. |
-| Root files | The Python modules (below), `run.bat`, `requirements.txt`, `svg_generators.json` (the generator registry), `pronunciations.json`, `pronunciations_archive.json` and `isbe_harvest.json` (pronunciation data), and the deploy files `wrangler.toml`, `package.json` and `prepare-deploy.ps1`. |
+| Root files | The Python modules (below), `run.bat`, `requirements.txt`, `svg_generators.json` (the generator registry), `pronunciations.json`, `pronunciations_archive.json` and `isbe_harvest.json` (pronunciation data), and the deploy files `wrangler.toml`, `package.json` and `package-lock.json`. |
 
 Superseded designs, old renders and scratch work live outside the repo in
 `C:\Dev\Theoria-archive` (`config.ARCHIVE_DIR`). Video renders go to
@@ -97,7 +102,7 @@ Superseded designs, old renders and scratch work live outside the repo in
 - `web/js/data.js`: the book list and chapter counts, ported from `books.py`.
 - `web/js/tts.js`: the per-verse player, which plays the verse's MP3 where there is one
   and uses Web Speech otherwise.
-- `web/js/visuals.js`: looks pictures up in `visuals/manifest.json`, lists the
+- `web/js/visuals.js`: looks pictures up in `/visuals/manifest.json`, lists the
   illustrated chapters, and picks each book's background gradient.
 - `web/manifest.webmanifest` and `web/icons/`: the web app manifest and icons.
 
@@ -114,11 +119,13 @@ from the `TOOLS` registry in `app.py`:
 | Author | Verifier: transcribes the rendered audio and scores it against the list | `pronunciation_check.py`, `ipa_asr.py` | separate process |
 | Produce | Audio: renders chapter narration MP3s | `audio_studio.py` | window |
 | Produce | Video: renders a verse range to an MP4 (4K by default) | `video_studio.py`, `video_render.py` | window |
-| Ship | Publish: manifest, bundle, commit, push | `publish_studio.py` | window |
+| Ship | Publish: manifest, commit, push | `publish_studio.py` | window |
 
 The modules the Studio and its tools share:
 
-- `config.py` handles settings (`config.json`, ignored) and the paths.
+- `config.py` handles settings (`config.json`, ignored) and the paths: `WEB_DIR`
+  (the site root), `VISUALS_DIR`, `BIBLES_DIR`, `WEB_AUDIO_DIR` and `SOURCES_DIR`.
+  The other modules take their paths from it.
 - `passages.py` loads the WEB text and provides `verse_numbers()`. `books.py` holds
   the canon.
 - `tts_engine.py` does speech synthesis (`HOUSE_VOICE`, `HOUSE_RATE`).
@@ -179,56 +186,63 @@ The libraries most generators share:
 - Video Studio needs ffmpeg (`winget install BtbN.FFmpeg.GPL`, or `ffmpeg.exe` and
   `ffprobe.exe` in `tools/ffmpeg/bin/`) and Google Chrome or Microsoft Edge, which
   draws the frames.
-- Windows PowerShell, which Publish uses to run `prepare-deploy.ps1`. It also
-  provides the offline SAPI fallback voice.
+- Windows PowerShell, which provides the offline SAPI fallback voice.
 - Inkscape is optional, for SVG Studio's "Open in Inkscape".
 
 ## Deploy
 
 **A push to `main` deploys.** The GitHub repo is connected to Cloudflare Workers
-Builds, which deploys the Worker `av-bible`. `wrangler.toml` serves `./deploy_bundle`
-as static assets: the web app at `/`, and `/audio/`, `/bibles/WEB/` and `/visuals/`
-beside it. Local wrangler can't run on Windows ARM64, because it needs `workerd`,
-which has no build for that platform. So every deploy goes through GitHub.
-`package.json` pins wrangler 4.107.0.
+Builds, which deploys the Worker `av-bible`. `wrangler.toml` serves `./web` from the
+pushed commit as static assets: the web app at `/`, and `/audio/`, `/bibles/WEB/`
+and `/visuals/` beside it. `web/.assetsignore` lists what wrangler leaves out of the
+upload: `*.tmp`, `*.xml`, `.DS_Store`, `Thumbs.db`, `desktop.ini` and the file
+itself. Everything else under `web/` goes public. Local wrangler can't run on
+Windows ARM64, because it needs `workerd`, which has no build for that platform. So
+every deploy goes through GitHub. `package.json` pins wrangler 4.107.0, and the build
+installs it from `package-lock.json`.
+
+Today every push builds and deploys, docs-only and Python-only pushes included. The
+next step is to build only for pushes that touch `web/`, `wrangler.toml`,
+`package.json` or `package-lock.json` ([ROADMAP.md](ROADMAP.md), "Cloudflare build
+settings").
 
 **Publish** is the deploy button. Open it with the Publish button in the Studio's
-Ship group, or run `publish_studio.py`. It has three steps:
+Ship group, or run `publish_studio.py`. It has two steps:
 
-1. `build_manifest.py` rebuilds `visuals/manifest.json`.
-2. `prepare-deploy.ps1` rebuilds `deploy_bundle/` from `web/`, `bibles/` and
-   `visuals/`. A confirm dialog then shows the change summary and the file budget.
-3. It runs `git add`, `git commit` and `git push` on the content paths only, which
-   are `publish_studio.CONTENT_PATHS`: `web/audio`, `bibles` and `visuals`, plus their
-   `deploy_bundle/` copies. The commit message reads `Publish: …`. If there are no
-   content changes, nothing is committed or pushed.
+1. `build_manifest.py` rebuilds `web/visuals/manifest.json`. Publish then scans the
+   content paths for changes (`git status`), and a confirm dialog shows the change
+   summary and the file budget.
+2. It runs `git add`, `git commit` and `git push` on the content paths only, which
+   are `publish_studio.CONTENT_PATHS`: `web/audio`, `web/visuals` and `web/bibles`.
+   The commit message reads `Publish: …`. If there are no content changes, nothing
+   is committed or pushed.
 
-Tick **Dry run (no commit / push)** to run steps 1 and 2 and log what would be
-committed. A dry run still rewrites the manifest and `deploy_bundle/`.
+Tick **Dry run (no commit / push)** to run step 1 and the change scan, and log what
+would be committed. It stops before `git add`, `git commit` and `git push`. A dry run
+still rewrites the manifest.
 
 **File budget.** Cloudflare Workers static assets allow about 20,000 files per
 deployed version (`publish_studio.DEPLOY_FILE_LIMIT`). The ceiling is a file count,
-not bytes. `count_deploy_files()` counts what a deploy ships: 5,802 files as of
-2026-10-17. Each fully produced verse adds about two files, one SVG and one MP3. The
-Studio's toolbar and Publish show the count, and the Audio Renderer projects it
-before a render.
+not bytes. `count_deploy_files()` counts what a deploy ships: every file under `web/`
+that `web/.assetsignore` doesn't exclude, 5,802 files as of 2026-10-17. Each fully
+produced verse adds about two files, one SVG and one MP3. The Studio's toolbar and
+Publish show the count, and the Audio Renderer projects it before a render.
 
-**Web-app code** means everything in `web/` except `web/audio/`. Publish never
-commits it, and it warns while any of it is uncommitted. To ship a change to it:
+**Web-app code** means everything in `web/` outside the three content folders:
+`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest` and `.assetsignore`
+(`publish_studio.WEB_APP_PATHS`). Publish never commits it, and it warns while any of
+it is uncommitted. To ship a change to it, commit the changed files by hand (for
+example `git add web/js/app.js`, then `git commit`) and run `git push`. Because
+`web/` is served as it is, the push deploys the change, and there are no copies to
+refresh. Publish's own `git push` also pushes any local commits like this one.
 
-1. Run a Publish dry run, so `deploy_bundle/` gets the new copies.
-2. Commit the changed files together with their `deploy_bundle/` copies, for
-   example `git add web/js/app.js deploy_bundle/js/app.js`, then `git commit`.
-3. Run `git push`. The push deploys it. Publish's own `git push` also pushes any
-   local commits like this one.
-
-Python, docs and other code are committed by hand the same way. They are not part of
-the bundle, but a push of them still triggers a build.
+Python, docs and other code are committed by hand the same way. Only `web/` is
+served, but until the build settings change, a push of them still triggers a build.
 
 **Rollback.** Either `git revert` the bad commit and push, which redeploys the
 previous content, or roll the Worker back to an earlier version from its deployments
 list in the Cloudflare dashboard. A dashboard rollback doesn't touch git, so the next
-push deploys `main` as it stands.
+build deploys `main` as it stands.
 
 ## Tests
 
@@ -265,7 +279,7 @@ There are 33 tests in four modules:
 - [docs/content-catalog.md](docs/content-catalog.md): candidate visuals for the whole
   canon. Coverage parses this file, so keep its format.
 - [docs/reference-charts.md](docs/reference-charts.md): the wall charts in
-  `visuals/reference/`.
+  `web/visuals/reference/`.
 - Design records:
   - [Hebrews](docs/design/hebrews.md)
   - [Romans](docs/design/romans.md)

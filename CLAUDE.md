@@ -19,7 +19,7 @@ explains the project, and `docs/` has the detail.
 ## Git and deploy
 
 - **A push to `main` is a deploy.** Cloudflare Workers Builds deploys the Worker
-  `av-bible` from `deploy_bundle/`. Never push without asking the user first.
+  `av-bible` from `web/`, served as it is. Never push without asking the user first.
 - Commit locally first, then ask before pushing. Publish's own `git push` sends any
   local commits too.
 - Deploy only through GitHub. Local wrangler can't run on this PC, so don't try to
@@ -29,15 +29,18 @@ explains the project, and `docs/` has the detail.
   `curl -s https://api.github.com/repos/dmwhit5988-ux/av-bible/commits/<sha>/check-runs`.
   The repo is public, so no auth is needed. `gh` isn't installed.
 - For the user, deploying stays one button: Publish in the Studio. Any change to the
-  deploy layout must update Publish (`publish_studio.py`, `prepare-deploy.ps1`) in the
-  same commit, and must be checked with a Publish dry run.
-- Publish commits only `publish_studio.CONTENT_PATHS`. Commit code and docs by hand.
-  When you change web-app files, refresh their `deploy_bundle/` copies with a Publish
-  dry run or `prepare-deploy.ps1`, then commit the copies too.
+  deploy layout (`wrangler.toml`, `web/.assetsignore`, the folders under `web/`) must
+  update Publish (`publish_studio.py`) in the same commit, and must be checked with a
+  Publish dry run.
+- Publish commits only `publish_studio.CONTENT_PATHS` (`web/audio`, `web/visuals`,
+  `web/bibles`). Commit code and docs by hand. A committed web-app file ships on the
+  next push as it is; there is no copy to refresh.
+- Everything under `web/` is public except what `web/.assetsignore` excludes, so never
+  put a private or scratch file there.
 - Mind the file budget. A deploy can hold about 20,000 files
   (`publish_studio.DEPLOY_FILE_LIMIT`, counted by `count_deploy_files()`), and the
-  ceiling is files, not bytes. Every file added under `web/`, `bibles/` or `visuals/`
-  counts.
+  ceiling is files, not bytes. Every file added under `web/` counts, unless
+  `web/.assetsignore` excludes it.
 
 ## Scope
 
@@ -49,8 +52,10 @@ explains the project, and `docs/` has the detail.
 ## Web app
 
 - `web/` is static vanilla JS with no build step, no framework and no bundler.
-- The page fetches root-absolute paths (`/visuals/…`, `/bibles/WEB/…`), so test it
-  served at a site root, for example `deploy_bundle/`.
+- `web/` is the site root: the content lives in `web/visuals/`, `web/bibles/WEB/` and
+  `web/audio/`. The page fetches root-absolute paths (`/visuals/…`, `/bibles/WEB/…`),
+  so test it with `web/` served at the root: `python -m http.server 8000 -d web`, the
+  `web-static` entry in `.claude/launch.json`.
 
 ## Studio
 
@@ -72,7 +77,7 @@ explains the project, and `docs/` has the detail.
 - Generators (`generate_*_svg.py` and the spec modules named in
   `svg_generators.json`) are the source of truth. Never hand-edit a generated SVG.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
-  `svg_generators.json`. The wall charts in `visuals/reference/` are exempt: they
+  `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt: they
   stay deployed and unlinked, and the 1–2 Chronicles chart is a frozen file with no
   generator ([docs/reference-charts.md](docs/reference-charts.md)).
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
@@ -90,6 +95,8 @@ explains the project, and `docs/` has the detail.
 
 - Put superseded designs, backups, renders and scratch work in
   `C:\Dev\Theoria-archive` (`config.ARCHIVE_DIR`), never in the repo.
+- Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
+  `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
   `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals`.
 - In living docs, describe what is, and cite file and function names, not line

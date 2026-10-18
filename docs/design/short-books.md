@@ -16,7 +16,7 @@
 > the office panels left no room for their names.
 >
 > ⚠️ **Wording.** Quotations and names below are **WEB** (the project's only
-> text, `passages.TRANSLATION`), checked against `bibles/WEB/`. Letter
+> text, `passages.TRANSLATION`), checked against `web/bibles/WEB/`. Letter
 > anything on a graphic from the WEB text itself, not from these notes.
 
 Every book of the Bible with **three chapters or fewer**: 13 books, 28 chapters.
@@ -52,7 +52,7 @@ Type icons follow the [content catalog](../content-catalog.md#legend):
 | 12 | 2 Thessalonians | 3 | NT |
 | 13 | 2 Peter | 3 | NT |
 
-*Numbering note:* WEB chapter divisions (`bibles/WEB/`, `books.py`). Near-misses at
+*Numbering note:* WEB chapter divisions (`web/bibles/WEB/`, `books.py`). Near-misses at
 four chapters, if the band is ever widened: Ruth, Jonah, Malachi, Philippians,
 Colossians, 2 Timothy.
 

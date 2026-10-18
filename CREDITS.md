@@ -6,8 +6,9 @@ states. It does not decide how any licence applies.
 ## Scripture: World English Bible
 
 The text is the **World English Bible** (WEB), which is in the public domain. The
-copy in `bibles/WEB/` comes from eBible.org's USFX edition (`bibles/eng-web.usfx.xml`,
-which is not tracked), and `import_translation.py` imports it. The import keeps the
+copy in `web/bibles/WEB/` comes from eBible.org's USFX edition
+(`sources/eng-web.usfx.xml`, which is not tracked), and `import_translation.py`
+imports it. The import keeps the
 verse text and the footnotes, though the app doesn't use the footnotes. It drops
 headings and cross-references.
 

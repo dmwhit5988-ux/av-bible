@@ -1,6 +1,6 @@
 # Visuals
 
-Every illustrated verse shows one animated SVG picture on the stage while the verse is narrated. Each picture is written by a Python generator (`generate_*.py`), indexed by `build_manifest.py` into `visuals/manifest.json`, and looked up by the web app (`web/js/visuals.js`).
+Every illustrated verse shows one animated SVG picture on the stage while the verse is narrated. Each picture is written by a Python generator (`generate_*.py`), indexed by `build_manifest.py` into `web/visuals/manifest.json`, and looked up by the web app (`web/js/visuals.js`), which fetches it as `/visuals/manifest.json`.
 
 As of 2026-10-17: 2,241 illustrated verses in 73 chapters of 11 books, shown by 2,116 distinct pictures, from 25 registered generator families. Every illustrated chapter is complete.
 
@@ -16,11 +16,12 @@ As of 2026-10-17: 2,241 illustrated verses in 73 chapters of 11 books, shown by 
 
 | What | Path |
 |---|---|
-| One verse | `visuals/<Book>/<chapter>/<Book>_<chapter>_<verse>.svg`, with underscores for the spaces in a book name, e.g. `visuals/1_Chronicles/2/1_Chronicles_2_5.svg` |
-| A verse range | `visuals/<Book>/<chapter>/<Book>_<chapter>_<v1>-<v2>.svg`, e.g. `Numbers_32_16-32.svg`. It is one picture for every verse in the range that has no file of its own. None exist yet. |
-| A whole chapter | `visuals/<Book>/<chapter>/<Book>_<chapter>.svg`, the key `Book_c`, used for any verse with no key of its own. None exist. |
+| One verse | `web/visuals/<Book>/<chapter>/<Book>_<chapter>_<verse>.svg`, with underscores for the spaces in a book name, e.g. `web/visuals/1_Chronicles/2/1_Chronicles_2_5.svg` |
+| A verse range | `web/visuals/<Book>/<chapter>/<Book>_<chapter>_<v1>-<v2>.svg`, e.g. `Numbers_32_16-32.svg`. It is one picture for every verse in the range that has no file of its own. None exist yet. |
+| A whole chapter | `web/visuals/<Book>/<chapter>/<Book>_<chapter>.svg`, the key `Book_c`, used for any verse with no key of its own. None exist. |
 
-- Generators build the path with `generate_tabernacle.out_path(book, chapter, filename)`.
+- Generators build the path with `generate_tabernacle.out_path(book, chapter, filename)`, under `config.VISUALS_DIR`.
+- The site serves the folder at `/visuals/`, so a file's URL is its path without `web/`.
 - Verse numbers come from `passages.verse_numbers(book, chapter)`, the WEB versification. A generator iterates those numbers rather than a hard-coded chapter length.
 - A file name never carries a translation suffix or `.still`. `build_manifest.py` and `test_registry` flag either as a retired leftover.
 
@@ -42,16 +43,16 @@ Run `.venv/Scripts/python.exe build_manifest.py`. Publish runs it as step 1, and
 | Field | Meaning |
 |---|---|
 | key | `Book_c_v` (a verse) or `Book_c` (a chapter), book name with underscores |
-| `file` | Path relative to `visuals/`, forward slashes |
+| `file` | Path relative to `web/visuals/`, forward slashes |
 | `kind` | `data-kind="…"` on the SVG root if present, else the owning family's `kind` in `svg_generators.json`, else `infographic`. Today: diagram, genealogy, map, chart. |
 | `animated` | Whether the SVG contains a SMIL element (`svg_freeze.svg_is_animated`) |
 
-**What it reads.** Image files in `visuals/<Book>/<chapter>/`, and in the flat `visuals/` root.
+**What it reads.** Image files in `web/visuals/<Book>/<chapter>/`, and in the flat `web/visuals/` root.
 
 **What it skips.**
 - Anything that isn't an image: `manifest.json`, and the chart viewers' `.html`.
 - Dot-folders.
-- `visuals/reference/`: it has no chapter folders, so its charts never become keys. See [reference-charts.md](reference-charts.md).
+- `web/visuals/reference/`: it has no chapter folders, so its charts never become keys. See [reference-charts.md](reference-charts.md).
 - Any `.still.svg`.
 - A range file whose range runs backwards, or whose chapter WEB doesn't have.
 
@@ -70,7 +71,7 @@ Run `.venv/Scripts/python.exe build_manifest.py`. Publish runs it as step 1, and
 **What it reports.**
 - `[WARN]` lines for each range problem above.
 - `[OK]` with the number of verses that share a picture.
-- `[WARN]` listing any retired variant files (translation-suffixed or `.still.svg`) under `visuals/`.
+- `[WARN]` listing any retired variant files (translation-suffixed or `.still.svg`) under `web/visuals/`.
 - Finally the key count and the number of animated records.
 
 ## How the web app uses it
@@ -98,7 +99,7 @@ Run `.venv/Scripts/python.exe build_manifest.py`. Publish runs it as step 1, and
   - SVG Studio routes "edit this verse" to the spec and offers **Re-run generator** ([svg-studio.md](svg-studio.md));
   - `build_manifest.py` takes `kind` and `replay_identical` from it;
   - `video_render.py` reads `replay_identical`.
-- **`test_registry`** checks four things: every generator and spec file exists (and imports), no two families claim a verse, every verse SVG under `visuals/<Book>/<chapter>/` has an owner, and no retired variant file is back.
+- **`test_registry`** checks four things: every generator and spec file exists (and imports), no two families claim a verse, every verse SVG under `web/visuals/<Book>/<chapter>/` has an owner, and no retired variant file is back.
 - **A new family** needs its generator and a registry entry in the same change.
 
 ## House rules
@@ -145,4 +146,4 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 ## Reference charts
 
-`visuals/reference/` holds the wall charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree and the OT timeline. They deploy with the site, but nothing links to them. See [reference-charts.md](reference-charts.md).
+`web/visuals/reference/` holds the wall charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree and the OT timeline. They deploy with the site, but nothing links to them. See [reference-charts.md](reference-charts.md).
