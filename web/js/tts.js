@@ -6,10 +6,10 @@
 //     used when `resolveAudio(index)` returns a URL for the current verse.
 // state: "stopped" | "playing" | "paused"
 
-// A near-silent one-sample WAV, used only to "prime" the shared <audio>
-// element inside a real user gesture so later programmatic .play() calls
-// (triggered by a previous clip's "ended" event, not a fresh tap) are still
-// allowed under iOS Safari's autoplay policy.
+// A WAV with no samples, used only to "prime" the shared <audio> element
+// inside a real user gesture so later programmatic .play() calls (triggered
+// by a previous clip's "ended" event, or by the wait in _playAudioEl(), not a
+// fresh tap) are still allowed under iOS Safari's autoplay policy.
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
@@ -18,6 +18,17 @@ const SILENT_WAV =
 const IS_IOS =
   /iPad|iPhone|iPod/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+// iOS: how long the first mp3 waits after unlock()'s primer reports done, and
+// the cap, from the tap, for when it never does (see _whenPrimerDone()).
+const PRIMER_SETTLE_MS = 400;
+const PRIMER_MAX_WAIT_MS = 2000;
+// iOS: after a wait that ended at the cap, how long from the tap one pause
+// the player didn't ask for is retried, and how the retry is timed (see
+// _onAudioPause()).
+const RETRY_UNTIL_MS = 5000;
+const RETRY_DELAY_MS = 250;
+const RETRY_CHECK_MS = 1500;
 
 export class Player {
   constructor({ onVerseChange, onStateChange, onEnd, onStart }) {
@@ -52,6 +63,13 @@ export class Player {
     this._utter = null; // utterance currently queued with the synth
     this._prefetchEl = null;
     this._prefetchedUrl = null;
+    // iOS: pending until unlock()'s primer is done with the audio session;
+    // the first mp3 waits for it (null once settled, and always off iOS).
+    this._primerDone = null;
+    // iOS: until this time a pause the player didn't ask for is retried once;
+    // 0 = not armed, which it only is when that wait ended at the cap.
+    this._retryUntil = 0;
+    this.audioEl.addEventListener("pause", () => this._onAudioPause());
     this.audioEl.addEventListener("ended", () => {
       if (this._audioGen !== this._gen) return;
       this._onClipEnded();
@@ -69,15 +87,21 @@ export class Player {
   // Safari grants both speech and audio-element playback before any real
   // clip is queued.
   //
-  // The primer utterance is deliberately never stored in `_utter`: that is
-  // how _haltPlayback() tells it apart from a real verse and leaves it alone
-  // when the clip about to start is an mp3 — see the note there. It is a
-  // volume-0 space; left alone it completes in milliseconds.
+  // The primer is a volume-0 space, and it has to be spoken here even when
+  // the verse is an mp3: iOS silently drops any speak() made outside a gesture
+  // until one has been made inside one, and auto-advance can roll from an mp3
+  // chapter into a Web Speech chapter with no tap. On iOS the first mp3 then
+  // waits for the primer to finish — see _whenPrimerDone().
+  //
+  // The primer is deliberately never stored in `_utter`: that is how
+  // _haltPlayback() tells it apart from a real verse and leaves it alone when
+  // the clip about to start is an mp3 — see the note there.
   unlock() {
     if (this._unlocked) return;
     this._unlocked = true;
     const u = new SpeechSynthesisUtterance(" ");
     u.volume = 0;
+    if (IS_IOS) this._primerDone = this._whenPrimerDone(u);
     this.synth.speak(u);
     try {
       this.audioEl.src = SILENT_WAV;
@@ -88,6 +112,53 @@ export class Player {
       // Autoplay policies vary; a failed priming attempt just means the
       // first real clip may need another tap, not worth surfacing.
     }
+  }
+
+  // Why the first mp3 on iOS waits for the primer. WebKit hands speech to the
+  // browser app's process, which speaks on the app's own audio session, while
+  // media plays on a separate session of WebKit's own, and neither mixes with
+  // the other. The first utterance after the page loads takes a second or so
+  // to get going, and when it does its session takes over: WebKit treats that
+  // as an interruption and pauses the mp3 that started in the same tap, and
+  // nothing resumes it. That was the "plays for a second, then stops, but only
+  // on the first Play" bug. Cancelling the primer doesn't help, because the
+  // synthesizer still starts up. Once the primer is done, a play() takes the
+  // session back from the idle synth, which is why every later Play worked.
+  //
+  // Resolves PRIMER_SETTLE_MS after the primer's end event (or an error other
+  // than a cancel), so the hand-over has time to land. A cancel doesn't count,
+  // because the synthesizer still starts up after one: a cancelled primer,
+  // like one iOS never reports on, waits for the cap at PRIMER_MAX_WAIT_MS
+  // after the tap. A wait that ends at the cap can't rule out the primer
+  // starting on top of the first mp3, so it arms the one retry in
+  // _onAudioPause() until RETRY_UNTIL_MS after the tap, or until a late report
+  // from the primer has had its hand-over time.
+  _whenPrimerDone(u) {
+    const tappedAt = performance.now();
+    return new Promise((resolve) => {
+      let settled = false;
+      const settle = (delay) => {
+        if (settled) return;
+        settled = true;
+        setTimeout(() => {
+          this._primerDone = null;
+          resolve();
+        }, delay);
+      };
+      const reported = () => {
+        if (settled) setTimeout(() => { this._retryUntil = 0; }, PRIMER_SETTLE_MS);
+        settle(PRIMER_SETTLE_MS);
+      };
+      u.onend = reported;
+      u.onerror = (e) => {
+        if (e.error !== "canceled" && e.error !== "interrupted") reported();
+      };
+      setTimeout(() => {
+        if (settled) return;
+        this._retryUntil = tappedAt + RETRY_UNTIL_MS;
+        settle(0);
+      }, PRIMER_MAX_WAIT_MS);
+    });
   }
 
   load(verses, startIndex = 0) {
@@ -161,15 +232,11 @@ export class Player {
   //
   // `cancelSpeech: false` says "the clip replacing this one is an mp3, so
   // leave the synth queue alone unless we actually put something in it".
-  // An unconditional cancel() also killed unlock()'s primer, which on the
-  // very first tap is still queued a millisecond later — and on iOS, where
-  // the synth and the <audio> element share one AVAudioSession, WebKit's
-  // teardown of a cancelled utterance lands asynchronously a few hundred ms
-  // after the tap, on top of the mp3 that has just started. That is the
-  // "plays for a fraction of a second, then stops, but only on the first
-  // Play" bug; the second tap was fine because unlock() had already latched.
-  // Every utterance the player itself queues sets `_utter`, so this can
-  // never suppress a cancel the fast-skip fix above depends on.
+  // That spares unlock()'s primer, which on the first tap is still queued: on
+  // iOS the first mp3 waits for the primer to finish (_whenPrimerDone()), and
+  // a cancel would report it finished at once while the synthesizer was still
+  // starting up. Every utterance the player itself queues sets `_utter`, so
+  // this can never suppress a cancel the fast-skip fix above depends on.
   _haltPlayback({ cancelSpeech = true } = {}) {
     this._gen++;
     const hadUtterance = Boolean(this._utter);
@@ -221,6 +288,17 @@ export class Player {
 
   _playAudioEl() {
     const gen = this._gen;
+    if (this._primerDone) {
+      // The first mp3 after unlock() on iOS waits for the primer (see
+      // _whenPrimerDone()). Its src is already set, so it buffers meanwhile;
+      // a Pause, Next or Stop in the meantime supersedes the wait.
+      this._primerDone.then(() => {
+        if (gen === this._gen && this.state === "playing" && this.backend === "audio") {
+          this._playAudioEl();
+        }
+      });
+      return;
+    }
     const p = this.audioEl.play();
     if (!p || !p.catch) return;
     p.catch((err) => {
@@ -229,8 +307,59 @@ export class Player {
       // not that the clip is unplayable — falling back to speech here is
       // what made both voices sound at once on rapid Next taps.
       if (err && err.name === "AbortError") return;
+      // NotAllowedError on iOS means WebKit wants a fresh tap before this
+      // element plays (the deferred first play() relies on the tap's priming
+      // still counting), and the clip itself is fine: show Play, and that tap
+      // resumes it. On a hidden page there is no one to tap, so the verse is
+      // read with Web Speech as before.
+      if (IS_IOS && err && err.name === "NotAllowedError" && document.visibilityState === "visible") {
+        this._dropToPaused();
+        return;
+      }
       this._onClipError();
     });
+  }
+
+  // A pause the player didn't ask for. The player's own pauses stop at the
+  // first two checks: pause() and stop() change the state first, a clip swap
+  // bumps the generation (and setting the new src cancels the queued event),
+  // _onClipError() switches the backend, and a clip that ran to its end
+  // reports `ended`.
+  //
+  // Such a pause is left as it is — the remote Play that follows a Control
+  // Center pause restarts the element without telling the player, and
+  // auto-advance carries on only while the state still says "playing" — with
+  // one exception. On iOS, when the wait for the primer ended at the cap
+  // (_whenPrimerDone()), the primer may still start on top of the first mp3
+  // and pause it, so until RETRY_UNTIL_MS after the tap one such pause on a
+  // visible page is retried, and if the retry doesn't take, the button shows
+  // Play so one tap resumes.
+  _onAudioPause() {
+    if (this._audioGen !== this._gen || this.state !== "playing" || this.backend !== "audio") return;
+    if (!this.audioEl.paused || this.audioEl.ended) return;
+    if (performance.now() > this._retryUntil || document.visibilityState !== "visible") return;
+    this._retryUntil = 0; // once
+    const gen = this._gen;
+    const stillStopped = () =>
+      gen === this._gen && this.state === "playing" && this.backend === "audio" && this.audioEl.paused;
+    setTimeout(() => {
+      if (!stillStopped() || document.visibilityState !== "visible") return;
+      const p = this.audioEl.play();
+      if (p && p.catch) p.catch(() => {}); // judged by the check below, never the speech fallback
+      setTimeout(() => {
+        if (stillStopped()) this._dropToPaused();
+      }, RETRY_CHECK_MS);
+    }, RETRY_DELAY_MS);
+  }
+
+  // The clip stopped without being asked to: show Play rather than a Pause
+  // button over silence. The clip stays loaded, so the next tap resumes it
+  // where it stopped (play()'s paused branch).
+  _dropToPaused() {
+    if (this.state !== "playing" || this.backend !== "audio") return;
+    this.state = "paused";
+    this._stopKeepAlive();
+    this.onStateChange(this.state);
   }
 
   _speakCurrent() {
@@ -255,10 +384,12 @@ export class Player {
   // On iOS that second media element is a liability: it is loaded from the
   // "ended" handler of the previous verse rather than from a user gesture, so
   // WebKit ignores the preload and warms nothing, while still poking the one
-  // audio session the playing element is using. That lands on every verse
-  // change and is the suspect for the click heard between clips on iPad. A
-  // plain fetch warms the same HTTP cache entry the media load will hit,
-  // without a second element going anywhere near the audio session.
+  // audio session the playing element is using — on iPad that clicked at
+  // every verse change. A plain fetch stays clear of the audio session. It
+  // doesn't fill the browser cache entry the element reads, because WebKit
+  // keys cached responses by their Range header and the element's loads are
+  // range requests, but it does warm Cloudflare's edge and the connection for
+  // the next clip.
   _prefetchNext() {
     const url = this.resolveAudio ? this.resolveAudio(this.index + 1) : null;
     if (!url || url === this._prefetchedUrl) return;
