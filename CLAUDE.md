@@ -67,6 +67,11 @@ explains the project, and `docs/` has the detail.
 - Write settings with `config.update(**changes)`. Never `config.save()` a dict you
   loaded earlier, because that undoes other windows' changes.
 - Narration always uses `tts_engine.HOUSE_VOICE` and `tts_engine.HOUSE_RATE`.
+- Azure TTS is metered (free tier: 500,000 characters a month). Its key and region
+  come only from `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`; never write them to a
+  file or print the key. Call Azure only through `azure_tts.synthesize()`, which
+  paces requests and logs usage, and keep test calls few: they spend the owner's
+  quota.
 - Write `pronunciations.json` through `pronunciation.save_names()`, which merges
   concurrent saves. `PRONUNCIATIONS.md` and `PRONUNCIATION_TODO.md` are generated and
   ignored, so never edit them.
@@ -98,7 +103,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.

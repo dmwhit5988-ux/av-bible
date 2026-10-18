@@ -53,8 +53,9 @@ web/visuals/manifest.json (v2)               web/audio/manifest.json
 
 - **Respelling.** `pronunciation.respell()` swaps the names the voice gets wrong for spellings it says correctly. The list is `pronunciations.json` ([pronunciation.md](pronunciation.md)).
 - **Synthesis.** `tts_engine.synthesize()` respells the text, then speaks it with edge-tts in the house voice (`tts_engine.HOUSE_VOICE` = `en-US-AndrewNeural`, `HOUSE_RATE` = 0).
-  - It caches the result as `cache/audio/tts/<voice without dashes>_<rate:+d>_<md5 of voice|rate|spoken text, 16 hex>.mp3` (`tts_engine._cache_file`).
-  - When edge-tts is unreachable, it falls back to the offline Windows SAPI voice and writes a `.wav`. That audio is never published.
+  - Its `engine` can send text to Azure instead (`azure_tts.py`), which is the same voice, metered, and able to speak `use_ipa` names from their IPA. `edge` is the default. `mixed` sends Azure only the verses that name someone spoken from IPA. `azure` sends everything. `tts_engine.route()` says which service a text would go to, what it would send, and what it would bill ([pronunciation.md](pronunciation.md#ipa-through-azure)).
+  - It caches the result as `cache/audio/tts/<voice without dashes>_<rate:+d>_<md5 of voice|rate|spoken text, 16 hex>.mp3` (`tts_engine._cache_file`). Plain text has one entry whichever service spoke it. SSML with `<phoneme>` tags is keyed `<voice>_<rate>_ssml_<md5>.mp3`.
+  - When edge-tts is unreachable, it falls back to the offline Windows SAPI voice and writes a `.wav`. That audio is never published. Azure has no fallback: a verse it refuses is skipped.
 - **Rendering.** The Audio tool (`audio_studio.py`) renders whole chapters through `generate_showcase_audio.generate_chapter()`.
   - Each verse becomes `web/audio/<Book>_<ch>_<v>.mp3`, registered in `web/audio/manifest.json` as `{"Genesis_1_1.WEB": "Genesis_1_1.mp3"}`. The `.WEB` suffix is a fixed part of the key format (D11).
   - Manifest writes re-read the file under a lock, merge, write a temp file and swap it in with `os.replace`. That way the Audio tool and Video Studio, both in the Studio's process, don't drop each other's entries.
@@ -112,7 +113,9 @@ On the Free plan, Cloudflare's Workers static assets take at most 20,000 files i
 
 | What | Where | Tracked |
 |---|---|---|
-| Studio settings: `last_book`, `last_chapter`, `last_verse`, `svg_preview_host`, `editor` | `config.json`, written through `config.update(**changes)`; an unreadable file is first copied to `config.json.bak` | no |
+| Studio settings: `last_book`, `last_chapter`, `last_verse`, `svg_preview_host`, `editor`, `render_engine` | `config.json`, written through `config.update(**changes)`; an unreadable file is first copied to `config.json.bak` | no |
+| The Azure key and region | the environment variables `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`, never a file | no |
+| The Azure usage meter: one line per billed request | `azure_usage.jsonl` (`config.AZURE_USAGE_PATH`) | no (ignored) |
 | TTS cache; the Studio's error log | `cache/audio/tts/`; `cache/studio_error.log` | no |
 | The Verifier's verdict store | `data/ipa_checks.json` (`config.IPA_CHECKS_PATH`) | yes |
 | Pronunciation list; retired entries | `pronunciations.json`; `pronunciations_archive.json` | yes |

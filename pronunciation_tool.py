@@ -6,9 +6,16 @@ are already customized, and lets you:
   * hear the name as the neural voice says it now  (▶ Name)
   * type your own "Say it" spelling and hear it     (▶ Say / Enter)
   * tick "Custom" when a name needs the override
+  * hear Azure say it from its IPA                  (▶ IPA / Enter in the IPA)
+    -- edit the IPA until it is right, rather than respelling by trial
+  * tick "Use" to have Azure renders speak it from the IPA (use_ipa)
   * click "✓ Fine" when the plain spelling is already read correctly
   * Save -> writes pronunciations.json AND PRONUNCIATIONS.md, merging with
     anything the Verifier saved while this window was open
+
+▶ IPA is the one preview that costs anything: Azure bills about 40
+characters plus the IPA for each new one (replays come from the cache), and
+the bottom bar shows the free tier's meter (azure_tts.usage).
 
 The "Checked" column is the point of "✓ Fine": a name you have listened to and
 approved used to be stored exactly like one nobody had ever opened, both being
@@ -33,6 +40,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+import azure_tts
 import books
 import config
 import passages
@@ -64,22 +72,31 @@ FILTERS = (
     "Suggestions waiting",
     "Still wrong",
     "Unsure (guessed IPA)",
+    "Spoken from IPA",
     "Not in the list yet",
 )
 
 
 class Row:
     __slots__ = ("name", "occ", "default_ref", "say_var", "override_var",
-                 "status_var", "score", "dot", "label")
+                 "ipa_var", "ipa_was", "use_ipa_var", "status_var", "score",
+                 "loaded", "dot", "label")
 
-    def __init__(self, name, occ, default_ref, say, override, status, score=None):
+    def __init__(self, name, occ, default_ref, say, override, status, score=None,
+                 ipa="", use_ipa=False):
         self.name = name
         self.occ = occ
         self.default_ref = default_ref
         self.say_var = tk.StringVar(value=say)
         self.override_var = tk.BooleanVar(value=override)
+        self.ipa_var = tk.StringVar(value=ipa)
+        self.ipa_was = ipa       # as loaded: an edit drops the recorded ipa_src
+        self.use_ipa_var = tk.BooleanVar(value=use_ipa)
         self.status_var = tk.StringVar(value=status)
         self.score = score
+        # The ticks and verdict as loaded: unticking back to them restores the
+        # verdict, rather than clearing one the Verifier measured.
+        self.loaded = (override, use_ipa, status, score)
         self.dot = None    # the coloured dot widget, set when built
         self.label = None  # the verdict text widget, set when built
 
@@ -100,8 +117,8 @@ class App:
         self.busy = False
 
         root.title("Pronunciation Studio")
-        root.geometry("980x680")
-        root.minsize(820, 460)
+        root.geometry("1240x700")
+        root.minsize(1000, 460)
         root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._build_top()
@@ -144,7 +161,9 @@ class App:
         fcb = ttk.Combobox(bar, textvariable=self.filter_var, width=20,
                            state="readonly", values=FILTERS)
         fcb.pack(side="left", padx=(4, 0))
-        fcb.bind("<<ComboboxSelected>>", lambda e: self._build_rows())
+        # Commit first: rebuilding the rows would otherwise drop unsaved edits.
+        fcb.bind("<<ComboboxSelected>>",
+                 lambda e: (self._commit_rows(), self._build_rows()))
 
     # ----- scrollable list ---------------------------------------------
     def _build_list(self):
@@ -168,6 +187,12 @@ class App:
 
     # ----- bottom bar ---------------------------------------------------
     def _build_bottom(self):
+        meter = ttk.Frame(self.root, padding=(10, 0))
+        meter.pack(fill="x", side="bottom")
+        self.azure_var = tk.StringVar()
+        ttk.Label(meter, textvariable=self.azure_var, foreground="#888").pack(
+            side="left")
+        self._refresh_azure()
         bar = ttk.Frame(self.root, padding=(10, 8))
         bar.pack(fill="x")
         self.status_var = tk.StringVar(value="Ready.")
@@ -207,12 +232,14 @@ class App:
             return
 
         found = pronunciation.scan_proper_nouns(self.cur_verses, known=set(self.names))
-        hdr = ("", "Name", "Seen in", "IPA", "Checked", "Custom", "Say it", "", "", "")
+        hdr = ("", "Name", "Seen in", "IPA (Azure)", "", "Use", "Checked", "Custom",
+               "Say it (Edge)", "", "", "")
         for c, text in enumerate(hdr):
             ttk.Label(self.inner, text=text, font=("Segoe UI", 9, "bold")).grid(
                 row=0, column=c, sticky="w", padx=4, pady=(2, 6))
 
         mode = self.filter_var.get()
+        azure_ok = azure_tts.available()[0]
         r = 1
         for name, occ in found:
             existing = self.names.get(name)
@@ -223,9 +250,13 @@ class App:
             override = bool(existing.get("override")) if existing else False
             default_ref = f"{self.cur_book} {self.cur_ch}:{occ[0]}"
             row = Row(name, occ, default_ref, say, override, status,
-                      (existing or {}).get("score"))
+                      (existing or {}).get("score"),
+                      ipa=(existing or {}).get("ipa", ""),
+                      use_ipa=bool((existing or {}).get("use_ipa")))
             row.say_var.trace_add("write", lambda *a: self._mark_dirty())
             row.override_var.trace_add("write", lambda *a: self._mark_dirty())
+            row.ipa_var.trace_add("write", lambda *a: self._mark_dirty())
+            row.use_ipa_var.trace_add("write", lambda *a: self._mark_dirty())
             self.rows.append(row)
 
             row.dot = tk.Label(self.inner, text="●", width=2)
@@ -236,27 +267,34 @@ class App:
             seen = "v" + ", v".join(str(v) for v in occ[:8]) + ("…" if len(occ) > 8 else "")
             ttk.Label(self.inner, text=seen, foreground="#666").grid(
                 row=r, column=2, sticky="w", padx=4)
-            ipa = existing.get("ipa", "") if existing else ""
-            ttk.Label(self.inner, text=ipa, foreground="#888").grid(
-                row=r, column=3, sticky="w", padx=4)
+            ipa_ent = ttk.Entry(self.inner, textvariable=row.ipa_var, width=20)
+            ipa_ent.grid(row=r, column=3, sticky="w", padx=4, pady=1)
+            ipa_ent.bind("<Return>", lambda e, rw=row: self._play_ipa(rw))
+            ttk.Button(self.inner, text="▶ IPA", width=6,
+                       state="normal" if azure_ok else "disabled",
+                       command=lambda rw=row: self._play_ipa(rw)).grid(
+                row=r, column=4, padx=2)
+            ttk.Checkbutton(self.inner, variable=row.use_ipa_var,
+                            command=lambda rw=row: self._on_use_ipa(rw)).grid(
+                row=r, column=5)
             row.label = tk.Label(self.inner, anchor="w", width=17)
-            row.label.grid(row=r, column=4, sticky="w", padx=4)
+            row.label.grid(row=r, column=6, sticky="w", padx=4)
             ttk.Checkbutton(self.inner, variable=row.override_var,
-                            command=lambda rw=row: self._on_override(rw)).grid(row=r, column=5)
-            ent = ttk.Entry(self.inner, textvariable=row.say_var, width=22)
-            ent.grid(row=r, column=6, sticky="w", padx=4, pady=1)
+                            command=lambda rw=row: self._on_override(rw)).grid(row=r, column=7)
+            ent = ttk.Entry(self.inner, textvariable=row.say_var, width=20)
+            ent.grid(row=r, column=8, sticky="w", padx=4, pady=1)
             ent.bind("<Return>", lambda e, rw=row: self._play(rw.say_var.get().lower(),
                                                               rw.say_var.get()))
             ttk.Button(self.inner, text="▶ Say", width=6,
                        command=lambda rw=row: self._play(rw.say_var.get().lower(),
                                                          rw.say_var.get())).grid(
-                row=r, column=7, padx=2)
+                row=r, column=9, padx=2)
             ttk.Button(self.inner, text="▶ Name", width=7,
                        command=lambda rw=row: self._play(rw.name, rw.name)).grid(
-                row=r, column=8, padx=(2, 2))
+                row=r, column=10, padx=(2, 2))
             ttk.Button(self.inner, text="✓ Fine", width=7,
                        command=lambda rw=row: self._mark_fine(rw)).grid(
-                row=r, column=9, padx=(2, 6))
+                row=r, column=11, padx=(2, 6))
             self._paint_status(row)
             r += 1
 
@@ -277,6 +315,8 @@ class App:
             return True
         if mode == "Not in the list yet":
             return existing is None
+        if mode == "Spoken from IPA":
+            return bool((existing or {}).get("use_ipa"))
         return status == {
             "Unchecked only": pronunciation.STATUS_UNCHECKED,
             "Fine as spelled": pronunciation.STATUS_OK,
@@ -297,9 +337,31 @@ class App:
 
     def _on_override(self, row):
         """Ticking Custom is itself a verdict: this name needs a respelling."""
-        row.status_var.set(pronunciation.STATUS_FIXED if row.override_var.get()
-                           else pronunciation.STATUS_UNCHECKED)
-        row.score = None
+        self._fixed_or_unchecked(row)
+
+    def _on_use_ipa(self, row):
+        """Ticking IPA is the same verdict, fixed by the IPA on Azure. Refused
+        when Azure couldn't take the IPA as written."""
+        if row.use_ipa_var.get():
+            try:
+                pronunciation.azure_ipa(row.ipa_var.get())
+            except ValueError as e:
+                row.use_ipa_var.set(False)
+                self.status_var.set(f"{row.name}: this IPA can't be sent to "
+                                    f"Azure — {e}. Fix it first.")
+                return
+        self._fixed_or_unchecked(row)
+
+    def _fixed_or_unchecked(self, row):
+        override, use_ipa, status, score = row.loaded
+        if (row.override_var.get(), row.use_ipa_var.get()) == (override, use_ipa):
+            row.status_var.set(status)      # back as it was: keep its verdict
+            row.score = score
+        else:
+            on = row.override_var.get() or row.use_ipa_var.get()
+            row.status_var.set(pronunciation.STATUS_FIXED if on
+                               else pronunciation.STATUS_UNCHECKED)
+            row.score = None
         self._paint_status(row)
 
     def _mark_fine(self, row):
@@ -315,6 +377,7 @@ class App:
                            else pronunciation.STATUS_OK)
         if row.status_var.get() == pronunciation.STATUS_OK:
             row.override_var.set(False)
+            row.use_ipa_var.set(False)
         row.score = None          # a human verdict, not a measured one
         self._paint_status(row)
         self._mark_dirty()
@@ -330,31 +393,51 @@ class App:
         for row in self.rows:
             name = row.name
             say = row.say_var.get().strip()
+            ipa = row.ipa_var.get().strip()
             existing = self.names.get(name)
             status = row.status_var.get()
-            if row.override_var.get():
+            if row.override_var.get() or row.use_ipa_var.get():
                 entry = dict(existing) if existing else {}
-                entry["say"] = say or name
-                entry["ipa"] = entry.get("ipa", "")
+                entry["say"] = say or entry.get("say") or name
                 entry["ref"] = entry.get("ref") or row.default_ref
-                entry["override"] = True
+                entry["override"] = row.override_var.get()
                 pronunciation.set_status(entry, status or pronunciation.STATUS_FIXED,
                                          row.score)
                 self.names[name] = entry
             elif existing is not None:
-                existing["say"] = say or existing.get("say", name)
-                existing["override"] = False
+                entry = existing
+                entry["say"] = say or existing.get("say", name)
+                entry["override"] = False
                 pronunciation.set_status(existing, status, row.score)
-            elif status:
-                # A verdict on a name not yet in the list is worth keeping --
-                # otherwise marking a new name "fine" would silently vanish.
-                entry = {"say": say or name, "ipa": "", "ref": row.default_ref,
+            elif status or ipa:
+                # A verdict (or IPA) on a name not yet in the list is worth
+                # keeping -- otherwise marking a new name "fine" would vanish.
+                entry = {"say": say or name, "ref": row.default_ref,
                          "override": False}
                 pronunciation.set_status(entry, status, row.score)
                 self.names[name] = entry
+            else:
+                continue
+            entry["use_ipa"] = row.use_ipa_var.get()
+            if ipa != row.ipa_was:
+                # Typed here, so no longer the source's: the reports call an
+                # entry with no ipa_src "curated".
+                entry["ipa"] = ipa
+                entry.pop("ipa_src", None)
+                row.ipa_was = ipa
 
     def save(self) -> bool:
         self._commit_rows()
+        unsendable = [n for n, v in self.names.items() if v.get("use_ipa")
+                      and not self._ipa_ok(v.get("ipa", ""))]
+        if unsendable and not messagebox.askyesno(
+                "IPA Azure can't take",
+                "These names are ticked Use, but their IPA can't be sent to "
+                "Azure, so Azure renders will respell them or read them plain "
+                "instead:\n\n" + ", ".join(unsendable[:20])
+                + ("…" if len(unsendable) > 20 else "") + "\n\nSave anyway?",
+                parent=self.root):
+            return False
         try:
             saved = pronunciation.save_names(self.names, base=self.base)
         except Exception as e:  # noqa: BLE001 - surface any write error to the user
@@ -404,6 +487,50 @@ class App:
             self.busy = False
 
         threading.Thread(target=work, daemon=True).start()
+
+    def _play_ipa(self, row):
+        """Azure speaking the name from the IPA in the row as typed -- before
+        it is saved, so an edit can be heard first."""
+        ipa = row.ipa_var.get().strip()
+        if self.busy:
+            return
+        if not ipa:
+            self.status_var.set(f"{row.name} has no IPA to play.")
+            return
+        try:
+            sent = pronunciation.azure_ipa(ipa)
+        except ValueError as e:
+            self.status_var.set(f"{row.name}: this IPA can't be sent to Azure — {e}.")
+            return
+        self.busy = True
+        self.status_var.set(f"Asking Azure for “{row.name}” as /{sent}/…")
+
+        def work():
+            try:
+                path = tts_engine.synthesize_ipa(row.name, ipa, tts_engine.HOUSE_VOICE,
+                                                 tts_engine.HOUSE_RATE)
+                self.player.load(path)
+                self.player.play()
+                msg = f"Playing “{row.name}” from IPA /{sent}/ (Azure)"
+            except Exception as e:  # noqa: BLE001
+                msg = f"Error: {e}"
+            self.root.after(0, lambda: (self.status_var.set(msg), self._refresh_azure()))
+            self.busy = False
+
+        threading.Thread(target=work, daemon=True).start()
+
+    @staticmethod
+    def _ipa_ok(ipa: str) -> bool:
+        try:
+            pronunciation.azure_ipa(ipa)
+            return True
+        except ValueError:
+            return False
+
+    def _refresh_azure(self):
+        ok, why = azure_tts.available()
+        self.azure_var.set(azure_tts.usage_text() if ok
+                           else why + " ▶ IPA needs it.")
 
     def _on_close(self):
         self._commit_rows()

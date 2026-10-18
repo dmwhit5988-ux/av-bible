@@ -1,8 +1,11 @@
 # Pronunciation
 
-The narration voice is the edge-tts neural voice `en-US-AndrewNeural` at rate 0 (`tts_engine.HOUSE_VOICE`, `HOUSE_RATE`), and it mispronounces many Bible names. edge-tts escapes its input, so SSML `<phoneme>` tags can't be used. Instead, the name is **respelled in the text sent to the voice**. The text on screen never changes.
+The narration voice is the neural voice `en-US-AndrewNeural` at rate 0 (`tts_engine.HOUSE_VOICE`, `HOUSE_RATE`), and it mispronounces many Bible names. There are two ways to fix a name:
 
-The list applies to the pre-rendered MP3s and to Studio playback. The browser's Web Speech fallback, used for verses with no MP3, reads the plain WEB text.
+- **Respelling**, for every render. The name is **respelled in the text sent to the voice**. The free edge-tts service escapes its input, so this is the only fix it can carry.
+- **IPA**, for Azure renders only. The same voice on Azure takes SSML, so a name can be spoken from its IPA ([IPA through Azure](#ipa-through-azure)).
+
+Either way, the text on screen never changes. Respellings apply to the pre-rendered MP3s and to Studio playback; IPA applies only to MP3s rendered with an Azure engine and to ▶ IPA, because Studio playback always uses Edge. The browser's Web Speech fallback, used for verses with no MP3, reads the plain WEB text.
 
 ## How a respelling reaches the audio
 
@@ -16,6 +19,57 @@ The list applies to the pre-rendered MP3s and to Studio playback. The browser's 
   - Verses whose spoken text didn't change come straight from the cache.
 - `pronunciation.load()` reloads the list whenever `pronunciations.json` changes on disk, so a running Studio picks up edits saved by the other tools.
 
+## IPA through Azure
+
+Azure AI Speech serves the same `en-US-AndrewNeural` as edge-tts, and it accepts SSML. So a name whose `use_ipa` is on can be spoken from its `ipa` with `<phoneme alphabet="ipa" ph="…">`, instead of respelled by trial and error. Azure is metered, so it is used only where a render asks for it.
+
+**Setup.** The key and region come from the environment and are never written to a file. Set them once, then restart the Studio:
+
+```bat
+setx AZURE_SPEECH_KEY <your key>
+setx AZURE_SPEECH_REGION eastus
+```
+
+**The engines** (`tts_engine.ENGINES`), chosen in the Audio tool:
+
+| Engine | Who speaks | Use it |
+|---|---|---|
+| `edge` | edge-tts for every verse, with respellings. IPA is not used. | The free default. |
+| `mixed` | Azure for verses that name someone with `use_ipa`; edge-tts for the rest. | The normal way to use IPA. Only those verses spend characters. |
+| `azure` | Azure for every verse. | While edge-tts is down. A verse already in the TTS cache costs nothing. |
+
+The two services give the same audio. One sentence rendered by both on 2026-10-18 matched in length to the sample, in leading and trailing silence and in loudness (waveform correlation 0.998), so a chapter can mix them. Azure never falls back to anything: a verse it refuses is skipped and reported, not shipped without its IPA.
+
+**What Azure is sent.** `pronunciation.ssml(text)` is the Azure counterpart of `respell()`. It is used only for en-US voices (`tts_engine.IPA_LOCALE`), because the converted IPA is in Azure's en-US phone set; with another voice override, names are respelled as on Edge. In what it builds:
+
+- each `use_ipa` name becomes `<phoneme alphabet="ipa" ph="…">Name</phoneme>`;
+- a possessive goes inside the tag, with its sound added to the IPA ("Moses's" ends `.ɪz`), because a `'s` left outside is read as "ess";
+- every other `override` name is respelled as usual, and the text is XML-escaped.
+
+**Converting the IPA.** `pronunciation.azure_ipa()` rewrites a stored `ipa` into what Azure takes. The stored value is never changed. It fixes two traps, both measured against the live service on 2026-10-18:
+- **Unknown symbols fail the whole request** (HTTP 400), so one bad name would cost its verse. The converter maps the list's notation onto Azure's en-US phone set: `r` → `ɹ`, `ɡ` → ASCII `g`, length marks dropped, British vowels to American (`ɒ` → `ɑ`, `ɜːr` → `ɝ`, `ɛər` → `ɛɹ`, `əʊ` → `oʊ`, a bare `e` → `ɛ`; `ɪə` and `ʊə` → `ɪɹ` and `ʊɹ` before an r, at the end or when stressed, but two vowels otherwise, so `/ˈsæmjʊəl/` stays three syllables), `ər` → `ɚ` (`ɝ` when stressed, as Azure's table has it), the Verifier's `ᵻ`, `eː` and `oː` → `ɪ`, `eɪ` and `oʊ`, tie bars and parentheses removed, `n̩` → `ən`. A symbol with no equivalent raises `ValueError`, and that name falls back to its respelling, or to the plain spelling if it has none (`pronunciation.ipa_problem()` says why). A reference holding alternatives ("a / b") is spoken from the first.
+- **Stress is honoured only when every syllable is dotted.** Otherwise Azure stresses the syllable *before* the mark: `tɑˈtɑ` and `ˈtɑ.tɑ` came back identical. Most of the list is written `/mɪˈθuː.ʃeɪ.ɛl/`, with no dot before the stress. So the converter splits every name into syllables, at a written `.` where there is one, at a stress mark written before a consonant, and otherwise by the longest legal English onset. It then puts each mark at the start of its syllable: `mɪ.ˈθu.ʃeɪ.ɛl`.
+
+- **British references, American voice.** Besides the vowels above, the converter drops the "y" after t, d, n, s, z, th or l in a stressed or first syllable, as American speech does: `/kəˈtjʊər.ə/` goes as `kə.ˈtʊɹ.ə`, where Azure had read the `tj` as "ch". In an unstressed syllable, or across a syllable break, the "y" stays (`/ˈmæθ.juː/` is still "MATH-yoo").
+
+All 3,125 stored references convert (`test_azure_tts`). Converting doesn't make a reference right: a wrong `ipa` (Coniah's is `/səˈni.əh/`) is spoken exactly as wrong. That is what ▶ IPA is for.
+
+**How well it works.** On 2026-10-18, 87 names were spoken by Azure from their IPA in the Verifier's carriers, and scored the Verifier's way (`ipa_asr.similarity` against the same `ipa`):
+
+| Names | Edge today (stored score) | Azure from IPA |
+|---|---|---|
+| 50 marked `unfixed` | mean 0.69; none at 0.80 | mean 0.84; 33 at 0.80 or more. 41 better, 2 worse |
+| 12 marked `fixed` (respelled by hand) | mean 0.83 | mean 0.86 |
+| 10 marked `ok` | mean 0.91 | mean 0.96 |
+
+The score says how closely the audio follows the IPA, not whether the IPA is right, so a name still needs an ear before **Use** is ticked. Some references score well and are wrong (Coniah). Some unstressed syllables are reduced more than a listener might like: Beersheba's first syllable came back as "ber" (0.79, where Edge's plain reading scored 0.93), because its IPA marks no secondary stress.
+
+**Cost.** Azure bills every character inside `<voice>`, markup included. A `<phoneme>` tag adds about 40 characters plus its IPA to each occurrence. The free tier (F0) allows 500,000 characters a month and 20 requests a minute; `azure_tts` paces itself to one request every 3.1 seconds and retries a 429 with backoff. The whole WEB is 3,946,301 characters, so the free tier covers about an eighth of it, which is why `mixed` exists.
+
+**The meter.** Azure has no usage API a Speech key can read, so every billed request is logged to `azure_usage.jsonl` beside `config.json` (`config.AZURE_USAGE_PATH`, ignored). `azure_tts.usage()` sums the last 31 days; whether the free month is a calendar month or a rolling 30 days isn't documented, and a 31-day sum is never lower than either. A request is logged as soon as Azure answers it, since it is billed then even if the audio never arrives. The Audio tool's confirm dialog shows what a render would add. The authority is the Azure portal: the Speech resource's **Metrics**, "Synthesized Characters", aggregated by Sum.
+
+**Errors.** A 400 skips that verse ("refused by Azure"). A bad key (401), a refusal (403), throttling that outlasts the retries (429, which is also what a used-up month looks like) or no network stops the render; it resumes like any other.
+
 ## `pronunciations.json`
 
 The file is `{"_readme": …, "names": {…}}`.
@@ -28,6 +82,7 @@ The file is `{"_readme": …, "names": {…}}`.
 | `ipa` | A formal reference pronunciation. The Verifier scores against it. |
 | `ref` | The first place the name appears (`Genesis 2:11`). The file is sorted by it. |
 | `override` | `true` means respell before synthesis; `false` means speak as spelled. Only this field decides whether `respell()` substitutes. |
+| `use_ipa` | `true` means Azure renders speak the name from `ipa`, which wins over `override` there. Edge renders ignore it. It is written only when `true`. |
 | `status` | What checking the audio concluded (below). |
 | `score` | The agreement measured at that check, 0–1. |
 | `ipa_src` | Where `ipa` came from: `isbe` (ISBE 1915), `cmudict`, `wiktionary`, `wikipedia` or `generated`. Absent means none is recorded; `PRONUNCIATION_TODO.md` labels it "curated". |
@@ -37,7 +92,7 @@ The file is `{"_readme": …, "names": {…}}`.
 | Status | Meaning | Names |
 |---|---|---|
 | `ok` | Checked; the plain spelling reads correctly | 1,442 |
-| `fixed` | Checked; an override is in place and works | 809 |
+| `fixed` | Checked; an override (or, on Azure, the IPA) is in place and works | 809 |
 | `unfixed` | Checked; the plain spelling is wrong and no respelling has worked yet | 569 |
 | `unsure` | Checked only against a `generated` reference, so a disagreement may be the reference's fault. It needs an ear, not another sweep. | 162 |
 | `suggested` | A better spelling is known but not applied, because the plain reading was close. Decide by ear. | 155 |
@@ -67,9 +122,12 @@ No current tool assigns `unsure`. The Pronunciation tool lists those names under
 - **▶ Name** plays the plain spelling as the voice reads it unrespelled.
 - Type a **Say it** spelling, then **▶ Say** (or Enter) to hear it. That is what narration uses when **Custom** is ticked.
 - Tick **Custom** to turn the override on.
-- **✓ Fine** records that the plain spelling is right.
-- Filters show unchecked, fine, overridden, suggested, still-wrong and unsure names, or names not in the list yet.
+- **▶ IPA** (or Enter in the IPA box) has Azure say the name from the IPA as typed, so an edit can be heard before it is saved. If it is wrong, correct the IPA rather than respelling. An edited IPA is saved as curated (its `ipa_src` is dropped).
+- Tick **Use** (beside ▶ IPA) to turn `use_ipa` on. The tick is refused when Azure couldn't take the IPA as written.
+- **✓ Fine** records that the plain spelling is right, and clears both ticks.
+- Filters show unchecked, fine, overridden, suggested, still-wrong and unsure names, names spoken from IPA, or names not in the list yet.
 - Previews use the house voice and rate, so what you hear is what will be rendered.
+- ▶ IPA is the only preview that costs anything: about 40 characters plus the IPA, once (replays come from the TTS cache). The bottom line shows the Azure meter. Without the key, ▶ IPA is greyed out.
 - Names are keyed by spelling, so tuning "Nahor" in Genesis 11 tunes it everywhere.
 
 ### Verifier (`pronunciation_check.py`, `ipa_asr.py`)
@@ -92,7 +150,7 @@ No current tool assigns `unsure`. The Pronunciation tool lists those names under
 
 **Saving.**
 - On save, each name measured in this session gets a verdict:
-  - with an override, `fixed`;
+  - with an override or `use_ipa`, `fixed`. The Verifier measures the Edge reading, which an Azure render of a `use_ipa` name doesn't use, so it can't demote one;
   - otherwise `ok` at 0.80 or above;
   - otherwise `unfixed`.
 - Nothing else changes automatically. **Use heard IPA** is a manual action for one row.
@@ -108,7 +166,7 @@ A headless sweep over the names whose reference comes from ISBE:
 3. It records a verdict:
    - **adopted:** a candidate that scores at least 0.70 and beats the plain reading by 0.10 becomes the `say`, with the override on (`fixed`);
    - **suggested:** a candidate that beats the plain reading by 0.10 but scores lower is stored as the `say` with the override left off (`suggested`);
-   - **otherwise:** `fixed` if the name already has an override, `ok` at 0.80 or above, and `unfixed` below that.
+   - **otherwise:** `fixed` if the name already has an override or `use_ipa` (a name with `use_ipa` is never given a suggestion), `ok` at 0.80 or above, and `unfixed` below that.
 4. It stores the measurements in `data/ipa_checks.json` and saves through the same merge.
 
 ```
@@ -131,7 +189,7 @@ Both reports sit at the repo root and are untracked and ignored. Never edit them
 A changed `say` or `override` makes every published MP3 of a verse containing that name stale.
 
 1. **Fix and save** in the Pronunciation tool, or let `isbe_sweep.py` adopt a respelling.
-2. **Re-render the chapters that contain the name** in the Audio tool (**Audio** in the Studio's Produce group). Choose the book and chapter range, tick **Overwrite existing files (re-render after a pronunciation or voice change)**, then press **Render**. Unchanged verses come from the TTS cache, so only the changed ones are synthesized.
+2. **Re-render the chapters that contain the name** in the Audio tool (**Audio** in the Studio's Produce group). Choose the book and chapter range, tick **Overwrite existing files (re-render after a pronunciation or voice change)**, then press **Render**. Unchanged verses come from the TTS cache, so only the changed ones are synthesized. For a name fixed by IPA, choose the engine **Azure for verses with IPA names**; the confirm dialog shows the Azure characters it will use.
 3. **If the chapter is 1 Chronicles 1–9 or Matthew 1, re-run its generator** (`generate_1chronicles_tree_svg.py` or `generate_matthew1_svg.py`). Their cameras are timed from the MP3 lengths in `web/audio/` (`svg_chronicles_world.AUDIO_DIR`).
 4. **Publish.**
 

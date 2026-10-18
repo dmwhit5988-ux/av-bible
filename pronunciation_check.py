@@ -474,7 +474,9 @@ class App:
             if info is None or r is None:
                 continue           # stale result: the spelling or voice changed
             score = r.get("score")
-            if info.get("override"):
+            # IPA in use: this measured the Edge reading, which Azure renders
+            # don't use, so it can't demote the name.
+            if info.get("override") or pronunciation.ipa_in_use(info):
                 status = pronunciation.STATUS_FIXED
             elif score is None:
                 continue           # could not be measured; leave the verdict alone

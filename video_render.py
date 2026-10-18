@@ -75,6 +75,7 @@ from dataclasses import dataclass, field
 import books
 import config
 import generate_showcase_audio as showcase_audio
+import pronunciation
 import svg_registry
 import tts_engine
 from config import VISUALS_DIR
@@ -527,7 +528,15 @@ def build_plan(spec: RenderSpec, on_status=None, cancel=None):
                 warnings.append(
                     f"{ref}: edge-tts unavailable, using the offline voice")
             if fresh and manifest is not None:
-                publish_audio(spec.book, chapter, num, audio_path, manifest)
+                if pronunciation.uses_ipa(text):
+                    # Edge can't speak the IPA, so this narration isn't the
+                    # one to publish; the Audio tool's Azure engines make it.
+                    warnings.append(
+                        f"{ref}: names someone spoken from IPA, so its Edge "
+                        f"narration was not published; render it in the "
+                        f"Audio tool with an Azure engine")
+                else:
+                    publish_audio(spec.book, chapter, num, audio_path, manifest)
             items.append(Item(
                 kind="verse", ref=ref, text=text, chapter=chapter, verse=num,
                 svg_path=svg_path, audio_path=audio_path,

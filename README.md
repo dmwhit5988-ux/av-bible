@@ -34,7 +34,8 @@ consecutive verses share a picture, it keeps playing and doesn't restart.
 3. **Narration.** The Studio's Audio Renderer synthesizes one MP3 per verse into
    `web/audio/`, listed in `web/audio/manifest.json`. It uses the house voice
    `en-US-AndrewNeural` through edge-tts, with proper nouns respelled from
-   `pronunciations.json`.
+   `pronunciations.json`. Optionally, the same voice on Azure speaks chosen names
+   from their IPA ([docs/pronunciation.md](docs/pronunciation.md#ipa-through-azure)).
 4. **Publish.** The Studio's Publish tool rebuilds the visuals manifest, then
    commits the content and pushes it. The push is the deploy: Cloudflare Workers
    Builds deploys `web/` from the pushed commit as the av-bible Worker's static
@@ -64,6 +65,15 @@ reinstalls the requirements whenever `requirements.txt` changes, and starts the 
 with `pythonw`. If the Studio can't load, `run.bat` runs it in the console so the
 traceback stays on screen. After the Studio starts, its errors go to
 `cache/studio_error.log`.
+
+**Optional: Azure, for names spoken from IPA.** Create an Azure Speech resource
+(the free F0 tier gives 500,000 characters a month), then set its key and region
+and restart the Studio. Nothing else needs it.
+
+```bat
+setx AZURE_SPEECH_KEY <your key>
+setx AZURE_SPEECH_REGION eastus
+```
 
 **Run the web app locally:** serve `web/` at the site root. From the repo root, run
 `python -m http.server 8000 -d web` (any Python works, `.venv\Scripts\python.exe`
@@ -115,9 +125,9 @@ from the `TOOLS` registry in `app.py`:
 |---|---|---|---|
 | Plan | Coverage: per-chapter visuals, audio, unreviewed names and catalog candidates | `coverage_studio.py` | window |
 | Author | Visuals (SVG Studio): each verse's SVG and its owner, a live preview, Re-run generator, manifest rebuild | `svg_studio.py`, `svg_preview.py` | window |
-| Author | Pronunciation: review and tune proper-noun respellings | `pronunciation_tool.py` | separate process |
+| Author | Pronunciation: review and tune proper-noun respellings, or hear and set the IPA Azure speaks | `pronunciation_tool.py` | separate process |
 | Author | Verifier: transcribes the rendered audio and scores it against the list | `pronunciation_check.py`, `ipa_asr.py` | separate process |
-| Produce | Audio: renders chapter narration MP3s | `audio_studio.py` | window |
+| Produce | Audio: renders chapter narration MP3s, through Edge, Azure or both | `audio_studio.py` | window |
 | Produce | Video: renders a verse range to an MP4 (4K by default) | `video_studio.py`, `video_render.py` | window |
 | Ship | Publish: manifest, commit, push | `publish_studio.py` | window |
 
@@ -128,8 +138,11 @@ The modules the Studio and its tools share:
   The other modules take their paths from it.
 - `passages.py` loads the WEB text and provides `verse_numbers()`. `books.py` holds
   the canon.
-- `tts_engine.py` does speech synthesis (`HOUSE_VOICE`, `HOUSE_RATE`).
-- `pronunciation.py` provides `respell()` and reads and writes `pronunciations.json`.
+- `tts_engine.py` does speech synthesis (`HOUSE_VOICE`, `HOUSE_RATE`) and picks the
+  service for each text (`ENGINES`, `route()`).
+- `azure_tts.py` calls Azure's text-to-speech and keeps the free-tier meter.
+- `pronunciation.py` provides `respell()`, the Azure SSML (`ssml()`, `azure_ipa()`),
+  and reads and writes `pronunciations.json`.
 - `generate_showcase_audio.py` holds the narration file and audio-manifest helpers.
 - `audio_player.py` plays audio through Windows MCI.
 - `visual_stage.py` and `svg_stage.py` draw the main window's SVG stage in WebView2.
@@ -247,10 +260,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts
 ```
 
-There are 33 tests in four modules:
+There are 65 tests in five modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -258,6 +271,9 @@ There are 33 tests in four modules:
 - `test_svg_freeze`: `svg_freeze`, with one test for each row of its case table.
 - `test_shared_visuals`: range files, identical-copy sharing and Video Studio's shared
   clock.
+- `test_azure_tts`: the Azure path, offline: IPA conversion (every stored `ipa`
+  must convert), the SSML a verse becomes, engine routing, the usage meter and how
+  `use_ipa` is saved.
 
 ## Docs
 

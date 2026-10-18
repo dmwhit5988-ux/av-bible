@@ -7,6 +7,8 @@ __pycache__/
 config.json
 config.json.bak
 cache/
+# The Azure TTS meter (azure_tts.usage): this machine's billed requests
+azure_usage.jsonl
 .claude/settings.local.json
 # A save's temp file, swapped in once written (config.json, manifests)
 *.tmp

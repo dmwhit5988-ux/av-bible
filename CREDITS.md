@@ -28,6 +28,8 @@ The narration MP3s in `web/audio/` are spoken by **Microsoft's `en-US-AndrewNeur
 neural voice**. The [edge-tts](#python-packages) library synthesizes them through
 Microsoft Edge's online text-to-speech service (`tts_engine.HOUSE_VOICE`). That
 service belongs to Microsoft, and this file draws no conclusion about its terms.
+Verses with names spoken from IPA are synthesized by the same voice through the
+owner's Azure AI Speech resource (`azure_tts.py`), under that subscription's terms.
 Verses without an MP3 are read by the visitor's own browser voice (Web Speech), so no
 audio for them ships.
 
@@ -122,14 +124,14 @@ The model's output reaches the project's data in three ways:
 
 ## Python packages
 
-These are the versions installed in `.venv` on 2026-10-17, with the licences their
+These are the versions installed in `.venv` on 2026-10-17 (edge-tts on 2026-10-18), with the licences their
 package metadata states: `pip show`, or, where `pip show` gives none (edge-tts,
 scipy), the licence classifiers and licence files. Their own dependencies carry their
 own licences.
 
 | Package | Version | Licence | Used for |
 |---|---|---|---|
-| edge-tts | 7.2.8 | LGPLv3 (its `srt_composer.py` is MIT) | narration |
+| edge-tts | 7.3.1 | LGPLv3 (its `srt_composer.py` is MIT) | narration |
 | aiohttp | 3.14.1 | Apache-2.0 AND MIT | edge-tts networking; Video Studio's DevTools connection to the browser |
 | Pillow | 12.3.0 | MIT-CMU | the generators |
 | pywebview | 6.2.1 | BSD 3-Clause | the Studio's embedded WebView2 views |

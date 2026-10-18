@@ -5,7 +5,7 @@ The design of record for the PC app (`app.py`, launched by `run.bat`). For the d
 ## The core idea
 
 Everything that *produces* Theoria's assets is Python and can't run in a browser:
-- `edge-tts` for the neural MP3s;
+- `edge-tts` for the neural MP3s, and Azure (`azure_tts.py`) for names spoken from IPA;
 - the `generate_*_svg.py` generators;
 - `pronunciation.respell()`.
 
@@ -30,7 +30,7 @@ Principles:
 - **Deploy meter.** `Files n / 20,000` sits beside the tool bar. It turns amber above 90% and red over the limit. It recounts at startup, whenever a tool window closes, and when you click it.
 - **Preview (interim).**
   - The chapter text is on the left; click a verse to play from it. The SVG stage is on the right, embedded WebView2 through `visual_stage.py` and `svg_stage.py`.
-  - Play, Stop, Prev and Next drive `PlaybackSession`. It announces the chapter when it starts from the first verse, then reads each verse. The narration is synthesized live in the house voice through `tts_engine.synthesize()`, not taken from the published MP3s. At the end of a chapter it plays on into the next one, and it stops after Revelation.
+  - Play, Stop, Prev and Next drive `PlaybackSession`. It announces the chapter when it starts from the first verse, then reads each verse. The narration is synthesized live in the house voice through `tts_engine.synthesize()`, not taken from the published MP3s. It always uses Edge, so it never spends Azure characters, and names set to `use_ipa` are heard respelled or plain here; the published MP3s and ▶ IPA carry the IPA. At the end of a chapter it plays on into the next one, and it stops after Revelation.
   - While stopped, Prev and Next step one verse and roll across chapters.
   - This stage differs from the website in three ways:
     - it restarts the picture on every verse;
@@ -127,14 +127,16 @@ The Filter box offers: All chapters, Has content, Candidate gaps (no visuals), U
 - **What it does:** lists the proper nouns of a chapter. For each one you can:
   - hear the name as the voice says it (`tts_engine.synthesize(..., apply_respell=False)` in the house voice);
   - type and hear a "Say it" respelling;
+  - edit the IPA and hear Azure say it (▶ IPA, `tts_engine.synthesize_ipa`), then tick **Use** to speak it from the IPA in Azure renders;
   - mark it Custom or "✓ Fine".
 
-  Names are keyed by WEB spelling, so a fix applies everywhere the name occurs.
-- **Reads:** `web/bibles/WEB/`, `pronunciations.json`.
+  Names are keyed by WEB spelling, so a fix applies everywhere the name occurs. ▶ IPA spends Azure characters, and the bottom line shows the meter.
+- **Reads:** `web/bibles/WEB/`, `pronunciations.json`, `azure_usage.jsonl`.
 - **Writes:**
   - `pronunciations.json`, via `pronunciation.save_names`, which merges per name with a fresh read;
   - the generated `PRONUNCIATIONS.md`;
-  - the TTS cache.
+  - the TTS cache;
+  - `azure_usage.jsonl`, one line per ▶ IPA that reached Azure.
 
 See [pronunciation.md](pronunciation.md).
 
@@ -155,13 +157,15 @@ See [pronunciation.md](pronunciation.md).
 - **What it does:** renders the narration MP3s for a book and chapter range, through `generate_showcase_audio.generate_chapter()`.
   - Existing files are skipped unless "Overwrite existing files" is ticked, which is the re-render after a pronunciation change.
   - "Voice override" is the one voice picker in the Studio. It applies to one render and is not saved.
-  - Before rendering, a confirm dialog shows the new-file count against the deploy budget.
-  - A verse is skipped when edge-tts is unreachable, so the offline voice never ships.
-- **Reads:** `web/bibles/WEB/`, `pronunciations.json` (via `respell()`), `web/audio/manifest.json`.
+  - "Engine" picks who speaks: Edge (free, respellings only), Azure for the verses with IPA names and Edge for the rest, or Azure for every verse ([pronunciation.md](pronunciation.md#ipa-through-azure)). The choice is remembered (`render_engine`). The Azure options are greyed out until `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` are set.
+  - Before rendering, a confirm dialog shows the new-file count against the deploy budget. With an Azure engine it also shows the verses Azure will speak, their characters, how long the free tier's pace makes that take, and the last 31 days' use against 500,000. It warns when the render would go past that.
+  - A verse is skipped when edge-tts is unreachable, so the offline voice never ships. A verse Azure refuses is skipped as "refused by Azure". A bad key, a used-up month or no network stops the render.
+- **Reads:** `web/bibles/WEB/`, `pronunciations.json` (via `respell()` and `ssml()`), `web/audio/manifest.json`, `azure_usage.jsonl`.
 - **Writes:**
   - `web/audio/<Book>_<ch>_<v>.mp3`;
   - `web/audio/manifest.json`, merged and saved after every chapter, so an interrupted render resumes;
-  - the TTS cache.
+  - the TTS cache;
+  - `azure_usage.jsonl`, one line per verse Azure speaks.
 - **Passage:**
   - A chapter already inside the From..To range leaves the range alone. Any other chapter becomes the range.
   - It refuses while a scan, its confirm dialog or a render is running.

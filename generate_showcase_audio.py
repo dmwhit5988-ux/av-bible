@@ -20,7 +20,10 @@ write the manifest too, so every write merges with what is on disk.
 Resumable: skips verses whose mp3 already exists. Only ships real neural
 audio — if edge-tts is unreachable and tts_engine falls back to the lower
 quality offline SAPI voice, that verse is skipped rather than shipping
-degraded audio (rerun later once online).
+degraded audio (rerun later once online). The engine (tts_engine.ENGINES)
+decides which verses Azure speaks; a verse Azure refuses is skipped as
+"failed", and a refusal that would repeat for every verse (bad key, quota
+used up, offline) stops the render.
 
 Usage:
     python generate_showcase_audio.py
@@ -32,6 +35,7 @@ import shutil
 import threading
 import time
 
+import azure_tts
 import config
 from passages import load_chapter, PassageError
 import tts_engine
@@ -129,7 +133,8 @@ def _save_manifest(manifest: dict) -> dict:
 
 def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE,
                       rate: int = RATE, passage=None, on_verse=None,
-                      should_stop=None, force: bool = False) -> tuple:
+                      should_stop=None, force: bool = False,
+                      engine: str = tts_engine.ENGINE_EDGE) -> tuple:
     """Render one chapter's verses into web/audio/ and update `manifest`.
 
     Reused by both this CLI script and the Audio Renderer studio (audio_studio.py)
@@ -137,9 +142,14 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
 
     `passage`, if given, skips the load (the studio loads each chapter during
     its file-count scan and reuses it here). `on_verse(num, status)` is called
-    after each verse with status in {"written", "skipped", "degraded"} — lets
-    a caller drive a progress bar. `should_stop()`, checked before each verse,
-    lets a caller cancel between verses. Returns (written, skipped, degraded).
+    after each verse with status in {"written", "skipped", "degraded",
+    "failed"} — lets a caller drive a progress bar. `should_stop()`, checked
+    before each verse, lets a caller cancel between verses. Returns
+    (written, skipped, degraded); a "failed" verse counts as degraded.
+
+    `engine` is a tts_engine engine. A verse Azure refuses (usually an IPA
+    symbol it doesn't know) is "failed" and skipped; an azure_tts.AzureError
+    that is ``fatal`` is raised, ending the render.
 
     `force=True` re-renders verses whose MP3 already exists, overwriting the
     file in place (same filename, new bytes — the publish flow ships it as a
@@ -165,7 +175,18 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
             if on_verse:
                 on_verse(num, "skipped")
             continue
-        src_path = tts_engine.synthesize(text, voice, rate)
+        try:
+            src_path = tts_engine.synthesize(
+                text, voice, rate, engine=engine,
+                label=f"{book} {chapter}:{num}")
+        except azure_tts.AzureError as e:
+            if e.fatal:
+                raise
+            degraded += 1
+            print(f"    {book} {chapter}:{num} — Azure refused it, skipped: {e}")
+            if on_verse:
+                on_verse(num, "failed")
+            continue
         if not src_path.lower().endswith(".mp3"):
             # tts_engine fell back to the offline SAPI voice (edge-tts
             # unreachable) — don't ship degraded audio.

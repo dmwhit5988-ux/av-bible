@@ -1,5 +1,9 @@
-edge-tts>=6.1
+# 7.3.0 or later: since about 2026-10-13 Microsoft refuses the token older
+# versions send (HTTP 403 on connect), and every verse falls back to SAPI.
+edge-tts>=7.3.0
 aiohttp>=3.8
+# Azure TTS (azure_tts.py) needs no package: it is plain HTTPS from the
+# standard library. It needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION set.
 # The SVG generators (generate_tabernacle.py and the families built on it).
 Pillow>=11.0
 # Required: the embedded web views (WebView2) that show every visual -- the

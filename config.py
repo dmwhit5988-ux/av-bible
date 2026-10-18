@@ -33,6 +33,10 @@ SOURCES_DIR = os.path.join(BASE_DIR, "sources")
 # would take a full ASR sweep to rebuild.
 DATA_DIR = os.path.join(BASE_DIR, "data")
 IPA_CHECKS_PATH = os.path.join(DATA_DIR, "ipa_checks.json")
+# Ignored, kept beside config.json rather than in cache/ so clearing the cache
+# can't zero the meter: one JSON line per billed Azure TTS request, which
+# azure_tts.usage() sums against the free tier.
+AZURE_USAGE_PATH = os.path.join(BASE_DIR, "azure_usage.jsonl")
 # Outside the repo, beside it: superseded designs, mockups and scratch work
 # kept for reference (backups/, mockups/, _scratch/), and finished video
 # renders (renders/).
@@ -45,6 +49,7 @@ DEFAULTS = {
     "last_verse": 1,
     "svg_preview_host": "embedded",  # SVG Studio's preview: "embedded" or "browser"
     "editor": "",                    # external editor command; "" = system default
+    "render_engine": "edge",         # the Audio Renderer's last choice (tts_engine.ENGINES)
 }
 
 # Settings from earlier versions. Dropped on load so an old config.json can't

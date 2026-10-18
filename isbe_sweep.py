@@ -242,14 +242,16 @@ def main():
                            "score": round(best_score, 3)}
             fixed += 1
             tag = f"FIXED -> {best_say} ({best_score:.2f}, was {score:.2f})"
-        elif best_say and best_score >= score + MARGIN:
+        elif (best_say and best_score >= score + MARGIN
+              and not pronunciation.ipa_in_use(info)):
             info["say"] = best_say          # recorded, not applied
             pronunciation.set_status(info, pronunciation.STATUS_SUGGESTED, score)
             suggested += 1
             tag = f"suggested {best_say} ({best_score:.2f}, plain {score:.2f})"
-        elif info.get("override"):
+        elif info.get("override") or pronunciation.ipa_in_use(info):
+            # IPA in use: Azure renders speak it from the IPA, not as measured
             pronunciation.set_status(info, pronunciation.STATUS_FIXED, score)
-            tag = f"override kept ({score:.2f})"
+            tag = f"{'override' if info.get('override') else 'IPA'} kept ({score:.2f})"
         elif score >= OK_AT:
             pronunciation.set_status(info, pronunciation.STATUS_OK, score)
             ok += 1

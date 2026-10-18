@@ -16,6 +16,12 @@ file-count ceiling of Cloudflare's Workers static assets
 counting what a deploy ships the way Publish does
 (publish_studio.count_deploy_files).
 
+The engine (tts_engine.ENGINES) picks who speaks: free Edge with respellings,
+or Azure, which speaks names from their IPA (use_ipa) and is metered -- the
+confirm step shows the Azure characters a render would bill against the
+free tier's (azure_tts.usage). The choice is remembered (config
+"render_engine").
+
     python audio_studio.py
 """
 
@@ -26,7 +32,9 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+import azure_tts
 import books
+import config
 import generate_showcase_audio as showcase_audio
 import tts_engine
 from passages import load_chapter, PassageError
@@ -42,18 +50,22 @@ from publish_studio import DEPLOY_FILE_LIMIT, count_deploy_files
 # Each worker posts exactly one closing event, whatever happens, so the window
 # always leaves its busy state.
 
-def _scan(events, book, chapters, voice, force):
+def _scan(events, book, chapters, voice, force, engine):
     """Load each chapter to count new-vs-existing verses, so the confirm
     dialog can show the real projected file count. Passages loaded here
     are reused by the render pass -- no double load. Overwrites (force)
     don't add files, so they never count against the ceiling -- only
-    genuinely new files do."""
+    genuinely new files do. Also counts what Azure would be sent: the
+    verses to render that the engine routes to Azure and the cache
+    doesn't already hold."""
     outcome = ("failed", "The scan stopped unexpectedly.")
     try:
         manifest = showcase_audio._load_manifest()
         passages = {}
         new_files = 0
         total_verses = 0
+        azure_verses = azure_chars = 0
+        azure_paths = set()       # a repeated verse is synthesized once
         for ch in chapters:
             try:
                 passage = load_chapter(book, ch)
@@ -62,32 +74,43 @@ def _scan(events, book, chapters, voice, force):
                 continue
             passages[ch] = passage
             safe_book = book.replace(" ", "_")
-            for num, _ in passage.verses:
+            for num, text in passage.verses:
                 total_verses += 1
                 base = f"{safe_book}_{ch}_{num}"
                 key = showcase_audio._manifest_key(base)
                 out_path = os.path.join(showcase_audio.AUDIO_DIR,
                                         showcase_audio._audio_filename(base))
-                if not (key in manifest and os.path.exists(out_path)):
+                present = key in manifest and os.path.exists(out_path)
+                if not present:
                     new_files += 1
+                if present and not force:
+                    continue                  # skipped: nothing synthesized
+                r = tts_engine.route(text, voice, tts_engine.HOUSE_RATE, engine)
+                if (r.engine == tts_engine.ENGINE_AZURE and not r.cached
+                        and r.path not in azure_paths):
+                    azure_paths.add(r.path)
+                    azure_verses += 1
+                    azure_chars += r.chars
         if not passages:
-            outcome = ("render_done", 0, 0, 0, None)
+            outcome = ("render_done", 0, 0, 0, 0, None)
             return
         current_total = count_deploy_files()
         outcome = ("confirm", book, chapters, voice, passages, manifest,
-                   new_files, current_total, total_verses, force)
+                   new_files, current_total, total_verses, force, engine,
+                   azure_verses, azure_chars)
     except Exception as e:
         outcome = ("failed", f"Scan failed: {type(e).__name__}: {e}")
     finally:
         events.put(outcome)
 
 
-def _render(events, cancel, book, chapters, voice, passages, manifest, force):
+def _render(events, cancel, book, chapters, voice, passages, manifest, force,
+            engine):
     """Render the chapters, stopping before the next verse once cancel is
     set. The manifest is saved after every chapter, including one that
     failed partway, so whatever was written stays registered."""
     done = 0
-    totals = {"written": 0, "skipped": 0, "degraded": 0}
+    totals = {"written": 0, "skipped": 0, "degraded": 0, "failed": 0}
     error = "The render stopped unexpectedly."
 
     def on_verse(num, status, ch_ref):
@@ -109,7 +132,7 @@ def _render(events, cancel, book, chapters, voice, passages, manifest, force):
                     rate=tts_engine.HOUSE_RATE, passage=passage,
                     on_verse=(lambda num, status, ch=ch:
                               on_verse(num, status, ch)),
-                    should_stop=cancel.is_set, force=force)
+                    should_stop=cancel.is_set, force=force, engine=engine)
             finally:
                 # Per chapter, so an interrupted render resumes.
                 showcase_audio._save_manifest(manifest)
@@ -118,7 +141,7 @@ def _render(events, cancel, book, chapters, voice, passages, manifest, force):
         error = f"{type(e).__name__}: {e}"
     finally:
         events.put(("render_done", totals["written"], totals["skipped"],
-                    totals["degraded"], error))
+                    totals["degraded"], totals["failed"], error))
 
 
 class App:
@@ -131,8 +154,8 @@ class App:
         self._cancel = threading.Event()
 
         root.title("Audio Renderer")
-        root.geometry("640x440")
-        root.minsize(580, 400)
+        root.geometry("660x560")
+        root.minsize(600, 520)
         root.protocol("WM_DELETE_WINDOW", self._on_close)
         # The shell may destroy this window itself (closing the main window),
         # so stopping a render hangs off <Destroy>, not the close button.
@@ -216,6 +239,26 @@ class App:
                  "or voice change)").grid(
             row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
+        # Who speaks. Azure is the only way to use IPA, and it is metered, so
+        # its options are greyed out until the key is set.
+        ttk.Label(top, text="Engine:").grid(row=3, column=0, sticky="nw",
+                                            pady=(10, 0))
+        engines = ttk.Frame(top)
+        engines.grid(row=3, column=1, columnspan=3, sticky="w", pady=(10, 0))
+        saved = config.load().get("render_engine")
+        self.engine_var = tk.StringVar(
+            value=saved if saved in tts_engine.ENGINES else tts_engine.ENGINE_EDGE)
+        azure_ok, self.azure_why = azure_tts.available()
+        if not azure_ok:
+            self.engine_var.set(tts_engine.ENGINE_EDGE)
+        for engine in tts_engine.ENGINES:
+            ttk.Radiobutton(
+                engines, text=tts_engine.ENGINE_LABELS[engine],
+                value=engine, variable=self.engine_var,
+                command=self._on_engine_change,
+                state=("normal" if azure_ok or engine == tts_engine.ENGINE_EDGE
+                       else "disabled")).pack(anchor="w")
+
         btns = ttk.Frame(self.root, padding=(10, 6))
         btns.pack(fill="x")
         self.render_btn = ttk.Button(btns, text="Render", command=self.start_render)
@@ -237,6 +280,9 @@ class App:
         self.count_var = tk.StringVar()
         ttk.Label(bottom, textvariable=self.count_var, foreground="#888888").pack(
             anchor="w", pady=(10, 0))
+        self.azure_var = tk.StringVar()
+        ttk.Label(bottom, textvariable=self.azure_var, foreground="#888888").pack(
+            anchor="w")
         self._refresh_file_count()
 
     def _refresh_file_count(self):
@@ -247,6 +293,11 @@ class App:
                 f"(~{DEPLOY_FILE_LIMIT:,} Cloudflare limit)")
         except OSError:
             self.count_var.set("")
+        ok, _ = azure_tts.available()
+        self.azure_var.set(azure_tts.usage_text() if ok else self.azure_why)
+
+    def _on_engine_change(self):
+        config.update(render_engine=self.engine_var.get())
 
     def _on_book_change(self):
         n = books.chapters_in(self.book_var.get())
@@ -279,6 +330,7 @@ class App:
             return
         voice = self.voice_var.get()
         force = self.force_var.get()
+        engine = self.engine_var.get()
         self.busy = True
         # Cleared here, not when the render starts: from now on only closing
         # the window sets it, which the confirm step checks.
@@ -287,11 +339,12 @@ class App:
         self.status_var.set(f"Scanning {book} {chapters[0]}-{chapters[-1]}…")
         # A daemon: the scan only reads, so there is nothing to wait for.
         threading.Thread(target=_scan,
-                         args=(self.events, book, chapters, voice, force),
+                         args=(self.events, book, chapters, voice, force, engine),
                          daemon=True).start()
 
     def _do_confirm(self, book, chapters, voice, passages, manifest,
-                     new_files, current_total, total_verses, force):
+                     new_files, current_total, total_verses, force, engine,
+                     azure_verses, azure_chars):
         resulting = current_total + new_files
         over = resulting > DEPLOY_FILE_LIMIT
         overwrites = total_verses - new_files if force else 0
@@ -307,12 +360,27 @@ class App:
                     f"({tts_engine.HOUSE_VOICE}).\n\n")
         if over:
             msg += "This would EXCEED Cloudflare's file-count ceiling.\n\n"
+        azure_over = False
+        if engine != tts_engine.ENGINE_EDGE:
+            used = azure_tts.usage()
+            azure_over = used + azure_chars > azure_tts.FREE_CHARS
+            minutes = azure_verses * azure_tts.MIN_INTERVAL / 60
+            msg += (f"Engine: {tts_engine.ENGINE_LABELS[engine]}.\n"
+                    f"Azure: {azure_verses} verse(s), about {azure_chars:,} "
+                    f"characters (at least {minutes:.0f} min at the free "
+                    f"tier's 20 a minute).\n"
+                    f"Used in the last {azure_tts.WINDOW_DAYS} days: {used:,} "
+                    f"of {azure_tts.FREE_CHARS:,}.\n\n")
+            if azure_over:
+                msg += ("This would go PAST the free tier's characters; Azure "
+                        "refuses requests once they run out.\n\n")
         msg += "Continue?"
         # parent= keeps the dialog owned by this window (not the main studio's
         # root), so dismissing it hands focus back here; the lift/focus_force
         # belt-and-suspenders covers Windows restacking anyway.
         proceed = messagebox.askyesno(
-            "Confirm render", msg, icon="warning" if over else "question",
+            "Confirm render", msg,
+            icon="warning" if over or azure_over else "question",
             parent=self.root)
         if self._cancel.is_set():
             return  # the window was closed while asking: start nothing
@@ -327,10 +395,12 @@ class App:
         # Not a daemon: closing the Studio mid-render then finishes the
         # current verse and saves the manifest instead of being cut off
         # mid-write. Every step it can wait on is bounded (edge-tts 10 s
-        # connect / 60 s receive, the SAPI fallback 120 s), so it can't hang.
+        # connect / 60 s receive, the SAPI fallback 120 s, Azure 30 s a try
+        # with one retry, or about 2 min of backoff while it throttles), so
+        # it can't hang.
         threading.Thread(target=_render, name="audio-render",
                          args=(self.events, self._cancel, book, chapters,
-                               voice, passages, manifest, force),
+                               voice, passages, manifest, force, engine),
                          daemon=False).start()
 
     def _idle(self):
@@ -385,9 +455,10 @@ class App:
             self.progress.configure(value=done)
             self.status_var.set(msg)
         elif kind == "render_done":
-            _, written, skipped, degraded, error = event
+            _, written, skipped, degraded, failed, error = event
             counts = (f"{written} written, {skipped} already present"
-                      + (f", {degraded} degraded/skipped" if degraded else ""))
+                      + (f", {degraded} degraded/skipped" if degraded else "")
+                      + (f", {failed} refused by Azure" if failed else ""))
             if error:
                 self._fail(f"Render failed ({counts} before it stopped): "
                            f"{error}")
