@@ -15,13 +15,13 @@ Three consequences worth knowing:
   order, not per chapter. Judah lights up at 2:1 and is still lit when 4:1
   comes back to him, so by chapter 9 the whole thing is standing.
 * NEW NAMES GROW IN. A name first read in this verse arrives: its connector
-  draws itself from the parent, its box wipes open, its name fades up. That
-  is what makes a family spread across a wide row read as one family — you
-  watch the branch reach each sibling.
-* BREAKS PULL BACK. When the next name is a long way from the last, or the
-  passage changes subject, the camera goes out through a wide mid-keyframe
-  before coming back in, so the jump is seen as a move across one tree
-  rather than a cut to somewhere else.
+  draws itself from the parent while its box, already standing faint,
+  brightens. That is what makes a family spread across a wide row read as
+  one family — you watch the branch reach each sibling.
+* BREAKS PULL BACK. When the next name is a long way from the last, the
+  camera's van Wijk & Nuij arc lifts out and comes back in, so the jump is
+  seen as a move across one tree rather than a cut to somewhere else. Every
+  box the flight shows at a readable size carries its name.
 
 Verse matching is NOT redone here. `generate_1chronicles.assign()` is still
 the authority; the bridge is the `src` stamp that `chronicles_tree` puts on
@@ -58,10 +58,18 @@ OPEN_S_MIN = 0.11
 FOCUS_MIN_W, FOCUS_MIN_H = 460, 250
 READABLE = 0.52             # below this a 15px name is not worth framing for
 MAX_NODES = 260             # per-verse ceiling, so one wide shot cannot
-                            # balloon the file
+                            # balloon the file — it bounds names too, since
+                            # only a drawn box carries one
 DWELL_SHARE = 0.45          # of that ceiling, reserved for the frame the
                             # verse OPENS on before the rest is spent
-TEXT_MIN_SCALE = 0.34       # below this a name is drawn as its box alone
+TEXT_MIN_SCALE = 0.34       # below this a 15px name is under 5px: quiet
+                            # breathe-outs stop here, and the cull pays for
+                            # what the flight shows at this scale first
+NAME_MIN_SCALE = 0.12       # a box on screen at this scale or closer at any
+                            # moment carries its name; below it a box is a
+                            # speck under 10px
+SEEN_MARGIN = 4.0           # screen px of slack round the visible area, for
+                            # antialiasing and the 2-dp translate rounding
 RHO = 1.35                  # van Wijk & Nuij's zoom/pan trade-off: higher
                             # lifts further on long pans, lower flies flatter
 CAM_FPS = 30                # keyframes per second when baking the arc
@@ -173,12 +181,21 @@ HOLE_MIN = 26.0             # likewise for a veil hole
 VEIL_ALPHA = 0.62
 
 
+def _cam_n(dur):
+    """How many intervals a zooming flight is baked into. _camera_group and
+    _cam_schedule both count with this, which keeps them in lockstep."""
+    return max(6, int(round(dur * CAM_FPS)))
+
+
+def _fmt_s(v):
+    return ("%.6f" % v).rstrip("0").rstrip(".")
+
+
 def _cam_schedule(cam0, cam1, arc_at, dur):
-    """The scale-over-time the camera will fly — None for a pure pan.
-    Keep the sample count in lockstep with _camera_group."""
+    """The scale-over-time the camera will fly — None for a pure pan."""
     if abs(cam1[0] - cam0[0]) <= 1e-9:
         return None
-    n = max(6, int(round(dur * CAM_FPS)))
+    n = _cam_n(dur)
     return [arc_at(_smooth(i / n))[0] for i in range(n + 1)]
 
 
@@ -309,12 +326,13 @@ def _vw(cam0, cam1):
 # -- how much of the world each verse is allowed to carry -------------------
 #
 # The whole tree is far too much SVG to repeat 407 times. Each verse emits
-# names only inside the frame it ends on, and bare boxes inside the wider
-# frames the camera passes through — at those scales a name is under six
-# pixels tall anyway, and the boxes alone are what carry "this is still the
-# same tree".
+# the boxes inside the frames it opens on, flies through and lands on, capped
+# at MAX_NODES, and a box carries its name only if the viewer can see it at
+# NAME_MIN_SCALE or closer at some moment of the flight (_flight_seen). A box
+# the camera only ever passes far above stays bare, because at that size it
+# is a speck and its name would be noise.
 
-DETAIL_PAD = 1.35           # frame expansion for full-detail nodes
+DETAIL_PAD = 1.35           # frame expansion the cull pays for at both ends
 SKELETON_PAD = 1.15
 
 F_NODE = font(15)
@@ -371,6 +389,77 @@ def _hits(box, f):
 
 def node_box(n):
     return n.x, n.y, n.x + n.w, n.y + n.h
+
+
+def _flight(cam0, cam1, arc_at, dur):
+    """The keyframes _camera_group writes -> (cams, keyTimes, pure_pan),
+    each scale already rounded to the six places it is written with, so
+    anything measured from these is measured on the flight the browser
+    actually plays."""
+    pure_pan = abs(cam1[0] - cam0[0]) <= 1e-9
+    if pure_pan:
+        cams, times = [cam0, cam1], [0.0, 1.0]
+    else:
+        n = _cam_n(dur)
+        cams = [arc_at(_smooth(i / n)) for i in range(n + 1)]
+        cams[0], cams[-1] = cam0, cam1
+        times = [i / n for i in range(n + 1)]
+    cams = [(float(_fmt_s(sc)), cx_, cy_) for sc, cx_, cy_ in cams]
+    return cams, times, pure_pan
+
+
+def _on_screen(cam, margin=SEEN_MARGIN):
+    """The world rectangle the viewer actually sees at `cam`: the full width,
+    and from under the HUD band to the bottom edge. `_frame` measures the
+    framing area, VIEW_TOP..VIEW_BOT, which is a little smaller."""
+    s = cam[0]
+    tx, ty = _cam_T(cam)
+    return ((-margin - tx) / s, (HUD_H - margin - ty) / s,
+            (W + margin - tx) / s, (H + margin - ty) / s)
+
+
+def _flight_seen(cam0, cam1, arc_at, dur):
+    """Everything the flight shows, as [(world box, scale)] — one entry per
+    keyframe interval: the box spanning the screens at its two ends, and the
+    larger of their two scales. The last end is the frame the verse rests on.
+
+    The box is exact, not a sample. SMIL interpolates translate and scale
+    separately and linearly between keyframes, so each edge of the visible
+    world, (k - T) / s, is monotone across an interval, and every frame
+    between two keyframes lies inside the box spanning them. A pure pan is
+    written as two keyframes and a spline that only re-times them, so its
+    straight line is cut into as many steps as a zoom of that length gets.
+    """
+    cams, _times, pure_pan = _flight(cam0, cam1, arc_at, dur)
+    if pure_pan:
+        (s, x0, y0), (_s, x1, y1) = cams
+        n = _cam_n(dur)
+        cams = [(s, x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n)
+                for i in range(n + 1)]
+    return [(_union(_on_screen(a), _on_screen(b)), max(a[0], b[0]))
+            for a, b in zip(cams, cams[1:])]
+
+
+def _seen_scale(nodes, intervals):
+    """node -> the largest scale it is on screen at, for the nodes the
+    flight shows at NAME_MIN_SCALE or closer."""
+    legible = sorted((iv for iv in intervals if iv[1] >= NAME_MIN_SCALE),
+                     key=lambda iv: -iv[1])
+    if not legible:
+        return {}
+    reach = legible[0][0]
+    for box, _s in legible[1:]:
+        reach = _union(reach, box)
+    seen = {}
+    for n in nodes:
+        nb = node_box(n)
+        if not _hits(nb, reach):
+            continue
+        for box, s in legible:
+            if _hits(nb, box):
+                seen[n] = s
+                break
+    return seen
 
 
 # ===========================================================================
@@ -714,14 +803,12 @@ def _cam_wrap(tracks, dur, els):
     drives both in lockstep.
     """
     tvals, svals, mode, t0, s0 = tracks
-    def fmt_s(v):
-        return ("%.6f" % v).rstrip("0").rstrip(".")
     return (
         f'<g transform="translate({_fmt(t0[0])} {_fmt(t0[1])})">'
         f'<animateTransform attributeName="transform" '
         f'attributeType="XML" type="translate" values="{tvals}" '
         f'{mode} dur="{dur}s" begin="0s" fill="freeze"/>'
-        f'<g transform="scale({fmt_s(s0)})">'
+        f'<g transform="scale({_fmt_s(s0)})">'
         f'<animateTransform attributeName="transform" '
         f'attributeType="XML" type="scale" values="{svals}" '
         f'{mode} dur="{dur}s" begin="0s" fill="freeze"/>'
@@ -769,14 +856,14 @@ class VerseFrame:
         if narr:
             dur = min(dur, max(1.1, (narr - AUDIO_SLACK) / GROW_TAIL))
         dur = round(dur, 2)
-        # Text is carried wherever the viewer DWELLS: the frame the verse
-        # ends on, and the frame it starts from — which is where they are
-        # looking the instant the file loads. Giving text to the destination
-        # frame alone made every verse open on bare boxes where the previous
-        # verse had just written names (the 1:3 / 1:13 "blanking").
-        text_frames = [_frame(cam, DETAIL_PAD)
-                       for cam in (cam0, apex, cam1)
-                       if cam[0] >= TEXT_MIN_SCALE]
+        # A box carries its name exactly when the viewer can see it: on
+        # screen at NAME_MIN_SCALE or closer at any moment of the flight
+        # the file bakes, or of the rest it freezes on. Three frames used
+        # to stand in for the flight — start, the arc's midpoint and the
+        # end — and every box the camera swept past between them, or past
+        # all of the midpoint once a wide one fell below TEXT_MIN_SCALE and
+        # was dropped, flew by empty (66 verses, 7:13 the worst).
+        seen = _seen_scale(w.nodes, _flight_seen(cam0, cam1, arc_at, dur))
         detail = _frame(cam1, DETAIL_PAD)
         skeleton = detail
         for cam in (cam0, apex):
@@ -785,33 +872,45 @@ class VerseFrame:
         # Everything the camera passes over, capped: a wide pull-back can
         # otherwise sweep in half the canon.
         #
-        # The budget is spent on the two frames the viewer DWELLS in — the
-        # one the verse opens on and the one it lands on — before anything
-        # else. Spending it all on "nearest the destination" emptied the
-        # START frame of six chapter 9 verses outright: the file opened on
-        # blank space, and the pull-out then revealed that it had been
-        # pointed at nothing. Whatever budget is left over goes to the
-        # in-between, nearest the destination first, which is only ever
-        # context glimpsed in passing.
-        shown = [n for n in w.nodes if _hits(node_box(n), skeleton)]
+        # The budget goes first to the frame the verse OPENS on, up to
+        # DWELL_SHARE — spending it all on "nearest the destination"
+        # emptied the start frame of six chapter 9 verses outright, and the
+        # pull-out then revealed it had been pointed at nothing. Next come
+        # the boxes the flight shows at a legible scale, largest first, then
+        # the frame the verse rests on, then the rest of what the flight
+        # shows; only what is left goes to margin and filler, nearest the
+        # destination first. A box on screen mid-flight is in the pool even
+        # outside the skeleton's bounding box, which never quite held the
+        # whole arc.
+        shown = [n for n in w.nodes
+                 if n in seen or _hits(node_box(n), skeleton)]
         if len(shown) > self.max_nodes:
             def near(cam, pool):
                 cxx, cyy = cam[1], cam[2]
                 return sorted(pool, key=lambda n: math.hypot(
                     n.x + n.w / 2 - cxx, n.y + n.h / 2 - cyy))
 
+            def biggest(pool):
+                return sorted(pool, key=lambda n: (-seen[n], math.hypot(
+                    n.x + n.w / 2 - cam1[1], n.y + n.h / 2 - cam1[2])))
+
             keep = set(arriving) | set(lit)
-            for cam, share in ((cam0, DWELL_SHARE), (cam1, 1.0)):
-                fr = _frame(cam, DETAIL_PAD)
-                room = int(self.max_nodes * share) - len(keep)
+
+            def take(ordered, cap=self.max_nodes):
+                room = cap - len(keep)
                 if room > 0:
-                    keep |= set(near(cam, [n for n in shown
-                                           if n not in keep
-                                           and _hits(node_box(n), fr)])[:room])
-            room = self.max_nodes - len(keep)
-            if room > 0:
-                keep |= set(near(cam1, [n for n in shown
-                                        if n not in keep])[:room])
+                    keep.update([n for n in ordered if n not in keep][:room])
+
+            fr0, rest = _frame(cam0, DETAIL_PAD), _on_screen(cam1)
+            take(near(cam0, [n for n in shown if _hits(node_box(n), fr0)]),
+                 int(self.max_nodes * DWELL_SHARE))
+            take(biggest([n for n in shown
+                          if seen.get(n, 0) >= TEXT_MIN_SCALE]))
+            take(near(cam1, [n for n in shown if _hits(node_box(n), rest)]))
+            take(biggest([n for n in shown if n in seen]))
+            take(near(cam1, [n for n in shown
+                             if _hits(node_box(n), detail)]))
+            take(near(cam1, shown))
             shown = [n for n in w.nodes if n in keep]
 
         c = SvgCanvas(W, H, bg=BG)
@@ -821,13 +920,11 @@ class VerseFrame:
         # behind a name reads; a line across one does not.
         lines, lines_new, boxes, boxes_new = [], [], [], []
         for n in shown:
-            nbox = node_box(n)
-            full = any(_hits(nbox, fr) for fr in text_frames)
             state = ("new" if n in arriving else
                      "lit" if n in lit else
                      "read" if n in self.read else "ahead")
-            self._draw(lines, lines_new, boxes, boxes_new, n, state, full,
-                       dur)
+            self._draw(lines, lines_new, boxes, boxes_new, n, state,
+                       n in seen, dur)
 
         lines[0:0] = self._extra_world_els(ch, v, dur, shown)
 
@@ -1093,24 +1190,12 @@ class VerseFrame:
           three visible gestures, sprinting pan) and over sparse placed
           keyframes with spline timing (variant D).
         """
-        def fmt_s(v):
-            return ("%.6f" % v).rstrip("0").rstrip(".")
-
-        pure_pan = abs(cam1[0] - cam0[0]) <= 1e-9
-        if pure_pan:
-            cams, times = [cam0, cam1], [0.0, 1.0]
-            mode_extra = 'calcMode="spline" keySplines="%s"' % EASE
-        else:
-            n = max(6, int(round(dur * CAM_FPS)))
-            cams = [arc_at(_smooth(i / n)) for i in range(n + 1)]
-            cams[0], cams[-1] = cam0, cam1
-            times = [i / n for i in range(n + 1)]
-            mode_extra = ""
-
-        cams = [(float(fmt_s(sc)), cx_, cy_) for sc, cx_, cy_ in cams]
+        cams, times, pure_pan = _flight(cam0, cam1, arc_at, dur)
+        mode_extra = ('calcMode="spline" keySplines="%s"' % EASE
+                      if pure_pan else "")
         tvals = ";".join("%s %s" % (_fmt(_cam_T(cm)[0]), _fmt(_cam_T(cm)[1]))
                          for cm in cams)
-        svals = ";".join(fmt_s(cm[0]) for cm in cams)
+        svals = ";".join(_fmt_s(cm[0]) for cm in cams)
         ktimes = ";".join(("%.5f" % t).rstrip("0").rstrip(".") or "0"
                           for t in times)
         mode = ('keyTimes="%s" %s' % (ktimes, mode_extra)).strip()

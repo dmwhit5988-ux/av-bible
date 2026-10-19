@@ -119,6 +119,7 @@ Run `.venv/Scripts/python.exe build_manifest.py`. Publish runs it as step 1, and
   - Keep `traced()` for reveals where the drawing-on is the point, such as rivers, routes and borders.
 - **Measure every box.** `svg_vocab.text_w()` reads real Georgia advance widths through PIL, so rings, chips and labels are cut to fit their text.
 - **WEB wording** (or a tight paraphrase) for any phrase on the canvas.
+- **No empty boxes on a tree camera.** In the 1 Chronicles 1–9 and Matthew 1:1–17 tree flights, a drawn box carries its name whenever it is on screen at camera scale `NAME_MIN_SCALE` (0.12) or closer at any moment of the flight or the rest it lands on. Below that scale a box is a speck under 10 px and stays bare. `svg_chronicles_world._flight_seen` measures this from the keyframes `_camera_group` actually writes, and `_seen_scale` turns it into the names. There is no separate name budget: the per-verse node cap (`MAX_NODES`, 260) bounds boxes and names together, and the cull gives the cap first to what the flight shows largest.
 
 **The audit targets.** For every family:
 - Zero overlapping text boxes.
