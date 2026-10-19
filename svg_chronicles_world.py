@@ -70,6 +70,10 @@ NAME_MIN_SCALE = 0.12       # a box on screen at this scale or closer at any
                             # speck under 10px
 SEEN_MARGIN = 4.0           # screen px of slack round the visible area, for
                             # antialiasing and the 2-dp translate rounding
+STROKE_HOLD_SCALE = 0.68    # below this camera scale box edges and connectors
+STROKE_MIN_PX = 1.0         # stop thinning: each keeps its width at this
+                            # scale, never under 1px, so a wide pull-back
+                            # still shows the shape of the tree
 RHO = 1.35                  # van Wijk & Nuij's zoom/pan trade-off: higher
                             # lifts further on long pans, lower flies flatter
 CAM_FPS = 30                # keyframes per second when baking the arc
@@ -211,6 +215,35 @@ def _anim(attr, vals, dur):
     return (f'<animate attributeName="{attr}" values='
             f'"{";".join("%.2f" % v for v in vals)}" dur="{dur}s" '
             f'begin="0s" fill="freeze"/>')
+
+
+CONNECTOR_W = 1.5           # a static connector's stroke, in world units
+
+
+def _unwidth(el, width):
+    """Drop an element's own stroke-width so it inherits its group's."""
+    attr = ' stroke-width="%s"' % _fmt(width)
+    assert attr in el, el
+    return el.replace(attr, "", 1)
+
+
+def _stroke_group(els, width, scales, s_end, dur):
+    """Wrap world strokes of one nominal `width` in a group whose
+    stroke-width they inherit, held at a screen-pixel floor as the camera
+    pulls out — on the camera's own schedule, like the rings. At 0.1 scale a
+    1.5-unit line is 0.15px and the tree simply dissolves; with the floor
+    its outline stays.
+
+    The width depends only on the scale, so a verse ends at exactly the
+    width the next one opens with."""
+    if not els:
+        return ""
+    px = max(STROKE_MIN_PX, width * STROKE_HOLD_SCALE)
+    vals = [max(width, px / s) for s in (scales or [s_end])]
+    anim = (_anim("stroke-width", vals, dur)
+            if any(round(v, 2) != round(vals[0], 2) for v in vals) else "")
+    return (f'<g stroke-width="{vals[0]:.2f}">{anim}' + "".join(els)
+            + "</g>")
 
 
 def _ride_els(named, scales, s_end, dur, uid, tracks,
@@ -918,7 +951,12 @@ class VerseFrame:
         # walking the tree crosses boxes that were drawn earlier, so all the
         # lines go down first and all the boxes sit on top of them. A line
         # behind a name reads; a line across one does not.
-        lines, lines_new, boxes, boxes_new = [], [], [], []
+        #
+        # Box edges and static connectors carry no stroke-width of their
+        # own: they inherit it from one group per nominal width, which
+        # holds a screen-pixel floor through the zoom (_stroke_group).
+        # Boxes do not overlap, so grouping them by width costs no order.
+        lines, lines_new, boxes, boxes_new = [], [], {}, []
         for n in shown:
             state = ("new" if n in arriving else
                      "lit" if n in lit else
@@ -926,19 +964,24 @@ class VerseFrame:
             self._draw(lines, lines_new, boxes, boxes_new, n, state,
                        n in seen, dur)
 
-        lines[0:0] = self._extra_world_els(ch, v, dur, shown)
-
         named = list(w.lit.get((ch, v), []))       # verse reading order
         self.read |= arriving
 
-        els_all = lines + lines_new + boxes + boxes_new
+        scales = _cam_schedule(cam0, cam1, arc_at, dur)
+        lit_w = self.LOOK["lit"][2]
+        els_all = (self._extra_world_els(ch, v, dur, shown)
+                   + [_stroke_group(lines, CONNECTOR_W, scales, cam1[0], dur)]
+                   + lines_new
+                   + [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
+                      for wd in sorted(boxes)]
+                   + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)])
         veil_screen = []
         if mode == "card" and named and cam1[0] < READABLE:
             # the camera group has to be built first: the veil's mask holes
             # reuse its transform tracks so they ride the same flight
             probe = self._camera_group(cam0, cam1, arc_at, dur, [])
             rings, veil_screen = _ride_els(
-                named, _cam_schedule(cam0, cam1, arc_at, dur), cam1[0],
+                named, scales, cam1[0],
                 dur, "veil%d_%d" % (ch, v), self.cam_tracks,
                 veil_alpha=self.veil_alpha)
             els_all = els_all + rings
@@ -973,6 +1016,8 @@ class VerseFrame:
         sub = SvgCanvas(W, H)
         sub.rect(n.x, n.y, n.w, n.h, fill=dim(PANEL, alpha), stroke=edge,
                  width=wdt, rx=12 if n.kind == "woman" else 4)
+        # the edge's width comes from its _stroke_group
+        sub._els[0] = _unwidth(sub._els[0], wdt)
         ty = n.y + PAD_Y
         if n.icon and full and look != "ahead":
             _icon(sub, n, n.x + n.w / 2, ty + ICON_H)
@@ -1003,11 +1048,13 @@ class VerseFrame:
         """
         if state != "new":
             lines.append(self._connector(n, state))
-            boxes.extend(self._node_els(n, state, full))
+            boxes.setdefault(self.LOOK[state][2], []).extend(
+                self._node_els(n, state, full))
             return
         gdur, gbegin = _grow_timing(dur)
         lines.append(self._connector(n, "ahead"))
-        boxes.extend(self._node_els(n, "ahead", full))
+        boxes.setdefault(self.LOOK["ahead"][2], []).extend(
+            self._node_els(n, "ahead", full))
         lines_new.append(self._connector(n, "lit", gdur, trace=True))
         boxes_new.append(_fade_group(self._node_els(n, "lit", full),
                                      gbegin, gdur))
@@ -1026,8 +1073,9 @@ class VerseFrame:
         if trace:
             sub.traced(pts, col, 1.6, dur=gdur or GROW_DUR)
         else:
-            sub.polyline(pts, col, 1.5,
+            sub.polyline(pts, col, CONNECTOR_W,
                          dash="4 4" if n.link == "dash" else None)
+            sub._els[0] = _unwidth(sub._els[0], CONNECTOR_W)
         return "".join(sub._els)
 
     # -- the cutaway card ---------------------------------------------------
