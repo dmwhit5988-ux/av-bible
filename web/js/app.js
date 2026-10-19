@@ -12,7 +12,7 @@ const els = {
   stageWrap: $("stage-wrap"),
   stage: $("stage"),
   stageBg: $("stage-bg"),
-  stageImg: $("stage-img"),
+  stageImgs: [$("stage-img"), $("stage-img-b")],
   idleMessage: $("idle-message"),
   stageEmpty: $("stage-empty"),
   emptyRef: $("empty-ref"),
@@ -69,6 +69,39 @@ const IDLE_TEXT = els.idleMessage.textContent;
 const stage = new VisualStage();
 let passage = null; // current fetched chapter {book,chapter,canonical,verses}
 let lastImagePath = null;
+
+// The stage has two <img>s. A new picture loads into the hidden one and is
+// shown only once it has decoded. Swapping one <img>'s src made Chrome and
+// Edge paint a single wrong frame - another part of the tree - at the start
+// of every tree verse; iOS never did. pictureToken lets only the latest
+// request win when verses change faster than pictures decode.
+let frontImg = 0;
+let pictureToken = 0;
+
+function showPicture(url) {
+  const my = ++pictureToken;
+  const front = els.stageImgs[frontImg];
+  const back = els.stageImgs[1 - frontImg];
+  back.classList.remove("visible");
+  back.classList.add("loading");
+  back.src = url;
+  back.decode().catch(() => {}).then(() => {
+    if (my !== pictureToken) return;
+    back.classList.remove("loading");
+    back.classList.add("visible");
+    front.classList.remove("visible", "loading");
+    front.removeAttribute("src");
+    frontImg = 1 - frontImg;
+  });
+}
+
+function clearPicture() {
+  ++pictureToken;
+  for (const img of els.stageImgs) {
+    img.classList.remove("visible", "loading");
+    img.removeAttribute("src");
+  }
+}
 // The verse on stage ("Book|chapter|index"). Rendering it again means
 // playback is starting on the verse already shown (Play from stopped, or a
 // tap on that verse), and its picture starts again in step with the
@@ -295,8 +328,7 @@ function refBook(book) {
 function showIdle(message) {
   els.idleMessage.style.display = "flex";
   els.idleMessage.textContent = message || IDLE_TEXT;
-  els.stageImg.classList.remove("visible");
-  els.stageImg.removeAttribute("src");
+  clearPicture();
   lastImagePath = null; // the next picture loads fresh
   shownVerse = null;
   els.stageEmpty.hidden = true;
@@ -349,15 +381,13 @@ function renderVerse(index) {
     if (replay) {
       // A fresh URL is the restart every browser honours (re-setting the
       // same URL can leave a cached SVG at its last frame).
-      els.stageImg.src = `${imgPath}?r=${Date.now()}`;
+      showPicture(`${imgPath}?r=${Date.now()}`);
     } else if (imgPath !== lastImagePath) {
-      els.stageImg.src = imgPath;
+      showPicture(imgPath);
     }
-    els.stageImg.classList.add("visible");
     lastImagePath = imgPath;
   } else {
-    els.stageImg.classList.remove("visible");
-    els.stageImg.removeAttribute("src");
+    clearPicture();
     lastImagePath = null;
     showNotIllustrated(ctx);
   }
@@ -458,7 +488,9 @@ els.btnPlay.addEventListener("click", togglePlay);
 
 // A picture that failed to load (offline, a flaky connection) is retried by
 // the next verse or Play, even inside a run that shares it.
-els.stageImg.addEventListener("error", () => { lastImagePath = null; });
+for (const img of els.stageImgs) {
+  img.addEventListener("error", () => { lastImagePath = null; });
+}
 
 els.btnPrev.addEventListener("click", () => { player.unlock(); player.prev(); });
 els.btnNext.addEventListener("click", () => { player.unlock(); player.next(); });
