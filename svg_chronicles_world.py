@@ -473,10 +473,10 @@ def _flight_seen(cam0, cam1, arc_at, dur):
             for a, b in zip(cams, cams[1:])]
 
 
-def _seen_scale(nodes, intervals):
+def _seen_scale(nodes, intervals, min_scale=NAME_MIN_SCALE):
     """node -> the largest scale it is on screen at, for the nodes the
-    flight shows at NAME_MIN_SCALE or closer."""
-    legible = sorted((iv for iv in intervals if iv[1] >= NAME_MIN_SCALE),
+    flight shows at `min_scale` or closer."""
+    legible = sorted((iv for iv in intervals if iv[1] >= min_scale),
                      key=lambda iv: -iv[1])
     if not legible:
         return {}
@@ -896,7 +896,8 @@ class VerseFrame:
         # end — and every box the camera swept past between them, or past
         # all of the midpoint once a wide one fell below TEXT_MIN_SCALE and
         # was dropped, flew by empty (66 verses, 7:13 the worst).
-        seen = _seen_scale(w.nodes, _flight_seen(cam0, cam1, arc_at, dur))
+        flight = _flight_seen(cam0, cam1, arc_at, dur)
+        seen = _seen_scale(w.nodes, flight)
         detail = _frame(cam1, DETAIL_PAD)
         skeleton = detail
         for cam in (cam0, apex):
@@ -946,6 +947,17 @@ class VerseFrame:
             take(near(cam1, shown))
             shown = [n for n in w.nodes if n in keep]
 
+        # The cap keeps the file to what can be NAMED. Past it, every other
+        # box the flight puts on screen is drawn as an outline only — box
+        # and connector, no name, no icon — so a wide pull-back still shows
+        # the whole shape of the tree instead of two lit patches with
+        # nothing between them (5:19, 9:10, 9:35 drew nothing at the apex).
+        kept = set(shown)
+        outline = {n for n in _seen_scale(w.nodes, flight, 0.0)
+                   if n not in kept}
+        if outline:
+            shown = [n for n in w.nodes if n in kept or n in outline]
+
         c = SvgCanvas(W, H, bg=BG)
         # Four layers, and the order is the point: a connector drawn while
         # walking the tree crosses boxes that were drawn earlier, so all the
@@ -962,7 +974,7 @@ class VerseFrame:
                      "lit" if n in lit else
                      "read" if n in self.read else "ahead")
             self._draw(lines, lines_new, boxes, boxes_new, n, state,
-                       n in seen, dur)
+                       n in seen and n not in outline, dur)
 
         named = list(w.lit.get((ch, v), []))       # verse reading order
         self.read |= arriving
