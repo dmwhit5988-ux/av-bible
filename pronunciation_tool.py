@@ -8,6 +8,8 @@ are already customized, and lets you:
   * tick "Custom" when a name needs the override
   * hear Azure say it from its IPA                  (▶ IPA / Enter in the IPA)
     -- edit the IPA until it is right, rather than respelling by trial
+  * type IPA from the ⌨ IPA keyboard pop-out, and look symbols up in the
+    IPA key (ipa_keyboard.py)
   * tick "Use" to have Azure renders speak it from the IPA (use_ipa)
   * click "✓ Fine" when the plain spelling is already read correctly
   * Save -> writes pronunciations.json AND PRONUNCIATIONS.md, merging with
@@ -43,6 +45,7 @@ from tkinter import ttk, messagebox
 import azure_tts
 import books
 import config
+import ipa_keyboard
 import passages
 import pronunciation
 import tts_engine
@@ -115,6 +118,9 @@ class App:
         self.cur_verses = []
         self.dirty = False
         self.busy = False
+        self.ipa_target = None    # the IPA box the keyboard types into
+        self.ipa_keyboard = None
+        self.ipa_guide = None
 
         root.title("Pronunciation Studio")
         root.geometry("1240x700")
@@ -155,6 +161,11 @@ class App:
         self.ch_cb.pack(side="left", padx=(4, 10))
 
         ttk.Button(bar, text="Load chapter", command=self.load_chapter).pack(side="left")
+
+        # Right side: the IPA pop-outs (most IPA isn't on a keyboard).
+        ttk.Button(bar, text="IPA key", command=self._show_ipa_guide).pack(side="right")
+        ttk.Button(bar, text="⌨ IPA keyboard",
+                   command=self._show_ipa_keyboard).pack(side="right", padx=(0, 6))
 
         ttk.Label(bar, text="   Show:").pack(side="left")
         self.filter_var = tk.StringVar(value=FILTERS[0])
@@ -270,6 +281,7 @@ class App:
             ipa_ent = ttk.Entry(self.inner, textvariable=row.ipa_var, width=20)
             ipa_ent.grid(row=r, column=3, sticky="w", padx=4, pady=1)
             ipa_ent.bind("<Return>", lambda e, rw=row: self._play_ipa(rw))
+            ipa_ent.bind("<FocusIn>", self._on_ipa_focus)
             ttk.Button(self.inner, text="▶ IPA", width=6,
                        state="normal" if azure_ok else "disabled",
                        command=lambda rw=row: self._play_ipa(rw)).grid(
@@ -381,6 +393,17 @@ class App:
         row.score = None          # a human verdict, not a measured one
         self._paint_status(row)
         self._mark_dirty()
+
+    # ----- IPA pop-outs -------------------------------------------------
+    def _on_ipa_focus(self, event):
+        self.ipa_target = event.widget
+
+    def _show_ipa_keyboard(self):
+        ipa_keyboard.show(self, "ipa_keyboard", lambda: ipa_keyboard.Keyboard(
+            self.root, lambda: self.ipa_target, self._show_ipa_guide))
+
+    def _show_ipa_guide(self):
+        ipa_keyboard.show(self, "ipa_guide", lambda: ipa_keyboard.Guide(self.root))
 
     # ----- edits / persistence -----------------------------------------
     def _mark_dirty(self):

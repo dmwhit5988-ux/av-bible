@@ -126,6 +126,22 @@ class AzureIpa(unittest.TestCase):
         self.assertEqual(failures, [], "\n".join(failures[:20]))
 
 
+class IpaKeyboard(unittest.TestCase):
+    """The Pronunciation Studio's keyboard offers Azure's phones, no more."""
+
+    def test_keys_are_exactly_azures_phone_set(self):
+        import ipa_keyboard
+        self.assertEqual(ipa_keyboard.symbols(),
+                         pronunciation.AZURE_VOWELS | pronunciation.AZURE_CONSONANTS)
+
+    def test_every_key_types_ipa_azure_takes(self):
+        import ipa_keyboard
+        for sym in ipa_keyboard.symbols():
+            with self.subTest(sym=sym):
+                ipa = sym if sym in pronunciation.AZURE_VOWELS else "ˈæ." + sym + "ə"
+                pronunciation.azure_ipa(ipa)
+
+
 class Ssml(unittest.TestCase):
     """ssml(), uses_ipa() and respell() over a small list of our own."""
 
