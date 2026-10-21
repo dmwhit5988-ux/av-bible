@@ -70,7 +70,7 @@ web/visuals/manifest.json (v2)               web/audio/manifest.json
 
 1. `build_manifest.py` rebuilds `web/visuals/manifest.json`. Publish then scans the content paths for changes (`git status`), and a confirm dialog shows the change summary, the commit message and the deploy's file count against the limit.
 2. Git:
-   - `git add -A` and `git commit` run on `publish_studio.CONTENT_PATHS` only: `web/audio`, `web/visuals` and `web/bibles`. Anything staged elsewhere stays staged and uncommitted.
+   - `git add -A` and `git commit` run on `publish_studio.CONTENT_PATHS` only: `web/audio`, `web/visuals`, `web/bibles` and `pronunciations.json`. The pronunciation list isn't deployed (it is outside `web/`), but the MP3s are rendered from it, so it is committed with them. Anything staged elsewhere stays staged and uncommitted.
    - `git push` follows. The push is the deploy.
 
 Further rules:

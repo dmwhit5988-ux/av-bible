@@ -33,7 +33,8 @@ explains the project, and `docs/` has the detail.
   update Publish (`publish_studio.py`) in the same commit, and must be checked with a
   Publish dry run.
 - Publish commits only `publish_studio.CONTENT_PATHS` (`web/audio`, `web/visuals`,
-  `web/bibles`). Commit code and docs by hand. A committed web-app file ships on the
+  `web/bibles` and `pronunciations.json`, which isn't deployed but is what the MP3s
+  are rendered from). Commit code and docs by hand. A committed web-app file ships on the
   next push as it is; there is no copy to refresh.
 - Everything under `web/` is public except what `web/.assetsignore` excludes, so never
   put a private or scratch file there.

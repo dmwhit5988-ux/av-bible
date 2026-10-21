@@ -226,7 +226,9 @@ Ship group, or run `publish_studio.py`. It has two steps:
    content paths for changes (`git status`), and a confirm dialog shows the change
    summary and the file budget.
 2. It runs `git add`, `git commit` and `git push` on the content paths only, which
-   are `publish_studio.CONTENT_PATHS`: `web/audio`, `web/visuals` and `web/bibles`.
+   are `publish_studio.CONTENT_PATHS`: `web/audio`, `web/visuals`, `web/bibles` and
+   `pronunciations.json`. The pronunciation list isn't deployed, but the MP3s are
+   rendered from it, so it is committed with them.
    The commit message reads `Publish: …`. If there are no content changes, nothing
    is committed or pushed.
 

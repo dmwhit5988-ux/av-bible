@@ -191,7 +191,7 @@ A changed `say` or `override` makes every published MP3 of a verse containing th
 1. **Fix and save** in the Pronunciation tool, or let `isbe_sweep.py` adopt a respelling.
 2. **Re-render the chapters that contain the name** in the Audio tool (**Audio** in the Studio's Produce group). Choose the book and chapter range, tick **Overwrite existing files (re-render after a pronunciation or voice change)**, then press **Render**. Unchanged verses come from the TTS cache, so only the changed ones are synthesized. For a name fixed by IPA, choose the engine **Azure for verses with IPA names**; the confirm dialog shows the Azure characters it will use.
 3. **If the chapter is 1 Chronicles 1–9 or Matthew 1, re-run its generator** (`generate_1chronicles_tree_svg.py` or `generate_matthew1_svg.py`). Their cameras are timed from the MP3 lengths in `web/audio/` (`svg_chronicles_world.AUDIO_DIR`).
-4. **Publish.**
+4. **Publish.** It commits `pronunciations.json` along with the MP3s, so the list in git matches the audio it rendered.
 
 Nothing yet reports which published verses a change made stale. The stale-narration check in the planned Studio lint is on the [roadmap](../ROADMAP.md).
 

@@ -5,10 +5,13 @@ web/.assetsignore leaves out, so there is nothing to build or copy. The
 publish chain is two steps:
 
     1. build_manifest.py   rebuild web/visuals/manifest.json (schema v2)
-    2. git add/commit/push CONTENT paths only (web/audio, web/visuals and
-                           web/bibles) — pushing is the deploy: Cloudflare's
-                           Workers Builds deploys web/ from the pushed commit
-                           (local wrangler can't run on ARM64)
+    2. git add/commit/push CONTENT paths only (web/audio, web/visuals,
+                           web/bibles and pronunciations.json) — pushing is
+                           the deploy: Cloudflare's Workers Builds deploys
+                           web/ from the pushed commit (local wrangler can't
+                           run on ARM64). pronunciations.json isn't deployed;
+                           it rides along because the MP3s are rendered
+                           from it.
 
 Code changes (*.py, docs, the web app's own js/css/html) are deliberately
 left out of the publish commit — commit those yourself, so a content
@@ -45,6 +48,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 import config
+import pronunciation
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -70,11 +74,15 @@ def _repo_rel(path: str) -> str:
 AUDIO_PATH = _repo_rel(config.WEB_AUDIO_DIR)
 VISUALS_PATH = _repo_rel(config.VISUALS_DIR)
 BIBLES_PATH = _repo_rel(config.BIBLES_DIR)
+# The pronunciation list isn't deployed (it is outside web/), but the MP3s a
+# publish ships were rendered from it, so it is committed alongside them --
+# otherwise the Studio's saves sit uncommitted however often you publish.
+PRONUNCIATIONS_PATH = _repo_rel(pronunciation.JSON_PATH)
 
-# Only these paths go into a publish commit. Content folders only, never the
-# web app shell: web/ is the site root, so listing plain "web" would ship
+# Only these paths go into a publish commit. Content only, never the web app
+# shell: web/ is the site root, so listing plain "web" would ship
 # half-finished web code (js, css, index.html) under "Publish: …".
-CONTENT_PATHS = [AUDIO_PATH, VISUALS_PATH, BIBLES_PATH]
+CONTENT_PATHS = [AUDIO_PATH, VISUALS_PATH, BIBLES_PATH, PRONUNCIATIONS_PATH]
 
 # The web app's own files: everything under web/ but the content folders
 # (js, css, index.html, icons, manifest.webmanifest, .assetsignore). Never in
@@ -91,7 +99,8 @@ _PICTURE_EXTS = (".svg", ".webp", ".gif", ".png", ".jpg", ".jpeg")
 # The content a change summary counts, as (tally area, singular, plural).
 _COUNTED = (("visuals", "visual", "visuals"),
             ("mp3s", "MP3", "MP3s"),
-            ("chapters", "Bible chapter", "Bible chapters"))
+            ("chapters", "Bible chapter", "Bible chapters"),
+            ("pronunciations", "pronunciation list", "pronunciation lists"))
 
 
 def assetsignore_patterns() -> list[str]:
@@ -189,8 +198,11 @@ def web_app_changes() -> list[str]:
 def _area(path: str) -> str:
     """The tally a changed content path counts towards: "visuals" (a
     picture under web/visuals/), "mp3s" (narration, web/audio/*.mp3),
-    "chapters" (a Bible chapter, web/bibles/<code>/<chapter>.json) or
-    "other" (the two manifests and the like)."""
+    "chapters" (a Bible chapter, web/bibles/<code>/<chapter>.json),
+    "pronunciations" (pronunciations.json) or "other" (the two manifests
+    and the like)."""
+    if path == PRONUNCIATIONS_PATH:
+        return "pronunciations"
     low = path.lower()
     if path.startswith(VISUALS_PATH + "/") and low.endswith(_PICTURE_EXTS):
         return "visuals"
@@ -208,7 +220,8 @@ def tally_changes(changes) -> dict[str, dict[str, int]]:
     """{area: {"changed": n, "deleted": n}} for a git_content_changes()
     list, with every area _area() names present."""
     tally = {area: {"changed": 0, "deleted": 0}
-             for area in ("visuals", "mp3s", "chapters", "other")}
+             for area in ("visuals", "mp3s", "chapters", "pronunciations",
+                          "other")}
     for change, path in changes:
         tally[_area(path)][change] += 1
     return tally
@@ -226,9 +239,10 @@ def _counted(tally, change: str) -> str:
 
 
 def commit_message(changes) -> str:
-    """The publish commit's message: the visuals, MP3s and Bible chapters
-    it adds or changes, then the ones it deletes, e.g. "Publish: 12
-    visuals, 30 MP3s; deleted 2 visuals". The manifests and the like
+    """The publish commit's message: the visuals, MP3s, Bible chapters and
+    pronunciation list it adds or changes, then the ones it deletes, e.g.
+    "Publish: 12 visuals, 30 MP3s, 1 pronunciation list; deleted 2
+    visuals". The manifests and the like
     that go along aren't counted; a commit of only those is a "content
     update"."""
     tally = tally_changes(changes)
@@ -342,8 +356,9 @@ class App:
         self.dry_run_check.pack(side="left", padx=(12, 0))
         ttk.Label(self.root, foreground="#888888", padding=(10, 2, 10, 4),
                   text=f"Publishes content only ({AUDIO_PATH}, "
-                       f"{VISUALS_PATH} and {BIBLES_PATH}) — code commits "
-                       f"stay yours.").pack(
+                       f"{VISUALS_PATH}, {BIBLES_PATH} and "
+                       f"{PRONUNCIATIONS_PATH}) — code commits stay "
+                       f"yours.").pack(
                            anchor="w")
 
         logframe = ttk.LabelFrame(self.root, text="Log", padding=(6, 4))
