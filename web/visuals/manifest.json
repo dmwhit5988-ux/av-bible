@@ -11744,7 +11744,7 @@
       {
         "file": "Numbers/34/Numbers_34_1.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_10": [
@@ -11772,40 +11772,40 @@
       {
         "file": "Numbers/34/Numbers_34_13.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_14": [
       {
         "file": "Numbers/34/Numbers_34_14.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_15": [
       {
         "file": "Numbers/34/Numbers_34_15.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_16": [
       {
         "file": "Numbers/34/Numbers_34_16.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_17": [
       {
-        "file": "Numbers/34/Numbers_34_16.svg",
+        "file": "Numbers/34/Numbers_34_17.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_18": [
       {
-        "file": "Numbers/34/Numbers_34_16.svg",
+        "file": "Numbers/34/Numbers_34_18.svg",
         "kind": "map",
         "animated": false
       }
@@ -11821,7 +11821,7 @@
       {
         "file": "Numbers/34/Numbers_34_2.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_20": [
@@ -11891,7 +11891,7 @@
       {
         "file": "Numbers/34/Numbers_34_29.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Numbers_34_3": [
