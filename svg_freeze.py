@@ -23,8 +23,9 @@ invent):
                                            node, warn
   additive="sum" or by=-only            -> keep, warn (freezing would need
                                            the animated base value)
-  animateTransform / animateMotion      -> keep, warn (no house generator
-                                           emits these)
+  animateTransform / animateMotion      -> keep, warn (only the camera
+                                           families emit these, and they
+                                           never come through here)
 
 Special case: a frozen stroke-dashoffset of 0 deletes both stroke-dashoffset
 and stroke-dasharray instead — a fully revealed traced line becomes a plain

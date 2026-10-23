@@ -189,9 +189,11 @@ class RealOutputRoundTrips(unittest.TestCase):
         base_group(root)
 
     def test_tribal_map_traced_verse(self):
-        root = self._roundtrip(os.path.join("Numbers", "34",
-                                            "Numbers_34_6.svg"),
-                               "Numbers_34_6")
+        # (Numbers 32, not 34: Numbers 34 flies a camera, an animateTransform
+        # the freeze keeps and warns about by design)
+        root = self._roundtrip(os.path.join("Numbers", "32",
+                                            "Numbers_32_33.svg"),
+                               "Numbers_32_33")
         # every traced border froze to "fully drawn": no dash-offset remains
         for el in root.iter():
             self.assertIsNone(el.get("stroke-dashoffset"))

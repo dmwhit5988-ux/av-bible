@@ -281,7 +281,7 @@
       "spec": [
         {
           "file": "generate_tribal_maps.py",
-          "edit": "geometry, LANDMARKS, captions shared with Numbers 34"
+          "edit": "SPECS_32, CITIES32, the Numbers 32 regions; coast, rivers and TRIBES shared with Numbers 34"
         },
         {
           "file": "generate_numbers32_svg.py",
@@ -300,7 +300,15 @@
       "spec": [
         {
           "file": "generate_tribal_maps.py",
-          "edit": "BORDER_SEGS, LANDMARKS34, CAPTIONS_34A/B, PANEL_34A, TRIBES, PRINCES"
+          "edit": "BORDER_SEGS, TRIBE_RINGS, LANDMARKS34, CURRENT34, MODERN34, PRINCES; geometry shared with Numbers 32"
+        },
+        {
+          "file": "generate_numbers34_svg.py",
+          "edit": "SHOTS and plan() (the camera), units_A and units_B (where names may go)"
+        },
+        {
+          "file": "svg_chronicles_world.py",
+          "edit": "camera arc and audio timing shared with 1 Chronicles"
         }
       ],
       "kind": "map"

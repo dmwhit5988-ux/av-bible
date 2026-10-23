@@ -5,16 +5,25 @@ maps from it, and eight more generators (Genesis 1, 2, 6-9, 10 and 11,
 Numbers 1-2, Acts 13-14 and 15-18) take its water and land colours or its
 MapFrame projection. What it holds:
 
+* The land: coast, lakes and rivers, plus the wider world (the Sinai and
+  Delta coast, the Syrian coast, the gulfs) that the Numbers 34 camera shows
+  when it pulls back. Context only, never labelled.
+
 * Numbers 34:1-15 — "Greater Canaan". The border of the land, one segment
   per border verse in reading order (south, west = the Great Sea, north,
-  east), the landmarks named along it, and the side-panel notes giving the
-  modern scholarly identification of each (Kadesh-barnea = Ein el-Qudeirat,
-  Brook of Egypt = Wadi el-Arish, Lebo-hamath = Labweh, Zedad = Sadad ...).
+  east), built from the same coast, river and shore points so the Jordan
+  stretch runs on the river. The landmarks named along it carry their WEB
+  names, and the current verse's landmark its modern identification
+  (Kadesh Barnea = Ein el-Qudeirat, Brook of Egypt = Wadi el-Arish ...).
   The northern reach follows the mainstream view (Mazar, Aharoni) that these
   borders preserve Egypt's Late Bronze Age province of Canaan.
 
 * Numbers 34:16-29 — the twelve tribal territories (as later described in
-  Joshua 13-19) and the prince named for each tribe (vv 19-28).
+  Joshua 13-19) and the prince named for each tribe (vv 19-28). The
+  territories are a SHARED-EDGE partition: every boundary between two
+  neighbours is written once and both use it, and the coast and the Jordan
+  and lake shores are their outer edges, so no gap or overlap opens however
+  far the camera zooms in.
 
 * Numbers 32 (all 42 verses) — the Transjordan: the lands of Jazer and
   Gilead, the kingdoms of Sihon and Og, and the cities Gad and Reuben
@@ -22,9 +31,7 @@ MapFrame projection. What it holds:
 
 All coordinates are approximate scholarly reconstructions — the ancient
 landmarks are only partly identifiable. Geometry is hand-encoded lat/lon
-simplified from standard Bible atlas reconstructions. Label positions are
-hand-tuned; if you move a dot, regenerate the affected verse's SVG and check
-for collisions.
+simplified from standard Bible atlas reconstructions.
 """
 
 import math
@@ -50,143 +57,199 @@ TRIBE_COL = {
 # Geometry (lat, lon) — approximate, simplified from atlas reconstructions
 # ---------------------------------------------------------------------------
 
+# Coast, south to north. Carmel is a rounded Haifa bay; (33.43, 35.279) is
+# Asher's north end, on the coast.
 COAST = [(30.95, 33.35), (31.05, 33.55), (31.16, 33.80), (31.29, 34.23),
          (31.52, 34.43), (31.67, 34.55), (31.80, 34.63), (32.05, 34.74),
          (32.28, 34.83), (32.50, 34.89), (32.62, 34.92), (32.83, 34.96),
-         (32.79, 35.03), (32.92, 35.07), (33.04, 35.10), (33.09, 35.11),
-         (33.27, 35.19), (33.45, 35.29), (33.56, 35.37), (33.90, 35.48),
-         (34.12, 35.65), (34.30, 35.73), (34.45, 35.85), (34.70, 35.97),
-         (34.95, 36.05), (35.20, 36.10)]
+         (32.818, 34.995), (32.808, 35.03), (32.83, 35.058),
+         (32.875, 35.071), (32.92, 35.075), (33.04, 35.10), (33.09, 35.11),
+         (33.27, 35.19), (33.43, 35.279), (33.45, 35.29), (33.56, 35.37),
+         (33.90, 35.48), (34.12, 35.65), (34.30, 35.73), (34.45, 35.85),
+         (34.70, 35.97), (34.95, 36.05), (35.20, 36.10)]
 
 # Land = everything east/south of the coastline (generous outer corners;
 # the map window clips whatever falls outside it).
 LAND_POLY = COAST + [(35.4, 38.4), (29.2, 38.4), (29.2, 33.0)]
 
-DEAD_SEA = [(31.77, 35.50), (31.76, 35.56), (31.60, 35.58), (31.45, 35.57),
-            (31.25, 35.56), (31.10, 35.52), (31.03, 35.46), (31.12, 35.42),
-            (31.30, 35.41), (31.50, 35.40), (31.65, 35.43), (31.72, 35.46)]
+# The Dead Sea carries the Jordan mouth (31.77, 35.51) and the Arnon mouth
+# (31.47, 35.5713) as vertices, and Galilee its outlet (32.70, 35.57), so
+# the territories and the border can share them.
+DEAD_SEA = [(31.77, 35.50), (31.77, 35.51), (31.76, 35.56), (31.60, 35.58),
+            (31.47, 35.5713), (31.45, 35.57), (31.25, 35.56), (31.10, 35.52),
+            (31.03, 35.46), (31.12, 35.42), (31.30, 35.41), (31.50, 35.40),
+            (31.65, 35.43), (31.72, 35.46)]
 GALILEE = [(32.90, 35.58), (32.86, 35.63), (32.78, 35.64), (32.71, 35.60),
-           (32.70, 35.56), (32.76, 35.52), (32.85, 35.53)]
+           (32.70, 35.57), (32.76, 35.52), (32.85, 35.53)]
 HULEH = [(33.10, 35.59), (33.06, 35.62), (33.02, 35.60), (33.05, 35.57)]
 LAKES = (DEAD_SEA, GALILEE, HULEH)
 
+# The lower Jordan carries every junction the territories use.
 JORDAN_UP = [(33.25, 35.63), (33.10, 35.60), (32.90, 35.58)]
-JORDAN_LOW = [(32.70, 35.57), (32.55, 35.55), (32.40, 35.56), (32.25, 35.54),
-              (32.10, 35.54), (31.95, 35.52), (31.77, 35.51)]
-ARNON = [(31.47, 35.57), (31.44, 35.80), (31.47, 36.05), (31.40, 36.25)]
-JABBOK = [(32.19, 35.56), (32.17, 35.72), (32.08, 35.88), (31.99, 35.98),
+JORDAN_LOW = [(32.70, 35.57), (32.68, 35.567), (32.55, 35.55),
+              (32.48, 35.555), (32.40, 35.56), (32.25, 35.54),
+              (32.12, 35.54), (32.10, 35.54), (31.95, 35.52),
+              (31.88, 35.516), (31.77, 35.51)]
+ARNON = [(31.47, 35.5713), (31.44, 35.80), (31.47, 36.05), (31.40, 36.25)]
+JABBOK = [(32.19, 35.54), (32.17, 35.72), (32.08, 35.88), (31.99, 35.98),
           (32.05, 36.08)]
-YARMOUK = [(32.68, 35.57), (32.71, 35.75), (32.76, 35.95), (32.73, 36.15)]
+YARMOUK = [(32.68, 35.567), (32.71, 35.75), (32.76, 35.95), (32.73, 36.15)]
+RIVERS = (JORDAN_UP, JORDAN_LOW, ARNON, JABBOK, YARMOUK)
+
+# --- The wider world, for the Numbers 34 camera's wide shots ---------------
+# Coarse on purpose: context, never labelled.
+COAST_WEST = [(30.85, 27.5), (30.95, 29.0), (31.20, 29.90), (31.45, 30.35),
+              (31.52, 30.80), (31.58, 31.30), (31.52, 31.85), (31.35, 32.10),
+              (31.26, 32.30), (31.12, 32.65), (31.08, 32.95), (31.00, 33.20)]
+COAST_NORTH = [(35.52, 35.77), (35.88, 35.86), (36.22, 35.94), (36.58, 36.17),
+               (36.85, 36.02), (36.76, 35.56), (36.80, 34.64), (36.32, 33.95),
+               (36.08, 32.85), (36.30, 32.20), (36.62, 31.40), (36.88, 30.70)]
+WORLD_COAST = COAST_WEST + COAST + COAST_NORTH
+WORLD_LAND = (WORLD_COAST + [(38.5, 30.2), (38.5, 46.0), (24.0, 46.0),
+                             (24.0, 27.0), (30.8, 27.0)])
+GULF_SUEZ = [(29.97, 32.55), (29.80, 32.62), (29.40, 32.78), (28.90, 33.02),
+             (28.40, 33.40), (27.90, 33.80), (27.60, 34.15), (27.30, 33.95),
+             (27.70, 33.45), (28.30, 33.00), (28.90, 32.75), (29.50, 32.45),
+             (29.88, 32.45)]
+GULF_AQABA = [(29.55, 34.96), (29.40, 35.00), (29.00, 34.86), (28.50, 34.72),
+              (28.00, 34.58), (27.70, 34.40), (27.90, 34.30), (28.40, 34.45),
+              (28.90, 34.62), (29.35, 34.85)]
+RED_SEA = [(27.60, 34.15), (27.70, 34.40), (27.00, 35.50), (24.0, 37.5),
+           (24.0, 33.5), (27.30, 33.95)]
+WORLD_SEAS = (GULF_SUEZ, GULF_AQABA, RED_SEA)
+WORLD_LAT = (24.5, 38.0)       # the drawn world; no shot may see past it
+WORLD_LON = (27.0, 45.5)
+
+
+def _run(seq, a, b):
+    """The stretch of `seq` from point a to point b, in that direction."""
+    ia, ib = seq.index(a), seq.index(b)
+    return seq[ia:ib + 1] if ia <= ib else seq[ib:ia + 1][::-1]
+
+
+def _coast(a, b):
+    return _run(COAST, a, b)
+
+
+def _jordan(a, b):
+    return _run(JORDAN_LOW, a, b)
+
+
+def _chain(*parts):
+    """Join runs into one ring, dropping the repeated joint points."""
+    out = []
+    for part in parts:
+        for p in part:
+            if not out or out[-1] != p:
+                out.append(p)
+    if len(out) > 1 and out[0] == out[-1]:
+        out.pop()
+    return out
+
+
+def _rev(seq):
+    return list(reversed(seq))
+
 
 # --- Numbers 34 border, one entry per border verse, in reading order ------
+_DS_EAST = [(31.77, 35.51), (31.76, 35.56), (31.60, 35.58), (31.47, 35.5713),
+            (31.45, 35.57), (31.25, 35.56), (31.10, 35.52), (31.03, 35.46)]
 BORDER_SEGS = [
     (3, [(31.03, 35.46), (30.90, 35.15)]),                    # Salt Sea->Akrabbim
     (4, [(30.90, 35.15), (30.78, 34.90), (30.63, 34.42),      # ->Zin->Kadesh
-         (30.70, 34.32), (30.85, 34.20)]),                    # ->Hazar-addar->Azmon
+         (30.70, 34.32), (30.85, 34.20)]),                    # ->Hazar Addar->Azmon
     (5, [(30.85, 34.20), (30.95, 34.00), (31.16, 33.80)]),    # ->Brook of Egypt->sea
-    (6, [(31.16, 33.80), (31.29, 34.23), (31.52, 34.43),      # the Great Sea
-         (31.67, 34.55), (31.80, 34.63), (32.05, 34.74),
-         (32.28, 34.83), (32.50, 34.89), (32.62, 34.92),
-         (32.83, 34.96), (32.79, 35.03), (32.92, 35.07),
-         (33.04, 35.10), (33.09, 35.11), (33.27, 35.19),
-         (33.45, 35.29), (33.56, 35.37), (33.90, 35.48),
-         (34.12, 35.65), (34.30, 35.73), (34.45, 35.85)]),
+    (6, _coast((31.16, 33.80), (34.45, 35.85))),              # the Great Sea
     (7, [(34.45, 35.85), (34.30, 35.95)]),                    # sea->Mount Hor
-    (8, [(34.30, 35.95), (34.20, 36.35), (34.31, 36.92)]),    # ->Lebo-hamath->Zedad
-    (9, [(34.31, 36.92), (34.36, 37.10), (34.23, 37.24)]),    # ->Ziphron->Hazar-enan
+    (8, [(34.30, 35.95), (34.20, 36.35), (34.31, 36.92)]),    # ->Hamath->Zedad
+    (9, [(34.31, 36.92), (34.36, 37.10), (34.23, 37.24)]),    # ->Ziphron->Hazar Enan
     (10, [(34.23, 37.24), (33.80, 36.60)]),                   # ->Shepham
     (11, [(33.80, 36.60), (33.40, 36.30), (32.85, 35.65)]),   # ->Riblah->Chinnereth
-    (12, [(32.85, 35.65), (32.70, 35.60), (32.55, 35.57),     # ->Jordan->Salt Sea
-          (32.40, 35.58), (32.25, 35.56), (32.10, 35.56),
-          (31.95, 35.54), (31.77, 35.56), (31.60, 35.58),
-          (31.45, 35.57), (31.25, 35.56), (31.10, 35.52),
-          (31.03, 35.46)]),
+    # down the lake's east shore, ON the Jordan, then the Salt Sea's shore
+    (12, _chain([(32.85, 35.65), (32.78, 35.64), (32.71, 35.60)],
+                JORDAN_LOW, _DS_EAST)),
 ]
 CANAAN_POLY = [p for _, seg in BORDER_SEGS for p in seg[:-1]]
 
-# (label, lat, lon, first verse, (dx, dy, PIL anchor), leader, uncertain)
-# Offsets are hand-tuned against the Numbers 34:1-15 window
-# (generate_numbers34_svg.py) — QC after moving.
-# (Azmon and Hazar-addar get dots via the border itself; their labels would
-# not fit in the crowded southwest pocket — the side panel names them.)
-LANDMARKS34 = [
-    ("ascent of Akrabbim", 30.90, 35.15, 3, (14, 8, "lm"), False, False),
-    ("Kadesh-barnea", 30.63, 34.42, 4, (0, 20, "mt"), False, False),
-    ("Mount Hor", 34.30, 35.95, 7, (-8, -14, "rm"), False, True),
-    ("Lebo-hamath", 34.20, 36.35, 8, (-8, 8, "rm"), False, False),
-    ("Zedad", 34.31, 36.92, 8, (-4, -12, "mb"), False, False),
-    ("Ziphron", 34.36, 37.10, 9, (10, -28, "mb"), True, True),
-    ("Hazar-enan", 34.23, 37.24, 9, (0, 9, "mt"), False, True),
-    ("Shepham", 33.80, 36.60, 10, (8, 0, "lm"), False, True),
-    ("Riblah", 33.40, 36.30, 11, (-8, 0, "rm"), False, True),
-    ("Jericho", 31.87, 35.44, 15, (-8, 0, "rm"), False, False),
-]
-
 # --- Tribal territories (Joshua 13-19, standard atlas approximation) ------
-TRIBES = {
-    "JUDAH": ("Judah",
-              [(31.16, 33.80), (31.45, 34.35), (31.78, 34.62), (31.80, 34.90),
-               (31.75, 35.08), (31.72, 35.20), (31.78, 35.38), (31.76, 35.46),
-               (31.55, 35.40), (31.30, 35.41), (31.03, 35.45), (30.90, 35.15),
-               (30.78, 34.90), (30.63, 34.42), (30.85, 34.20), (30.95, 34.00)],
-              (31.58, 34.95)),   # up in Judah's hill country, clear of Simeon
-    "SIMEON": ("Simeon",
-               [(31.45, 34.40), (31.42, 34.95), (31.28, 35.05), (31.05, 34.90),
-                (31.00, 34.50), (31.20, 34.30)],
-               (31.12, 34.62)),
-    "BENJAMIN": ("Benjamin",
-                 [(31.75, 35.08), (31.93, 35.12), (31.95, 35.32),
-                  (31.88, 35.50), (31.78, 35.47), (31.72, 35.20)],
-                 (31.85, 35.36)),
-    "DAN": ("Dan",
-            [(31.78, 34.62), (32.05, 34.74), (32.02, 35.05), (31.93, 35.12),
-             (31.75, 35.08), (31.80, 34.90)],
-            (31.92, 34.86)),
-    "EPHRAIM": ("Ephraim",
-                [(32.05, 34.74), (32.30, 34.86), (32.32, 35.15),
-                 (32.22, 35.40), (32.12, 35.52), (31.95, 35.50),
-                 (31.95, 35.32), (31.93, 35.12), (32.02, 35.05)],
-                (32.15, 35.12)),
-    "MANASSEH_W": ("Manasseh",
-                   [(32.30, 34.86), (32.62, 34.92), (32.83, 34.96),
-                    (32.78, 35.05), (32.65, 35.18), (32.55, 35.30),
-                    (32.50, 35.42), (32.48, 35.54), (32.40, 35.55),
-                    (32.12, 35.52), (32.22, 35.40), (32.32, 35.15)],
-                   (32.42, 35.06)),
-    "ISSACHAR": ("Issachar",
-                 [(32.55, 35.30), (32.70, 35.33), (32.75, 35.45),
-                  (32.70, 35.55), (32.60, 35.56), (32.48, 35.54),
-                  (32.50, 35.42)],
-                 (32.56, 35.45)),
-    "ZEBULUN": ("Zebulun",
-                [(32.75, 35.12), (32.95, 35.18), (32.98, 35.35),
-                 (32.85, 35.42), (32.75, 35.45), (32.70, 35.33),
-                 (32.68, 35.20)],
-                (32.85, 35.27)),
-    "ASHER": ("Asher",
-              [(32.83, 34.96), (32.92, 35.07), (33.09, 35.11), (33.27, 35.19),
-               (33.42, 35.30), (33.35, 35.45), (33.10, 35.40), (32.98, 35.35),
-               (32.95, 35.18), (32.75, 35.12), (32.78, 35.05)],
-              (33.05, 35.20)),
-    "NAPHTALI": ("Naphtali",
-                 [(32.85, 35.42), (32.98, 35.35), (33.10, 35.40),
-                  (33.35, 35.45), (33.30, 35.62), (33.05, 35.63),
-                  (32.88, 35.57), (32.80, 35.52), (32.75, 35.45)],
-                 (33.15, 35.55)),
-    "REUBEN": ("Reuben",
-               [(31.88, 35.53), (31.90, 36.05), (31.45, 36.05), (31.44, 35.80),
-                (31.47, 35.57), (31.70, 35.58), (31.77, 35.53)],
-               (31.30, 35.95)),
-    "GAD": ("Gad",
-            [(31.88, 35.53), (32.10, 35.54), (32.35, 35.56), (32.68, 35.58),
-             (32.55, 35.75), (32.40, 35.92), (32.30, 36.05), (31.90, 36.05)],
-            (32.13, 35.82)),
-    "MANASSEH_E": ("Manasseh",
-                   [(32.68, 35.58), (32.90, 35.62), (33.25, 35.65),
-                    (33.25, 35.95), (33.10, 36.45), (32.70, 36.65),
-                    (32.60, 36.15), (32.40, 35.92), (32.55, 35.75)],
-                   (32.90, 36.10)),
+# A shared-edge partition: each boundary below is written once and used by
+# both neighbours.
+_JUDAH_DAN = [(31.80, 34.63), (31.80, 34.90), (31.75, 35.08)]
+_JUDAH_BEN = [(31.75, 35.08), (31.755, 35.23), (31.78, 35.38), (31.79, 35.45),
+              (31.77, 35.51)]
+_DAN_BEN = [(31.75, 35.08), (31.93, 35.12)]
+_DAN_EPH = [(31.93, 35.12), (32.02, 35.05), (32.05, 34.74)]
+_BEN_EPH = [(31.93, 35.12), (31.95, 35.32), (31.95, 35.52)]
+_EPH_MAN = [(32.28, 34.83), (32.32, 35.15), (32.22, 35.40), (32.12, 35.54)]
+_MAN_ISS = [(32.48, 35.555), (32.50, 35.42), (32.55, 35.30), (32.66, 35.24)]
+_MAN_ZEB = [(32.66, 35.24), (32.70, 35.18), (32.75, 35.12)]
+_MAN_ASH = [(32.75, 35.12), (32.78, 35.05), (32.83, 34.96)]
+_ZEB_ISS = [(32.66, 35.24), (32.70, 35.33), (32.75, 35.45)]
+_ZEB_ASH = [(32.75, 35.12), (32.95, 35.18), (32.98, 35.35)]
+_ZEB_NAP = [(32.98, 35.35), (32.85, 35.42), (32.75, 35.45)]
+_ISS_NAP = [(32.75, 35.45), (32.76, 35.52)]
+_ASH_NAP = [(32.98, 35.35), (33.10, 35.40), (33.36, 35.45)]
+_REU_GAD = [(31.88, 35.516), (31.89, 35.75), (31.90, 36.05)]
+_GAD_MAN = [(32.68, 35.567), (32.55, 35.75), (32.40, 35.92)]
+_DS_JUDAH = [(31.77, 35.51), (31.77, 35.50), (31.72, 35.46), (31.65, 35.43),
+             (31.50, 35.40), (31.30, 35.41), (31.12, 35.42), (31.03, 35.46)]
+_SOUTH = [(31.03, 35.46), (30.90, 35.15), (30.78, 34.90), (30.63, 34.42),
+          (30.70, 34.32), (30.85, 34.20), (30.95, 34.00), (31.16, 33.80)]
+_SIMEON = [(31.42, 34.45), (31.42, 34.95), (31.28, 35.05), (31.05, 34.90),
+           (31.00, 34.50), (31.20, 34.30)]
+
+# key -> [outer ring, holes...]. Judah carries Simeon as a hole: Simeon is
+# an enclave inside it.
+TRIBE_RINGS = {
+    "JUDAH": [_chain(_coast((31.16, 33.80), (31.80, 34.63)), _JUDAH_DAN,
+                     _JUDAH_BEN, _DS_JUDAH, _SOUTH), _SIMEON],
+    "SIMEON": [_SIMEON],
+    "BENJAMIN": [_chain(_BEN_EPH, _jordan((31.95, 35.52), (31.77, 35.51)),
+                        _rev(_JUDAH_BEN), _DAN_BEN)],
+    "DAN": [_chain(_coast((31.80, 34.63), (32.05, 34.74)), _rev(_DAN_EPH),
+                   _rev(_DAN_BEN), _rev(_JUDAH_DAN))],
+    "EPHRAIM": [_chain(_coast((32.05, 34.74), (32.28, 34.83)), _EPH_MAN,
+                       _jordan((32.12, 35.54), (31.95, 35.52)),
+                       _rev(_BEN_EPH), _DAN_EPH)],
+    "MANASSEH_W": [_chain(_coast((32.28, 34.83), (32.83, 34.96)),
+                          _rev(_MAN_ASH), _rev(_MAN_ZEB), _rev(_MAN_ISS),
+                          _jordan((32.48, 35.555), (32.12, 35.54)),
+                          _rev(_EPH_MAN))],
+    "ISSACHAR": [_chain(_ZEB_ISS, _ISS_NAP, [(32.76, 35.52), (32.70, 35.57)],
+                        _jordan((32.70, 35.57), (32.48, 35.555)), _MAN_ISS)],
+    "ZEBULUN": [_chain(_ZEB_ASH, _ZEB_NAP, _rev(_ZEB_ISS), _MAN_ZEB)],
+    "ASHER": [_chain(_coast((32.83, 34.96), (33.43, 35.279)), [(33.36, 35.45)],
+                     _rev(_ASH_NAP), _rev(_ZEB_ASH), _MAN_ASH)],
+    "NAPHTALI": [_chain([(32.76, 35.52), (32.85, 35.53), (32.90, 35.58)],
+                        _rev(JORDAN_UP), [(33.32, 35.62), (33.36, 35.45)],
+                        _rev(_ASH_NAP), _ZEB_NAP, _ISS_NAP)],
+    "REUBEN": [_chain([(31.77, 35.51)], _REU_GAD, [(31.47, 36.05)],
+                      _rev(ARNON[:3]), [(31.60, 35.58), (31.76, 35.56)])],
+    "GAD": [_chain(_jordan((31.88, 35.516), (32.68, 35.567)), _GAD_MAN,
+                   [(32.30, 36.05)], _rev(_REU_GAD))],
+    "MANASSEH_E": [_chain([(32.68, 35.567), (32.70, 35.57), (32.71, 35.60),
+                           (32.78, 35.64), (32.86, 35.63), (32.90, 35.58)],
+                          JORDAN_UP[::-1],
+                          [(33.25, 35.95), (33.10, 36.45), (32.70, 36.65),
+                           (32.60, 36.15)], _rev(_GAD_MAN))],
 }
+
+# TRIBES: key -> (name, outer ring, label point). The label point is for
+# Numbers 32's fixed map; Numbers 34 finds room for each name at its own
+# camera.
+_LABEL_AT = {
+    "JUDAH": ("Judah", (31.58, 34.95)), "SIMEON": ("Simeon", (31.12, 34.62)),
+    "BENJAMIN": ("Benjamin", (31.85, 35.36)), "DAN": ("Dan", (31.92, 34.86)),
+    "EPHRAIM": ("Ephraim", (32.15, 35.12)),
+    "MANASSEH_W": ("Manasseh", (32.42, 35.06)),
+    "ISSACHAR": ("Issachar", (32.56, 35.45)),
+    "ZEBULUN": ("Zebulun", (32.85, 35.27)), "ASHER": ("Asher", (33.05, 35.20)),
+    "NAPHTALI": ("Naphtali", (33.15, 35.55)),
+    "REUBEN": ("Reuben", (31.30, 35.95)), "GAD": ("Gad", (32.13, 35.82)),
+    "MANASSEH_E": ("Manasseh", (32.90, 36.10)),
+}
+TRIBES = {key: (name, TRIBE_RINGS[key][0], at)
+          for key, (name, at) in _LABEL_AT.items()}
 WEST_TRIBES = ["JUDAH", "SIMEON", "BENJAMIN", "DAN", "EPHRAIM", "MANASSEH_W",
                "ISSACHAR", "ZEBULUN", "ASHER", "NAPHTALI"]
 EAST_TRIBES = ["REUBEN", "GAD", "MANASSEH_E"]
@@ -265,94 +328,63 @@ ANCHORS = {"r": (8, 0, "lm"), "l": (-8, 0, "rm"),
 PANEL_X = 440                  # left edge of the side panel, beside the map
 
 
+
 # ---------------------------------------------------------------------------
 # Numbers 34, verses 1-15 — tracing the border of Greater Canaan
 # ---------------------------------------------------------------------------
 
-CAPTIONS_34A = {
-    1: "instructions for the land you are entering",
-    2: "this is the land of Canaan by its borders",
-    3: "the south side: from the wilderness of Zin along Edom",
-    4: "south of Kadesh-barnea, on to Hazar-addar and Azmon",
-    5: "along the Brook of Egypt, out to the sea",
-    6: "the west border: the Great Sea",
-    7: "from the Great Sea, mark out Mount Hor",
-    8: "from Mount Hor to Lebo-hamath, and on to Zedad",
-    9: "to Ziphron, ending at Hazar-enan — the north border",
-    10: "the east border: from Hazar-enan to Shepham",
-    11: "down past Riblah to the slopes east of Chinnereth",
-    12: "down the Jordan to the Salt Sea — the whole border",
-    13: "this land falls by lot to the nine and a half tribes",
-    14: "Reuben, Gad, and half of Manasseh already have theirs",
-    15: "beyond the Jordan, opposite Jericho, toward the sunrise",
-}
+# (key, name as WEB has it, lat, lon, first verse, label placements to try
+# first, uncertain). Placements are the camera layout's codes, nearest-first:
+# r / l / a / b = right, left, above, below; ar, br ... the corners.
+LANDMARKS34 = [
+    ("akrabbim", "ascent of Akrabbim", 30.90, 35.15, 4, ["br", "r", "b"], 0),
+    ("kadesh", "Kadesh Barnea", 30.63, 34.42, 4, ["br", "b", "r", "bl"], 0),
+    ("hazar_addar", "Hazar Addar", 30.70, 34.32, 4, ["l", "bl", "al"], 1),
+    ("azmon", "Azmon", 30.85, 34.20, 4, ["ar", "a", "al", "l"], 1),
+    ("mount_hor", "Mount Hor", 34.30, 35.95, 7, ["ar", "a", "a+", "br"], 1),
+    ("lebo", "entrance of Hamath", 34.20, 36.35, 8, ["b", "bl", "br"], 0),
+    ("zedad", "Zedad", 34.31, 36.92, 8, ["a", "al", "b", "bl"], 0),
+    ("ziphron", "Ziphron", 34.36, 37.10, 9, ["ar", "a", "r"], 1),
+    ("hazar_enan", "Hazar Enan", 34.23, 37.24, 9, ["r", "br", "b"], 1),
+    ("shepham", "Shepham", 33.80, 36.60, 10, ["r", "br", "ar"], 1),
+    ("riblah", "Riblah", 33.40, 36.30, 11, ["br", "r", "b"], 1),
+    ("jericho", "Jericho", 31.87, 35.44, 15, ["l", "al", "bl"], 0),
+]
 
-PANEL_34A = {
-    2: ["the same outline as the", "Egyptian province of", "Canaan in the Late",
-        "Bronze Age", " (B. Mazar; Y. Aharoni)"],
-    3: ["Salt Sea = the Dead Sea", "ascent of Akrabbim =", " a pass SW of the Dead Sea"],
-    4: ["Kadesh-barnea =", " the Ein el-Qudeirat oasis", "Hazar-addar, Azmon:",
-        " nearby, uncertain"],
-    5: ["Brook of Egypt =", " Wadi el-Arish"],
-    6: ["the Great Sea =", " the Mediterranean"],
-    7: ["Mount Hor: a peak in the", "Lebanon range, unknown", " (not Aaron's Mount Hor)"],
-    8: ["Lebo-hamath = Labweh,", " in Lebanon's Beqaa Valley", "Zedad = Sadad, Syria"],
-    9: ["Ziphron and Hazar-enan:", " east of the Anti-Lebanon,", " uncertain"],
-    10: ["Shepham: unknown"],
-    11: ["Riblah here: uncertain", "sea of Chinnereth =", " the Sea of Galilee"],
-    12: ["the border closes: down", "the Jordan to the Dead Sea", "",
-         "far larger than Israel", "ever held — a promise,", "not a census"],
-    13: ["nine and a half tribes", "will draw lots west of", "the Jordan"],
-    14: ["two and a half tribes", "chose land east of the", "Jordan (Numbers 32)"],
-    15: ["their inheritance faces", "Jericho, toward the", "sunrise"],
-}
+# The names each verse is about, drawn in HL: landmark keys, the water and
+# area names (salt, chin, sea, jordan, edom, zin, brook), and the east-bank
+# tribes as "t_<KEY>".
+CURRENT34 = {3: {"salt", "edom", "zin"},
+             4: {"akrabbim", "zin", "kadesh", "hazar_addar", "azmon"},
+             5: {"brook"}, 6: {"sea"}, 7: {"mount_hor"},
+             8: {"lebo", "zedad"}, 9: {"ziphron", "hazar_enan"},
+             10: {"shepham"}, 11: {"riblah", "chin"}, 12: {"jordan", "salt"},
+             14: {"t_REUBEN", "t_GAD", "t_MANASSEH_E"},
+             15: {"jericho", "t_REUBEN", "t_GAD", "t_MANASSEH_E"}}
+
+# The modern identification shown under a name on the verse that names it
+MODERN34 = {("salt", 3): "Dead Sea", ("kadesh", 4): "Ein el-Qudeirat",
+            ("brook", 5): "Wadi el-Arish", ("sea", 6): "Mediterranean",
+            ("lebo", 8): "Labweh", ("zedad", 8): "Sadad",
+            ("chin", 11): "Sea of Galilee"}
 
 
 # ---------------------------------------------------------------------------
 # Numbers 34, verses 16-29 — the allotment, tribe by tribe
 # ---------------------------------------------------------------------------
 
-# verse -> (tribe key, prince, [blurb lines], [(city, lat, lon, place)])
+# verse -> (tribe key, prince)
 PRINCES = {
-    19: ("JUDAH", "Caleb son of Jephunneh",
-         ["the southern hill country", "and the Negev"],
-         [("Hebron", 31.53, 35.10, "r")]),
-    20: ("SIMEON", "Shemuel son of Ammihud",
-         ["an enclave inside Judah,", "around Beersheba"],
-         [("Beersheba", 31.25, 34.79, "r")]),
-    21: ("BENJAMIN", "Elidad son of Chislon",
-         ["a narrow strip between", "Jericho and Jerusalem"],
-         [("Jericho", 31.87, 35.44, (7, -12, "lm"))]),
-    22: ("DAN", "Bukki son of Jogli",
-         ["foothills west of Benjamin;", "later the tribe migrated",
-          "north to Laish (Judges 18)"],
-         [("Zorah", 31.77, 34.98, "b"), ("Laish / Dan", 33.25, 35.65, "r")]),
-    23: ("MANASSEH_W", "Hanniel son of Ephod",
-         ["from the coast to the Jordan,", "plus half the tribe east in",
-          "Gilead and Bashan (Num 32)"],
-         [("Megiddo", 32.58, 35.18, "a")]),
-    24: ("EPHRAIM", "Kemuel son of Shiphtan",
-         ["the central hill country —", "Shechem, Shiloh, Bethel"],
-         [("Shiloh", 32.06, 35.29, "b")]),
-    25: ("ZEBULUN", "Elizaphan son of Parnach",
-         ["the lower Galilee hills,", "landlocked"],
-         []),
-    26: ("ISSACHAR", "Paltiel son of Azzan",
-         ["the eastern Jezreel Valley,", "below Mount Tabor"],
-         [("Mt Tabor", 32.69, 35.39, "r")]),
-    27: ("ASHER", "Ahihud son of Shelomi",
-         ["the coastal plain of Acco,", "north toward Tyre and Sidon"],
-         [("Acco", 32.92, 35.07, "l")]),
-    28: ("NAPHTALI", "Pedahel son of Ammihud",
-         ["the eastern Galilee, west", "of the lake, with Hazor"],
-         [("Hazor", 33.02, 35.57, "r")]),
-}
-
-CAPTIONS_34B = {
-    16: "Yahweh names the men who will divide the land",
-    17: "Eleazar the priest and Joshua son of Nun",
-    18: "and one prince from every tribe",
-    29: "these are they who divided the inheritance in Canaan",
+    19: ("JUDAH", "Caleb son of Jephunneh"),
+    20: ("SIMEON", "Shemuel son of Ammihud"),
+    21: ("BENJAMIN", "Elidad son of Chislon"),
+    22: ("DAN", "Bukki son of Jogli"),
+    23: ("MANASSEH_W", "Hanniel son of Ephod"),
+    24: ("EPHRAIM", "Kemuel son of Shiphtan"),
+    25: ("ZEBULUN", "Elizaphan son of Parnach"),
+    26: ("ISSACHAR", "Paltiel son of Azzan"),
+    27: ("ASHER", "Ahihud son of Shelomi"),
+    28: ("NAPHTALI", "Pedahel son of Ammihud"),
 }
 
 

@@ -7,8 +7,7 @@ highlights. Regions and kingdoms trace their borders with SvgCanvas.traced
 modern identification in the side panel.
 
 The geometry, city coordinates and spec table come from
-generate_tribal_maps.py; the map helpers (lake repaint, dot labels, compass,
-border, side panel, canvas) come from generate_numbers34_svg.py.
+generate_tribal_maps.py, which Numbers 34 draws from too.
 
 Run inside the project venv:
     .venv\\Scripts\\python.exe generate_numbers32_svg.py
@@ -20,18 +19,68 @@ from svg_surface import SvgCanvas
 from generate_tabernacle import (W, H, BG, SAND_DIM, TEXT, TEXT_DIM, HL,
                                  out_path)
 from generate_tribal_maps import (
-    MapFrame, PANEL_X, RIVER, RIVER_DIM, SEA, LAND, WATER_TXT,
+    MapFrame, ANCHORS, PANEL_X, RIVER, RIVER_DIM, SEA, LAND, WATER_TXT,
     LAND_POLY, COAST, LAKES, JORDAN_UP, JORDAN_LOW, ARNON, JABBOK, YARMOUK,
     JAZER_GILEAD, SIHON_POLY, OG_POLY, N_GILEAD, HAVVOTH_JAIR,
     TRIBES, TRIBE_COL, CITIES32, V3_CITIES, BUILD_VERSES, SPECS_32,
 )
-# Shared SVG helpers, already tuned for these maps in the Numbers 34 twin.
-from generate_numbers34_svg import (
-    g, redraw_lakes, label_dot, compass_scale, map_border, panel_lines,
-    canvas,
-)
+from passages import verse_numbers
 
 DUR = "2.6s"
+
+
+def g(alpha):
+    return HL + (int(255 * alpha),)
+
+
+# ---------------------------------------------------------------------------
+# Map helpers
+# ---------------------------------------------------------------------------
+
+def redraw_lakes(c, fr):
+    for lake in LAKES:
+        c.polygon(fr.pts(lake), fill=SEA + (255,), stroke=SAND_DIM + (255,))
+
+
+def label_dot(c, xy, name, place, fill, size, dot, bold=False, italic=False,
+              unc=False, leader=False, r=3):
+    x, y = xy
+    if dot:
+        c.circle(x, y, r, stroke=dot, width=2)
+    dx, dy, anch = ANCHORS[place] if isinstance(place, str) else place
+    if leader:
+        lx, ly = x + dx * 0.75, y + dy * 0.75
+        c.line((x + (2 if dx >= 0 else -2), y - 3), (lx, ly),
+               stroke=SAND_DIM, width=1)
+    txt = name + " ?" if unc else name
+    c.text((x + dx, y + dy), txt, size, fill, anch, bold=bold, italic=italic)
+
+
+def compass_scale(c, fr):
+    x, y = fr.mw - 24, fr.mh - 62
+    c.line((x, y + 22), (x, y), TEXT_DIM, 2)
+    c.line((x - 5, y + 8), (x, y), TEXT_DIM, 2)
+    c.line((x + 5, y + 8), (x, y), TEXT_DIM, 2)
+    c.text((x - 10, y + 2), "N", 14, TEXT_DIM, "rm")
+    bar = 50 * fr.s / 111.0
+    bx, by = fr.mw - 16 - bar, fr.mh - 16
+    c.line((bx, by), (bx + bar, by), TEXT_DIM, 2)
+    c.line((bx, by - 3), (bx, by + 3), TEXT_DIM, 2)
+    c.line((bx + bar, by - 3), (bx + bar, by + 3), TEXT_DIM, 2)
+    c.text((bx + bar / 2, by - 6), "50 km", 14, TEXT_DIM, "mb", italic=True)
+
+
+def map_border(c, fr):
+    c.rect(fr.px - 1, fr.py - 1, fr.mw + 1, fr.mh + 1, stroke=SAND_DIM,
+           width=1)
+
+
+def canvas(title, verse, caption):
+    # (no caption line or footer: the verse is narrated aloud — the map and
+    # its place names carry the graphic; SPECS_32 still holds `caption` data)
+    c = SvgCanvas(W, H, bg=BG)
+    c.text((28, 18), title, 24, TEXT, "la", bold=True)
+    return c
 
 
 def draw_base(c, fr, dim=False):
@@ -208,12 +257,13 @@ def render_32(verse):
 
 def main():
     total = 0
-    for verse in range(1, 43):
+    verses = verse_numbers("Numbers", 32)
+    for verse in verses:
         c = render_32(verse)
         out = out_path("Numbers", 32, f"Numbers_32_{verse}.svg")
         c.save(out)
         total += os.path.getsize(out)
-    print(f"Numbers 32: 42 SVG files, {total/1e3:.0f} KB")
+    print(f"Numbers 32: {len(verses)} SVG files, {total/1e3:.0f} KB")
 
 
 if __name__ == "__main__":
