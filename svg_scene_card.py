@@ -22,6 +22,9 @@ Event kinds, each (kind, actor, t, dur, value):
     ink   colour     cross-fade to another ink (to dim, say)
     rot   degrees    turn about the feet (a fall)
     grow             rise out of the ground (a plant)
+    scale f          grow or shrink by f about the feet (the light)
+    grow_x           swing out from the origin (a door on its hinge)
+    name_dy dy       its name moves up or down (a man stands up)
     mark  svg        draw a mark on the figure, which then rides with it
     pulse            one gold pulse round the figure's outline
     label text       its name appears (constant screen size)
@@ -33,7 +36,8 @@ from xml.sax.saxutils import escape
 
 import svg_figures as F
 from svg_surface import SvgCanvas, _fmt
-from svg_map_camera import EASE, fade, rgb, ink as ink_box
+from svg_map_camera import EASE, fade, rgb, to_screen, ink as ink_box
+from generate_tabernacle import W, H
 
 MAN_H = 97.0        # a man's height in figure units
 
@@ -56,13 +60,19 @@ class Actor:
 
     def __init__(self, key, make, x, y, h=110.0, unit_h=MAN_H, flip=1,
                  ink=None, pose=None, shown=False, label=None,
-                 label_y=None):
+                 label_y=None, label_fill=None, label_italic=False,
+                 label_dx=0):
         self.key, self.make = key, make
         self.h, self.unit_h = h, unit_h
         self.start = dict(x=x, y=y, flip=flip, ink=ink, pose=dict(pose or {}),
-                          shown=shown, rot=0.0, label=label)
-        # where its name sits, card px from its feet (up is negative)
+                          shown=shown, rot=0.0, label=label, scale=1.0)
+        # where its name sits, card px from its feet (up is negative), and
+        # how it is set (a signpost name is dim and italic)
         self.label_y = label_y if label_y is not None else -(h + 22)
+        self.label_fill, self.label_italic = label_fill, label_italic
+        # a sideways nudge in screen px, so two names side by side stay
+        # apart at any zoom
+        self.label_dx = label_dx
 
     def parts(self, pose):
         return self.make(**pose)
@@ -111,6 +121,12 @@ class Card:
     def zoom(self, cam):
         return cam[0] / self.S
 
+    def world(self, xy):
+        """A card point in world units."""
+        ax, ay = self.anchor
+        tx, ty = self.town_xy
+        return tx + (xy[0] - ax) / self.S, ty + (xy[1] - ay) / self.S
+
     # -- state -----------------------------------------------------------
 
     def state_at(self, ref):
@@ -149,6 +165,7 @@ class Card:
         cast_at = len(out)
         ks = [f"{self.S / c[0]:.5g}" for c in fl.cams]
         self._k = (ks[0], fl._anim("transform", ks, "scale"))
+        self._rest, self._open = fl.cam1, fl.cam0
         self._font_px = font_px
         names = []
         marks = {}
@@ -193,6 +210,9 @@ class Card:
     def _drawing(self, a, pose, ink, flip):
         """A <use> of the figure drawn once per verse file: a crowd of the
         same few people costs a few drawings, not one each."""
+        parts = a.parts(pose)
+        if not parts:
+            return ""             # a name with no figure (a group's name)
         k = (id(a.make), tuple(sorted(pose.items())), a.h, a.unit_h,
              tuple(ink), flip)
         if k not in self._syms:
@@ -200,7 +220,7 @@ class Card:
             self._syms[k] = sid
             self._sym_defs.append(
                 f'<g id="{sid}">'
-                + figure_svg(a.parts(pose), a.h, ink, self.page, flip,
+                + figure_svg(parts, a.h, ink, self.page, flip,
                              unit_h=a.unit_h) + "</g>")
         return f'<use href="#{self._syms[k]}"/>'
 
@@ -247,6 +267,21 @@ class Card:
                     f'begin="{t:.2f}s" dur="{d:.2f}s" fill="freeze" '
                     f'calcMode="spline" keyTimes="0;1" '
                     f'keySplines="{EASE}"/>')
+            elif kind == "grow_x":
+                rots.append(
+                    f'<animateTransform attributeName="transform" '
+                    f'type="scale" values="0.05 1;1 1" additive="sum" '
+                    f'begin="{t:.2f}s" dur="{d:.2f}s" fill="freeze" '
+                    f'calcMode="spline" keyTimes="0;1" '
+                    f'keySplines="{EASE}"/>')
+            elif kind == "scale":
+                f0 = 1.0
+                rots.append(
+                    f'<animateTransform attributeName="transform" '
+                    f'type="scale" values="{f0};{val}" additive="sum" '
+                    f'begin="{t:.2f}s" dur="{d:.2f}s" fill="freeze" '
+                    f'calcMode="spline" keyTimes="0;1" '
+                    f'keySplines="{EASE}"/>')
             elif kind == "mark":
                 pulses.append(f'<g opacity="0">{fade(t, d)}{val}</g>')
             elif kind == "rot":
@@ -290,12 +325,18 @@ class Card:
         strikes = [(t, d) for kind, _k, t, d, _v in evs if kind == "strike"]
         struck0 = s0.get("struck", False)
         rot0 = s0.get("rot", 0.0)
-        name_y = a.label_y
+        name_y = a.label_y + s0.get("name_dy", 0.0)
         drop = a.h * 0.72              # how far a name falls with a fall
         if rot0:
             name_y += drop
         falls = []
         for kind, _k, t, d, val in evs:
+            if kind == "name_dy":
+                falls.append(
+                    f'<animateTransform attributeName="transform" '
+                    f'type="translate" values="0 0;0 {_fmt(val)}" '
+                    f'additive="sum" begin="{t:.2f}s" dur="{d:.2f}s" '
+                    f'fill="freeze"/>')
             if kind == "rot":
                 dy = drop if val and not rot0 else -drop
                 falls.append(
@@ -304,7 +345,35 @@ class Card:
                     f'additive="sum" begin="{t:.2f}s" dur="{d:.2f}s" '
                     f'fill="freeze"/>')
         k0, kanim = self._k
+        ital = ' font-style="italic"' if a.label_italic else ""
+        end = dict(s0, pose=dict(s0["pose"]))
+        for kind, _k, _t, _d, val in evs:
+            apply_event(end, kind, val)
+        end_y = a.label_y + end.get("name_dy", 0.0) + (
+            a.h * 0.72 if end.get("rot") else 0.0)
+        start_y = a.label_y + s0.get("name_dy", 0.0) + (
+            a.h * 0.72 if s0.get("rot") else 0.0)
+
+        def cut(cam, x, y, box):
+            sx, sy = to_screen(cam, self.world((x, y)))
+            sx += a.label_dx
+            return (sx + box[0] < 2 or sx + box[2] > W - 2 or
+                    sy + box[1] < 2 or sy + box[3] > H - 2)
         for text, t in ([(lab0, None)] if lab0 else []) + lab_evs:
+            # a name its rest would leave cut by the frame goes early, and
+            # one the last verse left cut comes back in, not at once
+            box = ink_box(text, self._font_px, False, a.label_italic, "mm")
+            gone = ""
+            if cut(self._rest, end["x"], end["y"] + end_y, box):
+                if t is not None:
+                    continue              # it would only arrive cut
+                if not end["shown"] and not s0["shown"]:
+                    continue
+                gone = fade(0.0, 0.4, out=True)
+            elif t is None and cut(self._open, s0["x"], s0["y"] + start_y,
+                                   box):
+                gone = (f'<set attributeName="opacity" to="0" begin="0s"/>'
+                        + fade(0.3, 0.5))
             op = "" if t is None else ' opacity="0"'
             an = "" if t is None else fade(t, 0.5)
             wpx = ink_box(text, self._font_px, False, False, "mm")
@@ -324,17 +393,24 @@ class Card:
                          f'dur="{d_s:.2f}s" fill="freeze"/></line>')
             names.append(
                 f'<g transform="translate({_fmt(s0["x"])} {_fmt(s0["y"])})">'
-                + "".join(moves)
+                + gone + "".join(moves)
                 + f'<g transform="translate(0 {_fmt(name_y)})">'
                 + "".join(falls)
-                + f'<g transform="scale({k0})">{kanim}<g{op}>{an}'
+                + f'<g transform="scale({k0})">{kanim}'
+                + f'<g transform="translate({a.label_dx} 0)"{op}>{an}'
                 + f'<text x="0" y="0" dominant-baseline="central" '
-                  f'fill="{rgb(label_ink)}" stroke="{rgb(self.sky)}" '
-                  f'stroke-width="4" stroke-opacity="0.8" '
-                  f'paint-order="stroke">{escape(text)}</text>'
+                  f'fill="{rgb(a.label_fill or label_ink)}" '
+                  f'stroke="{rgb(self.sky)}" stroke-width="4" '
+                  f'stroke-opacity="0.8" paint-order="stroke"{ital}>'
+                  f'{escape(text)}</text>'
                 + rule + "</g></g></g></g>")
         op0 = "1" if s0["shown"] else "0"
-        rot_attr = f' transform="rotate({_fmt(rot0)})"' if rot0 else ""
+        tf = []
+        if rot0:
+            tf.append(f"rotate({_fmt(rot0)})")
+        if s0.get("scale", 1.0) != 1.0:
+            tf.append(f"scale({s0['scale']:.4g})")
+        rot_attr = f' transform="{" ".join(tf)}"' if tf else ""
         old_marks = "".join(self._marks0.get(a.key, []))
         el = (f'<g transform="translate({_fmt(s0["x"])} {_fmt(s0["y"])})" '
               f'opacity="{op0}">' + "".join(shown_anim) + "".join(moves)
@@ -374,3 +450,7 @@ def apply_event(s, kind, val):
         s["label"] = val
     elif kind == "strike":
         s["struck"] = True
+    elif kind == "scale":
+        s["scale"] = s.get("scale", 1.0) * val
+    elif kind == "name_dy":
+        s["name_dy"] = s.get("name_dy", 0.0) + val

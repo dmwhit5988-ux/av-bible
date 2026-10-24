@@ -165,7 +165,7 @@ most use `svg_figures.py`. The table lists each family's other dependencies:
 | 1 Chronicles 1–9 | `generate_1chronicles_tree_svg.py` | `generate_1chronicles.py`, `chronicles_tree.py`, `ot_grafts.py`, `svg_chronicles_world.py` |
 | Matthew 1 | `generate_matthew1_svg.py` | `matthew_tree.py`, `svg_matthew_world.py`, `svg_matthew_nativity.py`, `svg_chronicles_world.py` |
 | Luke 3 | `generate_luke3_svg.py` | `generate_luke3.py`, which takes its frame timing from `generate_genealogy.py` |
-| Acts 13–14 | `generate_acts1314_svg.py` | `acts_geography.py`, which holds the map; `acts1314_lystra.py`, the Lystra scene; `svg_map_camera.py` and `svg_scene_card.py` for the camera tour and its scene cards |
+| Acts 13–14 | `generate_acts1314_svg.py` | `acts_geography.py`, which holds the map; `acts1314_synagogue.py`, `acts1314_jerusalem.py` and `acts1314_lystra.py`, the three scenes; `svg_map_camera.py` and `svg_scene_card.py` for the camera tour and its scene cards |
 | Acts 15–18 | `generate_acts1518_svg.py` | `generate_tribal_maps.py` (`MapFrame`) |
 | Romans 1–16 | `generate_romans_svg.py` | |
 | Hebrews 1–13 | `generate_hebrews_svg.py` | `svg_priest.py`, `svg_vocab.py` |

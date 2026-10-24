@@ -56,6 +56,7 @@ from svg_map_camera import (
     cam_duration, _same, to_screen, ink, title_rect, compass_rect, title_svg,
     compass_scale_svg, inset_view_rect, plate_rect_svg, poly_el, ptsstr, rgb,
     fade, op_anim, traced_el, seg_len, emit_class, curve_d, layout,
+    visible_world,
     rest_dots, identities, unchanged, emit_labels, emit_label_layers,
     label_elements, prev_state, midflight_qc, extent_check, S_OTHER, S_AREA,
     S_CUR,
@@ -65,6 +66,8 @@ from generate_tabernacle import (W, H, BG, SAND, SAND_DIM, TEXT, TEXT_DIM, HL,
 from generate_tribal_maps import SEA, LAND, RIVER, WATER_TXT
 import acts_geography as G
 import acts1314_lystra as LY
+import acts1314_synagogue as SY
+import acts1314_jerusalem as JE
 
 REFS = [(ch, v) for ch in (13, 14) for v in verse_numbers("Acts", ch)]
 IDX = {r: i for i, r in enumerate(REFS)}
@@ -553,6 +556,21 @@ def plate_lines(ref):
     return STAGE[ref].get("plate") or []
 
 
+ICON_PX = 44             # a plate's small drawing, its height
+
+
+def plate_icon(ref):
+    """The plate's small drawing (svg, width px), or (None, 0)."""
+    ic = STAGE[ref].get("plate_icon")
+    if not ic or not plate_lines(ref):
+        return None, 0
+    make, kw, unit = ic
+    parts = make(**kw)
+    x0, x1, _y0, y1 = F.bbox((parts, 0))
+    k = ICON_PX / max(y1, 1)
+    return fig_svg(parts, ICON_PX, HL, page=BG, unit_h=y1), (x1 - x0) * k
+
+
 def plate_rect(ref):
     """One plate size for a run of plated verses, so it never changes size
     while it stays up."""
@@ -569,9 +587,11 @@ def plate_rect(ref):
     for r in run:
         lines = plate_lines(r)
         nmax = max(nmax, len(lines))
+        icw = plate_icon(r)[1]
         for text, px, _f, bold, italic in lines:
             box = ink(text, px, bold, italic, "ra")
-            wmax = max(wmax, -box[0])
+            wmax = max(wmax, -box[0] + (icw + 12 if icw else 0))
+    nmax = max(nmax, 2 if any(plate_icon(r)[0] for r in run) else 1)
     h = 14 + sum(PLATE_LINE[0] if i == 0 else PLATE_LINE[1]
                  for i in range(nmax)) + 14 + 8
     return (W - 18 - wmax - 14, 4, W - 4, 4 + h)
@@ -580,6 +600,11 @@ def plate_rect(ref):
 def plate_texts(ref):
     out = []
     y = PLATE_TOP
+    icon, icw = plate_icon(ref)
+    if icon:
+        x0 = plate_rect(ref)[0] + 14
+        out.append(f'<g transform="translate({_fmt(x0 + icw / 2)} '
+                   f'{PLATE_TOP + ICON_PX + 4})">{icon}</g>')
     for i, (text, px, fill, bold, italic) in enumerate(plate_lines(ref)):
         a = ' font-weight="bold"' if bold else ""
         a += ' font-style="italic"' if italic else ""
@@ -809,7 +834,6 @@ BETHLEHEM = shot(31.74, 35.22, 660)
 JORDAN = shot(31.80, 35.42, 620)
 JORDAN_N = shot(32.12, 35.52, 460)
 WW = shot(35.2, 33.4, 66)                   # the whole eastern sea
-JERUSALEM = shot(31.80, 35.25, 560)
 T_SERMON = "Paul’s Sermon in Antioch of Pisidia — Acts 13"
 T_SABBATHS = "Two Sabbaths in Antioch of Pisidia — Acts 13"
 T_LYSTRA = "Taken for Gods at Lystra — Acts 14"
@@ -835,46 +859,60 @@ stage((13, 23), (13, 23), cam=_BETH3, legs=[("to", _BETH3, 3.0)])
 stage((13, 24), (13, 24), cam=JORDAN, legs=[("to", JORDAN, 1.8)])
 stage((13, 25), (13, 25), cam=JORDAN_N, legs=[("to", JORDAN_N, 2.0)])
 stage((13, 26), (13, 26), cam=WW, legs=[("to", WW, 3.0)], city_at=6.2)
-stage((13, 27), (13, 37), cam=JERUSALEM)
-stage((13, 27), (13, 27), legs=[("to", JERUSALEM, 3.4)])
-stage((13, 32), (13, 32), plate=names("fathers"), plate_at=0.4)
-stage((13, 33), (13, 33), plate=names("second psalm"), plate_at=5.4)
-stage((13, 35), (13, 35), plate=names("another psalm"), plate_at=0.3)
-stage((13, 38), (13, 50), cam=at("pantioch"))
-stage((13, 38), (13, 38), legs=[("to", at("pantioch"), 5.4)],
-      inset_swap=2.0)
-stage((13, 39), (13, 39), plate=names("law of Moses"), plate_at=5.2)
-stage((13, 40), (13, 41), plate=names("the prophets"), plate_at=2.6)
+# plates: the scripture Paul quotes, as a scroll and WEB's own words
+SCROLL_OPEN = (F.scroll, {}, F.UNIT["scroll"])
+SCROLL_SHUT = (F.scroll, {"shut": True}, F.UNIT["scroll"])
+def _fathers():
+    """The three fathers of the 13:17 pin, for the 13:32 plate."""
+    one = F.man(staff=True)
+    return LY.shifted(one, -24, 0) + one + LY.shifted(one, 24, 0)
+
+
+FATHERS = (_fathers, {}, 1.0)
+stage((13, 32), (13, 32), plate=names("fathers"), plate_at=0.4,
+      plate_icon=FATHERS)
+stage((13, 33), (13, 33), plate=names("second psalm"), plate_at=5.4,
+      plate_icon=SCROLL_OPEN)
+stage((13, 35), (13, 35), plate=names("another psalm"), plate_at=0.3,
+      plate_icon=SCROLL_OPEN)
+stage((13, 38), (13, 38), inset_swap=2.0)
+stage((13, 39), (13, 39), plate=names("law of Moses"), plate_at=5.2,
+      plate_icon=SCROLL_SHUT)
+stage((13, 40), (13, 41), plate=names("the prophets"), plate_at=2.6,
+      plate_icon=SCROLL_OPEN)
 stage((13, 47), (13, 47), cam=WW,
       legs=[("hold", None, 2.4), ("to", WW, 4.0)])
-stage((13, 48), (13, 48), legs=[("to", at("pantioch"), 3.6)])
 _PA_IC = frame(["pantioch", "iconium"])
-stage((13, 50), (13, 50), cam=_PA_IC,
-      legs=[("hold", None, 6.4), ("to", _PA_IC, 2.6)])
 stage((13, 51), (13, 51), cam=_PA_IC, legs=[], trace_at=(0.8, 2.8))
 
 
-# Lystra (14:8-20): the camera dives from Lystra's dot into the scene card
-# (acts1314_lystra) and surfaces at 14:20 for the road to Derbe
+# The scene cards: the camera dives from a town's dot into a side view of
+# it. The synagogue at Antioch of Pisidia (acts1314_synagogue: 13:15-16,
+# 13:38-50), Jerusalem (acts1314_jerusalem: 13:27-37) and Lystra
+# (acts1314_lystra: 14:8-20).
+SYN = SY.build(P(*city_pt("pantioch")))
+JER = JE.build(P(*city_pt("jerusalem")))
 LYS = LY.build(P(*city_pt("lystra")))
-CARD_IN = (0.06, 0.16)   # zooms over which the card fades in over the map
-CARD_COVER = 0.4         # at this zoom the card fills the frame
+CARDS = [(SYN, SY), (JER, JE), (LYS, LY)]
+CARD_IN = (0.06, 0.16)   # zooms over which a card fades in over the map
+CARD_COVER = 0.4         # at this zoom a card fills the frame
+S_CARD = LY.S_CARD       # one camera scale for every card's zoom 1
 
 
-def card_cam(xyz):
-    return LYS.cam(*xyz)
-
-
-for _r, _xyz in LY.SHOTS.items():
-    if _r == (14, 20):
-        continue
-    _legs = LY.LEGS.get(_r)
-    if _legs:
-        stage(_r, _r, cam=card_cam(_xyz),
-              legs=[(k, card_cam(x) if x else None, d) for k, x, d in _legs])
-    else:
-        stage(_r, _r, cam=card_cam(_xyz),
-              legs=[("to", card_cam(_xyz), LY.DUR.get(_r, 0.0))])
+for _card, _mod in CARDS:
+    for _r, _xyz in _mod.SHOTS.items():
+        _legs = _mod.LEGS.get(_r)
+        if _legs:
+            stage(_r, _r, cam=_card.cam(*_xyz),
+                  legs=[(k, _card.cam(*x) if x else None, d)
+                        for k, x, d in _legs])
+        else:
+            stage(_r, _r, cam=_card.cam(*_xyz),
+                  legs=[("to", _card.cam(*_xyz), _mod.DUR.get(_r, 0.0))])
+# the two verses that end back on the map: the card first, then surfacing
+_SY50 = SYN.cam(*SY.SHOTS[(13, 50)])
+stage((13, 50), (13, 50), cam=_PA_IC,
+      legs=[("to", _SY50, 1.2), ("hold", None, 5.2), ("to", _PA_IC, 2.6)])
 _LY_DE = frame(["lystra", "derbe"])
 stage((14, 20), (14, 20), cam=_LY_DE,
       legs=[("hold", None, 3.0), ("to", _LY_DE, 2.4)], trace_at=(5.4, 1.6))
@@ -892,11 +930,7 @@ def plan(ref, cam0):
     st = STAGE[ref]
     cam1 = st["cam"]
     if "legs" in st:
-        legs = st["legs"]
-        if ref == (14, 20):
-            # it opens where 14:19 rested, in the card
-            legs = [("hold", None, 3.0), ("to", st["cam"], 2.4)]
-        return Flight(cam0, legs)
+        return Flight(cam0, st["legs"])
     D = cam_duration(cam0, cam1)
     if D:
         D = round(max(0.9, min(D, NARR[ref] - AUDIO_SLACK - NEED_AFTER)), 2)
@@ -1415,19 +1449,16 @@ def story_beats(ref, fl, cam1, t_land):
                 f'{fade(0.5, 0.3, out=True)}</circle>')
         b.ends.append(0.8)
 
-    # the interim light at Jerusalem (13:30-37), until the Jerusalem card
-    if IDX[(13, 30)] <= i <= IDX[(13, 38)]:
-        la, lo = city_pt("jerusalem")
-        inner = light_svg()
-        if ref == (13, 30):
-            inner = lift_in(inner, 0.2, 0.6, 10)
-            b.ends.append(0.8)
-        elif ref == (13, 38):
-            inner = f'<g>{fade(0.0, 0.6, out=True)}{inner}</g>'
-        b.pins.append(pin_svg(fl, la + 0.012, lo + 0.03, inner))
-        ax, ay = at_rest(cam1, la + 0.012, lo + 0.03)
-        b.obstacles.append(("pin", (ax - 16, ay - LIGHT_PX - 4, ax + 16,
-                                    ay + 2)))
+    # 13:47 a light for the Gentiles: as the camera rises out of the town
+    # the light keeps a screen size at Antioch of Pisidia, and 13:48 brings
+    # it back down
+    if ref in ((13, 47), (13, 48)):
+        ops = [f"{1 - card_op(c[0] / S_CARD):.2f}" for c in fl.cams]
+        # where the card's own light stands, between Paul and Barnabas
+        la, lo = PROJ.latlon(*SYN.world(SY.LIGHT_OUT))
+        inner = (f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
+                 f'<g transform="scale(1.3)">{light_svg()}</g></g>')
+        b.pins.append(pin_svg(fl, la, lo, inner))
     return b
 
 
@@ -1451,6 +1482,7 @@ def crossing_pt(path, ring):
 def build_all():
     prev = None          # the names of the last verse that placed any
     last_cam = None      # where the last verse's camera rested
+    last_lab = None      # the last verse that placed names
     report = []
     shore, shore_qc = base_layers()
     shore += [("relief", el) for el in relief()]
@@ -1474,10 +1506,10 @@ def build_all():
         for name, el in shore:
             if name:
                 cls[name].append(el)
-        zs = [c[0] / LYS.S for c in fl.cams]
-        in_card = zs[-1] >= 0.2               # it rests inside the card
+        zs = [c[0] / S_CARD for c in fl.cams]
+        in_card = zs[-1] >= 0.2               # it rests inside a card
         show_map = min(zs) < CARD_COVER       # the map is seen at all
-        show_card = max(zs) >= CARD_IN[0]
+        show_card = cards_seen(fl)
         bt = story_beats(ref, fl, cam1, t_land)
         for name, els in bt.cls.items():
             cls.setdefault(name, []).extend(els)
@@ -1497,8 +1529,9 @@ def build_all():
             # no names to place on a map nobody sees: the last verse's stay
             # as they were until the card covers them
             placed, dropped, problems = [], [], []
-            card_names = prev if show_map else None
-            ends_card = card_ends(ref)
+            card_names = prev if show_map and prev_ref(ref) == last_lab \
+                else None
+            ends_card = card_ends(ref, show_card)
             sea_rect = sea_rect if show_map else []
             if not show_map:
                 cls = {k: [] for k in cls}
@@ -1510,8 +1543,11 @@ def build_all():
                 ref=ref, pxdeg=round(cam1[0] * K, 1), cam=round(fl.dur, 2),
                 end=round(max([fl.dur] + ends_card), 2), narr=narr,
                 kb=round(len(text.encode()) / 1024, 1), dropped=[],
-                problems=[], mid=[], dips=[], half=False, ext=card_extent(fl)))
+                problems=[], mid=[], dips=[], half=False,
+                ext=card_extent(fl, show_card)))
             continue
+        if prev_ref(ref) != last_lab:
+            prev = None                   # names last placed verses ago
         dots = rest_dots(PROJ, units_, cam1, hud)
         ctx = make_ctx(cam1, lines, dots, hud)
         placed, dropped, problems = layout(units_, ctx, prev)
@@ -1560,6 +1596,7 @@ def build_all():
             problems=problems, mid=mid, dips=lab["dips"], half=half,
             ext=extent_check(fl, PROJ, WORLD_LAT, WORLD_LON)))
         prev = prev_state(cam1, placed, cur_ident, lab["cur_dots"])
+        last_lab = ref
     return report
 
 
@@ -1590,8 +1627,9 @@ def assemble(ref, fl, cls, bt, sea_rect, lab, held, show_card, show_map, zs):
         svg.append("</g>")
     if show_card:
         ops = [f"{card_op(z):.2f}" for z in zs]
-        svg.append(f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
-                   + LYS.svg(ref, fl, 18, TEXT, HL) + "</g>")
+        for card in show_card:
+            svg.append(f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
+                       + card.svg(ref, fl, 18, TEXT, HL) + "</g>")
     svg.append("</g></g>")
     if show_map:
         svg += bt.overlay
@@ -1639,27 +1677,61 @@ def write(ref, text):
             time.sleep(0.3)
 
 
-def card_ends(ref):
-    return [t + d for _k, _a, t, d, _v in LYS.events.get(ref, [])]
+def card_rect(card):
+    """A card's world rect (x0, y0, x1, y1)."""
+    w, h = card.size
+    x0, y0 = card.origin
+    ax, ay = card.anchor
+    tx, ty = card.town_xy
+    return (tx + (x0 - ax) / card.S, ty + (y0 - ay) / card.S,
+            tx + (x0 + w - ax) / card.S, ty + (y0 + h - ay) / card.S)
 
 
-def card_extent(fl):
-    """Inside the card, is its edge ever in frame?"""
-    w, h = LYS.size
-    x0, y0 = LYS.origin
-    ax, ay = LYS.anchor
-    tx, ty = LYS.town_xy
+def cards_seen(fl):
+    """The cards a flight sees once they have begun to show."""
+    out = []
+    for card, _m in CARDS:
+        r = card_rect(card)
+        for c in fl.cams:
+            if c[0] / S_CARD < CARD_IN[0]:
+                continue
+            v = visible_world(c)
+            if v[0] < r[2] and r[0] < v[2] and v[1] < r[3] and r[1] < v[3]:
+                out.append(card)
+                break
+    return out
+
+
+def card_ends(ref, cards):
+    return [t + d for card in cards
+            for _k, _a, t, d, _v in card.events.get(ref, [])]
+
+
+def card_extent(fl, cards):
+    """Inside a card, is its edge ever in frame?"""
     for c in fl.cams:
-        z = c[0] / LYS.S
+        z = c[0] / S_CARD
         if z < CARD_COVER:
             continue
-        cx = ax + (c[1] - tx) * LYS.S
-        cy = ay + (c[2] - ty) * LYS.S
+        card = next((k for k in cards
+                     if pt_in(c[1:], card_rect(k))), None)
+        if card is None:
+            return "card edge visible"
+        w, h = card.size
+        x0, y0 = card.origin
+        ax, ay = card.anchor
+        tx, ty = card.town_xy
+        cx = ax + (c[1] - tx) * card.S
+        cy = ay + (c[2] - ty) * card.S
         hw, hh = W / 2 / z, H / 2 / z
         if cx - hw < x0 or cy - hh < y0 or cx + hw > x0 + w or \
                 cy + hh > y0 + h:
             return "card edge visible"
     return None
+
+
+def pt_in(p, r):
+    return r[0] <= p[0] <= r[2] and r[1] <= p[1] <= r[3]
 
 
 def anchor_on_screen(u, cam):

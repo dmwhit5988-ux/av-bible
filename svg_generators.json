@@ -420,6 +420,14 @@
           "edit": "the map: coasts, Cyprus, lakes, rivers, Taurus crests, SITES, ROADS, and the sermon's places and STORY roads"
         },
         {
+          "file": "acts1314_synagogue.py",
+          "edit": "the synagogue scene card at Antioch of Pisidia (13:15-16, 13:38-50): scenery, cast, each verse's events, SHOTS"
+        },
+        {
+          "file": "acts1314_jerusalem.py",
+          "edit": "the Jerusalem scene card (13:27-37): scenery, cast, each verse's events, SHOTS"
+        },
+        {
           "file": "acts1314_lystra.py",
           "edit": "the Lystra scene card (14:8-20): scenery, cast, each verse's events, SHOTS"
         },
