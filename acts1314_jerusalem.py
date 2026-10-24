@@ -4,10 +4,10 @@ The middle of Paul's sermon happened in one city, so the camera goes there:
 the City of David's hill with the royal tombs cut in its face, the city and
 the Temple, a scroll on its stand, Pilate's seat between two pillars, the
 gate, the mound outside it, the garden and its tomb, and the road north to
-Galilee. The light (who is Jesus, never drawn as a man) stands before the
+Galilee. The Chi-Rho (who is Jesus, never drawn as a man) stands before the
 rulers, is taken out through the gate to the cross and down from it, goes
-into the tomb, the stone rolls shut, and at 13:30 rolls back as the light
-rises out; the witnesses come down the road from Galilee. Then the proof
+into the tomb, the stone rolls shut, and at 13:30 rolls back as it rises
+out; the witnesses come down the road from Galilee. Then the proof
 from the psalms: David's sealed tomb beside the open one, the one cracking
 and growing over ("saw decay"), the other open ("no decay").
 
@@ -33,6 +33,7 @@ TOMB_F = 0.55                   # the tombs drawn a little over half size
 MOUND = (1480, 1690, 1352)      # Golgotha: from, to, its top
 GARDEN_TOMB = 1880
 CROSS_X = 1580
+CHIRHO_H = F.bbox((F.chi_rho(), 0))[3]   # the Chi-Rho's height, units
 
 
 def tomb_parts():
@@ -153,8 +154,8 @@ def build(town_xy):
                     ink=SAND_DIM, shown=True))
     c.add(Actor("tomb", static(lambda: TOMB_BODY), GARDEN_TOMB, GROUND,
                 h=MAN, unit_h=MAN_H, ink=SAND, shown=True))
-    c.add(Actor("light", static(F.light), 950, GROUND, h=70, unit_h=74.5,
-                ink=HL, label_y=-96))
+    c.add(Actor("chirho", static(F.chi_rho), 950, GROUND, h=70, unit_h=CHIRHO_H,
+                ink=HL, label_y=-116))
     c.add(Actor("stone", static(lambda: TOMB_STONE),
                 GARDEN_TOMB + STONE_ASIDE * K, GROUND - STONE_Y * K, h=MAN,
                 unit_h=MAN_H, ink=SAND, shown=True))
@@ -184,12 +185,12 @@ def events(c, witnesses):
     m0, m1, mt = MOUND
     roll = (STONE_SHUT - STONE_ASIDE) * K           # card px, leftward
     turn = roll / (STONE_R * K) * 57.2958           # degrees, rolling
-    # 13:27 the rulers, the light before them, the prophets read
+    # 13:27 the rulers, the Chi-Rho before them, the prophets read
     on((13, 27), ("label", "place_name", 4.4, 0, "Jerusalem"),
        ("show", "ruler0", 4.6, 0.6, None), ("show", "ruler1", 4.7, 0.6, None),
        ("show", "ruler2", 4.8, 0.6, None),
        ("label", "rulers_name", 5.2, 0, "rulers"),
-       ("show", "light", 5.8, 0.6, None), ("move", "light", 5.8, 0.6, (0, -8)),
+       ("show", "chirho", 5.8, 0.6, None), ("move", "chirho", 5.8, 0.6, (0, -8)),
        ("pulse", "stand_scroll", 7.0, 0.8, None))
     for k in range(3):
         on((13, 27), ("pose", f"ruler{k}", 8.2, 0.4, {"arms": "point_r"}))
@@ -202,21 +203,21 @@ def events(c, witnesses):
     # the stone rolled to the door
     beams = 0.70 * F.bbox((F.cross(), 0))[3] * K   # where the beams cross
     on((13, 29),
-       ("move", "light", 0.2, 1.0, (1370 - 950, 8)),
-       ("move", "light", 1.2, 1.0, (CROSS_X - 1370, mt - GROUND - beams
+       ("move", "chirho", 0.2, 1.0, (1370 - 950, 8)),
+       ("move", "chirho", 1.2, 1.0, (CROSS_X - 1370, mt - GROUND - beams
                                     + 30)),
-       ("move", "light", 2.8, 0.8, (0, beams - 30)),
-       ("move", "light", 3.6, 1.0, (GARDEN_TOMB + STONE_SHUT * K - CROSS_X,
+       ("move", "chirho", 2.8, 0.8, (0, beams - 30)),
+       ("move", "chirho", 3.6, 1.0, (GARDEN_TOMB + STONE_SHUT * K - CROSS_X,
                                     GROUND - mt)),
-       ("hide", "light", 4.0, 0.6, None),
+       ("hide", "chirho", 4.0, 0.6, None),
        ("move", "stone", 4.6, 1.0, (roll, 0)),
        ("rot", "stone", 4.6, 1.0, turn))
     # 13:30 But God raised him from the dead
     on((13, 30), ("move", "stone", 0.1, 0.7, (-roll, 0)),
        ("rot", "stone", 0.1, 0.7, -turn),
-       ("show", "light", 0.6, 0.4, None),
-       ("move", "light", 0.6, 0.8, (0, -170)),
-       ("scale", "light", 0.6, 0.8, 1.3))
+       ("show", "chirho", 0.6, 0.4, None),
+       ("move", "chirho", 0.6, 0.8, (0, -170)),
+       ("scale", "chirho", 0.6, 0.8, 1.3))
     # 13:31 seen by those who came up with him from Galilee
     on((13, 31), ("label", "galilee", 1.2, 0, "Galilee"))
     for k, a in enumerate(witnesses):
@@ -229,7 +230,7 @@ def events(c, witnesses):
            ("pose", a.key, t + 2.4, 0.2, {"pose": "stand"}))
     on((13, 31), ("label", "witness_name", 4.4, 0, "witnesses"))
     # 13:33 he raised up Jesus
-    on((13, 33), ("label", "light", 3.6, 0, "Jesus"))
+    on((13, 33), ("label", "chirho", 3.6, 0, "Jesus"))
     # 13:34 the sure blessings of David
     on((13, 34), ("label", "rtomb1", 8.2, 0, "David"))
     # 13:36 David saw decay: his tomb cracks and grows over
@@ -242,7 +243,7 @@ def events(c, witnesses):
 
 def effects(c):
     g = GROUND
-    # 13:35 David's psalm of the Holy One: an arc from his tomb to the light
+    # 13:35 David's psalm of the Holy One: an arc from his tomb to the Chi-Rho
     arc = [(480, g - 80)]
     for i in range(1, 24):
         t = i / 24

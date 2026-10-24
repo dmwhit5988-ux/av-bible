@@ -10,10 +10,10 @@ the town wall and its gate; the road out over the hills.
 The camera comes down into it at 13:15 and leaves at 13:17 to fly Israel's
 story over the map; it comes back at 13:38 for the end of the sermon and stays
 for the two Sabbaths: the hall empties, the followers trail the two out, the
-whole city fills the plaza, the objectors gather on the steps, the light (who
-is Jesus, never drawn as a man) goes out of the synagogue to Paul and Barnabas
-and the doors shut behind it, the believers walk out of the gate, and at
-13:50 the two are driven out with the light.
+whole city fills the plaza, the objectors gather on the steps, the Chi-Rho
+(who is Jesus, never drawn as a man) goes out of the synagogue to Paul and
+Barnabas and the doors shut behind it, the believers walk out of the gate,
+and at 13:50 the two are driven out with it.
 
 Card px: x from -1000 to 3400, y 0 to 2200, the ground at y 1400 and the hall
 floor three steps higher. A man is 110 px tall.
@@ -36,7 +36,8 @@ ORIGIN = (-1000, 0)
 SIZE = (4700, 2200)            # x from -1000 to 3700
 SEAT_Y = FLOOR - 33             # a bench plank, at a seated man's hips
 NAME_SIT, NAME_STAND = -100, -132
-LIGHT_OUT = (1852, GROUND)      # where the light stands, 13:46-49
+CHIRHO_OUT = (1852, GROUND)     # where the Chi-Rho stands, 13:46-49
+CHIRHO_H = F.bbox((F.chi_rho(), 0))[3]   # its height, figure units
 WALL = (42, 42, 34)
 HALL_IN = (30, 31, 27)
 
@@ -163,8 +164,8 @@ def build(town_xy):
         c.add(Actor(f"chief{k}", person(kind, **({"staff": True}
                                                 if kind == "man" else {})),
                     x, GROUND + 4, ink=SAND, flip=-1))
-    c.add(Actor("light", static(F.light), 1082, FLOOR - 190, h=70,
-                unit_h=74.5, ink=HL))
+    c.add(Actor("chirho", static(F.chi_rho), 1082, FLOOR - 190, h=70,
+                unit_h=CHIRHO_H, ink=HL))
     c.add(Actor("door", static(door_slab), HALL[1] - 20, FLOOR, h=1,
                 unit_h=1, ink=SAND))
 
@@ -207,8 +208,8 @@ def events(c, left, right, crowd):
     # 13:40 spoken in the prophets
     on((13, 40), ("pulse", "desk_scroll", 2.8, 0.8, None))
     # 13:41 I work a work in your days
-    on((13, 41), ("show", "light", 4.0, 0.8, None),
-       ("move", "light", 4.0, 0.8, (0, -12)),
+    on((13, 41), ("show", "chirho", 4.0, 0.8, None),
+       ("move", "chirho", 4.0, 0.8, (0, -12)),
        ("pose", "paul", 6.2, 0.4, {"arms": "point_l"}))
 
     # 13:42 the Jews go out; the Gentiles beg to hear more
@@ -262,16 +263,16 @@ def events(c, left, right, crowd):
        ("flip", "barnabas", 1.6, 0.4, -1),
        ("pose", "paul", 1.6, 0.4, {"arms": "point_l"}),
        ("pose", "barnabas", 1.6, 0.4, {"arms": "point_l"}),
-       ("move", "light", 6.0, 1.4, (LIGHT_OUT[0] - 1082,
+       ("move", "chirho", 6.0, 1.4, (CHIRHO_OUT[0] - 1082,
                                     GROUND - (FLOOR - 202))),
        ("show", "door", 7.4, 0.2, None), ("grow_x", "door", 7.4, 0.8, None),
        ("flip", "paul", 11.4, 0.4, 1), ("flip", "barnabas", 11.4, 0.4, 1),
        ("pose", "paul", 11.4, 0.4, {"arms": "point_r"}),
        ("pose", "barnabas", 11.4, 0.4, {"arms": "point_r"}))
     # 13:47 a light for the Gentiles
-    on((13, 47), ("scale", "light", 1.0, 1.0, 1.6))
+    on((13, 47), ("scale", "chirho", 1.0, 1.0, 1.6))
     # 13:48 the Gentiles were glad; as many as were appointed believed
-    on((13, 48), ("scale", "light", 0.4, 3.0, 1 / 1.6))
+    on((13, 48), ("scale", "chirho", 0.4, 3.0, 1 / 1.6))
     order = sorted(crowd[2:], key=lambda a: a.target_x)
     for k, a in enumerate(order):
         on((13, 48), ("pose", a.key, 4.0 + k * 0.02, 0.3, {"arms": "up"}))
@@ -296,7 +297,7 @@ def events(c, left, right, crowd):
        ("pose", "barnabas", 4.4, 0.2, {"pose": "walk", "arms": "down"}),
        ("move", "paul", 4.6, 1.8, (880, 0)),
        ("move", "barnabas", 4.6, 1.8, (880, 0)),
-       ("move", "light", 4.6, 1.8, (880, 0)))
+       ("move", "chirho", 4.6, 1.8, (880, 0)))
     for a in order[:3]:
         on((13, 50), ("move", a.key, 4.8, 1.6, (300, 0)))
 

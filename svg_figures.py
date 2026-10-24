@@ -1887,74 +1887,38 @@ def _star(points=5, r=15):
     return P
 
 
-def _vesica(h, w, n=16):
-    """A pointed lens `h` tall and `w` wide, standing on its lower tip at the
-    origin: two arcs of one circle's radius, each centred on the far side of
-    the axis, so both ends come to a true point. Not run through the curve
-    fitter, which would round the points off and make it a seed."""
-    hh, hw = h / 2.0, w / 2.0
-    c = (hh * hh - hw * hw) / (2 * hw)       # the arc centres sit at (±c, hh)
-    R = c + hw
-    a = math.atan2(hh, c)
-    pts = []
-    for i in range(n + 1):                   # up the right side
-        t = -a + 2 * a * i / n
-        pts.append((-c + R * math.cos(t), hh + R * math.sin(t)))
-    for i in range(1, n):                    # and down the left
-        t = math.pi - a + 2 * a * i / n
-        pts.append((c + R * math.cos(t), hh + R * math.sin(t)))
-    return pts, (c, hh, R)
+def _chi_rho():
+    """The Chi-Rho, the monogram that stands for Jesus wherever he is in a
+    scene, since he is never drawn as a man: X and P, the first two letters
+    of Christos, one laid over the other. It is the oldest sign of him there
+    is, older than the crucifix, and it means him and nothing else.
 
+    Drawn as letters cut from one stuff, all `fire` (the brightest mass the
+    palette has) and all one stroke. The P is the spine and stands the full
+    height on its foot, so the monogram can be stood on a road, a hill or a
+    doorstep like a figure; its bowl is a true half circle closing back on
+    the stem. The X crosses the stem low and its upper arms stop just under
+    the bowl, so the two letters read apart even at a phone's size, where a
+    bowl run into the X's arms closes up into a blot. Square ends: rounded,
+    the strokes go soft and the thing reads as a glyph in a font rather than
+    as something set up.
 
-def _light():
-    """The light that stands for Jesus wherever he is in a scene, since he is
-    never drawn as a man. It is the manger's light got up: the same lens of
-    `fire`, the brightest mass the palette has, stood on its point.
-
-    Three things keep it light and not something else of that shape. Both
-    ends come to a POINT — a lens rounded at one end is a seed, and rounded at
-    the foot a flame. It has no midrib and no stalk, which are what make a
-    leaf. And it GIVES OUT: a second lens is ruled round it with dark between,
-    the aureole, and the rays stand off that again, round the upper half
-    only. The ring is what does most of the work — a solid lens with a few
-    ticks round it is still an almond, while a lens inside a ring of its own
-    glow is a mandorla, which is how light has been drawn round a holy thing
-    since late antiquity. A ray with a gap before it reads as something the
-    thing gives out rather than a spike on it, and none below leaves it
-    standing rather than hanging in a sunburst. Long and short alternate, as
-    a glory does.
-
-    An emblem like the sun: about 60 tall and 36 wide to the aureole, the
-    fire lens 50 by 28 inside it, the rays reaching to about 75; its origin is
-    the aureole's lower tip, so it can be stood on a road, in a doorway or on
-    a hill like a figure.
+    An emblem like the sun: about 72 tall and 47 wide, its origin at the
+    foot of the stem.
     """
-    ring, (c, hh, R) = _vesica(60.0, 36.0)
-    lens, _ = _vesica(50.0, 28.0)
-    P = [("line", ring + [ring[0]], "rule"),
-         ("fill", [(x, y + 5.0) for x, y in lens], "fire")]
-
-    def inside(x, y):
-        return (math.hypot(x - c, y - hh) <= R and
-                math.hypot(x + c, y - hh) <= R)
-
-    for k in range(-3, 4):                   # seven rays, 22.5 degrees apart
-        a = math.pi / 2 + k * math.pi / 8
-        ca, sa = math.cos(a), math.sin(a)
-        lo, hi = 0.0, 60.0                   # where the ray leaves the ring
-        for _ in range(30):
-            mid = (lo + hi) / 2
-            if inside(ca * mid, hh + sa * mid):
-                lo = mid
-            else:
-                hi = mid
-        # Long enough to be seen at phone size: at 8.5 and 5 they thinned
-        # to ticks there and the lens was left an almond on its own.
-        r0 = lo + 3.5
-        r1 = r0 + (11.0 if k % 2 == 0 else 6.5)
-        P.append(("line", [(ca * r0, hh + sa * r0), (ca * r1, hh + sa * r1)],
-                  "rule"))
-    return P
+    def bar(p, q, w):
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        L = math.hypot(dx, dy)
+        nx, ny = -dy / L * w / 2, dx / L * w / 2
+        return [(p[0] + nx, p[1] + ny), (q[0] + nx, q[1] + ny),
+                (q[0] - nx, q[1] - ny), (p[0] - nx, p[1] - ny)]
+    bowl = [(12 * math.cos(t), 56 + 12 * math.sin(t))
+            for t in [math.pi / 2 - k * math.pi / 12 for k in range(13)]]
+    return [("fill", bar((0, 0), (0, 69), 7), "fire"),
+            ("fill", bar((-21, 10), (21, 52), 7), "fire"),
+            ("fill", bar((21, 10), (-21, 52), 7), "fire"),
+            ("fill", taper(bowl, [6.5] * len(bowl), round_end=False),
+             "fire")]
 
 
 def _cloud(rain=False):
@@ -2094,7 +2058,7 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         # The lights are emblems, not bodies — they have no size against a
         # man, so they are authored at 1 and a scene sets what it wants.
         "sun": 1.00, "moon": 1.00, "star": 1.00,
-        "light": 1.00,         # the light for Jesus: ~60 tall, 36 wide
+        "chi_rho": 1.00,       # the Chi-Rho for Jesus: ~72 tall, 47 wide
         "cloud": 1.00,         # ~87 wide and ~41 high, its rain below that
         # the handled things, sized off what a hand or a neck is
         "lamp": 0.30,          # a lamp fills a palm
@@ -2391,10 +2355,10 @@ def star(points=5, r=15):
     return _scale(_star(points=points, r=r), UNIT["star"])
 
 
-def light():
-    """The light emblem that stands for Jesus, on its lower tip. See
-    `_light`. Never pulse it: it is already the brightest thing there is."""
-    return _scale(_light(), UNIT["light"])
+def chi_rho():
+    """The Chi-Rho that stands for Jesus, on the foot of its stem. See
+    `_chi_rho`. Never pulse it: it is already the brightest thing there is."""
+    return _scale(_chi_rho(), UNIT["chi_rho"])
 
 
 def cloud(rain=False):

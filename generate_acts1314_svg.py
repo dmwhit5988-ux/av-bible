@@ -19,8 +19,8 @@ comes from the MP3s in web/audio.
 The long stops are told without leaving the flight. Paul's sermon tells
 Israel's story, and the camera flies it over the same map (13:17-26,
 story_beats): Egypt, the wilderness, the land filling tribe by tribe, the
-judges, Samuel, Saul, David, John at the Jordan and the light (Jesus, never
-drawn as a man) coming down the valley to him, then the word running from
+judges, Samuel, Saul, David, John at the Jordan and the Chi-Rho (Jesus,
+never drawn as a man) coming down the valley to him, then the word running from
 Jerusalem to Antioch. At Lystra (14:8-20) the camera dives from the town's
 dot into a side-view scene card of the town (acts1314_lystra.py) and
 surfaces at 14:20 for the road to Derbe. The synagogue and Jerusalem cards
@@ -834,6 +834,7 @@ BETHLEHEM = shot(31.74, 35.22, 660)
 JORDAN = shot(31.80, 35.42, 620)
 JORDAN_N = shot(32.12, 35.52, 460)
 WW = shot(35.2, 33.4, 66)                   # the whole eastern sea
+WW47 = shot(35.85, 33.4, 66)                # the same, Antioch lower down
 T_SERMON = "Paul’s Sermon in Antioch of Pisidia — Acts 13"
 T_SABBATHS = "Two Sabbaths in Antioch of Pisidia — Acts 13"
 T_LYSTRA = "Taken for Gods at Lystra — Acts 14"
@@ -880,8 +881,8 @@ stage((13, 39), (13, 39), plate=names("law of Moses"), plate_at=5.2,
       plate_icon=SCROLL_SHUT)
 stage((13, 40), (13, 41), plate=names("the prophets"), plate_at=2.6,
       plate_icon=SCROLL_OPEN)
-stage((13, 47), (13, 47), cam=WW,
-      legs=[("hold", None, 2.4), ("to", WW, 4.0)])
+stage((13, 47), (13, 47), cam=WW47,
+      legs=[("hold", None, 2.4), ("to", WW47, 4.0)])
 _PA_IC = frame(["pantioch", "iconium"])
 stage((13, 51), (13, 51), cam=_PA_IC, legs=[], trace_at=(0.8, 2.8))
 
@@ -944,7 +945,7 @@ def plan(ref, cam0):
 # this map, so the camera leaves the synagogue and flies it: the fathers at
 # Hebron, the people going down to Egypt and out of it, the wilderness, the
 # crossing, the land filling tribe by tribe, the judges, Samuel, Saul, David,
-# John at the Jordan, and the light (Jesus, never drawn as a man) coming down
+# John at the Jordan, and the Chi-Rho (Jesus, never drawn as a man) coming down
 # the valley to him. At 13:26 the camera rises to the whole eastern sea and
 # the word runs from Jerusalem to Antioch: "to you".
 #
@@ -1153,15 +1154,13 @@ def pin_label(key, text, lat, lon, cam1, fill, bold, prio, new, must):
                 bold=bold, cands=cands, prio=prio, new=new, must=must)
 
 
-LIGHT_PX = 44
+CHIRHO_PX = 55                           # the Chi-Rho on the map, tall
+CHIRHO_H = F.bbox((F.chi_rho(), 0))[3]   # its height in figure units
 
 
-def light_svg(ink=HL):
-    if hasattr(F, "light"):
-        return fig_svg(F.light(), LIGHT_PX, ink, unit_h=60.0)
-    # until the vocabulary has its light: the manger's lens, standing
-    return (f'<path d="M0 0 C-14 -12 -14 -32 0 -44 C14 -32 14 -12 0 0Z" '
-            f'fill="{rgb(HL)}" stroke="{rgb(BG)}" stroke-width="1.2"/>')
+def chirho_svg(ink=HL):
+    """The Chi-Rho (Jesus) at one screen size, foot at (0, 0)."""
+    return fig_svg(F.chi_rho(), CHIRHO_PX, ink, unit_h=CHIRHO_H)
 
 
 def story_beats(ref, fl, cam1, t_land):
@@ -1350,17 +1349,21 @@ def story_beats(ref, fl, cam1, t_land):
             f'stroke="{rgb(HL)}" opacity="0">{pulse_once(2.8)}</polyline>')
         b.ends.append(3.6)
 
-    # 13:25 the light comes down the valley to John; 13:26 it goes
+    # 13:25 the Chi-Rho comes down the valley to John; 13:26 it goes
     j_at = (31.86, 35.66)
     if ref == (13, 25):
         down = [q for q in G.RIVERS["jordan"] if q[0] >= 31.95]
         path = ([(32.72, 35.57)] + [q for q in down if q[0] < 32.70]
                 + [(31.90, 35.58), j_at])
-        b.pins.append(rider_svg(fl, PS(path), 7.0, 2.4, light_svg()))
+        b.pins.append(rider_svg(fl, PS(path), 7.0, 2.4, chirho_svg()))
+        # where it stops, beside John: his name keeps clear of it
+        ax, ay = at_rest(cam1, *j_at)
+        b.obstacles.append(("chirho", (ax - 26, ay - CHIRHO_PX - 4,
+                                       ax + 26, ay + 2)))
         b.ends.append(9.4)
     elif ref == (13, 26):
         b.pins.append(pin_svg(fl, *j_at, f'<g>{fade(0.0, 0.8, out=True)}'
-                              + light_svg() + "</g>"))
+                              + chirho_svg() + "</g>"))
 
     # 13:26 Jerusalem relights, where the word starts
     if ref == (13, 26):
@@ -1450,15 +1453,22 @@ def story_beats(ref, fl, cam1, t_land):
         b.ends.append(0.8)
 
     # 13:47 a light for the Gentiles: as the camera rises out of the town
-    # the light keeps a screen size at Antioch of Pisidia, and 13:48 brings
-    # it back down
+    # the Chi-Rho keeps a screen size at Antioch of Pisidia, and 13:48
+    # brings it back down
     if ref in ((13, 47), (13, 48)):
         ops = [f"{1 - card_op(c[0] / S_CARD):.2f}" for c in fl.cams]
-        # where the card's own light stands, between Paul and Barnabas
-        la, lo = PROJ.latlon(*SYN.world(SY.LIGHT_OUT))
+        # where the card's own Chi-Rho stands, between Paul and Barnabas
+        la, lo = PROJ.latlon(*SYN.world(SY.CHIRHO_OUT))
         inner = (f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
-                 f'<g transform="scale(1.3)">{light_svg()}</g></g>')
+                 f'<g transform="scale(1.3)">{chirho_svg()}</g></g>')
         b.pins.append(pin_svg(fl, la, lo, inner))
+        if ref == (13, 47):
+            # the town's name keeps clear of it at the rest. It stands on
+            # the town's dot, so the box stops above the stem's foot, which
+            # may run down beside the start of the name
+            ax, ay = at_rest(cam1, la, lo)
+            b.obstacles.append(("chirho", (ax - 24, ay - CHIRHO_PX * 1.3 - 4,
+                                           ax + 24, ay - 16)))
     return b
 
 
