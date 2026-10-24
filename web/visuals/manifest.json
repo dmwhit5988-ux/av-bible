@@ -3330,7 +3330,7 @@
       {
         "file": "Acts/13/Acts_13_16.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_17": [
@@ -3421,14 +3421,14 @@
       {
         "file": "Acts/13/Acts_13_28.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_29": [
       {
-        "file": "Acts/13/Acts_13_28.svg",
+        "file": "Acts/13/Acts_13_29.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_3": [
@@ -3449,7 +3449,7 @@
       {
         "file": "Acts/13/Acts_13_31.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_32": [
@@ -3491,7 +3491,7 @@
       {
         "file": "Acts/13/Acts_13_37.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_38": [
@@ -3526,7 +3526,7 @@
       {
         "file": "Acts/13/Acts_13_41.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_42": [
@@ -3540,28 +3540,28 @@
       {
         "file": "Acts/13/Acts_13_43.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_44": [
       {
-        "file": "Acts/13/Acts_13_43.svg",
+        "file": "Acts/13/Acts_13_44.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_45": [
       {
-        "file": "Acts/13/Acts_13_43.svg",
+        "file": "Acts/13/Acts_13_45.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_46": [
       {
-        "file": "Acts/13/Acts_13_43.svg",
+        "file": "Acts/13/Acts_13_46.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_47": [
@@ -3582,7 +3582,7 @@
       {
         "file": "Acts/13/Acts_13_49.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_5": [
