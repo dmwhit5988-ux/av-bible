@@ -3281,26 +3281,26 @@
       {
         "file": "Acts/13/Acts_13_1.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_10": [
       {
-        "file": "Acts/13/Acts_13_7.svg",
+        "file": "Acts/13/Acts_13_10.svg",
         "kind": "map",
         "animated": false
       }
     ],
     "Acts_13_11": [
       {
-        "file": "Acts/13/Acts_13_7.svg",
+        "file": "Acts/13/Acts_13_10.svg",
         "kind": "map",
         "animated": false
       }
     ],
     "Acts_13_12": [
       {
-        "file": "Acts/13/Acts_13_7.svg",
+        "file": "Acts/13/Acts_13_10.svg",
         "kind": "map",
         "animated": false
       }
@@ -3323,14 +3323,14 @@
       {
         "file": "Acts/13/Acts_13_15.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_16": [
       {
         "file": "Acts/13/Acts_13_16.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_17": [
@@ -3356,9 +3356,9 @@
     ],
     "Acts_13_2": [
       {
-        "file": "Acts/13/Acts_13_1.svg",
+        "file": "Acts/13/Acts_13_2.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_20": [
@@ -3421,19 +3421,19 @@
       {
         "file": "Acts/13/Acts_13_28.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_29": [
       {
-        "file": "Acts/13/Acts_13_29.svg",
+        "file": "Acts/13/Acts_13_28.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_3": [
       {
-        "file": "Acts/13/Acts_13_1.svg",
+        "file": "Acts/13/Acts_13_3.svg",
         "kind": "map",
         "animated": false
       }
@@ -3449,7 +3449,7 @@
       {
         "file": "Acts/13/Acts_13_31.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_32": [
@@ -3491,7 +3491,7 @@
       {
         "file": "Acts/13/Acts_13_37.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_38": [
@@ -3526,7 +3526,7 @@
       {
         "file": "Acts/13/Acts_13_41.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_42": [
@@ -3540,28 +3540,28 @@
       {
         "file": "Acts/13/Acts_13_43.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_44": [
       {
-        "file": "Acts/13/Acts_13_44.svg",
+        "file": "Acts/13/Acts_13_43.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_45": [
       {
-        "file": "Acts/13/Acts_13_45.svg",
+        "file": "Acts/13/Acts_13_43.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_46": [
       {
-        "file": "Acts/13/Acts_13_46.svg",
+        "file": "Acts/13/Acts_13_43.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_47": [
@@ -3582,7 +3582,7 @@
       {
         "file": "Acts/13/Acts_13_49.svg",
         "kind": "map",
-        "animated": true
+        "animated": false
       }
     ],
     "Acts_13_5": [
@@ -3610,7 +3610,7 @@
       {
         "file": "Acts/13/Acts_13_52.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_6": [
@@ -3624,21 +3624,21 @@
       {
         "file": "Acts/13/Acts_13_7.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_13_8": [
       {
-        "file": "Acts/13/Acts_13_7.svg",
+        "file": "Acts/13/Acts_13_8.svg",
         "kind": "map",
         "animated": false
       }
     ],
     "Acts_13_9": [
       {
-        "file": "Acts/13/Acts_13_7.svg",
+        "file": "Acts/13/Acts_13_9.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_14_1": [
@@ -3736,19 +3736,19 @@
       {
         "file": "Acts/14/Acts_14_21.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_14_22": [
       {
-        "file": "Acts/14/Acts_14_21.svg",
+        "file": "Acts/14/Acts_14_22.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_14_23": [
       {
-        "file": "Acts/14/Acts_14_21.svg",
+        "file": "Acts/14/Acts_14_23.svg",
         "kind": "map",
         "animated": false
       }
@@ -3757,7 +3757,7 @@
       {
         "file": "Acts/14/Acts_14_24.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_14_25": [
@@ -3778,12 +3778,12 @@
       {
         "file": "Acts/14/Acts_14_27.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Acts_14_28": [
       {
-        "file": "Acts/14/Acts_14_27.svg",
+        "file": "Acts/14/Acts_14_28.svg",
         "kind": "map",
         "animated": false
       }
