@@ -237,6 +237,67 @@ class Ssml(unittest.TestCase):
         self.assertTrue(r.payload.startswith('<prosody rate="+10%">'))
 
 
+class VerseWords(Ssml):
+    """for_verse() and save_verse(): words one verse alone says differently."""
+
+    VERSES = {"Acts 13:2": {"Separate Barnabas": "Sep-uh-rate Barnabas"}}
+
+    def setUp(self):
+        super().setUp()
+        with open(self.path, "w", encoding="utf-8") as f:
+            json.dump({"names": {**self.NAMES, "Barnabas": {
+                "say": "BAR-nuh-bus", "ref": "Acts 4:36", "override": True}},
+                "verses": self.VERSES}, f, ensure_ascii=False)
+        md = mock.patch.object(pronunciation, "MD_PATH", self.path + ".md")
+        md.start()
+        self.addCleanup(md.stop)
+        self.addCleanup(lambda: os.path.exists(self.path + ".md")
+                        and os.remove(self.path + ".md"))
+        pronunciation.load(force=True)
+
+    def test_only_that_verse_changes(self):
+        text = "the Holy Spirit said, “Separate Barnabas and Saul for me"
+        self.assertEqual(pronunciation.for_verse("Acts 13:2", text),
+                         "the Holy Spirit said, “Sep-uh-rate Barnabas and Saul for me")
+        self.assertEqual(pronunciation.for_verse("Acts 13:3", text), text)
+        self.assertEqual(pronunciation.for_verse("", text), text)
+
+    def test_route_applies_the_verse_then_the_names(self):
+        text = "“Separate Barnabas and Saul.”"
+        r = tts_engine.route(text, tts_engine.HOUSE_VOICE, 0, ref="Acts 13:2")
+        self.assertEqual(r.payload, "“Sep-uh-rate bar-nuh-bus and Saul.”")
+        plain = tts_engine.route(text, tts_engine.HOUSE_VOICE, 0)
+        self.assertEqual(plain.payload, "“Separate bar-nuh-bus and Saul.”")
+        verbatim = tts_engine.route(text, tts_engine.HOUSE_VOICE, 0,
+                                    apply_respell=False, ref="Acts 13:2")
+        self.assertEqual(verbatim.payload, text)
+
+    def test_whole_word_and_case_sensitive(self):
+        words = {"Separate": "Sep-uh-rate"}
+        self.assertEqual(pronunciation.apply_words("separate Separated", words),
+                         "separate Separated")
+
+    def test_save_verse_keeps_names_and_other_verses(self):
+        pronunciation.save_verse("Genesis 1:4", {"divided": "di-vided", " ": "x"})
+        self.assertEqual(pronunciation.verse_words("Genesis 1:4"),
+                         {"divided": "di-vided"})
+        self.assertEqual(pronunciation.verse_words("Acts 13:2"),
+                         self.VERSES["Acts 13:2"])
+        self.assertIn("Barnabas", pronunciation.load())
+        with open(self.path, encoding="utf-8") as f:
+            self.assertEqual(list(json.load(f)["verses"]),
+                             ["Genesis 1:4", "Acts 13:2"])     # canonical order
+        pronunciation.save_verse("Genesis 1:4", {})
+        self.assertEqual(pronunciation.verse_words("Genesis 1:4"), {})
+
+    def test_saving_names_keeps_the_verses(self):
+        names = pronunciation.load()
+        base = json.loads(json.dumps(names))
+        names["Ham"] = {**names["Ham"], "say": "hahm"}
+        pronunciation.save_names(names, base=base)
+        self.assertEqual(pronunciation.all_verse_words(), self.VERSES)
+
+
 class Meter(unittest.TestCase):
     def test_usage_sums_the_last_30_days_and_skips_junk(self):
         now = datetime.now(timezone.utc)

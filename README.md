@@ -125,7 +125,7 @@ from the `TOOLS` registry in `app.py`:
 |---|---|---|---|
 | Plan | Coverage: per-chapter visuals, audio, unreviewed names and catalog candidates | `coverage_studio.py` | window |
 | Author | Visuals (SVG Studio): each verse's SVG and its owner, a live preview, Re-run generator, manifest rebuild | `svg_studio.py`, `svg_preview.py` | window |
-| Author | Pronunciation: review and tune proper-noun respellings, or hear and set the IPA Azure speaks | `pronunciation_tool.py` | separate process |
+| Author | Pronunciation: review and tune proper-noun respellings, hear and set the IPA Azure speaks, or respell a word in one verse only | `pronunciation_tool.py` | separate process |
 | Author | Verifier: transcribes the rendered audio and scores it against the list | `pronunciation_check.py`, `ipa_asr.py` | separate process |
 | Produce | Audio: renders chapter narration MP3s, through Edge, Azure or both | `audio_studio.py` | window |
 | Produce | Video: renders a verse range to an MP4 (4K by default) | `video_studio.py`, `video_render.py` | window |

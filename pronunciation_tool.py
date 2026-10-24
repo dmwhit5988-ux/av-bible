@@ -12,6 +12,8 @@ are already customized, and lets you:
     IPA key (ipa_keyboard.py)
   * tick "Use" to have Azure renders speak it from the IPA (use_ipa)
   * click "✓ Fine" when the plain spelling is already read correctly
+  * "Verse words…": respell a word in one verse only -- a heteronym such as
+    "Separate" (the verb) in Acts 13:2 -- saved at once (VerseWords)
   * Save -> writes pronunciations.json AND PRONUNCIATIONS.md, merging with
     anything the Verifier saved while this window was open
 
@@ -121,6 +123,7 @@ class App:
         self.ipa_target = None    # the IPA box the keyboard types into
         self.ipa_keyboard = None
         self.ipa_guide = None
+        self.verse_words = None   # the Verse words pop-out
 
         root.title("Pronunciation Studio")
         root.geometry("1240x700")
@@ -161,6 +164,8 @@ class App:
         self.ch_cb.pack(side="left", padx=(4, 10))
 
         ttk.Button(bar, text="Load chapter", command=self.load_chapter).pack(side="left")
+        ttk.Button(bar, text="Verse words…",
+                   command=self._show_verse_words).pack(side="left", padx=(6, 0))
 
         # Right side: the IPA pop-outs (most IPA isn't on a keyboard).
         ttk.Button(bar, text="IPA key", command=self._show_ipa_guide).pack(side="right")
@@ -234,6 +239,8 @@ class App:
             return
         self.cur_book, self.cur_ch, self.cur_verses = book, ch, passage.verses
         self._build_rows()
+        if self.verse_words is not None and self.verse_words.win.winfo_exists():
+            self.verse_words.show_chapter()
 
     def _build_rows(self, keep_status=False):
         for w in self.inner.winfo_children():
@@ -405,6 +412,10 @@ class App:
     def _show_ipa_guide(self):
         ipa_keyboard.show(self, "ipa_guide", lambda: ipa_keyboard.Guide(self.root))
 
+    def _show_verse_words(self):
+        if self.cur_verses:
+            ipa_keyboard.show(self, "verse_words", lambda: VerseWords(self))
+
     # ----- edits / persistence -----------------------------------------
     def _mark_dirty(self):
         if not self.dirty:
@@ -557,6 +568,9 @@ class App:
 
     def _on_close(self):
         self._commit_rows()
+        pop = self.verse_words
+        if pop is not None and pop.win.winfo_exists() and not pop._settle():
+            return
         if self.dirty:
             ans = messagebox.askyesnocancel(
                 "Unsaved changes", "Save your pronunciation changes before closing?")
@@ -566,6 +580,176 @@ class App:
                 return            # the save failed: keep the window and the edits
         self.player.close()
         self.root.destroy()
+
+
+class VerseWords:
+    """The words one verse needs said differently -- a heteronym like
+    "Separate Barnabas" (the verb) in Acts 13:2, which a name-wide respelling
+    would break everywhere else. Stored in pronunciations.json's ``verses``
+    (pronunciation.save_verse), and saved here at once, apart from the names'
+    Save. ``pop.win`` is the window, as ipa_keyboard.show expects."""
+
+    ROWS = 4    # empty rows offered; a verse rarely needs more than one
+
+    def __init__(self, app):
+        self.app = app
+        self.win = tk.Toplevel(app.root)
+        self.win.geometry("760x420")
+        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        self.dirty = False
+        self.cur_num = None
+        self.rows = []      # (words_var, say_var)
+
+        top = ttk.Frame(self.win, padding=(10, 8))
+        top.pack(fill="x")
+        ttk.Label(top, text="Verse:").pack(side="left")
+        self.verse_var = tk.StringVar()
+        self.verse_cb = ttk.Combobox(top, textvariable=self.verse_var, width=5,
+                                     state="readonly")
+        self.verse_cb.pack(side="left", padx=(4, 10))
+        self.verse_cb.bind("<<ComboboxSelected>>", lambda e: self._on_verse_change())
+        ttk.Button(top, text="▶ Verse", command=self._play_verse).pack(side="left")
+        ttk.Button(top, text="Save verse", command=self.save).pack(side="right")
+
+        # A read-only Text, not a Label, so the words can be selected and copied.
+        self.text = tk.Text(self.win, height=4, wrap="word", font=("Segoe UI", 10),
+                            relief="flat", background=self.win.cget("background"))
+        self.text.pack(fill="x", padx=10)
+
+        ttk.Label(self.win, foreground="#666", wraplength=720, justify="left",
+                  text="Words: the exact text in this verse, capitals and all. "
+                       "Say it: what the voice reads instead, as typed (a name "
+                       "inside it is still respelled). ▶ Verse plays the verse "
+                       "the way Edge will render it.").pack(
+            fill="x", padx=10, pady=(6, 4))
+        self.grid = ttk.Frame(self.win, padding=(10, 0))
+        self.grid.pack(fill="x")
+
+        self.summary_var = tk.StringVar()
+        ttk.Label(self.win, textvariable=self.summary_var, foreground="#666",
+                  wraplength=720, justify="left").pack(fill="x", padx=10, pady=8)
+        self.show_chapter()
+
+    def show_chapter(self):
+        """Follow the main window's chapter (offering to save first)."""
+        if not self._settle():
+            return
+        app = self.app
+        self.ref_base = f"{app.cur_book} {app.cur_ch}"
+        self.verses = dict(app.cur_verses)
+        self.win.title(f"Verse words — {self.ref_base}")
+        nums = [str(n) for n in self.verses]
+        self.verse_cb.configure(values=nums)
+        have = [n for n in nums if pronunciation.verse_words(f"{self.ref_base}:{n}")]
+        self.verse_var.set(have[0] if have else nums[0])
+        self._on_verse_change(ask=False)
+
+    def _ref(self):
+        return f"{self.ref_base}:{self.cur_num}"
+
+    def _verse_text(self):
+        return self.verses.get(self.cur_num, "")
+
+    def _on_verse_change(self, ask=True):
+        num = int(self.verse_var.get())
+        if ask and num != self.cur_num and not self._settle():
+            self.verse_var.set(str(self.cur_num))
+            return
+        self.cur_num = num
+        self.text.configure(state="normal")
+        self.text.delete("1.0", "end")
+        self.text.insert("1.0", self._verse_text())
+        self.text.configure(state="disabled")
+        self._build_rows(pronunciation.verse_words(self._ref()))
+        self._show_summary()
+
+    def _build_rows(self, words):
+        for w in self.grid.winfo_children():
+            w.destroy()
+        self.rows = []
+        for c, head in enumerate(("Words", "Say it", "", "")):
+            ttk.Label(self.grid, text=head, font=("Segoe UI", 9, "bold")).grid(
+                row=0, column=c, sticky="w", padx=4)
+        items = list(words.items()) + [("", "")] * max(1, self.ROWS - len(words))
+        for r, (w, say) in enumerate(items, start=1):
+            wv, sv = tk.StringVar(value=w), tk.StringVar(value=say)
+            for v in (wv, sv):
+                v.trace_add("write", lambda *a: self._mark_dirty())
+            self.rows.append((wv, sv))
+            ttk.Entry(self.grid, textvariable=wv, width=30).grid(
+                row=r, column=0, padx=4, pady=1, sticky="w")
+            ent = ttk.Entry(self.grid, textvariable=sv, width=30)
+            ent.grid(row=r, column=1, padx=4, pady=1, sticky="w")
+            ent.bind("<Return>", lambda e, s=sv: self.app._play(s.get(), s.get()))
+            ttk.Button(self.grid, text="▶ Say", width=6,
+                       command=lambda s=sv: self.app._play(s.get(), s.get())).grid(
+                row=r, column=2, padx=2)
+            ttk.Button(self.grid, text="✕", width=3,
+                       command=lambda a=wv, b=sv: (a.set(""), b.set(""))).grid(
+                row=r, column=3, padx=2)
+        self.dirty = False
+
+    def _words(self):
+        return {w.get().strip(): s.get().strip() for w, s in self.rows
+                if w.get().strip() and s.get().strip()}
+
+    def _mark_dirty(self):
+        self.dirty = True
+        self.win.title(f"Verse words — {self.ref_base}  *unsaved*")
+
+    def _show_summary(self):
+        here = {ref: words for ref, words in pronunciation.all_verse_words().items()
+                if ref.rsplit(":", 1)[0] == self.ref_base}
+        lines = [f"v{ref.rsplit(':', 1)[1]}: " + "; ".join(
+                     f"{w} → {s}" for w, s in words.items())
+                 for ref, words in here.items()]
+        self.summary_var.set(f"Saved in {self.ref_base}:  " + ("   ".join(lines)
+                                                              if lines else "none"))
+
+    def _play_verse(self):
+        """The verse as Edge will speak it: these words (saved or not), then
+        the names' respellings."""
+        spoken = pronunciation.respell(
+            pronunciation.apply_words(self._verse_text(), self._words()))
+        self.app._play(spoken, f"{self._ref()} as it will be read")
+
+    def save(self) -> bool:
+        words = self._words()
+        text = self._verse_text()
+        missing = [w for w in words if pronunciation.apply_words(text, {w: "\0"}) == text]
+        if missing:
+            messagebox.showerror(
+                "Not in this verse",
+                f"{self._ref()} doesn't contain, as a whole word with these "
+                "capitals: " + ", ".join(f"“{w}”" for w in missing), parent=self.win)
+            return False
+        try:
+            pronunciation.save_verse(self._ref(), words)
+        except Exception as e:  # noqa: BLE001 - surface any write error to the user
+            messagebox.showerror("Save failed", str(e), parent=self.win)
+            return False
+        self.dirty = False
+        self.win.title(f"Verse words — {self.ref_base}")
+        self._show_summary()
+        self.app.status_var.set(
+            f"Saved {self._ref()}'s words to pronunciations.json. Re-render "
+            f"{self.ref_base} with Overwrite ticked to update its MP3.")
+        return True
+
+    def _settle(self) -> bool:
+        """True once there are no unsaved edits: saved, or dropped on request."""
+        if not self.dirty:
+            return True
+        ans = messagebox.askyesnocancel(
+            "Unsaved verse words", f"Save the words for {self._ref()} first?",
+            parent=self.win)
+        if ans is None:
+            return False
+        return self.save() if ans else True
+
+    def _on_close(self):
+        if self._settle():
+            self.win.destroy()
 
 
 def main():

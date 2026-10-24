@@ -350,7 +350,8 @@ def resolve_audio(book: str, chapter: int, verse: int, text: str,
                              showcase_audio._audio_filename(base))
     if os.path.exists(published) and os.path.getsize(published) > 500:
         return published, False
-    return tts_engine.synthesize(text, voice, rate), True
+    return tts_engine.synthesize(text, voice, rate,
+                                 ref=f"{book} {chapter}:{verse}"), True
 
 
 def publish_audio(book: str, chapter: int, verse: int, src: str,

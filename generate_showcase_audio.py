@@ -176,9 +176,9 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
                 on_verse(num, "skipped")
             continue
         try:
+            ref = f"{book} {chapter}:{num}"
             src_path = tts_engine.synthesize(
-                text, voice, rate, engine=engine,
-                label=f"{book} {chapter}:{num}")
+                text, voice, rate, engine=engine, label=ref, ref=ref)
         except azure_tts.AzureError as e:
             if e.fatal:
                 raise

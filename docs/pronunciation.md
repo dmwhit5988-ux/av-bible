@@ -5,7 +5,9 @@ The narration voice is the neural voice `en-US-AndrewNeural` at rate 0 (`tts_eng
 - **Respelling**, for every render. The name is **respelled in the text sent to the voice**. The free edge-tts service escapes its input, so this is the only fix it can carry.
 - **IPA**, for Azure renders only. The same voice on Azure takes SSML, so a name can be spoken from its IPA ([IPA through Azure](#ipa-through-azure)).
 
-Either way, the text on screen never changes. Respellings apply to the pre-rendered MP3s and to Studio playback; IPA applies only to MP3s rendered with an Azure engine and to ▶ IPA, because Studio playback always uses Edge. The browser's Web Speech fallback, used for verses with no MP3, reads the plain WEB text.
+A word that only one verse needs said differently, such as a heteronym, has its own fix: [one verse's words](#one-verses-words).
+
+In every case, the text on screen never changes. Respellings apply to the pre-rendered MP3s and to Studio playback; IPA applies only to MP3s rendered with an Azure engine and to ▶ IPA, because Studio playback always uses Edge. The browser's Web Speech fallback, used for verses with no MP3, reads the plain WEB text.
 
 ## How a respelling reaches the audio
 
@@ -18,6 +20,16 @@ Either way, the text on screen never changes. Respellings apply to the pre-rende
   - A changed respelling misses the cache and is synthesized fresh.
   - Verses whose spoken text didn't change come straight from the cache.
 - `pronunciation.load()` reloads the list whenever `pronunciations.json` changes on disk, so a running Studio picks up edits saved by the other tools.
+
+## One verse's words
+
+Some words are read two ways, so no list-wide fix is right. In Acts 13:2, "Separate Barnabas and Saul for me" is the verb (SEP-uh-rate), but the voice reads the adjective (SEP-rit). Respelling every "separate" would break the adjective elsewhere. So a verse can carry its own words:
+
+- They live in the `verses` section of `pronunciations.json`, keyed by reference: `"Acts 13:2": {"Separate": "Sep-uh-rate"}`.
+- The key is the exact text in that verse, whole-word and case-sensitive, like a name. A longer phrase ("Separate Barnabas") tells two readings in one verse apart.
+- The value is what the voice reads instead, used as typed, not lowercased. A name inside it is still respelled.
+- `pronunciation.for_verse(ref, text)` swaps them in before `respell()` or `ssml()`. `tts_engine.route()` and `synthesize()` call it when they are given `ref`, and every narration path passes it: the Audio tool's renders (`generate_showcase_audio.generate_chapter`), Studio playback, and Video Studio's on-the-fly verses. A changed entry changes the spoken text, so it misses the TTS cache like a changed respelling.
+- `pronunciation.save_verse(ref, words)` writes one verse. It re-reads the file first, so names and other verses saved by other tools are kept; `save_names()` keeps the `verses` section in turn.
 
 ## IPA through Azure
 
@@ -102,7 +114,9 @@ No current tool assigns `unsure`. The Pronunciation tool lists those names under
 
 **Reference sources:** `isbe` 975, `cmudict` 232, `generated` 224, `wiktionary` 62, `wikipedia` 13. The other 1,631 entries have no `ipa_src`.
 
-**Writing the file.** Every write goes through `pronunciation.save_names(names, base)`:
+The file can also hold `verses`, the words single verses say differently ([One verse's words](#one-verses-words)).
+
+**Writing the file.** Every write of the names goes through `pronunciation.save_names(names, base)`, and every write of a verse through `pronunciation.save_verse(ref, words)`:
 - It applies only the names that changed since the caller loaded the file, on top of a fresh read. So the Pronunciation tool and the Verifier, which run as separate processes, don't undo each other's saves.
 - It writes a temporary file and swaps it in, sorts by `ref`, rewrites `_readme` from `pronunciation.README`, and rebuilds `PRONUNCIATIONS.md`.
 - The merge lock works within one process only. Two processes saving within milliseconds of each other could still lose one edit; a cross-process lock is on the [roadmap](../ROADMAP.md).
@@ -129,6 +143,7 @@ No current tool assigns `unsure`. The Pronunciation tool lists those names under
 - Previews use the house voice and rate, so what you hear is what will be rendered.
 - ▶ IPA is the only preview that costs anything: about 40 characters plus the IPA, once (replays come from the TTS cache). The bottom line shows the Azure meter. Without the key, ▶ IPA is greyed out.
 - Names are keyed by spelling, so tuning "Nahor" in Genesis 11 tunes it everywhere.
+- **Verse words…** opens a window for the words one verse needs said differently. Pick the verse, type the exact **Words** from it and what to **Say** instead, then press **▶ Verse** to hear the whole verse the way Edge will render it. **Save verse** writes it straight away, apart from the main **Save**. It refuses words that aren't in the verse as typed, capitals included. **✕** clears a row, and saving a verse with no rows removes its entry.
 
 ### Verifier (`pronunciation_check.py`, `ipa_asr.py`)
 
@@ -188,7 +203,7 @@ Both reports sit at the repo root and are untracked and ignored. Never edit them
 
 A changed `say` or `override` makes every published MP3 of a verse containing that name stale.
 
-1. **Fix and save** in the Pronunciation tool, or let `isbe_sweep.py` adopt a respelling.
+1. **Fix and save** in the Pronunciation tool, or let `isbe_sweep.py` adopt a respelling. A verse's own words go stale only that verse.
 2. **Re-render the chapters that contain the name** in the Audio tool (**Audio** in the Studio's Produce group). Choose the book and chapter range, tick **Overwrite existing files (re-render after a pronunciation or voice change)**, then press **Render**. Unchanged verses come from the TTS cache, so only the changed ones are synthesized. For a name fixed by IPA, choose the engine **Azure for verses with IPA names**; the confirm dialog shows the Azure characters it will use.
 3. **If the chapter is 1 Chronicles 1–9 or Matthew 1, re-run its generator** (`generate_1chronicles_tree_svg.py` or `generate_matthew1_svg.py`). Their cameras are timed from the MP3 lengths in `web/audio/` (`svg_chronicles_world.AUDIO_DIR`).
 4. **Publish.** It commits `pronunciations.json` along with the MP3s, so the list in git matches the audio it rendered.

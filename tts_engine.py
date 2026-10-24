@@ -104,9 +104,13 @@ class Route(NamedTuple):
 
 
 def route(text: str, voice: str, rate: int, engine: str = ENGINE_EDGE,
-          apply_respell: bool = True) -> Route:
+          apply_respell: bool = True, ref: str = "") -> Route:
     """Decide how ``text`` is spoken under ``engine`` without speaking it --
-    for estimating a render's Azure characters before it starts."""
+    for estimating a render's Azure characters before it starts. ``ref``
+    ("Acts 13:2") names the verse ``text`` is, so its own words
+    (pronunciation.for_verse) are swapped in first."""
+    if apply_respell:
+        text = pronunciation.for_verse(ref, text)
     if (apply_respell and engine != ENGINE_EDGE and voice.startswith(IPA_LOCALE)
             and pronunciation.uses_ipa(text)):
         body = azure_tts.wrap_rate(pronunciation.ssml(text), rate)
@@ -181,7 +185,7 @@ _edge_down_until = 0.0
 
 
 def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True,
-               engine: str = ENGINE_EDGE, label: str = "") -> str:
+               engine: str = ENGINE_EDGE, label: str = "", ref: str = "") -> str:
     """Return path to an audio file speaking `text`. Cached across runs.
 
     Cached neural mp3s are served forever. Cached SAPI wavs (made while
@@ -193,14 +197,16 @@ def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True,
     pronunciation.py); this only changes what is *spoken*, and because the cache
     is keyed on the spoken text, updating the pronunciation list yields fresh
     audio automatically. `apply_respell=False` speaks `text` verbatim -- used by
-    the pronunciation editor to preview an exact string.
+    the pronunciation editor to preview an exact string. `ref` ("Acts 13:2")
+    says which verse `text` is, so the words that verse alone has said
+    differently are applied too (pronunciation.for_verse).
 
     `engine` picks the service (see the module docstring). Whatever Azure
     speaks is Azure's or nothing: its failures raise azure_tts.AzureError.
     `label` names the request in the Azure usage log.
     """
     global _edge_down_until
-    r = route(text, voice, rate, engine, apply_respell)
+    r = route(text, voice, rate, engine, apply_respell, ref)
     if r.cached:
         return r.path
     if r.engine == ENGINE_AZURE:

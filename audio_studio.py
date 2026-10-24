@@ -85,7 +85,8 @@ def _scan(events, book, chapters, voice, force, engine):
                     new_files += 1
                 if present and not force:
                     continue                  # skipped: nothing synthesized
-                r = tts_engine.route(text, voice, tts_engine.HOUSE_RATE, engine)
+                r = tts_engine.route(text, voice, tts_engine.HOUSE_RATE, engine,
+                                     ref=f"{book} {ch}:{num}")
                 if (r.engine == tts_engine.ENGINE_AZURE and not r.cached
                         and r.path not in azure_paths):
                     azure_paths.add(r.path)

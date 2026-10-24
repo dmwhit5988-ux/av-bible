@@ -189,9 +189,10 @@ class PlaybackSession(threading.Thread):
         with self._fut_lock:
             for k in range(i, min(i + 3, n)):
                 if k not in self._futures:
-                    text = self.passage.verses[k][1]
+                    num, text = self.passage.verses[k]
+                    ref = f"{self.passage.book} {self.passage.chapter}:{num}"
                     self._futures[k] = self._executor.submit(
-                        synthesize, text, HOUSE_VOICE, HOUSE_RATE)
+                        synthesize, text, HOUSE_VOICE, HOUSE_RATE, ref=ref)
             fut = self._futures[i]
         return fut.result()
 

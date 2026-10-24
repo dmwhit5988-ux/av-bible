@@ -51,7 +51,7 @@ web/visuals/manifest.json (v2)               web/audio/manifest.json
 
 ## Narration
 
-- **Respelling.** `pronunciation.respell()` swaps the names the voice gets wrong for spellings it says correctly. The list is `pronunciations.json` ([pronunciation.md](pronunciation.md)).
+- **Respelling.** `pronunciation.respell()` swaps the names the voice gets wrong for spellings it says correctly. The list is `pronunciations.json` ([pronunciation.md](pronunciation.md)). A verse can also have its own words said differently, such as a heteronym (`pronunciation.for_verse()`, applied when the verse's `ref` is passed in).
 - **Synthesis.** `tts_engine.synthesize()` respells the text, then speaks it with edge-tts in the house voice (`tts_engine.HOUSE_VOICE` = `en-US-AndrewNeural`, `HOUSE_RATE` = 0).
   - Its `engine` can send text to Azure instead (`azure_tts.py`), which is the same voice, metered, and able to speak `use_ipa` names from their IPA. `edge` is the default. `mixed` sends Azure only the verses that name someone spoken from IPA. `azure` sends everything. `tts_engine.route()` says which service a text would go to, what it would send, and what it would bill ([pronunciation.md](pronunciation.md#ipa-through-azure)).
   - It caches the result as `cache/audio/tts/<voice without dashes>_<rate:+d>_<md5 of voice|rate|spoken text, 16 hex>.mp3` (`tts_engine._cache_file`). Plain text has one entry whichever service spoke it. SSML with `<phoneme>` tags is keyed `<voice>_<rate>_ssml_<md5>.mp3`.

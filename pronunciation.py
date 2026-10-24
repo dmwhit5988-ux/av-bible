@@ -7,7 +7,7 @@ the name phonetically in the *text sent to the voice* while leaving the on-scree
 text untouched. The same voice on Azure (azure_tts.py) does take SSML, so a name
 can instead be spoken from its IPA there (``use_ipa``, ``ssml()``).
 
-The master list lives in ``pronunciations.json`` as ``{_readme, names}``.
+The master list lives in ``pronunciations.json`` as ``{_readme, names, verses}``.
 ``names`` is keyed by a name's exact spelling in the World English Bible (the
 only text the app reads), each entry
 ``{say, ipa?, ipa_src?, ref, override, use_ipa?, status?, score?}``:
@@ -53,6 +53,15 @@ narration benefits: the Studio's playback, the web app's pre-rendered MP3s and
 Video Studio's renders. ``ssml(text)`` is its Azure counterpart: the same
 respellings, plus a ``<phoneme>`` tag for every ``use_ipa`` name.
 
+``verses`` is for a word that one verse needs said differently -- a heteronym
+such as "Separate Barnabas" (the verb) in Acts 13:2, where respelling every
+"separate" would break the adjective elsewhere. It is keyed by reference
+("Acts 13:2"), each holding ``{words: say}``: ``words`` is the exact text of
+the verse to replace, whole-word and case-sensitive, and ``say`` is spoken in
+its place, as typed. ``for_verse(ref, text)`` applies them before ``respell``
+or ``ssml``, so a name inside ``say`` is still respelled; ``tts_engine.route``
+calls it when it is given the verse's ``ref``.
+
 Edit the list with the GUI (``python pronunciation_tool.py``) -- it plays each
 name back in the real voice and writes both this module's JSON and the readable
 ``PRONUNCIATIONS.md`` (a generated report, git-ignored).
@@ -87,7 +96,10 @@ README = (
     "spelling is known but unapplied, decide by ear), unfixed (wrong, nothing "
     "found yet), unsure (checked only against a generated reference, so it "
     "needs an ear); absent means never checked, which is NOT the same as ok. "
-    "'score' is the agreement measured at that check, 0-1. Edit with the GUI: "
+    "'score' is the agreement measured at that check, 0-1. 'verses' holds "
+    "words that one verse needs said differently (a heteronym like 'Separate' "
+    "the verb in Acts 13:2): {\"Book c:v\": {exact words in the verse: what "
+    "to say, as typed}}. Edit with the GUI: "
     "python pronunciation_tool.py (it plays names back and rewrites this file + "
     "PRONUNCIATIONS.md); check against real audio with python "
     "pronunciation_check.py."
@@ -144,6 +156,7 @@ def set_status(info: dict, status: str, score=None) -> dict:
 _names = None          # dict: name -> {say, ipa?, ref, override}
 _pattern = None        # compiled regex over the override names, or None
 _table = None          # dict: matched name -> lowercased spoken form
+_verses = {}           # dict: "Book c:v" -> {words in that verse: what to say}
 # The Azure side, swapped in as one tuple so a reader never sees half a reload:
 # (regex over override + use_ipa names with an optional possessive, or None;
 #  {use_ipa name: its ipa}; {use_ipa name: why its ipa can't be sent}).
@@ -167,16 +180,19 @@ def load(force: bool = False) -> dict:
     what lets a changed pronunciation actually re-render: respell() then yields
     new text, whose hash misses the audio cache.
     """
-    global _names, _pattern, _table, _ssml_state, _mtime
+    global _names, _pattern, _table, _ssml_state, _mtime, _verses
     mtime = _current_mtime()
     if _names is not None and not force and mtime == _mtime:
         return _names
     _mtime = mtime
     try:
         with open(JSON_PATH, encoding="utf-8") as f:
-            _names = json.load(f).get("names", {})
-    except (OSError, ValueError):
-        _names = {}
+            data = json.load(f)
+        _names = data.get("names", {})
+        verses = data.get("verses", {})
+        _verses = verses if isinstance(verses, dict) else {}
+    except (OSError, ValueError, AttributeError):
+        _names, _verses = {}, {}
     _table = {
         name: info["say"].lower()
         for name, info in _names.items()
@@ -226,6 +242,33 @@ def respell(text: str) -> str:
     # .get fallback: if a mid-reload leaves pattern/table momentarily out of
     # step, leave the word unchanged rather than raising (self-corrects next call).
     return pattern.sub(lambda m: table.get(m.group(0), m.group(0)), text)
+
+
+def verse_words(ref: str) -> dict:
+    """The words ``ref`` ("Acts 13:2") has said differently: {words: say}."""
+    load()
+    return dict(_verses.get(ref) or {})
+
+
+def all_verse_words() -> dict:
+    """Every verse's words: {"Book c:v": {words: say}}, a copy."""
+    load()
+    return {ref: dict(words) for ref, words in _verses.items()}
+
+
+def apply_words(text: str, words: dict) -> str:
+    """``text`` with each of ``words`` (whole-word, case-sensitive, longest
+    first) replaced by its ``say``, as typed."""
+    pattern = _names_regex({w for w, say in words.items() if w and say})
+    if not pattern:
+        return text
+    return pattern.sub(lambda m: words[m.group(0)], text)
+
+
+def for_verse(ref: str, text: str) -> str:
+    """``text``, the verse ``ref``, with that verse's own words swapped in.
+    Run it before ``respell`` or ``ssml``; a verse with none is unchanged."""
+    return apply_words(text, verse_words(ref)) if ref else text
 
 
 # --------------------------------------------------------------------------
@@ -714,21 +757,58 @@ def save_names(names: dict, base: dict = None) -> SaveResult:
                     warning = ("pronunciations.json had changed since this window "
                                "loaded it. " + "; ".join(parts) + ".")
 
-        data = {"_readme": README, "names": _sorted_names(merged)}
-        tmp = f"{JSON_PATH}.{os.getpid()}.tmp"
-        try:
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-                f.write("\n")
-            _replace(tmp, JSON_PATH)
-        finally:
-            if os.path.exists(tmp):
-                os.remove(tmp)
-        load(force=True)
-        write_markdown(data["names"])
+        names_out = _sorted_names(merged)
+        _write(names_out, _read_verses())
+        write_markdown(names_out)
     if warning:
         print(warning, file=sys.stderr)
-    return SaveResult(data["names"], warning)
+    return SaveResult(names_out, warning)
+
+
+def save_verse(ref: str, words: dict) -> None:
+    """Set the words ``ref`` has said differently to ``words`` ({words: say});
+    empty removes the verse. Only that verse changes: the names and every
+    other verse are written back as they are on disk now."""
+    words = {w.strip(): say.strip() for w, say in words.items()
+             if w.strip() and say.strip()}
+    with _SAVE_LOCK:
+        names = _read_saved()
+        if names is None:
+            raise OSError("pronunciations.json is missing or unreadable, so "
+                          "the verse was not saved.")
+        verses = _read_verses()
+        if words:
+            verses[ref] = words
+        else:
+            verses.pop(ref, None)
+        _write(_sorted_names(names), verses)
+
+
+def _read_verses() -> dict:
+    """The ``verses`` section as it is on disk right now ({} if none)."""
+    try:
+        with open(JSON_PATH, encoding="utf-8") as f:
+            verses = json.load(f).get("verses", {})
+    except (OSError, ValueError, AttributeError):
+        return {}
+    return verses if isinstance(verses, dict) else {}
+
+
+def _write(names: dict, verses: dict) -> None:
+    """Write the whole file through a temp file, then reload the cache."""
+    data = {"_readme": README, "names": names}
+    if verses:
+        data["verses"] = {ref: verses[ref] for ref in sorted(verses, key=_ref_key)}
+    tmp = f"{JSON_PATH}.{os.getpid()}.tmp"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        _replace(tmp, JSON_PATH)
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+    load(force=True)
 
 
 def write_markdown(names: dict = None) -> str:
