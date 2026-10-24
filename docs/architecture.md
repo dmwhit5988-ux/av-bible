@@ -60,7 +60,7 @@ web/visuals/manifest.json (v2)               web/audio/manifest.json
   - Each verse becomes `web/audio/<Book>_<ch>_<v>.mp3`, registered in `web/audio/manifest.json` as `{"Genesis_1_1.WEB": "Genesis_1_1.mp3"}`. The `.WEB` suffix is a fixed part of the key format (D11).
   - Manifest writes re-read the file under a lock, merge, write a temp file and swap it in with `os.replace`. That way the Audio tool and Video Studio, both in the Studio's process, don't drop each other's entries.
   - Today 2,348 verses in 76 chapters are narrated.
-- **Stale narration.** Changing a respelling changes the spoken text, so the next synthesis misses the cache. An MP3 already in `web/audio/` stays as it was until the chapter is re-rendered with "Overwrite existing files".
+- **Stale narration.** Changing a respelling, an IPA or a verse's own words changes the spoken text, so the next synthesis misses the cache. An MP3 already in `web/audio/` stays as it was until its chapter is rendered again. Each published MP3 is a byte copy of the cache entry it came from, so `generate_showcase_audio.is_current()` can tell a stale one: it matches no cache entry for the verse's text as spoken today, by Edge or by Azure's IPA route. A render re-renders those verses and skips the rest.
 - **Audio-timed pictures.** The 1 Chronicles 1–9, Matthew 1, Numbers 34 and Acts 13–14 generators pace each verse's animation by the length of its MP3 in `web/audio/`. They fall back to an estimated pace when a file is missing. Re-run them after re-rendering those chapters.
 - **Web.** `web/js/app.js` loads `audio/manifest.json` and plays a verse's MP3 when it has one. Otherwise `web/js/tts.js` reads the verse with Web Speech.
 

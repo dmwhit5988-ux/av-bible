@@ -7,6 +7,7 @@ calls Azure or edge-tts.
 
 import json
 import os
+import shutil
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -296,6 +297,25 @@ class VerseWords(Ssml):
         names["Ham"] = {**names["Ham"], "say": "hahm"}
         pronunciation.save_names(names, base=base)
         self.assertEqual(pronunciation.all_verse_words(), self.VERSES)
+
+    def test_a_changed_verse_is_no_longer_current(self):
+        import generate_showcase_audio as showcase_audio
+        cache = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, cache, True)
+        patcher = mock.patch.object(tts_engine, "AUDIO_CACHE_DIR", cache)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        text, ref = "“Separate Barnabas and Saul.”", "Acts 13:2"
+        voice, rate = tts_engine.HOUSE_VOICE, 0
+        rendered = tts_engine.route(text, voice, rate, ref=ref).path
+        with open(rendered, "wb") as f:
+            f.write(b"x" * 600)
+        published = os.path.join(cache, "Acts_13_2.mp3")
+        with open(published, "wb") as f:
+            f.write(b"x" * 600)                     # Audio copies the cache entry
+        self.assertTrue(showcase_audio.is_current(text, ref, published, voice, rate))
+        pronunciation.save_verse(ref, {"Separate": "Separayte"})
+        self.assertFalse(showcase_audio.is_current(text, ref, published, voice, rate))
 
 
 class Meter(unittest.TestCase):

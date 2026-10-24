@@ -10,6 +10,11 @@ web/audio/manifest.json exactly as generate_showcase_audio.py writes them
 (see that module's docstring for the key and filename format), so the web
 player picks it up.
 
+A render skips the verses whose MP3 is current and re-renders the ones a
+pronunciation change has made stale (generate_showcase_audio.is_current),
+so after fixing a name or a verse's own words, rendering the chapter again
+is enough; Overwrite is for a voice or engine change.
+
 Before rendering, shows the projected new-file count against the ~20k
 file-count ceiling of Cloudflare's Workers static assets
 (publish_studio.DEPLOY_FILE_LIMIT; docs/architecture.md, "File budget"),
@@ -55,15 +60,17 @@ def _scan(events, book, chapters, voice, force, engine):
     dialog can show the real projected file count. Passages loaded here
     are reused by the render pass -- no double load. Overwrites (force)
     don't add files, so they never count against the ceiling -- only
-    genuinely new files do. Also counts what Azure would be sent: the
-    verses to render that the engine routes to Azure and the cache
-    doesn't already hold."""
+    genuinely new files do. Counts the existing verses a pronunciation
+    change has made stale, which are re-rendered without force. Also counts
+    what Azure would be sent: the verses to render that the engine routes
+    to Azure and the cache doesn't already hold."""
     outcome = ("failed", "The scan stopped unexpectedly.")
     try:
         manifest = showcase_audio._load_manifest()
         passages = {}
         new_files = 0
         total_verses = 0
+        stale = 0                 # existing verses a pronunciation change outdated
         azure_verses = azure_chars = 0
         azure_paths = set()       # a repeated verse is synthesized once
         for ch in chapters:
@@ -83,10 +90,14 @@ def _scan(events, book, chapters, voice, force, engine):
                 present = key in manifest and os.path.exists(out_path)
                 if not present:
                     new_files += 1
+                ref = f"{book} {ch}:{num}"
                 if present and not force:
-                    continue                  # skipped: nothing synthesized
+                    if showcase_audio.is_current(text, ref, out_path, voice,
+                                                 tts_engine.HOUSE_RATE):
+                        continue              # skipped: nothing synthesized
+                    stale += 1
                 r = tts_engine.route(text, voice, tts_engine.HOUSE_RATE, engine,
-                                     ref=f"{book} {ch}:{num}")
+                                     ref=ref)
                 if (r.engine == tts_engine.ENGINE_AZURE and not r.cached
                         and r.path not in azure_paths):
                     azure_paths.add(r.path)
@@ -98,7 +109,7 @@ def _scan(events, book, chapters, voice, force, engine):
         current_total = count_deploy_files()
         outcome = ("confirm", book, chapters, voice, passages, manifest,
                    new_files, current_total, total_verses, force, engine,
-                   azure_verses, azure_chars)
+                   azure_verses, azure_chars, stale)
     except Exception as e:
         outcome = ("failed", f"Scan failed: {type(e).__name__}: {e}")
     finally:
@@ -236,8 +247,9 @@ class App:
         self.force_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(
             top, variable=self.force_var,
-            text="Overwrite existing files (re-render after a pronunciation "
-                 "or voice change)").grid(
+            text="Overwrite every existing file (after a voice or engine "
+                 "change; pronunciation changes are re-rendered without "
+                 "it)").grid(
             row=2, column=0, columnspan=4, sticky="w", pady=(6, 0))
 
         # Who speaks. Azure is the only way to use IPA, and it is metered, so
@@ -345,12 +357,13 @@ class App:
 
     def _do_confirm(self, book, chapters, voice, passages, manifest,
                      new_files, current_total, total_verses, force, engine,
-                     azure_verses, azure_chars):
+                     azure_verses, azure_chars, stale):
         resulting = current_total + new_files
         over = resulting > DEPLOY_FILE_LIMIT
-        overwrites = total_verses - new_files if force else 0
-        work = (f"{new_files} new file(s), {overwrites} overwrite(s)"
-                if force else f"{new_files} new file(s)")
+        overwrites = total_verses - new_files if force else stale
+        work = (f"{new_files} new file(s), {overwrites} overwrite(s)" if force
+                else f"{new_files} new file(s), {stale} re-render(s) of verses "
+                     f"whose pronunciation changed")
         msg = (f"{book} {chapters[0]}-{chapters[-1]}: "
                f"{total_verses} verse(s), {work} to render.\n\n"
                f"Current deploy: {current_total:,} files under web/\n"
@@ -457,7 +470,7 @@ class App:
             self.status_var.set(msg)
         elif kind == "render_done":
             _, written, skipped, degraded, failed, error = event
-            counts = (f"{written} written, {skipped} already present"
+            counts = (f"{written} written, {skipped} already current"
                       + (f", {degraded} degraded/skipped" if degraded else "")
                       + (f", {failed} refused by Azure" if failed else ""))
             if error:

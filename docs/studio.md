@@ -155,7 +155,7 @@ See [pronunciation.md](pronunciation.md).
 ### Audio: Audio Renderer (`audio_studio.py`)
 
 - **What it does:** renders the narration MP3s for a book and chapter range, through `generate_showcase_audio.generate_chapter()`.
-  - Existing files are skipped unless "Overwrite existing files" is ticked, which is the re-render after a pronunciation change.
+  - An existing file is skipped while it is current, and re-rendered once a pronunciation change has made it stale (`generate_showcase_audio.is_current`). The confirm dialog counts those re-renders. "Overwrite every existing file" re-renders all of them, which is for a voice or engine change.
   - "Voice override" is the one voice picker in the Studio. It applies to one render and is not saved.
   - "Engine" picks who speaks: Edge (free, respellings only), Azure for the verses with IPA names and Edge for the rest, or Azure for every verse ([pronunciation.md](pronunciation.md#ipa-through-azure)). The choice is remembered (`render_engine`). The Azure options are greyed out until `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` are set.
   - Before rendering, a confirm dialog shows the new-file count against the deploy budget. With an Azure engine it also shows the verses Azure will speak, their characters, how long the free tier's pace makes that take, and the last 31 days' use against 500,000. It warns when the render would go past that.
@@ -198,7 +198,7 @@ What the Studio is built around, from catalog entry to published chapter. Steps 
    - Today: Coverage with the "Candidate gaps (no visuals)" filter, and the chapter's catalog entry and design notes in `docs/design/`.
    - *(planned, S5)* a **Next up** queue of high-priority candidates, linked to their design records.
 2. **Names.** Clear the chapter's unreviewed names in Pronunciation before rendering audio, because the audio depends on them.
-3. **Audio.** Render the chapter in Audio. When a respelling changes later, re-render with "Overwrite existing files". *(planned, S3)* lint flags the stale verses.
+3. **Audio.** Render the chapter in Audio. When a pronunciation changes later, render the chapter again: only the stale verses are re-rendered. *(planned, S3)* lint flags the stale verses.
 4. **Visuals.**
    - Today:
      - the generator is written in a Claude Code session and registered in `svg_generators.json`;
@@ -233,7 +233,7 @@ Today, of the 24 distinct registered generators:
 **Deploy and narration**
 - The file budget against `DEPLOY_FILE_LIMIT`.
 - **Partial-audio chapters:** some verses narrated but not all. This needs its own rule, because such a chapter may have no visuals.
-- **Stale narration:** compare each published MP3 with the TTS cache entry for the verse's *current* respelling, `tts_engine._cache_file(voice, rate, pronunciation.respell(text), "mp3")`, passing the same text the Audio Renderer passes to `synthesize()`. A fingerprint file can back this up in case the cache is cleared.
+- **Stale narration:** `generate_showcase_audio.is_current()` for every published verse, the check the Audio Renderer already makes per render. A fingerprint file can back it up in case the cache is cleared.
 - **Audio-timed visuals** (1 Chronicles 1–9, Matthew 1) flagged when their MP3s change.
 
 **Visual keys and files**

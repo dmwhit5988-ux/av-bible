@@ -17,7 +17,10 @@ the key is a fixed part of the format (the web player looks up
 Web Speech for any verse with no MP3. The Audio Renderer and Video Studio
 write the manifest too, so every write merges with what is on disk.
 
-Resumable: skips verses whose mp3 already exists. Only ships real neural
+Resumable: skips verses whose mp3 already exists and is current
+(is_current), so a re-render picks up exactly the verses a pronunciation
+change has made stale -- a name's respelling or IPA, or a verse's own words
+-- and nothing else. Only ships real neural
 audio — if edge-tts is unreachable and tts_engine falls back to the lower
 quality offline SAPI voice, that verse is skipped rather than shipping
 degraded audio (rerun later once online). The engine (tts_engine.ENGINES)
@@ -29,6 +32,7 @@ Usage:
     python generate_showcase_audio.py
 """
 
+import filecmp
 import json
 import os
 import shutil
@@ -71,6 +75,27 @@ def _manifest_key(base: str) -> str:
 def _audio_filename(base: str) -> str:
     """'Genesis_1_1' -> 'Genesis_1_1.mp3'."""
     return f"{base}.mp3"
+
+
+def is_current(text: str, ref: str, out_path: str, voice: str = VOICE,
+               rate: int = RATE) -> bool:
+    """True when the published mp3 at ``out_path`` is ``text`` (the verse
+    ``ref``) as it would be spoken today.
+
+    Each published mp3 is a byte copy of the TTS cache entry it was rendered
+    from, and that entry is keyed on the text actually spoken, so a
+    pronunciation change since -- a name's respelling or IPA, or the verse's
+    own words -- leaves the mp3 matching no entry for today's text. Edge's
+    route and Azure's IPA route both count, so switching engine alone doesn't
+    make a verse stale; that, like a new voice, takes Overwrite. A cleared
+    cache makes every verse look stale, which the Audio Renderer's confirm
+    step shows before anything is synthesized.
+    """
+    for engine in (tts_engine.ENGINE_EDGE, tts_engine.ENGINE_MIXED):
+        path = tts_engine.route(text, voice, rate, engine, ref=ref).path
+        if os.path.exists(path) and filecmp.cmp(path, out_path, shallow=False):
+            return True
+    return False
 
 
 # How many times a manifest read or write is tried, 50 ms apart, while
@@ -151,9 +176,12 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
     symbol it doesn't know) is "failed" and skipped; an azure_tts.AzureError
     that is ``fatal`` is raised, ending the render.
 
-    `force=True` re-renders verses whose MP3 already exists, overwriting the
-    file in place (same filename, new bytes — the publish flow ships it as a
-    modified file). Default False keeps interrupted renders resumable.
+    A verse whose MP3 already exists is skipped while it is current
+    (is_current) and re-rendered once a pronunciation change has made it
+    stale. `force=True` re-renders every verse whose MP3 already exists,
+    overwriting the file in place (same filename, new bytes — the publish
+    flow ships it as a modified file); that is for a voice or engine change.
+    Either way interrupted renders stay resumable.
     """
     if passage is None:
         try:
@@ -170,13 +198,14 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
         key = _manifest_key(base)
         filename = _audio_filename(base)
         out_path = os.path.join(AUDIO_DIR, filename)
-        if not force and key in manifest and os.path.exists(out_path):
+        ref = f"{book} {chapter}:{num}"
+        if (not force and key in manifest and os.path.exists(out_path)
+                and is_current(text, ref, out_path, voice, rate)):
             skipped += 1
             if on_verse:
                 on_verse(num, "skipped")
             continue
         try:
-            ref = f"{book} {chapter}:{num}"
             src_path = tts_engine.synthesize(
                 text, voice, rate, engine=engine, label=ref, ref=ref)
         except azure_tts.AzureError as e:
