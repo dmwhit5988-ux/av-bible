@@ -146,6 +146,17 @@ lists as MIT OR Apache-2.0.
 **Video Studio** uses ffmpeg and a locally installed Chrome or Edge. Neither is
 included in the repo.
 
+## Map geography
+
+The map lines Theoria draws (coasts, lakes, rivers, roads) are this project's own
+drawings. The Acts 13–14 map (`acts_geography.py`) was drawn between anchor points,
+each the coordinate of one named place (a town, cape, river mouth or ancient site)
+taken as a single fact from **Wikidata**, whose data is CC0, or from **Wikipedia**;
+two ancient sites (Comama and Derbe) come from **vici.org**. No line geometry was
+copied, traced or sampled from OpenStreetMap or any other map or dataset. The older
+maps (`generate_tribal_maps.py`, `generate_acts1518_svg.py`) are hand-encoded from
+standard atlas reconstructions.
+
 ## Retired Genesis 1 photographs
 
 Genesis 1 once used photographs, which were replaced by SVGs. Their credits are kept

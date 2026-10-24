@@ -307,6 +307,10 @@
           "edit": "SHOTS and plan() (the camera), units_A and units_B (where names may go)"
         },
         {
+          "file": "svg_map_camera.py",
+          "edit": "the map camera shared with Acts 13-14: Flight, labels and clash test, HUD, inset, QC - editing it changes both"
+        },
+        {
           "file": "svg_chronicles_world.py",
           "edit": "camera arc and audio timing shared with 1 Chronicles"
         }
@@ -409,7 +413,23 @@
       "spec": [
         {
           "file": "generate_acts1314_svg.py",
-          "edit": "CITIES, ROUTE, LEGS, SCENES for the map; MOVES/POINTS for the sermon outline that replaces it at 13:16-41; AFTER_NODES for the two-Sabbaths picture at 13:42-50 - all in this one file"
+          "edit": "the camera tour: CITIES, LEGS (the route), STAGE (each verse's shot, plate, title), story_beats (Israel's story flown over the map at 13:17-26, the 13:47 rings, the 13:50 border)"
+        },
+        {
+          "file": "acts_geography.py",
+          "edit": "the map: coasts, Cyprus, lakes, rivers, Taurus crests, SITES, ROADS, and the sermon's places and STORY roads"
+        },
+        {
+          "file": "acts1314_lystra.py",
+          "edit": "the Lystra scene card (14:8-20): scenery, cast, each verse's events, SHOTS"
+        },
+        {
+          "file": "svg_scene_card.py",
+          "edit": "Card/Actor: scene cards hung in a map camera's world, actor state carried from verse to verse"
+        },
+        {
+          "file": "svg_map_camera.py",
+          "edit": "the map camera shared with Numbers 34: Flight, labels and clash test, HUD, inset, QC - editing it changes both"
         }
       ],
       "kind": "map"

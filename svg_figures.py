@@ -191,7 +191,7 @@ def bbox(*groups):
 MATERIALS = ("robe", "mantle", "cloth", "skin", "hair", "hide", "muzzle",
              "far", "fin", "hoof", "horn", "fleece", "wing", "metal", "wood",
              "stone", "clay", "fire", "fruit", "void", "mane", "rule",
-             "sclera", "eye")
+             "sclera", "eye", "cloud")
 
 _cache = {}
 
@@ -248,7 +248,9 @@ def palette(ink, page):
         "rule": (None, _dim(ink, 0.72), 1.2),
         "mane": (None, _dim(ink, 0.72), 1.2),
         "sclera": (t(0.46), _dim(ink, 0.8), 1.0),
-        "eye": (t(0.02), None, 0)})
+        "eye": (t(0.02), None, 0),
+        # vapour: a pale mass, its contour softer than a body's
+        "cloud": (t(0.40), _dim(ink, 0.78), 1.3)})
     _cache[key] = sheet
     return sheet
 
@@ -1754,6 +1756,107 @@ def _grass():
     return P
 
 
+def _blade(bx, by, ang, L, W):
+    """One narrow leaf, laurel or olive, its stem at (bx, by) and its tip
+    `L` away along `ang`. Widest well below the middle, so it tapers to a
+    point and stays a leaf at the size a wreath is drawn — the five-lobed
+    `_leaf` is a vine leaf, and at a few pixels it comes out a blot."""
+    ca, sa = math.cos(ang), math.sin(ang)
+    out = []
+    for px, py in ((0, 0), (W / 2, L * 0.36), (0, L), (-W / 2, L * 0.36)):
+        out.append((bx + py * ca - px * sa, by + py * sa + px * ca))
+    return smooth(out, n=3)
+
+
+def _sprig(P, path, grow=(1.0, 1.0), L=7.6, W=3.4, splay=0.66):
+    """Leaves in pairs along `path`, every one pointing the way the path runs,
+    as they do on a cut branch. `grow` scales the leaves from the first point
+    to the last, which is what thickens a festoon toward its middle."""
+    seg = [math.hypot(b[0] - a[0], b[1] - a[1])
+           for a, b in zip(path, path[1:])]
+    total, step = sum(seg), L * 0.62
+    P.append(("line", path, "rule"))                   # the stem, under them
+    d = 0.0
+    while d <= total + 1e-6:
+        i, rem = 0, d
+        while i < len(seg) - 1 and rem > seg[i]:
+            rem -= seg[i]
+            i += 1
+        (x0, y0), (x1, y1) = path[i], path[i + 1]
+        t = min(1.0, rem / seg[i])
+        bx, by = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+        ang = math.atan2(y1 - y0, x1 - x0)
+        k = grow[0] + (grow[1] - grow[0]) * d / total
+        for s in (-1, 1):
+            P.append(("fill", _blade(bx, by, ang + s * splay, L * k, W * k),
+                      "fleece"))
+        d += step
+    (x0, y0), (x1, y1) = path[-2], path[-1]           # the leading leaf
+    P.append(("fill", _blade(x1, y1, math.atan2(y1 - y0, x1 - x0),
+                             L * grow[1], W * grow[1]), "fleece"))
+
+
+def _garland(swag=False):
+    """A garland of leaves with blossoms in it and the ribbons it was tied
+    with — what the priest of Jupiter brought to the gates with the oxen.
+
+    Front on, in one of the two ways a garland is ever seen. The default is
+    the WREATH: two sprigs bound at the foot and curving up either side, OPEN
+    at the top where their tips do not quite meet. The gap is what makes it a
+    wreath and not a ring, and the leaves all pointing up the way they grew
+    are what make it leaves and not a fringe. `swag` is the FESTOON hung
+    across an ox's neck or over a doorway: one sprig from each end meeting in
+    the middle, the leaves larger toward the bottom of the curve, where a
+    festoon is always thickest.
+
+    The ribbons are the woollen fillets a victim's garland was tied with.
+    Without them the wreath is any ring of leaves; with them it is a thing
+    made, and made for an occasion. A few blossoms, in `fruit`, are the
+    brightest marks on it.
+    """
+    P = []
+    if swag:
+        top = 27.4                       # the ends; the lowest leaf is at 0
+        left = [(-25 + 25 * (1 - math.cos(t)) * 0.98,
+                 top - 22 * math.sin(t)) for t in
+                [math.pi / 2 * k / 8 for k in range(9)]]
+        right = [(-x, y) for x, y in left]
+        for sx in (-1, 1):            # the ribbons, hanging clear of the ends
+            P.append(("fill", taper([(sx * 25, top + 0.6),
+                                     (sx * 30.0, top - 5.0),
+                                     (sx * 31.2, top - 12.5),
+                                     (sx * 33.4, top - 19.5)],
+                                    [3.0, 2.7, 2.4, 2.0]), "cloth"))
+        _sprig(P, left, grow=(0.78, 1.12))
+        _sprig(P, right, grow=(0.78, 1.12))
+        for sx in (-1, 1):
+            P.append(("dot", (sx * 25, top + 0.6, 2.6), "cloth"))  # the knots
+        for bx, by in ((0, 7.0), (-8.6, 9.0), (8.6, 9.0), (-17, 15.8),
+                       (17, 15.8)):
+            P.append(("dot", (bx, by, 2.1), "fruit"))
+        return P
+    cy, R = 28.0, 15.0
+    for sx, tail in ((-1, [(0, 13), (-4.6, 7), (-3.4, 0.8)]),
+                     (1, [(0, 13), (4.4, 7.4), (6.2, 1.6)])):
+        P.append(("fill", taper(tail, [3.0, 2.6, 2.2]), "cloth"))
+    # The sprigs stop 30 degrees short of the top. Carried to within 16 the
+    # leading leaves closed the gap, and below 60 px the wreath was a ring.
+    for sx in (-1, 1):                                  # the two sprigs
+        path = []
+        for k in range(13):
+            a = math.radians(-90 - sx * (8 + 142 * k / 12))
+            path.append((R * math.cos(a), cy + R * math.sin(a)))
+        _sprig(P, path, grow=(1.0, 0.8))
+    # The blossoms keep clear of the knot: one at the foot sat half under it,
+    # and the two read as a double ball.
+    for a in (205, 152, 335, 28):                       # the blossoms
+        r = math.radians(a)
+        P.append(("dot", (R * math.cos(r), cy + R * math.sin(r), 2.1),
+                  "fruit"))
+    P.append(("dot", (0, 13.4, 2.6), "cloth"))          # the knot
+    return P
+
+
 def _sun():
     """The greater light. An emblem, not a body: it has no scale against a
     man, so a scene sets its size."""
@@ -1781,6 +1884,147 @@ def _star(points=5, r=15):
         k = r if i % 2 == 0 else r * 0.42
         pts.append((math.cos(a) * k, math.sin(a) * k))
     P.append(("fill", pts, "fire"))
+    return P
+
+
+def _vesica(h, w, n=16):
+    """A pointed lens `h` tall and `w` wide, standing on its lower tip at the
+    origin: two arcs of one circle's radius, each centred on the far side of
+    the axis, so both ends come to a true point. Not run through the curve
+    fitter, which would round the points off and make it a seed."""
+    hh, hw = h / 2.0, w / 2.0
+    c = (hh * hh - hw * hw) / (2 * hw)       # the arc centres sit at (±c, hh)
+    R = c + hw
+    a = math.atan2(hh, c)
+    pts = []
+    for i in range(n + 1):                   # up the right side
+        t = -a + 2 * a * i / n
+        pts.append((-c + R * math.cos(t), hh + R * math.sin(t)))
+    for i in range(1, n):                    # and down the left
+        t = math.pi - a + 2 * a * i / n
+        pts.append((c + R * math.cos(t), hh + R * math.sin(t)))
+    return pts, (c, hh, R)
+
+
+def _light():
+    """The light that stands for Jesus wherever he is in a scene, since he is
+    never drawn as a man. It is the manger's light got up: the same lens of
+    `fire`, the brightest mass the palette has, stood on its point.
+
+    Three things keep it light and not something else of that shape. Both
+    ends come to a POINT — a lens rounded at one end is a seed, and rounded at
+    the foot a flame. It has no midrib and no stalk, which are what make a
+    leaf. And it GIVES OUT: a second lens is ruled round it with dark between,
+    the aureole, and the rays stand off that again, round the upper half
+    only. The ring is what does most of the work — a solid lens with a few
+    ticks round it is still an almond, while a lens inside a ring of its own
+    glow is a mandorla, which is how light has been drawn round a holy thing
+    since late antiquity. A ray with a gap before it reads as something the
+    thing gives out rather than a spike on it, and none below leaves it
+    standing rather than hanging in a sunburst. Long and short alternate, as
+    a glory does.
+
+    An emblem like the sun: about 60 tall and 36 wide to the aureole, the
+    fire lens 50 by 28 inside it, the rays reaching to about 75; its origin is
+    the aureole's lower tip, so it can be stood on a road, in a doorway or on
+    a hill like a figure.
+    """
+    ring, (c, hh, R) = _vesica(60.0, 36.0)
+    lens, _ = _vesica(50.0, 28.0)
+    P = [("line", ring + [ring[0]], "rule"),
+         ("fill", [(x, y + 5.0) for x, y in lens], "fire")]
+
+    def inside(x, y):
+        return (math.hypot(x - c, y - hh) <= R and
+                math.hypot(x + c, y - hh) <= R)
+
+    for k in range(-3, 4):                   # seven rays, 22.5 degrees apart
+        a = math.pi / 2 + k * math.pi / 8
+        ca, sa = math.cos(a), math.sin(a)
+        lo, hi = 0.0, 60.0                   # where the ray leaves the ring
+        for _ in range(30):
+            mid = (lo + hi) / 2
+            if inside(ca * mid, hh + sa * mid):
+                lo = mid
+            else:
+                hi = mid
+        # Long enough to be seen at phone size: at 8.5 and 5 they thinned
+        # to ticks there and the lens was left an almond on its own.
+        r0 = lo + 3.5
+        r1 = r0 + (11.0 if k % 2 == 0 else 6.5)
+        P.append(("line", [(ca * r0, hh + sa * r0), (ca * r1, hh + sa * r1)],
+                  "rule"))
+    return P
+
+
+def _cloud(rain=False):
+    """A cloud: rounded lobes heaped along a flat underside.
+
+    The flat UNDERSIDE is what makes it a cloud. Lobed all the way round it is
+    a bush or a sheep; sat on a level base, the same lobes read as vapour
+    floating on a layer of air, which is how anybody draws one. The lobes are
+    true arcs of circles meeting in notches, so the outline stays scalloped
+    rather than lumpy, and two shallow seams across the front say that they
+    overlap and the thing has some depth.
+
+    Drawn in `cloud`, a pale mass with a softer contour than a body gets.
+    `rain` hangs slanting streaks under it for the rains from heaven of Acts
+    14:17; they fall BELOW the origin, which sits on the cloud's own base, so
+    a cloud is placed where it is in the sky whether it is raining or not.
+    """
+    lobes = [(-30, 10, 12), (-14, 18, 16), (6, 23, 18), (24, 15, 13),
+             (36, 8, 9)]                     # (cx, cy, r), left to right
+
+    def meet(p, q):                          # the upper crossing of two lobes
+        (x0, y0, r0), (x1, y1, r1) = p, q
+        d = math.hypot(x1 - x0, y1 - y0)
+        a = (r0 * r0 - r1 * r1 + d * d) / (2 * d)
+        h = math.sqrt(max(0.0, r0 * r0 - a * a))
+        mx, my = x0 + a * (x1 - x0) / d, y0 + a * (y1 - y0) / d
+        cands = [(mx + h * (y1 - y0) / d, my - h * (x1 - x0) / d),
+                 (mx - h * (y1 - y0) / d, my + h * (x1 - x0) / d)]
+        return max(cands, key=lambda p_: p_[1])
+
+    def ang(lobe, pt):
+        return math.atan2(pt[1] - lobe[1], pt[0] - lobe[0])
+
+    pts = []
+    n = len(lobes)
+    for i in range(n - 1, -1, -1):           # right to left, over the top
+        lb = lobes[i]
+        if i == n - 1:
+            a0 = -math.asin(lb[1] / lb[2])   # where it meets the base
+        else:
+            a0 = ang(lb, meet(lb, lobes[i + 1]))
+        if i == 0:
+            a1 = math.pi + math.asin(lb[1] / lb[2])
+        else:
+            a1 = ang(lb, meet(lobes[i - 1], lb))
+        if a1 < a0:
+            a1 += 2 * math.pi
+        steps = max(2, int((a1 - a0) / 0.22))
+        for j in range(steps + (1 if i == 0 else 0)):
+            t = a0 + (a1 - a0) * j / steps
+            pts.append((lb[0] + lb[2] * math.cos(t),
+                        lb[1] + lb[2] * math.sin(t)))
+    pts += [(-24, 0), (-8, 0), (8, 0), (24, 0)]     # held level by the base
+    P = [("fill", smooth(pts, n=2), "cloud")]
+    # The seams run on from two notches, each the near lobe's own edge carried
+    # a little way across the big one behind it. Drawn as free arcs in the
+    # middle of the mass they were a pair of shut eyes, and the cloud smiled.
+    for front, back, sweep in ((1, 2, -0.95), (3, 2, 0.85)):
+        lb = lobes[front]
+        a0 = ang(lb, meet(lb, lobes[back]))
+        P.append(("line", [(lb[0] + lb[2] * math.cos(a0 + sweep * k / 5),
+                            lb[1] + lb[2] * math.sin(a0 + sweep * k / 5))
+                           for k in range(6)], "rule"))
+    if rain:
+        # Short and staggered, and slanting together: rain falls in a wind.
+        # Even lengths at one height read as a fringe hanging off the cloud.
+        for x0, y0, ln in ((-30, -4, 14), (-20, -9, 17), (-10, -3, 13),
+                           (0, -8, 18), (10, -4, 14), (20, -10, 15),
+                           (30, -4, 12)):
+            P.append(("line", [(x0, y0), (x0 - ln * 0.32, y0 - ln)], "rule"))
     return P
 
 
@@ -1850,6 +2094,8 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         # The lights are emblems, not bodies — they have no size against a
         # man, so they are authored at 1 and a scene sets what it wants.
         "sun": 1.00, "moon": 1.00, "star": 1.00,
+        "light": 1.00,         # the light for Jesus: ~60 tall, 36 wide
+        "cloud": 1.00,         # ~87 wide and ~41 high, its rain below that
         # the handled things, sized off what a hand or a neck is
         "lamp": 0.30,          # a lamp fills a palm
         "idol": 1.42,          # image and plinth together, over a man's head
@@ -1864,6 +2110,9 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "bread": 0.36,
         "yoke": 0.90,          # the beam spans two necks
         "well": 1.05,
+        "garland": 0.38,       # the wreath a head wide, ~15 across; the
+                               # festoon ~26 with its ribbons, to hang
+                               # across an ox's neck
         # the worked things
         "millstone": 0.60,     # a hand-mill two women turn between them
         "plough": 1.10,        # beam, stilt and share, near a man's length
@@ -1875,6 +2124,11 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "harp": 0.60,
         "pillar": 1.50,
         "house": 2.60,
+        "temple": 3.20,        # a small temple: the pediment's peak about
+                               # three men up, the columns a man and two
+                               # thirds, the door tall enough for an idol
+        "plinth": 1.42,        # the idol's own unit, so the steps match its
+                               # base; the top comes to a man's waist
         # the second rank
         "table": 1.30,         # top at a man's waist, and long enough that a
                                # company stands behind it rather than at it
@@ -2119,6 +2373,12 @@ def grass():
     return _scale(_grass(), UNIT["grass"])
 
 
+def garland(swag=False):
+    """A wreath, or with `swag` a festoon, of leaves and blossoms tied with
+    ribbons. See `_garland`."""
+    return _scale(_garland(swag=swag), UNIT["garland"])
+
+
 def sun():
     return _scale(_sun(), UNIT["sun"])
 
@@ -2129,6 +2389,18 @@ def moon():
 
 def star(points=5, r=15):
     return _scale(_star(points=points, r=r), UNIT["star"])
+
+
+def light():
+    """The light emblem that stands for Jesus, on its lower tip. See
+    `_light`. Never pulse it: it is already the brightest thing there is."""
+    return _scale(_light(), UNIT["light"])
+
+
+def cloud(rain=False):
+    """A cloud on its flat base; `rain` hangs streaks below it. See
+    `_cloud`."""
+    return _scale(_cloud(rain=rain), UNIT["cloud"])
 
 
 def unclothed(woman=False, covering=None, arms="down", hair="long"):
@@ -2756,6 +3028,104 @@ def _house():
     return P
 
 
+_TEMPLE_FLOOR = 12.0     # the top step, where the columns and an idol stand
+
+
+def _temple():
+    """A small temple front: the temple of Jupiter that stood before Lystra,
+    whose priest came out to the gates (Acts 14:13), and the shrines of
+    Athens and Ephesus after it.
+
+    Four things make it a temple and not a house or a gate, and all four are
+    drawn. The STEPS — three of them, the whole width of the front — raise it
+    off the street the way a plinth raises an image. The COLUMNS stand free,
+    with the page or the wall showing between them. The ENTABLATURE runs
+    across their heads in one level band. And the PEDIMENT is low: a steep
+    gable is a barn or a church, and only the shallow classical triangle says
+    Greek or Roman at a glance.
+
+    The middle bay is wider than the outer two, and the cella door behind it
+    is open — drawn in `void` from the floor to a lintel ten units under the
+    beam, so the dark of the shrine shows between the middle columns and an
+    idol can be set in it. The cella wall fills the outer bays and the strip
+    over the lintel, a step darker than the stone in front of it, so the door
+    is the deepest thing on the front. The lintel is what makes it a DOOR:
+    run up to the beam, the dark read as a wider gap between columns and the
+    temple as an open colonnade with nothing behind it. The floor of the
+    cella is the top step, 12 units up (TEMPLE_FLOOR, 38.4 at the temple's
+    UNIT), and the door is 40 high (128), so an idol or a priest placed there
+    stands in it with room over his head.
+    """
+    fl = _TEMPLE_FLOOR
+    P = []
+    for hw, y0 in ((50, 0), (46, 4), (42, 8)):              # the three steps
+        P.append(("fill", [(-hw, y0), (hw, y0), (hw, y0 + 4),
+                           (-hw, y0 + 4)], "stone"))
+    P.append(("fill", [(-35, fl), (35, fl), (35, 62), (-35, 62)], "far"))
+    P.append(("fill", [(-9.2, fl), (9.2, fl), (9.2, 52), (-9.2, 52)],
+              "void"))                                      # the open door
+    for cx in (-34, -12.5, 12.5, 34):                       # the columns
+        P.append(("fill", [(cx - 4.6, fl), (cx + 4.6, fl), (cx + 4.6, fl + 2),
+                           (cx - 4.6, fl + 2)], "stone"))
+        P.append(("fill", [(cx - 3.6, fl + 2), (cx + 3.6, fl + 2),
+                           (cx + 3.0, 57), (cx - 3.0, 57)], "stone"))
+        P.append(("fill", [(cx - 3.0, 57), (cx + 3.0, 57), (cx + 5.0, 59.6),
+                           (cx - 5.0, 59.6)], "stone"))     # the capital
+        P.append(("fill", [(cx - 5.4, 59.6), (cx + 5.4, 59.6),
+                           (cx + 5.4, 62), (cx - 5.4, 62)], "stone"))
+        for fx in (-1.3, 1.3):                              # the fluting
+            P.append(("line", [(cx + fx, fl + 4), (cx + fx * 0.85, 55)],
+                      "rule"))
+    P.append(("fill", [(-40, 62), (40, 62), (40, 68), (-40, 68)],
+              "stone"))                                     # the architrave
+    P.append(("fill", [(-40, 68), (40, 68), (40, 74), (-40, 74)],
+              "stone"))                                     # the frieze
+    for k in range(9):                                      # its triglyphs
+        gx = -34 + k * 8.5
+        P.append(("line", [(gx - 0.9, 68.8), (gx - 0.9, 73.2)], "rule"))
+        P.append(("line", [(gx + 0.9, 68.8), (gx + 0.9, 73.2)], "rule"))
+    P.append(("fill", [(-43.5, 74), (43.5, 74), (43.5, 76.6), (-43.5, 76.6)],
+              "stone"))                                     # the cornice
+    P.append(("fill", [(-43.5, 76.6), (43.5, 76.6), (0, 89.4)],
+              "stone"))                                     # the pediment
+    P.append(("line", [(-36, 78.4), (36, 78.4), (0, 87.0), (-36, 78.4)],
+              "rule"))                                      # its tympanum
+    return P
+
+
+_PLINTH_TOP = 34.0       # the top of the cap, in the plinth's own units
+
+
+def _plinth():
+    """A pedestal: two steps, the die, and a capped top — the base an image
+    stands on in a forum, empty, so that anything can be set on it.
+
+    The two steps are the idol's own, to the unit, so a plinth beside an idol
+    is plainly the same kind of thing with the image taken off. What turns a
+    stepped block into a pedestal is the DIE — taller than it is wide, and
+    about as wide as the idol's image, with a sunk panel on its face where an
+    inscription goes — and the cap that overhangs it: without the cap the top
+    is the end of a post, and nothing looks set on it. Drawn wider than it is
+    tall the die is a box on steps, which is an altar or a chest. The cap is
+    flat and wider than a man's hem; it is the whole use of the thing. Its
+    top is 34 units up, which at the plinth's UNIT is PLINTH_TOP, 48.3, about
+    a man's waist: where the crowd at Lystra would have stood Barnabas and
+    Paul as Jupiter and Mercury.
+    """
+    t = _PLINTH_TOP
+    P = [("fill", [(-16, 0), (16, 0), (16, 5), (-16, 5)], "stone"),
+         ("fill", [(-13, 5), (13, 5), (13, 11), (-13, 11)], "stone"),
+         ("line", [(-13, 8), (13, 8)], "rule"),
+         ("fill", [(-8, 11), (8, 11), (8, t - 6), (-8, t - 6)], "stone"),
+         ("line", [(-4.6, 14.4), (4.6, 14.4), (4.6, t - 9.4),
+                   (-4.6, t - 9.4), (-4.6, 14.4)], "rule"),    # the panel
+         ("fill", [(-9.6, t - 6), (9.6, t - 6), (9.6, t - 3.6),
+                   (-9.6, t - 3.6)], "stone"),
+         ("fill", [(-11.4, t - 3.6), (11.4, t - 3.6), (11.4, t),
+                   (-11.4, t)], "stone")]                       # the cap
+    return P
+
+
 def millstone():
     return _scale(_millstone(), UNIT["millstone"])
 
@@ -2803,6 +3173,26 @@ def pillar():
 
 def house():
     return _scale(_house(), UNIT["house"])
+
+
+def temple():
+    """A temple front with its door open. See `_temple`; anything placed at
+    TEMPLE_FLOOR on the temple's centre line stands in that door."""
+    return _scale(_temple(), UNIT["temple"])
+
+
+def plinth():
+    """An empty pedestal. See `_plinth`; a figure set on it stands with its
+    feet at PLINTH_TOP."""
+    return _scale(_plinth(), UNIT["plinth"])
+
+
+# Where a thing set on these stands, in the same units the figures are
+# returned in — so a scene places a man on a plinth, or an idol in a temple's
+# door, with place() at this height rather than by eye.
+PLINTH_TOP = _PLINTH_TOP * UNIT["plinth"]           # 48.28: a man's waist
+TEMPLE_FLOOR = _TEMPLE_FLOOR * UNIT["temple"]       # 38.4: the top step
+
 
 def _throne():
     """A seat of judgment: the dais, the seat, the high back, and a lion at

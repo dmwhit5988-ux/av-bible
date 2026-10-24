@@ -161,11 +161,12 @@ most use `svg_figures.py`. The table lists each family's other dependencies:
 | Exodus 25, 27 and Exodus 26 | `generate_exodus2527_svg.py`, `generate_exodus26_svg.py` | `generate_tabernacle.py`, which holds the Exodus 25–27 spec. The Exodus 25, 27 family also reuses Exodus 26. |
 | Exodus 28 | `generate_exodus28_svg.py` | `svg_priest.py`, `svg_vocab.py` |
 | Numbers 1–2, 3–4 | `generate_numbers1_2_svg.py`, `generate_numbers3_4_svg.py` | Numbers 1–2 takes colours from `generate_tribal_maps.py` and `generate_genesis2_svg.py`. |
-| Numbers 32, 34 | `generate_numbers32_svg.py`, `generate_numbers34_svg.py` | `generate_tribal_maps.py`, which holds the shared geometry. Numbers 34 also takes its camera arc and audio timing from `svg_chronicles_world.py`. |
+| Numbers 32, 34 | `generate_numbers32_svg.py`, `generate_numbers34_svg.py` | `generate_tribal_maps.py`, which holds the shared geometry. Numbers 34 is a camera tour on `svg_map_camera.py`. |
 | 1 Chronicles 1–9 | `generate_1chronicles_tree_svg.py` | `generate_1chronicles.py`, `chronicles_tree.py`, `ot_grafts.py`, `svg_chronicles_world.py` |
 | Matthew 1 | `generate_matthew1_svg.py` | `matthew_tree.py`, `svg_matthew_world.py`, `svg_matthew_nativity.py`, `svg_chronicles_world.py` |
 | Luke 3 | `generate_luke3_svg.py` | `generate_luke3.py`, which takes its frame timing from `generate_genealogy.py` |
-| Acts 13–14, 15–18 | `generate_acts1314_svg.py`, `generate_acts1518_svg.py` | `generate_tribal_maps.py` (`MapFrame`) |
+| Acts 13–14 | `generate_acts1314_svg.py` | `acts_geography.py`, which holds the map; `acts1314_lystra.py`, the Lystra scene; `svg_map_camera.py` and `svg_scene_card.py` for the camera tour and its scene cards |
+| Acts 15–18 | `generate_acts1518_svg.py` | `generate_tribal_maps.py` (`MapFrame`) |
 | Romans 1–16 | `generate_romans_svg.py` | |
 | Hebrews 1–13 | `generate_hebrews_svg.py` | `svg_priest.py`, `svg_vocab.py` |
 | 2 Peter, Zephaniah | `generate_2peter_svg.py`, `generate_zephaniah_svg.py` | `svg_vocab.py` |
@@ -179,6 +180,13 @@ The libraries most generators share:
 - `svg_figures.py` is the shared figure vocabulary: people, creatures and objects.
 - `svg_vocab.py` holds small drawing helpers.
 - `generate_tribal_maps.py` holds the map projection and shared map data.
+- `svg_map_camera.py` is the camera-tour engine for maps (Numbers 34, Acts 13–14): the
+  camera, names that hold their size and are placed by a clash test, the plates,
+  the overview inset and the QC checks. It takes its camera arc and audio timing
+  from `svg_chronicles_world.py`.
+- `svg_scene_card.py` hangs a side-view scene (a town, its people) in a camera
+  tour's world, so the camera can dive into it from the town's dot. Its cast
+  carry their state from one verse's file to the next.
 - `generate_ot_family_tree_svg.py` draws the Old Testament family-tree wall chart.
   It also provides the tree layout that 1 Chronicles and Matthew 1 use.
 - `generate_ot_timeline_svg.py` draws the OT timeline chart, using `chronology.py`.
