@@ -21,7 +21,11 @@ Three kinds of edge, and the distinction is the point of the chart:
 
 Nothing is silently merged. Where two passages give the same person a
 different father (there are several — Chronicles is not tidy), both lines
-are kept and the node carries the disagreement in its note.
+are kept and the node carries the disagreement in its note. Where one man
+goes by two names, one box carries both ("Hotham · Helem"); and where a
+passage only retells a line already drawn (9:11's priests are 6:12-13's),
+its rows are bound to those boxes (Tree.bind) instead of being drawn twice,
+with the difference in a note.
 
 Material that is not genealogy at all (the Levites' city allotments, the
 gatekeepers' duty roster, Simeon's town list, the Hagrite war) is left out;
@@ -651,20 +655,17 @@ def _david(T):
         n.note = ("3:21 sets these four beside Hananiah's sons without "
                   "naming their father")
         T.child("Hananiah", n, under=han, link="dash", ref="3:21")
-    T.descent("Shecaniah", chain(3, "The last generations recorded", 0, 0)[1:],
-              ref="3:22")
-    T.children("Shemaiah", blk(3, "The last generations recorded", 0, 0)
-               .kids[0] if False else _shemaiah_kids(), ref="3:22")
+    # 3:22 — the chain row for Shemaiah already carries his five sons, so
+    # this one graft brings them; they are not grafted a second time.
+    shem = T.descent("Shecaniah",
+                     chain(3, "The last generations recorded", 0, 0)[1:],
+                     ref="3:22")
+    assert shem.label == "Shemaiah", shem
     T.children("Neariah", blk(3, "The last generations recorded", 1, 0),
-               ref="3:23")
+               under=shem, ref="3:23")
     T.children("Elioenai", blk(3, "The last generations recorded", 2, 0),
                ref="3:24")
     T.find("Anani").note = "the last name in the book's royal line"
-
-
-def _shemaiah_kids():
-    src = _nest(_scene(3, "The last generations recorded")["cols"][0][0][1])
-    return named(src, "Shemaiah")
 
 
 # ===========================================================================
@@ -687,6 +688,17 @@ def _judah_more(T):
                         under=hur, ref="4:1-2")
     for k, n in enumerate((judah, perez, hezron, caleb, hur, shobal)):
         T.bind[(4, "Families of Judah", k)] = n
+    # 2:52 Haroeh and 4:2 Reaiah: both "son of Shobal", and commonly read as
+    # one man under two spellings. One box carries both names and Reaiah's
+    # line; 4:2's Reaiah row finds it by the second half of the label (Jahath,
+    # stamped, is its son, which settles it over the Reubenite Reaiah).
+    hro = T.find("Haroeh", under=shobal)
+    rea = T.find("Reaiah", under=shobal)
+    hro.kids.extend(rea.kids)
+    shobal.kids.remove(rea)
+    hro.label = "Haroeh · Reaiah"
+    hro.note = ((hro.note + " · ") if hro.note else "") + \
+        "2:52 Haroeh, 4:2 Reaiah — commonly read as one man"
 
     # 4:3 "the sons of the father of Etam": their father is not named, and
     # Etam is a town (2 Chr 11:6), so the box is "the father of Etam". This
@@ -996,8 +1008,13 @@ def _levi(T):
     ethan.link = "dash"
     ethan.note = "6:44-47 read upward"
     T.child("Mushi", ethan, link="dash", ref="6:44-47")
+    # The third singer is Ethan in 6:44 and 15:17-19 and Jeduthun in 16:41-42
+    # and 25:1-6: one box with both names. 9:16's Jeduthun line hangs from it
+    # (_return).
     et = blk(6, "The temple singers", 2, 0)
-    et.note = "of the sons of Merari, on the left hand"
+    et.label = "Ethan · Jeduthun"
+    et.note = ("of the sons of Merari, on the left hand · Jeduthun in "
+               "16:41 and 25:1, where 6:44 and 15:17 have Ethan")
     et.icon = "harp"
     named(ethan, "Kishi").kids.append(et)
 
@@ -1093,16 +1110,23 @@ def _northern(T):
                  "with Reuben and Gad")
     T.child("Manasseh", half, under=jos, link="dash", ref="5:23-26")
 
-    T.children("Asher", blk(7, "The sons of Asher", 0, 0), ref="7:30-32")
+    ash = T.children("Asher", blk(7, "The sons of Asher", 0, 0),
+                     ref="7:30-32")
     for w in ("Shua", "Serah"):
         T.find(w).kind = "woman"
     T.find("Shomer").label = "Shomer · Shemer"
     T.children("Shomer · Shemer",
                _relabel(blk(7, "The sons of Asher", 1, 0), "Shomer · Shemer"),
                ref="7:34")
-    hel = blk(7, "The sons of Asher", 1, 1)
-    hel.note = "his brother — 7:35"
-    T.child("Heber", hel, under=T.find("Asher"), ref="7:35-36")
+    # 7:32 lists Heber's sons as Japhlet, Shomer and Hotham; 7:33-35 takes
+    # them in the same order as Japhlet, Shemer and "Helem his brother". As
+    # with Shomer · Shemer, one man. The explicit note keeps T.children from
+    # copying the scene row's bare "his brother" onto the merged box.
+    heber = T.find("Heber", under=ash)
+    T.find("Hotham", under=heber).label = "Hotham · Helem"
+    T.children("Hotham · Helem",
+               _relabel(blk(7, "The sons of Asher", 1, 1), "Hotham · Helem"),
+               under=heber, note="7:32 Hotham, 7:35 Helem", ref="7:35-36")
     for i in (0, 1):
         n = blk(7, "The sons of Asher", 2, i)
         n.link = "dash"
@@ -1275,12 +1299,28 @@ def _return(T):
         ben.kids.append(c)
     T.child("Benjamin", ben, link="dash", ref="9:7-9")
 
-    # The priests: 9:11 read upward lands on Ahitub, in Aaron's line.
-    pr = upward(9, "The priests", 0, 1, drop=1)
-    pr.link = "dash"
-    pr.note = "9:11 read upward — the chain is abridged; the Ahitub it ends " \
-              "in is the ruler of God's house"
-    T.child("Ahitub", pr, nth=2, link="dash", ref="9:11")
+    # The priests: 9:11 "Azariah the son of Hilkiah, the son of Meshullam, the
+    # son of Zadok, the son of Meraioth, the son of Ahitub" is the high
+    # priests' line of 6:12-13 told again. Ezra 7:1-2 (Shallum) and Neh
+    # 11:11 (Meshullam) give the same pedigree, so Shallum is Meshullam. No
+    # second line is drawn: the rows are bound to the 6:12-13 men, 9:11's
+    # Azariah to Hilkiah's son as head of the house. Its Meraioth has no box
+    # (a note on Zadok says so); bound to nothing, it cannot light the much
+    # older Meraioth of 6:6-7, nine generations above this Ahitub.
+    ele = T.find("Eleazar", under=T.find("Aaron"))
+    zad2 = named(ele, "Zadok", 2)                          # 6:12
+    ahit2 = next(n for n in walk(ele) if zad2 in n.kids)
+    shm = next(k for k in zad2.kids if k.label == "Shallum")
+    hil = next(k for k in shm.kids if k.label == "Hilkiah")
+    az = next(k for k in hil.kids if k.label == "Azariah")
+    assert ahit2.label == "Ahitub", ahit2
+    shm.label = "Shallum · Meshullam"
+    zad2.note = ((zad2.note + " · ") if zad2.note else "") + \
+        "9:11 and Neh 11:11 put a Meraioth between him and Ahitub; 9:11 " \
+        "calls Ahitub the ruler of God's house"
+    for k, n in ((4, az), (5, hil), (6, shm), (7, zad2), (8, None),
+                 (9, ahit2)):
+        T.bind[(9, "The priests", k)] = n
     courses = N("of the priests' courses", "9:10, 12-13 — Jedaiah, Jehoiarib "
                 "and Jachin head courses 2, 1 and 21 (24:7-17); 1,760 very "
                 "able men for the work of the service of God's house",
@@ -1297,14 +1337,15 @@ def _return(T):
     # The Levites: two of these lines join singers already in the tree.
     mat = upward(9, "The Levites", 0, 3)                 # Asaph -> Mattaniah
     T.children("Asaph", mat, ref="9:15")
-    oba = upward(9, "The Levites", 1, 0)                 # Jeduthun -> Obadiah
-    oba.label = "Jeduthun"
+    # 9:16 "Obadiah the son of Shemaiah, the son of Galal, the son of
+    # Jeduthun": Jeduthun is the singer Ethan (_levi), so the line hangs from
+    # that box and his row lights it by the label's second half. Dashed,
+    # because the line is shortened: Obadiah lived after the exile.
+    oba = upward(9, "The Levites", 1, 0, drop=1)         # Galal -> Obadiah
     oba.link = "dash"
-    oba.note = "9:16 read upward — Jeduthun, the third singer, called Ethan " \
-               "in 6:44 and 15:17"
-    T.child("Merari", oba, link="dash", ref="9:16")
-    T.link(T.find("Jeduthun"), T.find("Ethan", 3),
-           "Jeduthun and Ethan — the same office, 15:17 and 16:41")
+    oba.note = "9:16 read upward to Jeduthun — a shortened line: Obadiah " \
+               "(Abda, Neh 11:17) lived after the exile"
+    T.child("Ethan · Jeduthun", oba, link="dash", ref="9:16")
     shem = upward(9, "The Levites", 0, 1)                # Merari -> Shemaiah
     shem.link, shem.note = "dash", "9:14 read upward — of the sons of Merari"
     T.child("Merari", shem, link="dash", ref="9:14")
@@ -1353,7 +1394,6 @@ def _return(T):
     T.bind[(9, "The gatekeepers", 1)] = shal
     # 9:20 "Phinehas the son of Eleazar" is Aaron's grandson (6:4), not
     # Eli's son of Ithamar's house; the row has no node of its own.
-    ele = T.find("Eleazar", under=T.find("Aaron"))
     T.bind[(9, "The gatekeepers", 13)] = T.find("Phinehas", under=ele)
     # 9:31 "Mattithiah … the firstborn of Shallum the Korahite": the
     # gatekeeper of 9:17-19.
@@ -1460,17 +1500,23 @@ def _second_chronicles(T):
             kind="woman", link="wife", ref="2 Chr 11:18-19")
     for s in ("Jeush", "Shemariah", "Zaham"):
         mah.kids.append(N(s, link="solid"))
+    # 2 Chr 11:20 "she bore him Abijah, Attai, Ziza, and Shelomith": her
+    # Abijah is the king of 3:10, already Rehoboam's son on the line, so he
+    # is not drawn a second time under her. A cross-reference ties them.
     maa = N("Maacah", "the daughter of Absalom, whom Rehoboam loved above "
             "all his wives — 18 wives, 60 concubines, 28 sons and 60 "
             "daughters", kind="woman", link="wife", ref="2 Chr 11:20-21")
-    maa.kids.append(N("Abijah", "whom his father made chief, the prince "
-                      "among his brothers, intending to make him king",
-                      link="solid", kind="king"))
     for s in ("Attai", "Ziza", "Shelomith"):
         maa.kids.append(N(s, link="solid"))
     reh = T.find("Rehoboam", under=dav)
+    abij = next(k for k in reh.kids if k.label == "Abijah")
+    abij.note = ((abij.note + " · ") if abij.note else "") + \
+        "whom his father made chief, the prince among his brothers, " \
+        "intending to make him king — 2 Chr 11:22"
     reh.kids[0:0] = [mah, maa]
     T.link(maa, T.find("Absalom"), "Rehoboam's queen was Absalom's daughter")
+    T.link(maa, abij, "she bore him Abijah — 2 Chr 11:20-22; 13:2 calls his "
+           "mother Micaiah the daughter of Uriel of Gibeah")
     T.link(mah, T.find("Eliab", under=T.find("Jesse")),
            "and Mahalath was Eliab's granddaughter")
 
@@ -1514,23 +1560,33 @@ def _second_chronicles(T):
         N("Maaseiah", "the king's son, whom Zichri of Ephraim killed — "
           "2 Chr 28:7", link="solid", ref="2 Chr 28:7"))
 
-    # 3:15 makes Zedekiah Josiah's third son; 3:16 puts a Zedekiah among
-    # Jehoiakim's; 2 Chr 36:10 calls him Jehoiachin's brother. The chart
-    # keeps both nodes and says so on each.
-    jos_k = T.find("Josiah")
-    for zed in [n for n in walk(jos_k) if n.label == "Zedekiah"]:
-        zed.note = ("3:15 makes him Josiah's third son, 3:16 puts a "
-                    "Zedekiah among Jehoiakim's, and 2 Chr 36:10 calls him "
-                    "the brother of Jehoiachin · 21 when he began, 11 "
-                    "years — then the land kept Sabbath seventy years")
+    # 3:15 makes Zedekiah Josiah's third son; 3:16 lists a Zedekiah among
+    # Jehoiakim's sons. Two men, as the WEB reads 3:16: the king is Josiah's
+    # son (2 Kgs 24:17-18, Jer 37:1), so only he takes the crown, the
+    # shackle and the reign. 2 Chr 36:10 calls the king Jehoiachin's
+    # "brother", which his note records.
+    jos_k = T.find("Josiah", under=dav)
+    for zed in [n for n in jos_k.kids if n.label == "Zedekiah"]:
+        zed.note = ("Mattaniah, whom the king of Babylon renamed — 2 Kgs "
+                    "24:17; Josiah's son (Jer 37:1), Jehoiachin's uncle, "
+                    "though 2 Chr 36:10 calls him his brother · 21 when he "
+                    "began, 11 years — then the land kept Sabbath seventy "
+                    "years")
         zed.icon = "shackle"
         zed.kind = "king"
+    jhk = next(k for k in jos_k.kids if k.label == "Jehoiakim")
+    z316 = next(k for k in jhk.kids if k.label == "Zedekiah")
+    assert z316.kind == "person" and z316.icon is None, z316
+    z316.note = ("3:16 — listed as a son of Jehoiakim; the king Zedekiah "
+                 "was Josiah's son, Jehoiachin's uncle (2 Kgs 24:17-18; "
+                 "Jer 37:1)")
 
     # The priests 2 Chronicles names. Hilkiah is secure — 1 Chr 6:13 puts
     # him one generation before Seraiah, and 2 Chr 34 has him find the book
     # in Josiah's day. The other two the chart will not pin to a generation
     # it cannot show, so they hang beside the line instead of on it.
-    hil = T.find("Hilkiah", under=T.find("Shallum", under=T.find("Zadok", 2)))
+    hil = T.find("Hilkiah", under=T.find("Shallum · Meshullam",
+                                         under=T.find("Zadok", 2)))
     hil.note = ((hil.note + " · ") if hil.note else "") +         "who found the book of the law of Yahweh given by Moses, in "         "Josiah's eighteenth year — 2 Chr 34:14"
     hil.kind, hil.icon = "priest", "scroll"
 

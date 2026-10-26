@@ -205,10 +205,12 @@ def build():
     at["Ruth"] = _kid(at["Boaz"], "Ruth")
 
     # The kings are walked for the same reason, and more urgently: scoping a
-    # bare `find` under David is not enough on its own — Rehoboam's house
-    # holds a second Abijah, and pre-order reaches him first. (This is the
-    # ordinal trap that put a crowned Joash in Shelah's branch when the OT
-    # chart was built.) The crown descends one child at a time.
+    # bare `find` under David is not enough on its own — names recur inside
+    # David's own house (Jehoshaphat has two sons named Azariah; Maacah and
+    # Zerubbabel each have a Shelomith), and pre-order takes whichever comes
+    # first. (This is the ordinal trap that put a crowned Joash in Shelah's
+    # branch when the OT chart was built.) The crown descends one child at a
+    # time.
     at.update(_walk_down(david, [
         "born to him in Jerusalem", "Solomon", "Rehoboam", "Abijah", "Asa",
         "Jehoshaphat", "Joram", "Ahaziah", "Joash", "Amaziah",
