@@ -212,7 +212,7 @@ def build():
     # branch when the OT chart was built.) The crown descends one child at a
     # time.
     at.update(_walk_down(david, [
-        "born to him in Jerusalem", "Solomon", "Rehoboam", "Abijah", "Asa",
+        "Solomon", "Rehoboam", "Abijah", "Asa",
         "Jehoshaphat", "Joram", "Ahaziah", "Joash", "Amaziah",
         "Azariah · Uzziah", "Jotham", "Ahaz", "Hezekiah", "Manasseh",
         "Amon", "Josiah", "Jehoiakim", "Jeconiah · Jechoniah", "Pedaiah",

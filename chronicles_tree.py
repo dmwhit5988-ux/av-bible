@@ -617,18 +617,29 @@ def _judah(T):
 # ===========================================================================
 
 def _david(T):
+    # 3:1-9: "born to him in Hebron" and "born to him in Jerusalem" say where
+    # the sons were born, not a generation between them and David — "all
+    # these were the sons of David … and Tamar was their sister" (3:9). The
+    # two heading rows get no box; the nineteen sons and Tamar hang straight
+    # under David, and the reigns go into his note. Tamar stands right after
+    # Ithream, among the Hebron sons (Absalom's full sister, 2 Sam 13:1), so
+    # the wrap keeps her on her brothers' row.
     dv = blk(3, "The sons of David", 0, 0)
     born_heb = dv.kids[0]
-    born_heb.label = "born to him in Hebron"
-    born_heb.kind, born_heb.note = "house", "seven years and six months"
     born_jer = blk(3, "The sons of David", 1, 0)
-    born_jer.label = "born to him in Jerusalem"
-    born_jer.kind, born_jer.note = "house", "thirty-three years"
+    assert (born_heb.label, born_jer.label) == (
+        "~born to him in Hebron:", "~born to him in Jerusalem:"), \
+        (born_heb, born_jer)
     tamar = blk(3, "The sons of David", 2, 2)
+    assert tamar.label == "Tamar", tamar
     tamar.kind, tamar.note = "woman", "their sister"
 
-    T.children("David", N("David", kids=[born_heb, born_jer, tamar]),
-               ref="3:1-9")
+    T.children("David",
+               N("David", kids=born_heb.kids + [tamar] + born_jer.kids),
+               ref="3:1-9",
+               note="six sons born in Hebron, where he reigned seven years "
+                    "and six months, and thirteen in Jerusalem, where he "
+                    "reigned thirty-three years — 3:1-8")
     T.find("Solomon").note = "of Bathshua — 3:5"
 
     # 3:10-16: son succeeding father, Solomon to the exile.
