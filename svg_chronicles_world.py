@@ -9,6 +9,13 @@ chapter 2. This world is the welded tree from `chronicles_tree.py` instead
 — laid out once, name-only — and every verse of all nine chapters is a
 camera move over that single map.
 
+The tree is laid out in REGIONS (`layout_regions`): Adam to Israel's sons
+is one fan in strict generation rows, and each son's descendants (and
+Esau's, as EDOM) stand under it in a faint titled panel, reached by a
+routed line from the son's box. A wife stands beside her husband on a
+marriage bar, and a house that gathers people is a small italic label on
+the line rather than a box.
+
 Three consequences worth knowing:
 
 * THE TREE ACCUMULATES. `read` is global across chapters 1-9 in reading
@@ -36,6 +43,7 @@ Rendered by generate_1chronicles_tree_svg.py.
 import math
 import os
 import struct
+from xml.sax.saxutils import escape
 
 import chronicles_tree as CT
 import layout_regions
@@ -45,13 +53,13 @@ from config import WEB_AUDIO_DIR
 from generate_1chronicles import (CHAPTERS, assign, flatten,
                                   web_verses)
 from generate_ot_family_tree_svg import (BG, FAINT, HL, HOUSE, PANEL,
-                                         PRIESTLY, ROYAL, SAND_DIM, TEXT,
-                                         TEXT_DIM, FEMALE, ICON_H, MIN_W,
+                                         PRIESTLY, ROYAL, SAND, SAND_DIM,
+                                         TEXT, TEXT_DIM, FEMALE, ICON_H, MIN_W,
                                          NAME_H, PAD_X, PAD_Y, _crown, _icon,
                                          accent, arrange, arrange_spine, dim,
                                          place, place_spine)
 from generate_tabernacle import W, H, F_TITLE, font
-from svg_surface import SvgCanvas, SvgLayer, _fmt
+from svg_surface import SvgCanvas, SvgLayer, _fmt, _rgb
 
 # -- viewport ---------------------------------------------------------------
 
@@ -96,35 +104,38 @@ AUDIO_DIR = WEB_AUDIO_DIR      # the narration MP3s that pace each verse
 
 # -- which layout the world is laid out in ----------------------------------
 #
+# CHRONICLES USES "regions" (layout_regions). It keeps the tree one tree
+# with honest rows: Adam to Israel's sons is one fan in strict generation
+# rows, so 2:1-2 see the twelve sons together on one row, and each son's
+# descendants stand in a titled panel under the fan, reached by a routed
+# line. Inside a panel a row is a generation too, a wife stands beside her
+# husband and a house is a label on the line. Its place() returns a Plan
+# (labels, routes, panels), kept as `World.plan`, which the frames draw. The
+# front of the book's fans rest far tighter than under either tree layout
+# below (1:17, 2:1 and 2:2 at reading size); the price is a few later
+# verses whose head stands in the fan far above his panel (6:1, 6:16, 7:6)
+# and rest wider.
+#
+# The two tree layouts stay selectable for comparison — `--centred` or
+# `--spine` on the driver, or `World(layout=...)`:
+#
 # "centred" is the wall chart's rule — a parent over the whole span of its
-# descendants. "spine" puts the heir directly under its parent, so a line of
-# descent is a straight vertical column.
+# descendants — and was the live layout before regions. Two brothers each
+# carrying a house of hundreds cannot both stand near their father in it,
+# and a wrapped family stands later brothers beside an earlier brother's
+# grandsons, so boxes level with each other were not one generation.
 #
-# CHRONICLES USES CENTRED, AND THE SPINE WAS TRIED AND REJECTED HERE
-# (2026-08-21). Matthew 1 is nothing but a line of descent and the spine
-# transformed it; these nine chapters are mostly FANS — "the sons of X" — and
-# a fan is tightest when the parent is centred over its children, because the
-# spine cascades every sibling to one side of the heir.
+# "spine" puts the heir directly under its parent, so a line of descent is a
+# straight vertical column. It was tried here and rejected (2026-08-21):
+# these nine chapters are mostly FANS — "the sons of X" — and a fan is
+# tightest when the parent is centred over its children, because the spine
+# cascades every sibling to one side of the heir. The front of the book's
+# wide rests roughly halved in scale: 1:4 (the sons of Noah) 0.101 -> 0.053,
+# 1:28 (Abraham, Isaac and Ishmael) 0.134 -> 0.066, 1:34 (Isaac, Jacob and
+# Esau) 0.137 -> 0.073.
 #
-# The count of wide rests barely moved (66 -> 75 over the whole reading, and
-# 13 -> 13 across chapters 1-2). What moved was HOW WIDE they are, which is
-# what a viewer actually feels: across chapters 1-2 the mean rest scale of the
-# wide verses went 0.147 -> 0.117, and the ones that matter roughly halved —
-# 1:4 (the sons of Noah) 0.101 -> 0.053, 1:28 (Abraham, Isaac and Ishmael)
-# 0.134 -> 0.066, 1:34 (Isaac, Jacob and Esau) 0.137 -> 0.073. The front of
-# the book is where the fans are widest and the spine is worst.
-#
-# The switch stays because the comparison is worth being able to re-run:
-# `--spine` on the driver, `LAYOUT` here, or `World(layout=...)`. Matthew calls
-# arrange_spine directly and is unaffected by this setting.
-#
-# "regions" (layout_regions) keeps the tree one tree with honest rows: Adam
-# to Israel's sons is one fan in strict generation rows, and each son's
-# descendants stand in a titled panel under it, reached by a routed line.
-# Its place() returns a Plan (labels, routes, panels), kept as `World.plan`;
-# the other two return nothing. The verse frames do not draw its labels,
-# routes or panels yet, so it is not the live layout.
-LAYOUT = "centred"
+# Matthew calls arrange_spine directly and is unaffected by this setting.
+LAYOUT = "regions"
 LAYOUTS = {"spine": (arrange_spine, place_spine),
            "centred": (arrange, place),
            "regions": (layout_regions.arrange, layout_regions.place)}
@@ -235,6 +246,36 @@ TRACE_W = 1.6               # an arrival's line as it draws itself
 TRACE_FINE_W = 1.1          # and the second strand of a wife's drop
 LINE_ALPHA = {"lit": 0.95, "read": 0.8, "ahead": 0.2}
 
+# -- the regions layout's panels, titles and labels --------------------------
+#
+# A panel is a faint rounded rectangle drawn in WORLD space, inside the
+# camera group, as a plain rect: no mask, filter or clip, because one whose
+# region is world-sized is rasterised at that size every frame (the veil
+# once asked an iPad for 512 megapixels). Its edge sits in a stroke-floor
+# group like the boxes'.
+PANEL_RX = 18
+PANEL_FILL_ALPHA = 0.55
+PANEL_EDGE = (52, 50, 64)
+PANEL_EDGE_ALPHA = 0.9
+PANEL_EDGE_W = 1.2
+PANEL_BLEND = tuple(int(round(BG[i] + (PANEL[i] - BG[i]) * PANEL_FILL_ALPHA))
+                    for i in range(3))      # the panel's colour, seen flat
+TITLE_PX = 26               # a title's size in world units, where its room
+TITLE_MIN_PX = 11           # (the corner the entering lines leave) allows
+TITLE_ALPHA = 0.62          # sand at this alpha over the panel, painted
+TITLE_INK = tuple(int(round(PANEL_BLEND[i] + (SAND[i] - PANEL_BLEND[i])
+                            * TITLE_ALPHA)) for i in range(3))   # opaque
+TITLE_HOLD_PX = 16          # screen px a full-size tribe title holds as the
+TITLE_HOLD_MIN = 11         # camera pulls out; a smaller one holds less
+TITLE_HALO = 0.22           # a growing title's halo in the panel's colour,
+                            # as a fraction of its size
+F_PANEL = font(TITLE_PX, bold=True)
+LABEL_PX = layout_regions.LABEL_PX      # a house label's italic text
+FLOOR_MARGIN = 1.25         # every focus box must fit at this multiple of
+                            # S_MIN, so no named box rests off screen
+IPAD_BOX_RECTS = 1050       # per file, the most boxes and names proven
+IPAD_NAMES = 268            # smooth on the owner's iPad (2:2, 4:17)
+
 
 def _unwidth(el, width):
     """Drop an element's own stroke-width so it inherits its group's."""
@@ -260,6 +301,96 @@ def _stroke_group(els, width, scales, s_end, dur):
             if any(round(v, 2) != round(vals[0], 2) for v in vals) else "")
     return (f'<g stroke-width="{vals[0]:.2f}">{anim}' + "".join(els)
             + "</g>")
+
+
+def _title_w(t, px):
+    """A panel title's width at px world units, letter-spaced 1."""
+    return F_PANEL.getlength(t) * px / TITLE_PX + len(t)
+
+
+class PanelTitle:
+    """How one panel's title is set.
+
+    TITLE_PX on one line where the corner the entering lines leave
+    (`Panel.title_room`) allows it, smaller in a narrow panel, and on two
+    lines under 14 px when the title is a long house name. It hangs from
+    the panel's top edge in that corner, in the band above the panel's
+    first row.
+
+    A tribe's title (its head is a person: EDOM, REUBEN ... ASHER) GROWS as
+    the camera pulls out, holding about TITLE_HOLD_PX on screen, up to what
+    the panel can hold, so a wide shot can still tell the panels apart. It
+    reaches the panel's first row only below scale ~0.25, where those names
+    are specks; it is painted opaque (sand as it looks at TITLE_ALPHA on
+    the panel) and haloed in the panel's colour, so the specks it covers do
+    not cut it up. A house's title (the kings of Israel, the first to live
+    again in their cities) stays at its own size, like the house labels:
+    its words are never the largest thing on a wide shot. The size depends
+    only on the camera's scale, so a verse ends at exactly the size the
+    next one opens with."""
+
+    def __init__(self, p):
+        x0, y0, x1, y1 = p.rect
+        t, room = p.title, p.title_room
+
+        def fit(lines):
+            w = max(_title_w(L, TITLE_PX) - len(L) for L in lines)
+            n = max(len(L) for L in lines)
+            return min(TITLE_PX, TITLE_PX * (room - n - 4) / max(w, 1.0))
+        px = fit([t])
+        lines = [t]
+        if px < 14.0 and " " in t:
+            words = t.split()
+            best = max(((fit([" ".join(words[:i]), " ".join(words[i:])]),
+                         [" ".join(words[:i]), " ".join(words[i:])])
+                        for i in range(1, len(words))), key=lambda b: b[0])
+            px, lines = min(best[0], 15.0), best[1]
+        self.px = max(TITLE_MIN_PX, px)
+        self.lines = lines
+        self.anchor = "start" if p.title_side == "left" else "end"
+        self.x = x0 + 20 if p.title_side == "left" else x1 - 20
+        self.y = y0 + 12
+        self.grows = not layout_regions.is_house(p.head)
+        if self.grows:
+            self.px_max = max(self.px, min(
+                (x1 - x0 - 40 - len(t)) * TITLE_PX / F_PANEL.getlength(t),
+                (y1 - y0 - 24) * 0.5))
+            self.hold = max(TITLE_HOLD_MIN, TITLE_HOLD_PX * self.px / TITLE_PX)
+        else:
+            self.px_max = self.px
+        w = max(_title_w(L, self.px_max) for L in lines)
+        h = self.px_max * (1.2 + 1.15 * (len(lines) - 1))
+        bx0 = self.x if self.anchor == "start" else self.x - w
+        self.box = (bx0, self.y, bx0 + w, self.y + h)
+
+    def size(self, s):
+        if not self.grows:
+            return self.px
+        return min(self.px_max, max(self.px, self.hold / s))
+
+    def els(self, scales, s_end, dur):
+        vals = [self.size(s) for s in (scales or [s_end])]
+        moves = any(round(v, 2) != round(vals[0], 2) for v in vals)
+        anim = _anim("font-size", vals, dur) if moves else ""
+        halo = ""
+        if self.grows:
+            halo = (f' stroke="{_rgb(PANEL_BLEND)}" stroke-width='
+                    f'"{TITLE_HALO * vals[0]:.2f}" stroke-linejoin="round" '
+                    f'paint-order="stroke"')
+            if moves:
+                anim += _anim("stroke-width", [TITLE_HALO * v for v in vals],
+                              dur)
+        out = []
+        for i, line in enumerate(self.lines):
+            y = self.y + i * self.px * 1.15
+            out.append(
+                f'<text x="{_fmt(self.x)}" y="{_fmt(y)}" '
+                f'font-size="{vals[0]:.2f}" text-anchor="{self.anchor}" '
+                f'dominant-baseline="text-before-edge" '
+                f'fill="{_rgb(TITLE_INK)}"{halo} '
+                f'font-weight="bold" letter-spacing="1">'
+                f'{escape(line)}{anim}</text>')
+        return out
 
 
 def _ride_els(named, scales, s_end, dur, uid, tracks,
@@ -541,6 +672,11 @@ class World:
                           min(n.y for n in self.nodes),
                           max(n.x + n.w for n in self.nodes),
                           max(n.y + n.h for n in self.nodes))
+        if self.plan is not None:
+            # the panels reach past their boxes, and the opening shot and
+            # the quiet breathe-outs must frame them whole
+            for p in self.plan.panels:
+                self.world_box = _union(self.world_box, p.rect)
 
         self.order = []             # [(chapter, verse, scene)]
         self.arrivals = {}          # (ch, v) -> [node]  first read here
@@ -792,6 +928,40 @@ class World:
                         anchor = (sum(n.x + n.w / 2 for n in named) / len(named),
                                   sum(n.y + n.h / 2 for n in named) / len(named))
 
+    # -- what the live layout must satisfy ----------------------------------
+
+    def audit(self):
+        """-> [problem]: what must hold before a frame is written. The
+        driver stops on any for the live layout.
+
+        * No two boxes (or labels) overlap.
+        * Israel, Esau and Judah stand in the tree, and Israel has the
+          twelve sons of 2:1-2 (`layout_regions.landmarks`).
+        * Every verse's focus box fits at FLOOR_MARGIN x S_MIN or closer:
+          the camera clamps at S_MIN, so a focus wider than that would rest
+          with named boxes off screen.
+        """
+        out = []
+        clash = layout_regions.overlaps(self.nodes)
+        if clash:
+            out.append(f"{len(clash)} boxes overlap: " + ", ".join(
+                f"{a.label} / {b.label}" for a, b in clash[:6]))
+        try:
+            layout_regions.landmarks(self.root)
+        except AssertionError as e:
+            out.append(f"landmarks: {e}")
+        vh = VIEW_BOT - VIEW_TOP
+        for ch, v, _scene in self.order:
+            focus, _mode = self.focus_box(ch, v)
+            if focus is None:
+                continue
+            x0, y0, x1, y1 = focus
+            s = min(W / max(x1 - x0 + 140, 1), vh / max(y1 - y0 + 140, 1))
+            if s < FLOOR_MARGIN * S_MIN:
+                out.append(f"{ch}:{v} focus fits at {s / S_MIN:.2f} x S_MIN "
+                           f"(under {FLOOR_MARGIN})")
+        return out
+
     # -- what is standing at a given point in the reading -------------------
 
     def context_nodes(self):
@@ -929,19 +1099,86 @@ class VerseFrame:
     # tree) so that a son seemed to hang from his brother. Matthew 1 keeps
     # the elbow until its own files are reviewed.
     family_lines = True
+    # The cutaway card's star layout stands the head's wives beside him on
+    # a short bar rather than among his children. Matthew 1 keeps the
+    # older card until its own files are reviewed.
+    card_wives_beside = True
 
     def __init__(self, world):
         self.world = world
         self.camera = Camera(world)
         self.read = set(world.context_nodes())
         self.lines = None
+        plan = getattr(world, "plan", None)
+        # The regions layout's houses drawn as labels on the line, and its
+        # panels' titles; both empty for the tree layouts and for Matthew.
+        self.labels = set(plan.labels) if plan is not None else set()
+        self.titles = ({p: PanelTitle(p) for p in plan.panels}
+                       if plan is not None else {})
+        self.counts = {}
         # Boxes are drawn over lines, so a line through somebody else's box
         # seems to leave from it or arrive at it: the picture would say that
         # a man is the father of his brother. The driver stops on any.
         self.lines_behind = []
         if self.family_lines:
-            self.lines = FL.Geometry(world.nodes)
+            self.lines = FL.Geometry(
+                world.nodes, labels=self.labels,
+                routes=plan.routes if plan is not None else None)
             self.lines_behind = FL.through_boxes(self.lines)
+
+    def audit(self):
+        """-> [problem] in the frames' own drawing, for the driver: lines
+        behind boxes, and THE ONE WIFE RULE. The regions layout packs and
+        rows a wife by `layout_regions.is_wife`, and svg_family_lines draws
+        a marriage bar by the same rule, so under that layout every wife
+        must come out on a bar beside her husband: one standing anywhere
+        else means two rules have drifted apart, which is what once
+        overlapped twelve boxes."""
+        out = [f"the {s.role} of {s.fam.label}'s family runs behind "
+               f"{n.label}" for s, n in self.lines_behind]
+        if self.world.plan is not None and self.lines is not None:
+            wives = {n for n in self.world.nodes if layout_regions.is_wife(n)}
+            barred = {wv for _p, wv, _s in self.lines.bars}
+            for n in sorted(wives - barred, key=lambda n: (n.y, n.x)):
+                out.append(f"wife {n.label} ({n.parent.label}) is not on a "
+                           f"bar beside her husband")
+            for n in sorted(barred - wives, key=lambda n: (n.y, n.x)):
+                out.append(f"{n.label} has a marriage bar but is no wife")
+        return out
+
+    def _bead_fill(self, x, y):
+        """An open bead inside a panel is filled with the panel's colour:
+        the background's would read as a dark hole in it."""
+        for p in self.titles:
+            x0, y0, x1, y1 = p.rect
+            if x0 <= x <= x1 and y0 <= y <= y1:
+                return PANEL_BLEND
+        return None
+
+    def _panel_els(self, flight, scales, s_end, dur):
+        """The regions layout's panels on screen at some moment of this
+        flight or its rest -> (rects, titles).
+
+        The rects go behind everything else in the world. The titles go
+        over the boxes: in a wide shot a grown title reaches down over the
+        panel's first rows, and drawn under them it was cut up by a row of
+        specks. By the scale it gets there (~0.2) those names are under
+        3 px, and closer in it stays in the band above the first row."""
+        boxes = [b for b, _s in flight]
+        rects, titles = [], []
+        for p, tl in self.titles.items():
+            if not any(_hits(p.rect, b) for b in boxes):
+                continue
+            x0, y0, x1, y1 = p.rect
+            sub = SvgCanvas(W, H)
+            sub.rect(x0, y0, x1 - x0, y1 - y0,
+                     fill=dim(PANEL, PANEL_FILL_ALPHA),
+                     stroke=dim(PANEL_EDGE, PANEL_EDGE_ALPHA),
+                     width=PANEL_EDGE_W, rx=PANEL_RX)
+            rects.append(_unwidth(sub._els[0], PANEL_EDGE_W))
+            if any(_hits(tl.box, b) for b in boxes):
+                titles.extend(tl.els(scales, s_end, dur))
+        return rects, titles
 
     def render(self, ch, v, scene, first):
         w = self.world
@@ -977,6 +1214,13 @@ class VerseFrame:
         for cam in (cam0, apex):
             skeleton = _union(skeleton, _frame(cam, SKELETON_PAD))
 
+        # The regions layout's panels on screen in this flight. Their titles
+        # are names too, so they are paid for out of the node cap, which is
+        # what keeps a file's names within what the iPad has been proven on.
+        scales = _cam_schedule(cam0, cam1, arc_at, dur)
+        panels, titles = self._panel_els(flight, scales, cam1[0], dur)
+        max_nodes = self.max_nodes - len(titles)
+
         # Everything the camera passes over, capped: a wide pull-back can
         # otherwise sweep in half the canon.
         #
@@ -992,7 +1236,7 @@ class VerseFrame:
         # whole arc.
         shown = [n for n in w.nodes
                  if n in seen or _hits(node_box(n), skeleton)]
-        if len(shown) > self.max_nodes:
+        if len(shown) > max_nodes:
             def near(cam, pool):
                 cxx, cyy = cam[1], cam[2]
                 return sorted(pool, key=lambda n: math.hypot(
@@ -1004,14 +1248,14 @@ class VerseFrame:
 
             keep = set(arriving) | set(lit)
 
-            def take(ordered, cap=self.max_nodes):
+            def take(ordered, cap=max_nodes):
                 room = cap - len(keep)
                 if room > 0:
                     keep.update([n for n in ordered if n not in keep][:room])
 
             fr0, rest = _frame(cam0, DETAIL_PAD), _on_screen(cam1)
             take(near(cam0, [n for n in shown if _hits(node_box(n), fr0)]),
-                 int(self.max_nodes * DWELL_SHARE))
+                 int(max_nodes * DWELL_SHARE))
             take(biggest([n for n in shown
                           if seen.get(n, 0) >= TEXT_MIN_SCALE]))
             take(near(cam1, [n for n in shown if _hits(node_box(n), rest)]))
@@ -1057,15 +1301,17 @@ class VerseFrame:
         named = list(w.lit.get((ch, v), []))       # verse reading order
         self.read |= arriving
 
-        scales = _cam_schedule(cam0, cam1, arc_at, dur)
         lit_w = self.LOOK["lit"][2]
-        els_all = (self._extra_world_els(ch, v, dur, shown)
+        els_all = (([_stroke_group(panels, PANEL_EDGE_W, scales, cam1[0],
+                                   dur)] if panels else [])
+                   + self._extra_world_els(ch, v, dur, shown)
                    + [_stroke_group(lines, CONNECTOR_W, scales, cam1[0], dur)]
                    + [_stroke_group(fine, FINE_W, scales, cam1[0], dur)]
                    + lines_new
                    + [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
                       for wd in sorted(boxes)]
-                   + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)])
+                   + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)]
+                   + titles)
         veil_screen = []
         if mode == "card" and named and cam1[0] < READABLE:
             # the camera group has to be built first: the veil's mask holes
@@ -1077,6 +1323,11 @@ class VerseFrame:
                 veil_alpha=self.veil_alpha)
             els_all = els_all + rings
         world_g = self._camera_group(cam0, cam1, arc_at, dur, els_all)
+        # what this file asks of the device, counted in the elements
+        # actually written: box rects (two for an arrival, its faint box and
+        # the lit one fading in over it) and every name, label and title
+        self.counts = dict(box_rects=world_g.count("<rect") - len(panels),
+                           names=world_g.count("<text"), panels=len(panels))
         c.raw([world_g] + veil_screen)
         if mode == "card" and named:
             self._card(c, named, dur)
@@ -1138,24 +1389,43 @@ class VerseFrame:
         lights up.
 
         With `family_lines` the lines are drawn per family afterwards
-        (_family_lines) and this draws the boxes only.
+        (_family_lines) and this draws the boxes only. A house the layout
+        draws as a label is its italic name alone (_label_els), and
+        brightens the same way.
         """
         elbow = self.lines is None
+        els = self._label_els if n in self.labels else self._node_els
         if state != "new":
             if elbow:
                 lines.append(self._connector(n, state))
             boxes.setdefault(self.LOOK[state][2], []).extend(
-                self._node_els(n, state, full))
+                els(n, state, full))
             return
         gdur, gbegin = _grow_timing(dur)
         if elbow:
             lines.append(self._connector(n, "ahead"))
         boxes.setdefault(self.LOOK["ahead"][2], []).extend(
-            self._node_els(n, "ahead", full))
+            els(n, "ahead", full))
         if elbow:
             lines_new.append(self._connector(n, "lit", gdur, trace=True))
-        boxes_new.append(_fade_group(self._node_els(n, "lit", full),
-                                     gbegin, gdur))
+        lit_els = els(n, "lit", full)
+        if lit_els:
+            boxes_new.append(_fade_group(lit_els, gbegin, gdur))
+
+    def _label_els(self, n, look, full):
+        """A house the regions layout draws as a label: its name, small and
+        italic, in the gap above the row it gathers, with no box. The line
+        from the parent runs into its top and its own stem leaves its
+        bottom, so it sits on the line. It is a name like any other: shown
+        whenever a box there would be, in the same three looks. Past the
+        node cap (`full` off) a box keeps its outline; a label has none, so
+        it draws nothing."""
+        if not full:
+            return []
+        sub = SvgCanvas(W, H)
+        sub.text((n.x + n.w / 2, n.y + n.h / 2), n.label, LABEL_PX,
+                 self.LOOK[look][3], anchor="mm", italic=True)
+        return sub._els
 
     def _family_lines(self, shown, arriving, lit, dur):
         """This verse's lines, one family at a time -> (static, fine,
@@ -1187,7 +1457,7 @@ class VerseFrame:
                     segs.append(s)
         lines, fine = FL.static_els(
             segs, lambda s: rank[max(standing(k) for k in s.serves)],
-            LINE_ALPHA)
+            LINE_ALPHA, bead_fill=self._bead_fill if self.titles else None)
         gdur, _gbegin = _grow_timing(dur)
         growing = []
         for n in shown:
@@ -1251,8 +1521,15 @@ class VerseFrame:
             return False
 
         head, rest = named[0], named[1:]
-        star = (len(named) > 2 and all(anc(head, n) for n in rest)
-                and not any(anc(a, b) for a in rest for b in rest
+        # The head's wives stand beside him on a short bar, as they do in
+        # the tree, not in the row of his children; the children of one
+        # wife drop from her.
+        wives = ([n for n in rest if n.parent is head and
+                  layout_regions.is_wife(n)]
+                 if self.card_wives_beside else [])
+        kids = [n for n in rest if n not in wives]
+        star = (len(named) > 2 and kids and all(anc(head, n) for n in kids)
+                and not any(anc(a, b) for a in kids for b in kids
                             if a is not b))
 
         BH = 27                                    # box height on the card
@@ -1276,7 +1553,7 @@ class VerseFrame:
         sub = SvgCanvas(W, H)
         if star:
             rows, row, x = [], [], 0.0
-            for n in rest:
+            for n in kids:
                 step = bw(n) + (14 if row else 0)
                 if row and x + step > self.CARD_W_MAX:
                     rows.append(row)
@@ -1286,17 +1563,45 @@ class VerseFrame:
             if row:
                 rows.append(row)
             row_ws = [r[-1][1] + bw(r[-1][0]) for r in rows]
-            cw = max(max(row_ws), bw(head))
+            WG = 18                                # husband to wife
+            hw = bw(head) + sum(WG + bw(wv) for wv in wives)
+            cw = max(max(row_ws), hw)
             ch_ = BH + 22 + len(rows) * BH + (len(rows) - 1) * 24
             pad = 16
             px, py = self.card_pos(cw, ch_, pad)
             sub.rect(px - pad, py - pad, cw + 2 * pad, ch_ + 2 * pad,
                      fill=BG + (234,), stroke=dim(SAND_DIM, 0.95),
                      width=1.1, rx=10)
-            hx = px + cw / 2 - bw(head) / 2
+            hx = px + cw / 2 - hw / 2
             draw_box(sub, head, hx, py)
+            sx = px + cw / 2                       # where the stem leaves
+            if wives:
+                sx = hx + bw(head) / 2
+                wx = hx + bw(head)
+                for i, wv in enumerate(wives):
+                    wx += WG
+                    bar = dim(FEMALE, 0.95)
+                    if i == 0:                     # a doubled bar to her
+                        for dy, wd in ((-1.5, 1.5), (1.5, 1.0)):
+                            sub.line((wx - WG, py + BH / 2 + dy),
+                                     (wx, py + BH / 2 + dy), bar, wd)
+                    else:
+                        # a later wife hangs from a comb over the row: a
+                        # bar to her would run behind the first wife and
+                        # read as a marriage between the two women
+                        cx_ = wx + bw(wv) / 2
+                        ax = hx + bw(head) - 10
+                        for dx, wd in ((0.0, 1.5), (3.0, 1.0)):
+                            sub.polyline([(ax + dx, py),
+                                          (ax + dx, py - 8 + dx),
+                                          (cx_ + dx, py - 8 + dx),
+                                          (cx_ + dx, py)], bar, wd)
+                    draw_box(sub, wv, wx, py)
+                    if all(k.parent is wv for k in kids):
+                        sx = wx + bw(wv) / 2
+                    wx += bw(wv)
             bus = py + BH + 11
-            sub.line((px + cw / 2, py + BH), (px + cw / 2, bus),
+            sub.line((sx, py + BH), (sx, bus),
                      dim(SAND_DIM, 0.95), 1.5)
             y = bus + 11
             prev_rail = None
@@ -1306,8 +1611,8 @@ class VerseFrame:
                 cxs = [rx0 + off + bw(n) / 2 for n, off in r]
                 by = y - 11
                 if ri == 0:
-                    sub.line((min(cxs + [px + cw / 2]), bus),
-                             (max(cxs + [px + cw / 2]), bus),
+                    sub.line((min(cxs + [sx]), bus),
+                             (max(cxs + [sx]), bus),
                              dim(SAND_DIM, 0.95), 1.5)
                     by = bus
                     prev_rail = min(cxs) - 12

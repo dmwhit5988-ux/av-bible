@@ -2,8 +2,9 @@
 
 The same world, the same camera and the same frame as 1 Chronicles 1-9 —
 `svg_chronicles_world.VerseFrame` does the drawing here, keeping the older
-per-child elbow for its lines (`MatthewFrame.family_lines`) — with two
-differences that come from what Matthew is doing:
+per-child elbow for its lines (`MatthewFrame.family_lines`) and the older
+cutaway card (`MatthewFrame.card_wives_beside`) — with two differences that
+come from what Matthew is doing:
 
   * THE OLD TESTAMENT IS ALREADY STANDING. In Chronicles a name arrives when
     the verse first reads it, because the reader is watching the family be
@@ -316,6 +317,8 @@ class MatthewFrame(VerseFrame):
     panorama = False
     family_lines = False        # the older elbow, until Matthew's own files
                                 # are reviewed under the family lines
+    card_wives_beside = False   # and the older card, with a wife standing
+                                # among the children
 
     def render(self, ch, v, scene, first):
         """Verses 1 and 17 get the whole tree, and a thinner veil.

@@ -14,14 +14,32 @@ draw_edges`) does:
   the side instead.
 * A wife standing on her husband's row is joined by a MARRIAGE BAR between
   the facing edges; a second or third wife on the same side hangs from a
-  COMB over the row, so no bar runs behind the wife nearer to him. (The
-  centred layout stands a wife in her sons' row, as a child of her husband,
-  so it draws none: her drop is doubled in rose instead.)
+  COMB over the row, so no bar runs behind the wife nearer to him. Her
+  children drop from her own box. A wife is `layout_regions.is_wife`, the
+  one rule the regions layout also packs and rows her by; that layout
+  stands every wife beside her husband. (The centred layout stands a wife
+  in her sons' row, as a child of her husband, so it draws no bars: her
+  drop is doubled in rose instead.)
 * A child that is not below its parent at all gets a SIDE LINK (an elbow
-  from the parent's facing side). The centred layout produces none.
+  from the parent's facing side). Neither layout produces any.
 
 Rows are read from where the boxes stand (`rows_of`), never from a layout's
-own bookkeeping, so any layout that places boxes can be drawn.
+own bookkeeping, so any layout that places boxes can be drawn. Two things a
+layout can say that positions cannot, both from the regions layout's Plan
+(`layout_regions`), and both empty for the centred layout:
+
+* LABELS. A house drawn as a small label, not a box, stands in the gap
+  above the row of the people it gathers. It counts as standing in THAT row
+  when its parent's family is sorted into rows, so a parent whose children
+  are a mix of sons and labels gets one bus over the labels; the drop runs
+  into the label's top and its own stem leaves from its bottom, so the
+  label sits on the line.
+* ROUTES. A panel head stands in the fan, far above the children in his
+  panel. His stem runs from his box down to each waypoint's y and across to
+  its x in turn (the lanes under the fan and down the corridors), then down
+  to the bus over his children. The route is part of every child's path,
+  so it is drawn once in the brightest look among them and an arrival
+  traces along it (trace_els: a long path draws its far part fast).
 
 WHERE A RAIL GOES. Left of the whole block over its height: left of the
 leftmost box among the children AND their descendants between the rail's
@@ -41,6 +59,7 @@ the people it leads to, and trace one arrival's own path from the parent
 import math
 
 from generate_ot_family_tree_svg import BG, DROP, FEMALE, SAND_DIM, dim
+from layout_regions import is_wife
 from svg_surface import _fmt, _opacity, _rgb
 
 RAIL_OFF = 18       # a rail sits this far left of the leftmost box in its
@@ -59,6 +78,9 @@ STRAND_DY = 5.0     # doubled line, offset right and starting lower
 BEAD_R = 2.4        # the open bead on an implied (dashed) join,
 BEAD_UP = 6.0       # this far above the child's box
 DASH = "4 4"
+TRACE_NEAR = 600.0  # the last this-many units of a long arrival path (the
+TRACE_FAR = 0.5     # bus and drop the camera rests on) take the second half
+                    # of its trace; everything before them, the first half
 
 
 class Seg:
@@ -101,24 +123,30 @@ def _shared_style(kids):
     return "solid"
 
 
-def _vov(a, b):
-    o = min(a.y + a.h, b.y + b.h) - max(a.y, b.y)
-    return o / max(1e-9, min(a.h, b.h)) if o > 0 else 0.0
+def _box_span(k):
+    return k.y, k.y + k.h
 
 
-def rows_of(kids):
+def rows_of(kids, span=_box_span):
     """Boxes clustered into visual rows (at least half the shorter box's
     height shared with the row's first box), rows top to bottom, each left
-    to right."""
+    to right. `span(k)` -> (top, bottom) is where k counts as standing:
+    its own box, or for a label the row it gathers (Geometry._span)."""
+    sp = {k: span(k) for k in kids}
+
+    def vov(a, b):
+        (a0, a1), (b0, b1) = sp[a], sp[b]
+        o = min(a1, b1) - max(a0, b0)
+        return o / max(1e-9, min(a1 - a0, b1 - b0)) if o > 0 else 0.0
     rows = []
-    for k in sorted(kids, key=lambda k: (k.y, k.x)):
+    for k in sorted(kids, key=lambda k: (sp[k][0], k.x)):
         for r in rows:
-            if _vov(r[0], k) >= 0.5:
+            if vov(r[0], k) >= 0.5:
                 r.append(k)
                 break
         else:
             rows.append([k])
-    rows.sort(key=lambda r: min(k.y for k in r))
+    rows.sort(key=lambda r: min(sp[k][0] for k in r))
     for r in rows:
         r.sort(key=lambda k: k.x)
     return rows
@@ -141,20 +169,28 @@ class Geometry:
 
     `segs` is every piece in draw order; `node_segments[k]` the pieces on
     k's path from its parent. Built once per laid-out world: nothing here
-    depends on the verse."""
+    depends on the verse.
 
-    def __init__(self, nodes):
+    `labels`: houses drawn as labels (they count as standing in the row
+    they gather). `routes`: {parent: [(y, x), ...]}, the waypoints of a
+    routed stem. Both come from the regions layout's Plan; the centred
+    layout passes neither."""
+
+    def __init__(self, nodes, labels=(), routes=None):
         self.nodes = list(nodes)
+        self.labels = set(labels)
+        self.routes = dict(routes or {})
         self.segs = []
         self.node_segments = {}
         self.families = {}          # parent -> plan (kind, rows, ...)
         self.bars = []              # (husband, wife, seg)
         self.side_links = []        # (parent, child)
+        self._spans = {}
         for p in self.nodes:
             if not p.kids:
                 continue
             beside = [k for k in p.kids
-                      if k.link == "wife" and same_row(p, k)
+                      if is_wife(k) and same_row(p, k)
                       and (k.x >= p.x + p.w - 0.5 or k.x + k.w <= p.x + 0.5)]
             right = sorted((k for k in beside if k.x >= p.x + p.w - 0.5),
                            key=lambda k: k.x)
@@ -174,6 +210,16 @@ class Geometry:
         for s in self.segs:
             for k in s.serves:
                 self.node_segments.setdefault(k, []).append(s)
+
+    def _span(self, k):
+        """Where k counts as standing when its family is sorted into rows:
+        its box, or for a label the rows of the people it gathers."""
+        if k not in self.labels or not k.kids:
+            return k.y, k.y + k.h
+        if k not in self._spans:
+            ss = [self._span(c) for c in k.kids]
+            self._spans[k] = (min(a for a, _b in ss), max(b for _a, b in ss))
+        return self._spans[k]
 
     # -- pieces --------------------------------------------------------------
 
@@ -253,7 +299,7 @@ class Geometry:
             self._side(p, k)
         if not below:
             return
-        rows = rows_of(below)
+        rows = rows_of(below, self._span) if self.labels else rows_of(below)
         info = dict(rows=rows, kind="bus", below=below)
         self.families[p] = info
         if len(rows) == 1:
@@ -304,11 +350,28 @@ class Geometry:
     def _emit(self, p, info):
         pb, pcx = p.y + p.h, p.x + p.w / 2
         below = info["below"]
+        route = self.routes.get(p)
+        if route:
+            # a panel's children stand on one generation row, so a routed
+            # family is always a bus; anything else is a layout change that
+            # must be looked at
+            assert info["kind"] == "bus", \
+                f"{p.label}'s routed family is not one row"
         if info["kind"] == "bus":
             row = info["rows"][0]
             bus = info["bus_y"]
-            self._add(pcx, pb, pcx, bus, "stem", _shared_style(row), p,
-                      frozenset(row))
+            if route:
+                sv, st = frozenset(row), _shared_style(row)
+                x, y = pcx, pb
+                for ly, lx in route:
+                    self._add(x, y, x, ly, "route", st, p, sv)
+                    self._add(x, ly, lx, ly, "route", st, p, sv)
+                    x, y = lx, ly
+                self._add(x, y, x, bus, "route", st, p, sv)
+                pcx = x
+            else:
+                self._add(pcx, pb, pcx, bus, "stem", _shared_style(row), p,
+                          frozenset(row))
             tg = [(k.x + k.w / 2, k) for k in row]
             self._hline_pieces(bus, pcx, tg, "bus", p)
             for x, k in tg:
@@ -537,7 +600,14 @@ def _merged(lines):
     return "".join(d)
 
 
-def static_els(segs, look_of, alpha):
+def _bar_strand(s):
+    """The second strand of a marriage bar or comb piece, as a line."""
+    off = STRAND_DX
+    return ((s.x0, s.y0 + off, s.x1, s.y1 + off) if s.horizontal
+            else (s.x0 + off, s.y0, s.x1 + off, s.y1))
+
+
+def static_els(segs, look_of, alpha, bead_fill=None):
     """The standing lines of one verse, each piece drawn ONCE.
 
     segs: the pieces to draw; look_of(seg) -> a look name; alpha: look ->
@@ -546,7 +616,9 @@ def static_els(segs, look_of, alpha):
     ones. -> (lines, fine): `lines` carry no stroke-width and inherit the
     connector width from their group; `fine` (the second strand of a
     wife's line, and the open beads, which must lie over the dashes) inherit
-    a thinner one."""
+    a thinner one. bead_fill(x, y) -> the colour an open bead is filled
+    with there (the background unless it says otherwise: inside a panel it
+    is the panel's)."""
     main, second, beads = {}, {}, []
     for s in segs:
         look = look_of(s)
@@ -557,19 +629,17 @@ def static_els(segs, look_of, alpha):
             second.setdefault(look, []).append(st)
         if s.style == "bar":
             # a marriage is doubled too, the second strand below the first
-            off = STRAND_DX
-            second.setdefault(look, []).append(
-                (s.x0, s.y0 + off, s.x1, s.y1 + off) if s.horizontal
-                else (s.x0 + off, s.y0, s.x1 + off, s.y1))
+            second.setdefault(look, []).append(_bar_strand(s))
         if s.bead:
             col = dim(_colour(s.style), alpha[look])
             if s.horizontal:
                 bx, by = s.x1 - BEAD_UP, s.y1
             else:
                 bx, by = s.x1, max(s.y0, s.y1) - BEAD_UP
+            fill = (bead_fill(bx, by) if bead_fill else None) or BG
             beads.append(
                 f'<circle cx="{_fmt(bx)}" cy="{_fmt(by)}" r="{_fmt(BEAD_R)}" '
-                f'fill="{_rgb(BG)}" stroke="{_rgb(col)}" '
+                f'fill="{_rgb(fill)}" stroke="{_rgb(col)}" '
                 f'stroke-opacity="{_opacity(col):.3f}"/>')
 
     def path(d, col, dash=None):
@@ -591,10 +661,14 @@ def static_els(segs, look_of, alpha):
 _EASE = "0.42 0 0.58 1"
 
 
-def _traced(pts, col, width, total, d0, dur):
+def _traced(pts, col, width, total, d0, dur, split=None):
     """A polyline revealed as the part of a longer path that starts d0
     along it: dash and gap of the whole path's length `total`, offset run
-    from total + d0 down to d0 on the house ease."""
+    from total + d0 down to d0 on the house ease.
+
+    split = (R, f): the first R of the path is revealed by time fraction f
+    (easing in) and the rest over the remainder (easing out), for a long
+    path whose far part would otherwise take most of the time."""
     a = [f'points="{" ".join(f"{_fmt(x)},{_fmt(y)}" for x, y in pts)}"',
          'fill="none"', 'stroke-linejoin="round"',
          f'stroke="{_rgb(col)}"', f'stroke-width="{_fmt(width)}"',
@@ -602,10 +676,18 @@ def _traced(pts, col, width, total, d0, dur):
          f'stroke-dashoffset="{_fmt(total + d0)}"']
     if _opacity(col) < 1:
         a.append(f'stroke-opacity="{_opacity(col):.3f}"')
-    anim = (f'<animate attributeName="stroke-dashoffset" '
-            f'values="{_fmt(total + d0)};{_fmt(d0)}" dur="{dur}" '
-            f'begin="0s" fill="freeze" calcMode="spline" '
-            f'keyTimes="0;1" keySplines="{_EASE}"/>')
+    if split is None:
+        anim = (f'<animate attributeName="stroke-dashoffset" '
+                f'values="{_fmt(total + d0)};{_fmt(d0)}" dur="{dur}" '
+                f'begin="0s" fill="freeze" calcMode="spline" '
+                f'keyTimes="0;1" keySplines="{_EASE}"/>')
+    else:
+        r, f = split
+        anim = (f'<animate attributeName="stroke-dashoffset" '
+                f'values="{_fmt(total + d0)};{_fmt(total + d0 - r)};'
+                f'{_fmt(d0)}" dur="{dur}" begin="0s" fill="freeze" '
+                f'calcMode="spline" keyTimes="0;{f:.3f};1" '
+                f'keySplines="0.42 0 1 1;0 0 0.58 1"/>')
     return f"<polyline {' '.join(a)}>{anim}</polyline>"
 
 
@@ -619,14 +701,25 @@ def trace_els(geom, n, alpha, width, fine_width, dur):
     length L runs its dash offset from L + d0 down to d0 with a dash of L:
     exactly what one polyline over the whole path would show at every
     moment (and, for a path of one colour, exactly SvgCanvas.traced). The
-    second strand of a wife's drop draws with the drop it doubles."""
+    second strand of a wife's drop, and of a marriage bar or comb, draws
+    with the piece it doubles.
+
+    A LONG path draws its far part in the first half of the time and its
+    last TRACE_NEAR units in the second. A panel head's routed stem runs
+    over 10,000 px, and a head's bus across his panel thousands more; drawn
+    at one speed, the drops into the boxes the camera rests on appeared
+    only in the last instant."""
     chain = geom.chain(n)
     runs = _runs(chain, lambda s: _colour(s.style))
     total = sum(math.hypot(b[0] - a[0], b[1] - a[1])
                 for _c, pts in runs for a, b in zip(pts, pts[1:]))
+    split = None
+    if total * (1 - TRACE_FAR) > TRACE_NEAR:
+        split = (total - TRACE_NEAR, TRACE_FAR)
     out, d0 = [], 0.0
     for colour, pts in runs:
-        out.append(_traced(pts, dim(colour, alpha), width, total, d0, dur))
+        out.append(_traced(pts, dim(colour, alpha), width, total, d0, dur,
+                           split))
         d0 += sum(math.hypot(b[0] - a[0], b[1] - a[1])
                   for a, b in zip(pts, pts[1:]))
     along = 0.0
@@ -634,6 +727,12 @@ def trace_els(geom, n, alpha, width, fine_width, dur):
         st = strands(s)
         if st:
             out.append(_traced([st[:2], st[2:]], dim(FEMALE, alpha),
-                               fine_width, total, along + STRAND_DY, dur))
+                               fine_width, total, along + STRAND_DY, dur,
+                               split))
+        elif s.style == "bar":
+            ox, oy = (0.0, STRAND_DX) if s.horizontal else (STRAND_DX, 0.0)
+            out.append(_traced([(a[0] + ox, a[1] + oy),
+                                (b[0] + ox, b[1] + oy)], dim(FEMALE, alpha),
+                               fine_width, total, along, dur, split))
         along += math.hypot(b[0] - a[0], b[1] - a[1])
     return out

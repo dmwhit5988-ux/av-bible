@@ -92,7 +92,8 @@ from chronicles_tree import walk
 from generate_ot_family_tree_svg import measure
 from generate_tabernacle import font
 
-F_LABEL = font(12, italic=True)
+LABEL_PX = 12       # a house label's text: italic, this size
+F_LABEL = font(LABEL_PX, italic=True)
 
 SIB = 20            # gap between brothers in a row
 GROUP_GAP = 40      # between one wife's children and the next group, and on

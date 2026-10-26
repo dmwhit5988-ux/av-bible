@@ -162,7 +162,7 @@ most use `svg_figures.py`. The table lists each family's other dependencies:
 | Exodus 28 | `generate_exodus28_svg.py` | `svg_priest.py`, `svg_vocab.py` |
 | Numbers 1–2, 3–4 | `generate_numbers1_2_svg.py`, `generate_numbers3_4_svg.py` | Numbers 1–2 takes colours from `generate_tribal_maps.py` and `generate_genesis2_svg.py`. |
 | Numbers 32, 34 | `generate_numbers32_svg.py`, `generate_numbers34_svg.py` | `generate_tribal_maps.py`, which holds the shared geometry. Numbers 34 is a camera tour on `svg_map_camera.py`. |
-| 1 Chronicles 1–9 | `generate_1chronicles_tree_svg.py` | `generate_1chronicles.py`, `chronicles_tree.py`, `ot_grafts.py`, `svg_chronicles_world.py`, `svg_family_lines.py`, which draws the lines that join each family, and `layout_regions.py`, a second layout for the tree that is built but not live |
+| 1 Chronicles 1–9 | `generate_1chronicles_tree_svg.py` | `generate_1chronicles.py`, `chronicles_tree.py`, `ot_grafts.py`, `svg_chronicles_world.py`, `svg_family_lines.py`, which draws the lines that join each family, and `layout_regions.py`, which lays the tree out in a fan with a titled panel for each son of Israel |
 | Matthew 1 | `generate_matthew1_svg.py` | `matthew_tree.py`, `svg_matthew_world.py`, `svg_matthew_nativity.py`, `svg_chronicles_world.py` |
 | Luke 3 | `generate_luke3_svg.py` | `generate_luke3.py`, which takes its frame timing from `generate_genealogy.py` |
 | Acts 13–14 | `generate_acts1314_svg.py` | `acts_geography.py`, which holds the map; `acts1314_synagogue.py`, `acts1314_jerusalem.py` and `acts1314_lystra.py`, the three scenes; `svg_map_camera.py` and `svg_scene_card.py` for the camera tour and its scene cards |
