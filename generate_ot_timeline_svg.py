@@ -53,7 +53,7 @@ BASE = 0.55          # px per year before the tree stretches it
 RUN_W = 240          # a run of childless brothers wider than this is gridded
 GRID_ASPECT = 1.2    # taller than the wall chart's 2.4: nothing hangs below a
                      # leaf, so a grid costs no descent and width is the
-                     # whole problem on this sheet (764 of 1,283 are leaves)
+                     # whole problem on this sheet (763 of 1,282 are leaves)
 MARGIN = 220
 
 # the gutter, left of the tree, right to left

@@ -2,8 +2,8 @@
 
 Chronicles is the canon's own genealogical spine — it is the only book that
 runs Adam to the exile in one sweep — but it is not the whole story. Genesis
-names the wives the lines run through and gives Dan and Zebulun the only sons
-they ever get; Exodus fills in Levi's house and marries Aaron into Judah;
+names the wives the lines run through and gives Dan, Zebulun and Gad the only
+sons they ever get; Exodus fills in Levi's house and marries Aaron into Judah;
 Ruth brings Moab into David's line; Samuel and Kings give Saul's house and
 the northern dynasties; Ezra and Nehemiah carry the priesthood past the point
 where 1 Chronicles 6 stops.
@@ -203,8 +203,8 @@ def _genesis(T):
 
     # -- 46:8-27  the seventy who went down into Egypt --------------------
     #
-    # This is where Dan and Zebulun get the only sons the canon ever gives
-    # them, and where several tribes get a second, different list.
+    # This is where Dan, Zebulun and Gad get the only sons the canon ever
+    # gives them, and where several tribes get a second, different list.
     T.children("Zebulun", N("Zebulun", kids=[
         N("Sered"), N("Elon"), N("Jahleel")]), under=isr, ref="Gen 46:14")
     _note(T.find("Zebulun", under=isr),
@@ -236,12 +236,17 @@ def _genesis(T):
         except KeyError:
             pass
 
-    T.child("Gad", H("the sons of Gad (Genesis 46:16)",
-                     "a different seven from the four 1 Chr 5:11 names",
-                     ref="Gen 46:16",
-                     kids=[N(x, link="dash") for x in
-                           ("Ziphion", "Haggi", "Shuni", "Ezbon", "Eri",
-                            "Arodi", "Areli")]), under=isr, link="dash")
+    # Gad's own sons, ahead of everything else under him. The men of
+    # 1 Chr 5:11-17 are a later register of Gadites in Bashan, already hung
+    # in their own house (chronicles_tree._reuben_gad_manasseh).
+    gad = T.find("Gad", under=isr)
+    gad.kids[0:0] = [
+        N("Ziphion", "Numbers 26:15 calls him Zephon"), N("Haggi"),
+        N("Shuni"), N("Ezbon", "Numbers 26:16 calls him Ozni"), N("Eri"),
+        N("Arodi", "Numbers 26:17 calls him Arod"), N("Areli")]
+    gad.ref = gad.ref or "Gen 46:16"
+    _note(gad, "Chronicles never names his sons; these seven are Genesis "
+          "46:16 and Numbers 26:15-17")
     T.child("Benjamin", H("the sons of Benjamin (Genesis 46:21)",
                           "ten — a third list, against 7:6 and 8:1",
                           ref="Gen 46:21",

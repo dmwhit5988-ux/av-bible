@@ -699,10 +699,13 @@ def _simeon(T):
     princes.kind, princes.link = "house", "dash"
     princes.note = "4:34-38 — heads of Simeon's houses, fathers not traced"
     T.child("Simeon", princes, link="dash", ref="4:34-38")
-    ziza = _nest(_scene(4, "The princes of Simeon")["cols"][1][1][1])
-    ziza.note = "4:37 — each the son of the next"
-    ziza.link = "dash"
-    princes.kids.append(ziza)
+    # 4:37 climbs: "Ziza the son of Shiphi … the son of Shemaiah". Turned
+    # right way up, Shemaiah heads the line and Ziza, the prince, is its foot.
+    top = upward(4, "The princes of Simeon", 1, 1)
+    top.note = "4:37 — Ziza's line read upward; Shemaiah's own father is " \
+               "not given"
+    top.link = "dash"
+    princes.kids.append(top)
 
     ishi = blk(4, "The princes of Simeon", 2, 2)
     ishi.note = "his sons led five hundred to Mount Seir, and struck the " \
@@ -722,32 +725,48 @@ def _reuben_gad_manasseh(T):
                 "birthright went to the sons of Joseph; the prince came "
                 "from Judah")
 
-    joel = _nest(_scene(5, "Reuben, the firstborn")["cols"][1][0][1])
+    # 5:4-6, stamped: Joel > Shemaiah > … > Baal > Beerah, "his son" each.
+    jc = chain(5, "Reuben, the firstborn", 1, 0)
+    for a, b in zip(jc, jc[1:]):
+        a.kids.append(b)
+    joel, beerah = jc[0], jc[-1]
     joel.note = "5:4-6 — Joel's descent; his own father is not given"
-    joel.link = "dash"
-    T.child("Reuben", joel, link="dash", ref="5:4-6")
-    T.find("Beerah").note = ("prince of the Reubenites, whom Tilgath "
-                             "Pilneser carried away")
-    T.find("Beerah").icon = "shackle"
+    T.child("Reuben", joel, under=reu, link="dash", ref="5:4-6")
+    beerah.note = ("prince of the Reubenites, whom Tilgath Pilneser "
+                   "carried away")
+    beerah.icon = "shackle"
 
+    # 5:7 "His brothers" are Beerah's: Reubenite kinsmen whose father the
+    # text doesn't give, so the house stays dashed under the tribe.
     bros = blk(5, "Reuben, the firstborn", 2, 0)
-    bros.label = "his brothers by their families"
+    bros.label = "Beerah's brothers by their families"
     bros.kind, bros.link, bros.note = "house", "dash", \
-        "5:7-9 — from Aroer to Nebo and Baal Meon, eastward to the Euphrates"
-    T.child("Reuben", bros, link="dash", ref="5:7-9")
+        "5:7-9 — kinsmen of Beerah; from Aroer to Nebo and Baal Meon"
+    T.child("Reuben", bros, under=reu, link="dash", ref="5:7-9")
 
-    T.children("Gad", blk(5, "The sons of Gad", 0, 0), ref="5:11-16")
-    gbros = blk(5, "The sons of Gad", 1, 0)
-    gbros.label = "their brothers, of their fathers' houses"
-    gbros.kind, gbros.link = "house", "dash"
-    T.child("Gad", gbros, link="dash", ref="5:13")
-    abi = _nest(_scene(5, "The sons of Gad")["cols"][2][1][1])
-    abi.note = "5:14-15 — read upward in the text; listed in the days of " \
-               "Jotham of Judah and Jeroboam of Israel"
-    abi.link = "dash"
-    T.child("Gad", abi, link="dash", ref="5:14-17")
+    # 5:11-17 is one register of Gadites in Bashan, listed in Jotham's and
+    # Jeroboam's days — not Gad's own sons (those are Genesis 46:16, grafted
+    # in ot_grafts). The chiefs of 5:12 and Ahi of 5:15 stand in one house;
+    # the scene's "in Bashan to Salecah" note stays off Gad himself.
+    gad = T.find("Gad", under=T.find("Israel"))
+    sons = blk(5, "The sons of Gad", 0, 0)            # Gad + the four, stamped
     ahi = blk(5, "The sons of Gad", 2, 2)
-    T.child("Gad", ahi, link="dash", ref="5:15")
+    ahi.ref = "5:15"
+    bashan = N("the Gadites in Bashan",
+               "5:11-17 — in Bashan to Salecah; listed in the days of "
+               "Jotham king of Judah and Jeroboam king of Israel",
+               kids=sons.kids + [ahi], kind="house")
+    T.child("Gad", bashan, under=gad, link="dash", ref="5:11-17")
+    # 5:14 climbs from Abihail to Buz; turned right way up, Buz heads it.
+    buz = upward(5, "The sons of Gad", 2, 1)
+    buz.note = "5:14 read upward: Abihail's line climbs to Buz, whose own " \
+               "descent from Gad is not given"
+    T.child("Gad", buz, under=gad, link="dash", ref="5:14")
+    # "These were the sons of Abihail" (5:14) — the seven of 5:13.
+    abi = named(buz, "Abihail")
+    abi.note = "5:13-14 — father of the seven, 'their brothers, of their " \
+               "fathers' houses'"
+    abi.kids.extend(blk(5, "The sons of Gad", 1, 0).kids)
 
     # half-Manasseh: the tribe is Joseph's, so it hangs on Manasseh, built
     # in _northern — deferred there.

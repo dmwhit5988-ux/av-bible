@@ -15,10 +15,10 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 27,737 × 16,141 px, about 1.4 MB, 1,268 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 27,737 × 16,141 px, about 1.4 MB, 1,267 boxes | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
-| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,384 × 11,502 px, about 1.5 MB, 1,283 boxes | `generate_ot_timeline_svg.py` |
+| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 64,860 × 11,502 px, about 1.5 MB, 1,282 boxes | `generate_ot_timeline_svg.py` |
 
 ## The Old Testament family tree
 
