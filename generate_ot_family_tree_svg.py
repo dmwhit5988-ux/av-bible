@@ -667,8 +667,9 @@ def draw_masthead(c, x, y, T, stats):
         "City and town lists, the Hagrite war and the gatekeepers\u2019 "
         "duty roster are left out; the people named inside them are kept.",
         "The canon repeats names freely and does not always agree with "
-        "itself. Where two books give one man two fathers, both lines are "
-        "drawn and the box says so rather than quietly choosing.",
+        "itself. Where two books give one man two fathers, the chart never "
+        "chooses quietly: both lines are drawn, or one is and the box’s "
+        "note gives the other.",
     ]
     for t in notes:
         for line in _wrap(t, F_LEGS, MAST_W - 60):
