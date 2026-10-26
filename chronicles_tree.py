@@ -466,6 +466,14 @@ def _judah(T):
     seg[0].kids = [seg[1]]
     seg[1].note = "twenty-three cities in Gilead; Geshur and Aram took them"
     T.child("Hezron", mach_dau, link="wife")
+    # She has no row of her own, so she takes the heading that introduces
+    # her ('~Hezron, at sixty, married the daughter of'), and 2:21 lights
+    # her through it. The scene's "Machir" row there is her father's name
+    # in her description, not Manasseh's son arriving: bound to her, 2:21
+    # and 2:23 frame Hezron's house instead of resting on a card that
+    # reaches across to Manasseh.
+    mach_dau.src = (2, "Caleb and Hezron's later line", 11)
+    T.bind[(2, "Caleb and Hezron's later line", 12)] = mach_dau
 
     abij = blk(2, "Caleb and Hezron's later line", 2, 2)          # Abijah
     abij.kind, abij.link = "woman", "wife"

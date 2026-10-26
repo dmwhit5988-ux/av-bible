@@ -378,8 +378,22 @@ CH2 = [
         [T(("~Geshur and Aram took Jair’s towns — sixty cities", [])),
          T(("~after Hezron died in Caleb Ephrathah:", [])),
          T(("Abijah", "Hezron’s wife", [
-             ("Ashhur", "the father of Tekoa")]))],
-    ]),
+             ("Ashhur", "the father of Tekoa")])),
+         # Hezron himself, the subject of 2:21 and 2:24. The tree does not
+         # lift this row; it resolves by name, and the kin rank picks
+         # Perez's son. Kept last so no earlier row index moves.
+         T(("Hezron", []))],
+    ], explicit={
+        # 2:18 "Caleb the son of Hezron": Caleb's family, as it always lit.
+        # Lighting Hezron too would widen the frame past reading scale, and
+        # the camera would close on Azubah's sons and drop Caleb from view.
+        18: ["Caleb", "Azubah", "Jesher", "Shobab", "Ardon", "Jerioth"],
+        # 2:21 "the daughter of Machir": the heading row is her src stamp.
+        21: ["~Hezron, at sixty, married the daughter of", "Hezron",
+             "Machir", "Segub"],
+        # 2:24 "died in Caleb Ephrathah" is a place, not Caleb the man.
+        24: ["Hezron", "Abijah", "Ashhur"],
+    }),
     sc("The sons of Jerahmeel", 25, 33, [
         [T(("Jerahmeel", "the firstborn of Hezron", [
             ("Ram", "the firstborn", ["Maaz", "Jamin", "Eker"]),
@@ -421,8 +435,8 @@ CH2 = [
              ("Sheva", "father of Machbena and Gibea")])),
          T(("Achsah", "Caleb’s daughter"))],
     ], explicit={
-        46: ["Ephah", "Haran", "Moza", "Gazez", "Gazez#2"],
-        49: ["Shaaph#2", "Sheva", "Achsah"],
+        46: ["Ephah", "Caleb", "Haran", "Moza", "Gazez", "Gazez#2"],
+        49: ["Shaaph#2", "Sheva", "Caleb", "Achsah"],
     }),
     sc("The sons of Hur", 50, 55, [
         [T(("~the sons of Caleb, the son of Hur,", [])),
