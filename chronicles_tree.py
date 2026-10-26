@@ -217,6 +217,15 @@ class Tree:
     def __init__(self, root):
         self.root = root
         self.links = []       # cross-references drawn as gold dotted arcs
+        # Scene rows the tree retells or drops, and the node each one means:
+        # (chapter, scene title, flatten index) -> node, or None for "this
+        # row lights nothing". A node keeps the one `src` stamp of the row it
+        # was lifted from; 4:1 recites a descent chapter 2 already built, and
+        # 6:33-38 climbs back up the Kohathite line of 6:22-28, so their rows
+        # have no node of their own. The verse camera reads this after a miss
+        # on the stamp (svg_chronicles_world.World._resolve_verse). Fill it
+        # from node handles held at graft time, never from a bare find().
+        self.bind = {}
 
     # -- lookup ------------------------------------------------------------
 
@@ -570,10 +579,20 @@ def _shemaiah_kids():
 
 def _judah_more(T):
     # 4:1 is a descent, not a brotherhood — Perez, Hezron, Carmi, Hur and
-    # Shobal are all already in the tree, so nothing is added for it.
-    T.children("Shobal", strip(_only(blk(4, "Families of Judah", 0, 0),
-                                     "Shobal")),
-               under=T.find("Hur"), ref="4:1-2")
+    # Shobal are all already in the tree, so only Shobal's sons (4:2) are
+    # added, and the verse's own rows are bound to the men chapter 2 built.
+    # "Carmi" stands where Chelubai · Caleb does, between Hezron and Hur
+    # (2:9, 2:18-19); the only Judahite Carmi, Zimri's (2:7), is off the line.
+    judah = T.find("Judah")
+    perez = T.find("Perez", under=judah)
+    hezron = T.find("Hezron", under=perez)
+    caleb = T.find("Chelubai · Caleb", under=hezron)
+    hur = T.find("Hur", under=caleb)
+    shobal = T.children("Shobal", strip(_only(blk(4, "Families of Judah",
+                                                  0, 0), "Shobal")),
+                        under=hur, ref="4:1-2")
+    for k, n in enumerate((judah, perez, hezron, caleb, hur, shobal)):
+        T.bind[(4, "Families of Judah", k)] = n
 
     etam = blk(4, "Families of Judah", 1, 0)
     etam.note = "4:3 — of the father of Etam, among Hur's sons"
@@ -723,6 +742,8 @@ def _levi(T):
                ref="6:3")
     T.find("Miriam").kind = "woman"
     T.find("Moses").icon = "scroll"
+    koh = T.find("Kohath", under=lv)
+    izhar = next(k for k in koh.kids if k.label == "Izhar")       # 6:2
     T.children("Aaron", blk(6, "The line of the high priests", 1, 0),
                ref="6:3-15")
     T.find("Aaron").kind = "priest"
@@ -779,6 +800,31 @@ def _levi(T):
     heman.icon = "harp"
     heman.ref = "6:33-38"
     T.child("Joel", heman, nth=1, under=T.find("Samuel"))
+
+    # 6:33-38 climbs Heman's line back up to Israel through men 6:22-28
+    # already built, so its rows are bound to them rather than lifted (a
+    # lift would draw Samuel and Joel twice). The run Elkanah, Jeroham,
+    # Eliel, Toah, Zuph matches 6:26-27 and 1 Samuel 1:1 (Elihu, Tohu,
+    # Zuph): Eliel is Eliab, Toah Nahath, Zuph Zophai. Rows 10-16 (Elkanah,
+    # Mahath, Amasai, Elkanah, Joel, Azariah, Zephaniah) have no right box
+    # yet — the tree hangs Amasai under Assir's son Elkanah, above Tahath,
+    # where 6:35-36 puts him below — so they light nothing rather than a
+    # namesake.
+    joel = next(k for k in sam.kids if k.label == "Joel")
+    isr = T.find("Israel")
+    assert lv in isr.kids
+    assert [n.label for n in zoph] == ["Zophai", "Nahath", "Eliab",
+                                       "Jeroham", "Elkanah"]
+    assert [n.label for n in kch[1:7]] == ["Korah", "Assir", "Elkanah",
+                                           "Ebiasaph", "Assir", "Tahath"]
+    heman_line = {3: joel, 4: sam, 5: zoph[4], 6: zoph[3], 7: zoph[2],
+                  8: zoph[1], 9: zoph[0],
+                  17: kch[6], 18: kch[5], 19: kch[4], 20: kch[1],
+                  21: izhar, 22: koh, 23: lv, 24: isr}
+    for k in range(10, 17):
+        heman_line[k] = None
+    for k, n in heman_line.items():
+        T.bind[(6, "The temple singers", k)] = n
 
     asaph = upward(6, "The temple singers", 1, 1, drop=2)   # after Levi,Gershom
     asaph.link = "dash"
@@ -1094,6 +1140,10 @@ def _return(T):
     gate.kids.append(N("Zechariah", "son of Meshelemiah — keeper of the "
                        "door of the tent of meeting, 9:21", link="dash"))
     T.child("Ebiasaph", gate, nth=1, link="dash", ref="9:17-21")
+    # 9:20 "Phinehas the son of Eleazar" is Aaron's grandson (6:4), not
+    # Eli's son of Ithamar's house; the row has no node of its own.
+    ele = T.find("Eleazar", under=T.find("Aaron"))
+    T.bind[(9, "The gatekeepers", 13)] = T.find("Phinehas", under=ele)
     mat2 = blk(9, "Duties of the temple service", 1, 0)   # Mattithiah
     mat2.link = "dash"
     mat2.note = "a Korahite, over the things baked in pans — 9:31"

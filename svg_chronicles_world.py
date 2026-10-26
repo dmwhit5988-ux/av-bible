@@ -26,7 +26,9 @@ Three consequences worth knowing:
 Verse matching is NOT redone here. `generate_1chronicles.assign()` is still
 the authority; the bridge is the `src` stamp that `chronicles_tree` puts on
 every node it lifts out of the scene data — (chapter, scene title, flatten
-index) — which is exactly the key `assign()` returns.
+index) — which is exactly the key `assign()` returns. A row the tree retells
+instead of lifting (4:1, 6:33-38, 9:20) reaches its node through the tree's
+binding table, `Tree.bind`, under the same key.
 
 Rendered by generate_1chronicles_tree_svg.py.
 """
@@ -541,9 +543,13 @@ class World:
 
         The `src` stamp handles most rows outright. What it cannot handle is
         a row the tree dropped on purpose — 4:1 recites a descent already
-        walked, 9:35-44 retells the house of Saul from chapter 8 — and those
-        fall back to the name. Chronicles has ten Azariahs, so a name alone
-        is a guess.
+        walked, 9:35-44 retells the house of Saul from chapter 8. Where the
+        tree knows whom such a row means it says so in its binding table
+        (`Tree.bind`, read into `self.bound`): 4:1's Hezron is Perez's son,
+        9:20's Phinehas is Eleazar's. A binding is as certain as a stamp,
+        and one bound to None lights nothing, for a row the tree has no
+        right box for yet. Rows neither stamped nor bound fall back to the
+        name. Chronicles has ten Azariahs, so a name alone is a guess.
 
         Resolving each guess independently against the previous verse's
         anchor was what made chapters 5, 6 and 9 lurch: 9:37 put Gedor in
@@ -567,13 +573,17 @@ class World:
         the caller passes the flag as it stands for this one verse.
 
         Only the fallback goes. A row the tree DID lift still resolves
-        through its `src` stamp, so if the chart ever grows a town the verse
-        finds it.
+        through its `src` stamp (or its binding), so if the chart ever grows
+        a town the verse finds it.
         """
         fixed, open_ = [], []
         home = self.scene_home.get((ch, title))
         for k in idxs:
             n = self.by_src.get((ch, title, k))
+            if n is None and (ch, title, k) in self.bound:
+                n = self.bound[(ch, title, k)]
+                if n is None:               # bound to "lights nothing"
+                    continue
             if n is not None:
                 fixed.append((k, n))
                 continue
@@ -629,6 +639,13 @@ class World:
             # ranking kinship flat pulled Kish down a generation to the
             # other Kish, the one 9:39 gives to Ner — who is standing right
             # there in the same verse as his brother.
+            #
+            # Ahead of both: a candidate who is the son of one settled name
+            # and the father of another is the link the verse is spelling
+            # out. 9:39 "Ner became the father of Kish. Kish became the
+            # father of Saul" settles Ner and Saul, and the brother rule
+            # alone lit Ner's brother Kish beside a Saul hanging under the
+            # other one.
             fixed_ns = [chosen[k] for k, _ in fixed] or list(chosen.values())
             sibs, kin = set(), set()
             for m in fixed_ns:
@@ -639,7 +656,9 @@ class World:
             sibs.difference_update(fixed_ns)
 
             def rank(c):
-                return 0 if c in sibs else 1 if c in kin else 2
+                return -1 if (c.parent in fixed_ns and
+                              any(k in fixed_ns for k in c.kids)) \
+                    else 0 if c in sibs else 1 if c in kin else 2
 
             if a is None:
                 for k, cands in open_:
@@ -654,6 +673,22 @@ class World:
         return [chosen[k] for k in idxs if k in chosen]
 
     def _read_scenes(self):
+        # The tree's bindings for rows it retells or drops (Tree.bind). Read
+        # here rather than in __init__ so tools/layout_lab.py, which builds
+        # its own by_src and then calls this, gets them too. They stay out
+        # of scene_home: a retold row must not drag its passage's home
+        # across the sheet (9:20's Phinehas would pull the gatekeepers'
+        # ~760 px west).
+        self.bound = dict(getattr(self.tree, "bind", {}))
+        present = set(self.nodes)
+        lost = [k for k, n in self.bound.items()
+                if n is not None and n not in present]
+        assert not lost, \
+            f"rows bound to nodes no longer in the tree: {lost}"
+        shadowed = [k for k in self.bound if k in self.by_src]
+        assert not shadowed, \
+            f"rows both stamped and bound (the binding would never be " \
+            f"read): {shadowed}"
         # Exact names first; then the halves of a doubled label, because the
         # tree renames a few people the scenes know by one name only —
         # "Abraham" there is "Abram · Abraham" here, and 1:28 was naming a
