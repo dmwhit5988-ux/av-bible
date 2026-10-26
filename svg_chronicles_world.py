@@ -562,7 +562,9 @@ class World:
         Hebron the son of Kohath and "Shechem in the hill country of
         Ephraim" was lighting Shechem the son of Gilead. A verse about a
         place should light nothing and let the camera breathe out, which is
-        what its neighbours in the same passage already do.
+        what its neighbours in the same passage already do. A scene that
+        turns to towns partway through flags only those verses (sc()), so
+        the caller passes the flag as it stands for this one verse.
 
         Only the fallback goes. A row the tree DID lift still resolves
         through its `src` stamp, so if the chart ever grows a town the verse
@@ -718,11 +720,15 @@ class World:
                         if sec is None:     # no MP3 yet: ~150 wpm estimate
                             sec = 0.40 * len(texts.get(v, "").split()) + 0.7
                         self.narr[(ch, v)] = sec
+                    # `places` is a whole scene's flag, or the set of
+                    # verses where a scene turns to towns (sc()).
+                    p = scene.get("places")
+                    p = (v in p) if isinstance(p, (set, frozenset)) \
+                        else bool(p)
                     named = []
                     for n in self._resolve_verse(ch, title,
                                                  highlights.get(v, []),
-                                                 rows, anchor,
-                                                 scene.get("places")):
+                                                 rows, anchor, p):
                         if n not in named:
                             named.append(n)
                     new = [n for n in named if n not in seen]

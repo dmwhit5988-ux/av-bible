@@ -80,6 +80,13 @@ def sc(title, lo, hi, cols, explicit=None, foot=None, places=False):
     point — Hebron and Shechem are perfectly good people twenty verses
     earlier in the same chapter, and a blocklist of names would put out
     their lights too.
+
+    `places` is True for a scene that is all towns, or a set of verse
+    numbers for a scene that turns to towns partway through. "The sons of
+    Ephraim" names its people in 7:20-27 and its towns in 7:28-29, where
+    "Shechem also and its towns" was lighting the Manassite Shechem son of
+    Gilead; the whole scene can't be flagged, because Ephraim himself at
+    7:20 lights only through the name.
     """
     return dict(title=title, verses=(lo, hi), cols=cols,
                 explicit=explicit or {}, foot=foot, places=places)
@@ -293,6 +300,7 @@ CH1 = [
     ], explicit={
         38: ["Seir", "Lotan", "Shobal", "Zibeon", "Anah#2", "Dishon#2",
              "Ezer", "Dishan"],
+        41: ["Anah", "Dishon", "Hamran", "Eshban", "Ithran", "Cheran"],
     }),
     sc("The kings of Edom", 43, 50, [
         [T(("~kings in Edom before any king reigned over Israel:", [])),
@@ -305,7 +313,10 @@ CH1 = [
            ("Baal Hanan", "son of Achbor"),
            ("Hadad", "his city: Pai", [
                ("Mehetabel", "his wife, daughter of Matred")]))],
-    ], foot="each king reigned in the place of the one before"),
+    ], explicit={
+        47: ["Hadad", "Samlah"],
+        50: ["Baal Hanan", "Hadad#2", "Mehetabel"],
+    }, foot="each king reigned in the place of the one before"),
     sc("The chiefs of Edom", 51, 54, [
         [T(("~after Hadad died —", [])),
          T(("~the chiefs of Edom:", [
@@ -575,7 +586,10 @@ CH4 = [
              ("Eshtemoa", "the Maacathite")])),
          T(("Shimon", ["Amnon", "Rinnah", "Ben Hanan", "Tilon"])),
          T(("Ishi", ["Zoheth", "Ben Zoheth"]))],
-    ]),
+    ], explicit={
+        17: ["Ezrah", "Jether", "Mered", "Epher", "Jalon", "Miriam",
+             "Shammai", "Ishbah"],
+    }),
     sc("The sons of Shelah", 21, 23, [
         [T(("Shelah", "the son of Judah", [
             ("Er", "the father of Lecah"),
@@ -653,7 +667,7 @@ CH5 = [
            ("Beerah", "prince of the Reubenites, exiled"))],
         [T(("~his brothers by their families:", [
             ("Jeiel", "the chief"), "Zechariah",
-            ("Bela", "son of Azaz, son of Shema")])),
+            ("Bela", "son of Azaz, son of Shema, son of Joel")])),
          T(("~they lived in Aroer, to Nebo and Baal Meon,", [])),
          T(("~eastward toward the Euphrates — and in Saul’s", [])),
          T(("~days they defeated the Hagrites in their tents", []))],
@@ -661,6 +675,7 @@ CH5 = [
         1: ["~Reuben was the firstborn, but he defiled",
             "~his father’s couch — his birthright went to"],
         2: ["~the sons of Joseph; from Judah came the prince"],
+        8: ["Bela"],
         9: ["~eastward toward the Euphrates — and in Saul’s"],
         10: ["~days they defeated the Hagrites in their tents"],
     }),
@@ -700,6 +715,7 @@ CH5 = [
          T(("~they lived there until the captivity", []))],
     ], explicit={
         18: ["~Reuben, Gad, and half-Manasseh:", "44,760 men"],
+        19: ["~they made war with the Hagrites —"],
         20: ["~they cried to God in the battle, and he",
              "~answered, because they trusted in him"],
         21: ["50,000", "250,000", "2,000", "100,000"],
@@ -982,7 +998,7 @@ CH7 = [
              "~also his sons Ezer and Elead, killed by the",
              "~men of Gath when they came for the livestock;"],
         22: ["~Ephraim their father mourned many days"],
-    }),
+    }, places={28, 29}),
     sc("The sons of Asher", 30, 40, [
         [T(("Asher", ["Imnah", "Ishvah", "Ishvi",
                       ("Beriah", [
