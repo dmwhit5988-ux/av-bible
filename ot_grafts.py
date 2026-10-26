@@ -17,8 +17,11 @@ generations run back to a Hezekiah in Josiah's day.
 
 Where a graft rests on an inference rather than a statement, the edge is
 dashed and the note says what the inference is. Where two books disagree —
-and they do, often — both are drawn and the disagreement is written on the
-node rather than quietly resolved.
+and they do, often — the disagreement is written on the node rather than
+quietly resolved. Usually both lines are drawn. Numbers 26's clan list is
+the exception: its Iezer, Asriel and Shemida are men 1 Chronicles 7 already
+names, so each keeps the box his verse lights and Numbers' reading goes in
+its note.
 
 Every entry cites its verse. Spellings are the WEB's throughout.
 """
@@ -345,21 +348,49 @@ def _numbers(T, jos):
           "same Elishama, Joshua's grandfather")
 
     # -- Machir's house: Numbers 26:29-33 against 1 Chronicles 7 ---------
-    machir = T.find("Machir")
-    gilead = D("Gilead", "1 Chr 7:14 calls Machir his father; Numbers "
-               "26:29-33 hangs Manasseh's whole clan list on him",
-               ref="Num 26:29")
-    gilead.kids = [N(x, link="dash") for x in
-                   ("Iezer", "Helek", "Asriel", "Shechem", "Shemida")]
-    gilead.kids.append(N("Hepher", "Numbers 26:33 makes Zelophehad his son; "
-                         "1 Chr 7:15 makes Zelophehad Machir's",
-                         link="dash", ref="Num 26:33"))
-    machir.kids.append(gilead)
-    zel = T.find("Zelophehad")
+    #
+    # 1 Chr 7:14 gives the tree its Gilead ("Machir the father of Gilead"),
+    # and Numbers 26:30-32 names his sons. Three of those six are already
+    # here from 1 Chronicles 7, so they are not drawn twice: Iezer is the
+    # 7:18 Abiezer (Joshua 17:2 has Abiezer in his place), Asriel is the
+    # 7:14 one, and Shemida, whose father 7:19 never names, moves under
+    # Gilead with his four sons. Each keeps the box its verse lights.
+    man = T.find("Manasseh", under=jos)
+    machir = next(k for k in man.kids if k.label == "Machir")
+    gilead = next(k for k in machir.kids if k.label == "Gilead")
+    assert gilead.src and gilead.src[1] == "The sons of Manasseh", gilead
+    gilead.ref = gilead.ref or "Num 26:29"
+    _note(gilead, "Numbers 26:29-32 makes him the father of Manasseh's "
+          "clans — Iezer (Abiezer), Helek, Asriel, Shechem, Shemida, Hepher")
+    asr = next(k for k in man.kids if k.label == "Asriel")
+    _note(asr, "Numbers 26:31 lists him among the sons of Gilead; Joshua "
+          "17:2 among the male children of Manasseh")
+    abz = T.find("Abiezer", under=machir)
+    _note(abz, "Numbers 26:30 calls him Iezer and makes him a son of "
+          "Gilead; Joshua 17:2 calls him Abiezer")
+    sh = next(k for k in machir.kids if k.label == "Shemida")
+    assert sh.src and sh.src[1] == "The sons of Manasseh", sh
+    machir.kids.remove(sh)
+    sh.link = "solid"
+    sh.note = ("his sons are named in 1 Chr 7:19; Numbers 26:32 makes him "
+               "Gilead's son")
+    sh.ref = "7:19; Num 26:32"
+    hepher = N("Hepher", "Zelophehad's father — Numbers 26:33; 27:1; "
+               "Joshua 17:3", ref="Num 26:32")
+    gilead.kids += [N("Helek", ref="Num 26:30"), N("Shechem", ref="Num 26:31"),
+                    sh, hepher]
+    # 7:15's "the second" names no father; Numbers 26:33, 27:1 and Joshua
+    # 17:3 all make Zelophehad Hepher's son. He keeps his 7:15 stamp.
+    zel = next(k for k in machir.kids if k.label == "Zelophehad")
+    machir.kids.remove(zel)
+    zel.link = "solid"
+    zel.note = ("“the second” — 1 Chr 7:15 · the son of Hepher, the son of "
+                "Gilead — Numbers 27:1; Joshua 17:3 · who had no sons, but "
+                "daughters")
+    hepher.kids.append(zel)
     zel.kids = [N(d, "one of the five who came before Moses and got their "
                   "father's inheritance", kind="woman", ref="Num 27:1")
                 for d in ("Mahlah", "Noah", "Hoglah", "Milcah", "Tirzah")]
-    _note(zel, "who had no sons")
 
     # -- Judges ----------------------------------------------------------
     T.child("Abiezer", D("Joash", "the Abiezrite, of Ophrah",
@@ -371,11 +402,20 @@ def _numbers(T, jos):
                                    N("Abimelech", "who killed his seventy "
                                      "brothers on one stone and reigned "
                                      "three years", ref="Judg 9",
-                                     kind="king")])]), link="dash")
-    T.child("Gilead", D("Jephthah", "the Gileadite, a mighty man of valor, "
-                        "the son of a prostitute, whom his brothers drove "
-                        "out — and who judged Israel six years",
-                        ref="Judg 11:1-2", icon="sword"), link="dash")
+                                     kind="king")])]),
+            under=machir, link="dash")
+    # Judges 11:1 "Gilead became the father of Jephthah" — a father of the
+    # judges' day, not Machir's son. Jephthah hangs solid under him; only
+    # the join to the clan of Gilead is inferred, so that edge is dashed.
+    T.child("Gilead", D("Gilead", "Jephthah's father, a man of the judges' "
+                        "day — Judges 11:1-2; hung on the clan of Gilead son "
+                        "of Machir, though Judges never names his tribe",
+                        ref="Judg 11:1", kids=[
+                            N("Jephthah", "the Gileadite, a mighty man of "
+                              "valor, the son of a prostitute, whom his "
+                              "brothers drove out — and who judged Israel "
+                              "six years", ref="Judg 11:1-2", icon="sword")]),
+            under=machir, link="dash")
     T.link(T.find("Jair", 1), T.find("Jephthah"),
            "Jair the Gileadite, who judged Israel — Judges 10:3")
     T.child("Dan", D("Manoah", "of Zorah, of the family of the Danites",

@@ -1041,14 +1041,24 @@ def _northern(T):
     jos.note = "the birthright was his — 5:1-2"
     jos.kids = [N("Manasseh", link="solid", ref="7:14"),
                 N("Ephraim", link="solid", ref="7:20")]
-    T.children("Manasseh", blk(7, "The sons of Manasseh", 0, 0),
-               under=jos, ref="7:14")
+    # 7:14 gives Machir his son Gilead ("Machir the father of Gilead"), so
+    # Gilead comes in from the scene, solid; Numbers 26 hangs its clan list
+    # on this box (ot_grafts._numbers).
+    man = T.children("Manasseh", blk(7, "The sons of Manasseh", 0, 0),
+                     under=jos, ref="7:14")
     T.find("Asriel").note = "whom his Aramitess concubine bore"
+    # 7:14 — the concubine who bore both sons. She stands beside them, as
+    # Israel's and David's wives do, and has no children of her own on the
+    # chart: Asriel and Machir stay under Manasseh, so Machir's house keeps
+    # its generation. Her box is the scene's row, so 7:14 lights her.
+    aram = man.kids[0]
+    assert aram.label == "the Aramitess", aram
+    aram.kind, aram.link, aram.ref = "woman", "wife", "7:14"
+    aram.note = "his concubine — she bore Asriel and Machir — 7:14"
     mach = T.children("Machir", blk(7, "The sons of Manasseh", 0, 1),
                       ref="7:15-16")
     maa = T.find("Maacah", 1, under=mach)     # 7:16 "the wife of Machir"
     maa.kind, maa.link = "woman", "wife"
-    T.find("Zelophehad").note = "who had daughters — Numbers 27:1"
     T.children("Maacah", blk(7, "The sons of Manasseh", 1, 0), nth=1,
                under=T.find("Machir"))
     T.descent("Ulam", chain(7, "The sons of Manasseh", 1, 1)[1:], ref="7:17")

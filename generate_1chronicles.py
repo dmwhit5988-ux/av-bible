@@ -970,8 +970,9 @@ CH7 = [
     ]),
     sc("The sons of Manasseh", 14, 19, [
         [T(("Manasseh", [
+            ("the Aramitess", "his concubine"),
             ("Asriel", "whom his Aramitess concubine bore"),
-            ("Machir", "the father of Gilead")])),
+            ("Machir", "the father of Gilead", ["Gilead"])])),
          T(("Machir", "took a wife of Huppim and Shuppim", [
              ("Maacah", "his wife"),
              ("Zelophehad", "the second — had daughters")]))],
@@ -985,7 +986,9 @@ CH7 = [
             "Ishhod", "Abiezer", "Mahlah"])),
          T(("Shemida", ["Ahian", "Shechem", "Likhi", "Aniam"]))],
     ], explicit={
-        17: ["Ulam#2", "Bedan", "~these were the sons of Gilead,",
+        # "These were the sons of Gilead the son of Machir" — the verse is
+        # pinned, so Gilead lights here only by being named in the list.
+        17: ["Ulam#2", "Bedan", "~these were the sons of Gilead,", "Gilead",
              "~the son of Machir, the son of Manasseh"],
     }),
     sc("The sons of Ephraim", 20, 29, [
