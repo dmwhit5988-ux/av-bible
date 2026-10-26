@@ -548,8 +548,7 @@ CH4 = [
         [T(("Ashhur", "the father of Tekoa — two wives:", [
             ("Naarah", ["Ahuzzam", "Hepher", "Temeni", "Haahashtari"]),
             ("Helah", ["Zereth", "Izhar", "Ethnan"])])),
-         T(("Hakkoz", ["Anub", "Zobebah",
-                       ("Aharhel", "the son of Harum")]))],
+         T(("Hakkoz", ["Anub", "Zobebah", ("Harum", ["Aharhel"])]))],
     ]),
     sc("The prayer of Jabez", 9, 10, [
         [T(("Jabez", "more honorable than his brothers — his mother "
@@ -580,8 +579,8 @@ CH4 = [
          T(("Othniel", ["Hathath",
                         ("Meonothai", ["Ophrah"])])),
          T(("Seraiah", [("Joab", "father of Ge Harashim")]))],
-        [T(("Caleb", "the son of Jephunneh", [
-            "Iru", ("Elah", ["Kenaz"]), "Naam"]))],
+        [T(("Jephunneh", [("Caleb", "the son of Jephunneh", [
+            "Iru", ("Elah", ["Kenaz"]), "Naam"])]))],
     ], explicit={
         13: ["Kenaz", "Othniel", "Seraiah", "Othniel#2", "Hathath"],
     }),
@@ -595,10 +594,9 @@ CH4 = [
                 ("Jered", "father of Gedor"),
                 ("Heber", "father of Soco"),
                 ("Jekuthiel", "father of Zanoah")])]))],
-        [T(("~the sons of the wife of Hodiah,", [])),
-         T(("~the sister of Naham:", [
-             ("Keilah", "the Garmite — his father"),
-             ("Eshtemoa", "the Maacathite")])),
+        [T(("Hodiah", [("the sister of Naham", [
+            ("Keilah", "the Garmite — his father"),
+            ("Eshtemoa", "the Maacathite")])])),
          T(("Shimon", ["Amnon", "Rinnah", "Ben Hanan", "Tilon"])),
          T(("Ishi", ["Zoheth", "Ben Zoheth"]))],
     ], explicit={
@@ -1167,7 +1165,7 @@ CH9 = [
          T(("Jeuel", "of the sons of Zerah — 690 brothers"))],
         [T(("~of Benjamin:", [])),
          C("Sallu", "Meshullam", "Hodaviah", "Hassenuah"),
-         T(("Ibneiah", "the son of Jeroham")),
+         C("Ibneiah", "Jeroham"),
          C("Elah", "Uzzi", "Michri")],
         [C("Meshullam", "Shephatiah", "Reuel", "Ibnijah"),
          T(("~956 brothers by their generations —", [])),
@@ -1209,7 +1207,7 @@ CH9 = [
          T(("~the Korahites kept the thresholds of the tent,", [])),
          T(("~as their fathers kept the entry of Yahweh’s camp", []))],
         [T(("Phinehas", "son of Eleazar — ruler in time past")),
-         T(("Zechariah", "son of Meshelemiah — door keeper")),
+         C(("Zechariah", "door keeper"), "Meshelemiah"),
          T(("~212 chosen gatekeepers, ordained in their", [])),
          T(("~office of trust by David and Samuel the seer", [])),
          T(("~they and their children kept the gates", [])),

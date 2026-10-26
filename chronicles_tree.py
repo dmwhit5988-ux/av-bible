@@ -641,12 +641,16 @@ def _david(T):
     T.find("Zerubbabel").icon = "house"
     T.find("Zerubbabel").note = ("who laid the second temple's foundation — "
                                  "Ezra 3:8")
-    T.children("Hananiah", blk(3, "The line after the exile", 1, 0),
-               ref="3:21")
-    T.descent("Pelatiah", chain(3, "The line after the exile", 1, 2),
-              ref="3:21", link="dash")
-    T.find("Rephaiah").note = ("3:21 sets these four beside Hananiah's sons "
-                               "without naming their father")
+    han = T.children("Hananiah", blk(3, "The line after the exile", 1, 0),
+                     ref="3:21")
+    # 3:21 "the sons of Rephaiah, the sons of Arnan, the sons of Obadiah, the
+    # sons of Shecaniah": four families beside Hananiah's sons, with no
+    # father named and no "his son" between them (the WEB, with the Hebrew;
+    # the Greek reads a chain from Jeshaiah). Each hangs dashed on Hananiah.
+    for n in chain(3, "The line after the exile", 1, 2):
+        n.note = ("3:21 sets these four beside Hananiah's sons without "
+                  "naming their father")
+        T.child("Hananiah", n, under=han, link="dash", ref="3:21")
     T.descent("Shecaniah", chain(3, "The last generations recorded", 0, 0)[1:],
               ref="3:22")
     T.children("Shemaiah", blk(3, "The last generations recorded", 0, 0)
@@ -705,6 +709,12 @@ def _judah_more(T):
         n.kind, n.link = "woman", "wife"
     hak = blk(4, "Families of Judah", 2, 1)
     hak.note = "4:8 gives no father"
+    # 4:8 "the families of Aharhel the son of Harum": Aharhel's father is
+    # Harum, and Hakkoz is the forebear of the families.
+    har = named(hak, "Harum")
+    har.link = "dash"
+    har.note = ("4:8 — Hakkoz fathered 'the families of Aharhel the son of "
+                "Harum'; how Harum joins Hakkoz is not said")
     T.child("Judah", hak, link="dash", ref="4:8")
 
     jab = blk(4, "The prayer of Jabez", 0, 0)
@@ -718,21 +728,32 @@ def _judah_more(T):
 
     # 4:13-15 — Kenaz, Othniel and Caleb son of Jephunneh. A DIFFERENT Caleb
     # from Hezron's son, and the chart says so rather than merging them.
-    calj = blk(4, "Kenaz and Caleb's families", 2, 0)
-    calj.note = ("the spy — a Kenizzite (Numbers 32:12), not the Caleb son "
-                 "of Hezron in chapter 2")
-    T.child("Judah", calj, link="dash", ref="4:15")
+    # 4:15 names his father; the father's own descent is not given.
+    jeph = blk(4, "Kenaz and Caleb's families", 2, 0)
+    jeph.note = ("4:15 — Caleb's father; the Kenizzite (Numbers 32:12); "
+                 "Chronicles gives no further ancestry")
+    calj = named(jeph, "Caleb")
+    calj.note = ("the son of Jephunneh — the spy (Numbers 13:6), not the "
+                 "Caleb son of Hezron")
+    T.child("Judah", jeph, link="dash", ref="4:15")
     kenaz = blk(4, "Kenaz and Caleb's families", 1, 0)
     T.child("Judah", kenaz, link="dash", ref="4:13-14")
-    T.children("Othniel", blk(4, "Kenaz and Caleb's families", 1, 1))
+    oth = T.children("Othniel", blk(4, "Kenaz and Caleb's families", 1, 1))
     T.children("Seraiah", blk(4, "Kenaz and Caleb's families", 1, 2))
-    T.find("Othniel").note = "Israel's first judge — Judges 3:9"
-    T.find("Othniel").icon = "sword"
+    oth.note = "Israel's first judge — Judges 3:9"
+    oth.icon = "sword"
+    # 4:13-14 "The sons of Othniel: Hathath. Meonothai became the father of
+    # Ophrah": the WEB names no father for Meonothai. He stays under
+    # Othniel, whose line 4:14 sets beside Seraiah's, on a dashed join.
+    meo = T.find("Meonothai", under=oth)
+    meo.link = "dash"
+    meo.note = ("4:14 gives no father; some Greek copies and the Latin read "
+                "“the sons of Othniel: Hathath and Meonothai”")
     T.link(T.find("Kenaz", 2), T.find("Kenaz", 3),
            "Caleb the Kenizzite and Othniel son of Kenaz — Joshua 15:17")
 
     for col, i, ref in ((0, 0, "4:16"), (0, 1, "4:17-18"),
-                        (2, 2, "4:20"), (2, 3, "4:20")):
+                        (2, 1, "4:20"), (2, 2, "4:20")):
         n = blk(4, "More families of Judah", col, i)
         n.note = (n.note + " · " if n.note else "") + f"{ref} gives no father"
         T.child("Judah", n, link="dash", ref=ref)
@@ -748,12 +769,17 @@ def _judah_more(T):
     jew = T.find("the Jewess", under=mer)
     jew.label = "his wife the Jewess"
     jew.kind, jew.link, jew.note = "woman", "wife", "4:18"
-    hod = blk(4, "More families of Judah", 2, 1)
-    hod.label = "the wife of Hodiah, the sister of Naham"
-    hod.kind, hod.link, hod.note = "woman", "dash", "4:19"
+    # 4:19 "the sons of the wife of Hodiah, the sister of Naham": in the WEB
+    # Hodiah is the husband (the KJV reads it as her name), so he takes the
+    # dashed join under Judah and she the wife line under him.
+    hod = blk(4, "More families of Judah", 2, 0)
+    assert hod.label == "Hodiah", hod
+    hod.note = "4:19 gives no father"
+    nah = named(hod, "the sister of Naham")
+    nah.kind, nah.link, nah.note = "woman", "wife", "Hodiah's wife — 4:19"
     # 4:19 her sons "were the father of Keilah the Garmite, and Eshtemoa":
     # the son is unnamed, and Keilah is a town (Joshua 15:44).
-    kei = named(hod, "Keilah")
+    kei = named(nah, "Keilah")
     kei.label = "the father of Keilah"
     kei.note = "the Garmite"
     T.child("Judah", hod, link="dash", ref="4:19")
@@ -1034,13 +1060,26 @@ def _northern(T):
     ber = blk(7, "The sons of Ephraim", 1, 0)
     ber.note = "“there was trouble with his house” — born to Ephraim after"
     T.child("Ephraim", ber, ref="7:23")
+    # 7:24 "His daughter was Sheerah": "his" may be Beriah, just named, or
+    # Ephraim, the subject of 7:22-23. She stays under Beriah, dashed.
     sheer = blk(7, "The sons of Ephraim", 1, 1)
     sheer.kind = "woman"
-    sheer.note = "his daughter, who built Lower and Upper Beth Horon"
-    T.child("Beriah", sheer, nth=1, under=T.find("Ephraim"), ref="7:24")
-    T.descent("Beriah", chain(7, "The sons of Ephraim", 1, 3), nth=1,
-              under=T.find("Ephraim"), ref="7:25-27", link="dash")
-    T.find("Rephah").note = "7:25 continues the house without naming the join"
+    sheer.note = ("his daughter (7:24 'his' — Beriah's or Ephraim's), who "
+                  "built Lower and Upper Beth Horon")
+    T.child("Beriah", sheer, under=ber, link="dash", ref="7:24")
+    # 7:25 "Rephah was his son, and Resheph, and Telah his son": Resheph
+    # alone has no "his son", so he is read as Rephah's brother (Keil &
+    # Delitzsch), and the line runs on through Rephah to Telah and Joshua.
+    line = chain(7, "The sons of Ephraim", 1, 3)     # Rephah, Resheph, Telah…
+    reph, resh = line[0], line[1]
+    assert (reph.label, resh.label) == ("Rephah", "Resheph"), line[:2]
+    T.descent("Beriah", [reph] + line[2:], under=ber, ref="7:25-27",
+              link="dash")
+    reph.note = "7:25 continues the house without naming the join"
+    resh.link, resh.ref = "dash", "7:25"
+    resh.note = ('7:25 "Rephah was his son, and Resheph" — no "his son", '
+                 "read as Rephah's brother")
+    ber.kids.insert(ber.kids.index(reph) + 1, resh)
     josh = T.find("Joshua")
     josh.note = "who brought Israel into the land"
     josh.icon = "sword"
@@ -1163,10 +1202,11 @@ def _benjamin(T):
 
     saul = blk(8, "The house of Saul", 0, 0)          # Ner -> Kish -> Saul …
     T.children("Ner", saul, ref="8:33-40")
-    T.find("Saul").kind = "king"
-    T.find("Saul").icon = "sword"
-    T.find("Saul").note = "the first king — 10:13-14 tells how he died"
-    T.find("Jonathan", under=T.find("Saul")).note =         "his son Merib Baal is the Mephibosheth of 2 Samuel 4:4"
+    king = T.find("Saul", under=saul)
+    king.kind = "king"
+    king.icon = "sword"
+    king.note = "the first king — 10:13-14 tells how he died"
+    T.find("Jonathan", under=king).note =         "his son Merib Baal is the Mephibosheth of 2 Samuel 4:4"
     T.find("Azel").note = "9:44 repeats his six sons"
     # 9:35-44 tells this house a second time and spells four of it
     # differently. The doubled label is how the tree already carries one man
@@ -1179,10 +1219,13 @@ def _benjamin(T):
             continue
         n.label = f"{a} · {b}"
         n.note = f"9:35-44 spells him {b}"
+    # 8:39 "the sons of Eshek his brother" follows "All these were the sons
+    # of Azel" (8:38): Eshek is Azel's brother, a son of Eleasah (8:37).
+    # Scoped to Saul's house — a bare "Eleasah" finds Sheshan's (2:39-40).
     esh = blk(8, "The house of Saul", 1, 0)
-    esh.note = "his brother — his son Ulam's sons were mighty men of valor, " \
-               "archers, 150 sons and sons' sons"
-    T.child("Ner", esh, ref="8:39-40")
+    esh.note = "Azel's brother — his son Ulam's sons were mighty men of " \
+               "valor, archers, 150 sons and sons' sons"
+    T.child("Eleasah", esh, under=king, ref="8:39-40")
 
 
 def _house(ch, title, col, i, label):
@@ -1224,13 +1267,12 @@ def _return(T):
     ben = N("of Benjamin, in Jerusalem", "9:7-9 — 956 brothers by their "
             "generations, all heads of fathers' households", kind="house",
             link="dash", ref="9:7-9")
-    for col, i in ((1, 1), (1, 3), (2, 0)):
+    # In verse order: Sallu, Ibneiah (the son of Jeroham — not 8:27's
+    # Jeroham, whose sons are others), Elah, Meshullam.
+    for col, i in ((1, 1), (1, 2), (1, 3), (2, 0)):
         c = upward(9, "Of Judah and Benjamin in Jerusalem", col, i)
         c.link = "dash"
         ben.kids.append(c)
-    ibn = blk(9, "Of Judah and Benjamin in Jerusalem", 1, 2)
-    ibn.link = "dash"
-    ben.kids.append(ibn)
     T.child("Benjamin", ben, link="dash", ref="9:7-9")
 
     # The priests: 9:11 read upward lands on Ahitub, in Aaron's line.
@@ -1278,25 +1320,47 @@ def _return(T):
     T.child("Levi", misc, link="dash", ref="9:15")
 
     # The gatekeepers: 9:19 read upward lands on Korah's son Ebiasaph.
-    gate = upward(9, "The gatekeepers", 0, 3, drop=2)    # after Korah,Ebiasaph
+    gate = upward(9, "The gatekeepers", 0, 3, drop=2)    # Kore > Shallum
     gate.link = "dash"
     gate.note = "9:17-19 — the chief of the gatekeepers, who with his " \
                 "brothers kept the thresholds of the tent as their fathers " \
                 "kept the entry of Yahweh's camp"
-    for lbl, nt in (("Akkub", "a gatekeeper"), ("Talmon", "a gatekeeper"),
-                    ("Ahiman", "a gatekeeper")):
-        gate.kids.append(N(lbl, nt, link="dash"))
-    gate.kids.append(N("Zechariah", "son of Meshelemiah — keeper of the "
-                       "door of the tent of meeting, 9:21", link="dash"))
+    shal = named(gate, "Shallum")
+    # 9:21 "Zechariah the son of Meshelemiah"; 26:1-2 "Meshelemiah the son
+    # of Kore … Zechariah the firstborn". Not Shallum under another name:
+    # 9:31 gives Shallum a different firstborn.
+    mesh = upward(9, "The gatekeepers", 1, 1)            # Meshelemiah > Zech.
+    mesh.note = "the son of Kore — 26:1; Shelemiah, 26:14"
+    named(mesh, "Zechariah").note = ("keeper of the door of the tent of "
+                                     "meeting — 9:21; the firstborn, 26:2")
+    gate.kids.append(mesh)
     T.child("Ebiasaph", gate, nth=1, link="dash", ref="9:17-21")
+    # 9:17 "The gatekeepers: Shallum, Akkub, Talmon, Ahiman" gives the other
+    # three no father, and gatekeepers came from Merari too (26:10), so they
+    # stand in a group under Levi ("the four chief gatekeepers, who were
+    # Levites", 9:26), not as Shallum's brothers. 9:17's Shallum is the man
+    # of 9:19, so that row is bound to him.
+    four = blk(9, "The gatekeepers", 0, 0)
+    assert [k.label for k in four.kids] == \
+        ["Shallum", "Akkub", "Talmon", "Ahiman"], four.kids
+    keepers = N("the gatekeepers", "9:17 gives no father; the four chiefs "
+                "were Levites, 9:26; 212 in all, 9:22", kind="house",
+                link="dash", ref="9:17-26")
+    for k in four.kids[1:]:
+        k.link = "dash"
+        keepers.kids.append(k)
+    T.child("Levi", keepers, link="dash", ref="9:17-26")
+    T.bind[(9, "The gatekeepers", 1)] = shal
     # 9:20 "Phinehas the son of Eleazar" is Aaron's grandson (6:4), not
     # Eli's son of Ithamar's house; the row has no node of its own.
     ele = T.find("Eleazar", under=T.find("Aaron"))
     T.bind[(9, "The gatekeepers", 13)] = T.find("Phinehas", under=ele)
+    # 9:31 "Mattithiah … the firstborn of Shallum the Korahite": the
+    # gatekeeper of 9:17-19.
     mat2 = blk(9, "Duties of the temple service", 1, 0)   # Mattithiah
-    mat2.link = "dash"
-    mat2.note = "a Korahite, over the things baked in pans — 9:31"
-    T.child("Korah", mat2, under=T.find("Kohath"), link="dash", ref="9:31")
+    mat2.note = ("the firstborn of Shallum the Korahite; over the things "
+                 "baked in pans")
+    T.child("Shallum", mat2, under=shal, link="solid", ref="9:31")
 
     # 9:2 names four classes, not four men: "Israel, the priests, the
     # Levites, and the temple servants" (Neh 11:3 lists the same). The lay

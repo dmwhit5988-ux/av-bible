@@ -659,7 +659,7 @@ def draw_masthead(c, x, y, T, stats):
         "%(people)d people and %(houses)d houses; %(solid)d stated "
         "descents, %(dash)d implied ones and %(wife)d doubled lines to a "
         "wife or mother. Every one of them reaches Adam." % stats,
-        "The deepest line runs 64 generations, Adam to Hodaviah son of "
+        "The deepest line runs 60 generations, Adam to Hodaviah son of "
         "Elioenai. The small grey number in each box says which.",
         "A person is here only if the text gives a join. Isaiah is not — "
         "\u201cson of Amoz\u201d joins nothing. Zephaniah is: his four "

@@ -15,10 +15,10 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 27,163 × 15,617 px, about 1.4 MB, 1,270 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,889 × 15,551 px, about 1.4 MB, 1,279 boxes | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
-| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 66,016 × 11,967 px, about 1.5 MB, 1,285 boxes | `generate_ot_timeline_svg.py` |
+| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 67,178 × 11,858 px, about 1.5 MB, 1,294 boxes | `generate_ot_timeline_svg.py` |
 
 ## The Old Testament family tree
 
@@ -80,7 +80,7 @@ It is a **frozen file with no generator.** It has been deployed since 2026-08-14
 The same tree laid on a year scale: every box sits at its year, and a rail down the left gives the year.
 
 - **The scale.** The axis is one monotone, piecewise-linear map. It opens out where the tree is dense in time, such as the monarchy, and closes up where nothing is recorded. The tick spacing shows where.
-- **What is dated.** 87 of 1,244 people are dated. Undated boxes sit between their nearest dated ancestor and descendant.
+- **What is dated.** 87 of 1,252 people are dated. Undated boxes sit between their nearest dated ancestor and descendant.
 - **The year rails.** Ussher's years run throughout, with Thiele's on a right-hand rail.
 - **Data.** `chronology.py` holds the dates and their binding to the tree. `matthew_tree.py` carries the line on past Zerubbabel to Jesus.
 - **Design record.** [design/ot-timeline.md](design/ot-timeline.md).

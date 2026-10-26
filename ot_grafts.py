@@ -450,25 +450,26 @@ def _samuel(T):
     T.child("Ithamar", eli, link="dash")
 
     # -- Samuel's mother --------------------------------------------------
+    # Elkanah's two wives (1 Sam 1:2) stand beside Samuel; Samuel stays
+    # under Elkanah.
     sam = T.find("Samuel")
-    elk = sam.parent
-    if elk is not None:
-        elk.kids.insert(0, W("Hannah", "who was in bitterness of soul and "
-                             "vowed her son to Yahweh all the days of his "
-                             "life", ref="1 Sam 1:11"))
-        elk.kids.insert(1, W("Peninnah", "his other wife, who had children "
-                             "and provoked her", ref="1 Sam 1:2"))
-        _note(elk, "of Ramathaim Zophim in the hill country of Ephraim — "
-                   "1 Sam 1:1 traces him back through Jeroham, Elihu, Tohu "
-                   "and Zuph, the same line as 6:26-27")
+    elk = _parent(T, sam)
+    elk.kids.insert(0, W("Hannah", "who was in bitterness of soul and "
+                         "vowed her son to Yahweh all the days of his "
+                         "life", ref="1 Sam 1:11"))
+    elk.kids.insert(1, W("Peninnah", "his other wife, who had children "
+                         "and provoked her", ref="1 Sam 1:2"))
+    _note(elk, "of Ramathaim Zophim in the hill country of Ephraim — "
+               "1 Sam 1:1 traces him back through Jeroham, Elihu, Tohu "
+               "and Zuph, the same line as 6:26-27 and 6:34-35, and calls "
+               "him an Ephraimite; Chronicles makes him a Levite")
 
     # -- Saul's house -----------------------------------------------------
     saul = T.find("Saul")
-    kish = saul.parent
-    if kish is not None:
-        _note(kish, "1 Sam 9:1 traces him through Abiel, Zeror, Becorath "
-                    "and Aphiah, and 14:51 makes him Ner's brother, not "
-                    "his son")
+    kish = _parent(T, saul)
+    _note(kish, "1 Sam 9:1 traces him through Abiel, Zeror, Becorath "
+                "and Aphiah, and 14:51 makes him Ner's brother, not "
+                "his son")
     saul.kids[0:0] = [
         W("Ahinoam", "the daughter of Ahimaaz", ref="1 Sam 14:50"),
         W("Rizpah", "the daughter of Aiah, his concubine", ref="2 Sam 21:8",
@@ -501,17 +502,26 @@ def _samuel(T):
     T.link(T.find("Michal", 2), T.find("Michal", 1),
            "David married Saul's daughter — 1 Samuel 18:27")
 
+    # Bathsheba is "the daughter of Eliam" (2 Sam 11:3) and Bathshua "the
+    # daughter of Ammiel" (1 Chr 3:5): one father under two names, stated.
+    # That he is the Eliam son of Ahithophel among the thirty (2 Sam 23:34)
+    # is the inference, so that edge is the dashed one.
     ahi = D("Ahithophel", "the Gilonite, David's counselor, whose counsel "
-            "was as if a man inquired at the word of God — and who hanged "
-            "himself when it was not followed", ref="2 Sam 15-17", kids=[
-                N("Eliam", "one of David's thirty mighty men",
-                  ref="2 Sam 23:34", kids=[
+            "was as if a man inquired at the inner sanctuary of God — and "
+            "who hanged himself when it was not followed · joined to Judah "
+            "only through his town, Giloh (2 Sam 15:12; Josh 15:51); his "
+            "generation is not known", ref="2 Sam 15-17", kids=[
+                D("Eliam · Ammiel", "2 Sam 23:34 names an Eliam son of "
+                  "Ahithophel among the thirty; that he is Bathsheba's "
+                  "father is a traditional identification, not stated",
+                  ref="2 Sam 11:3; 1 Chr 3:5", kids=[
                       N("Bathsheba · Bathshua", "Uriah the Hittite's wife, "
                         "who bore Solomon", kind="woman",
                         ref="2 Sam 11:3, 1 Chr 3:5")])])
     T.child("Judah", ahi, link="dash")
     T.link(T.find("Bathsheba · Bathshua"), T.find("Solomon"),
-           "Solomon's mother was David's counsellor's granddaughter")
+           "Solomon's mother was David's counsellor's granddaughter, if her "
+           "father Eliam is Ahithophel's son (2 Sam 23:34)")
 
     abs_ = T.find("Absalom")
     _note(abs_, "who stole the hearts of the men of Israel and was caught "
@@ -522,6 +532,15 @@ def _samuel(T):
     abs_.kids.append(N("Tamar", "his daughter, a woman with a beautiful "
                        "face", kind="woman", ref="2 Sam 14:27"))
     _note(T.find("Daniel", 1), "2 Samuel 3:3 calls him Chileab")
+
+
+def _parent(T, node):
+    """The node whose children include `node`. `.parent` is not wired until
+    Tree.seal(), which runs after these grafts."""
+    for n in walk(T.root):
+        if any(k is node for k in n.kids):
+            return n
+    raise LookupError(f"{node.label!r} has no parent in the tree")
 
 
 def _has(T, label):
@@ -677,11 +696,19 @@ def _after(T):
     m = next(x for x in walk(mord) if x.label == "Mordecai")
     m.icon = "scroll"
     m.ref = "Est 2:5-6"
-    m.kids = [N("Hadassah · Esther", "his uncle's daughter, whom he took "
-                "for his own daughter when her father and mother were "
-                "dead — queen in Ahasuerus' place",
-                kind="woman", ref="Est 2:7", link="dash")]
+    # Esther is "the daughter of Abihail the uncle of Mordecai" (Est 2:15,
+    # 9:29) — his cousin, in his generation. "Uncle" is read as his
+    # father's brother, so Abihail hangs dashed beside Jair; Mordecai's
+    # adoption of her (2:7) is a cross-reference, not a parent edge.
+    est = N("Hadassah · Esther", "Mordecai's uncle's daughter, who had "
+            "neither father nor mother — made queen instead of Vashti, "
+            "Est 2:17", kind="woman", ref="Est 2:7, 2:15")
+    shim = next(x for x in walk(mord) if x.label == "Shimei")
+    shim.kids.append(D("Abihail", "Mordecai's uncle — Est 2:15, 9:29; "
+                       "'uncle' read as his father's brother",
+                       ref="Est 2:15", kids=[est]))
     T.child("Benjamin", mord, under=T.find("Israel"), link="dash")
+    T.link(est, m, "he took her for his own daughter — Est 2:7, 15")
 
     # -- Daniel 1:3-6 ----------------------------------------------------
     # "Of the royal offspring and of the nobles … of the children of
