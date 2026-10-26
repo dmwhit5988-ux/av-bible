@@ -17,7 +17,8 @@ Layout notes
   instead, which trades width for a little height.
 * The three edge styles are the tree module's, and they matter: solid is
   descent the text states, dashed is a join the text implies, doubled is a
-  wife. The legend says so on the sheet.
+  wife, or the mother a line is reckoned through. The legend says so on the
+  sheet.
 
 Output: web/visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
 """
@@ -374,7 +375,7 @@ def _drop(c, k, from_y):
     dash, wdt = LINK_STYLE.get(k.link, LINK_STYLE["solid"])
     col = {"dash": dim(SAND_DIM, 0.85), "wife": FEMALE}.get(k.link, SAND_DIM)
     c.line((kcx, from_y), (kcx, k.y), col, wdt, dash=dash)
-    if k.link == "wife":                       # doubled: a marriage
+    if k.link == "wife":                       # doubled: a wife or mother
         c.line((kcx + 3.5, from_y + 5), (kcx + 3.5, k.y), col, 1.0)
     if k.link == "dash":                       # open bead: an implied join
         c.circle(kcx, k.y - 6, 2.4, fill=BG, stroke=col, width=1.1)
@@ -610,7 +611,7 @@ def draw_masthead(c, x, y, T, stats):
         ("solid", "father to son, as the text states it"),
         ("dash", "a join the text implies but does not state — the note "
                  "on the box says what the inference is"),
-        ("wife", "a wife, and the line reckoned through her"),
+        ("wife", "a wife, or the mother the line is reckoned through"),
     ]
     for kind, what in rows:
         if kind == "solid":
@@ -656,8 +657,8 @@ def draw_masthead(c, x, y, T, stats):
     ly += 28
     notes = [
         "%(people)d people and %(houses)d houses; %(solid)d stated "
-        "descents, %(dash)d implied ones and %(wife)d marriages. Every one "
-        "of them reaches Adam." % stats,
+        "descents, %(dash)d implied ones and %(wife)d doubled lines to a "
+        "wife or mother. Every one of them reaches Adam." % stats,
         "The deepest line runs 64 generations, Adam to Hodaviah son of "
         "Elioenai. The small grey number in each box says which.",
         "A person is here only if the text gives a join. Isaiah is not — "

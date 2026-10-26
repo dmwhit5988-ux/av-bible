@@ -15,7 +15,9 @@ Three kinds of edge, and the distinction is the point of the chart:
             the son of" line hung on the ancestor it terminates in, a
             family placed under its tribe because the passage is headed by
             that tribe. Every dashed edge carries a note saying why.
-    wife    a woman through whom the next generation is reckoned.
+    wife    a wife, or the mother the line is reckoned through (Tamar,
+            Judah's daughter-in-law, 2:4). A daughter keeps the solid
+            line, even one the next generation is reckoned through.
 
 Nothing is silently merged. Where two passages give the same person a
 different father (there are several — Chronicles is not tidy), both lines
@@ -369,7 +371,8 @@ def build(ot=True):
     kings.kids = [blk(1, "The kings of Edom", 0, 1)]
     kings.kids[0].link = "dash"
     T.child("Esau", kings, link="dash")
-    T.find("Mehetabel").kind = "woman"
+    meh = T.find("Mehetabel", under=kings)       # 1:50 "his wife's name"
+    meh.kind, meh.link = "woman", "wife"
 
     chiefs = N("the chiefs of Edom", "eleven chiefs, after Hadad died — "
                "clans, not a descent", kind="house", link="dash",
@@ -416,7 +419,11 @@ def _relabel(node, label):
 def _judah(T):
     ju = T.children("Judah", blk(2, "The sons of Judah", 0, 0), ref="2:3-8")
     ju.icon = "lion"
-    T.find("Tamar").kind = "woman"
+    # 2:4 — Perez and Zerah are reckoned through her, so she takes the wife
+    # line; the note keeps it from reading as a marriage to Judah.
+    tam = T.find("Tamar", under=ju)
+    tam.kind, tam.link = "woman", "wife"
+    tam.note = "his daughter-in-law, Er's widow — Genesis 38"
 
     # 2:7 gives Achar a father (Carmi) but gives Carmi none. Joshua 7:1 puts
     # him under Zerah's son Zabdi — the Zimri of 2:6.
@@ -444,10 +451,16 @@ def _judah(T):
 
     # -- Caleb ------------------------------------------------------------
     cal = "Chelubai · Caleb"
-    T.children(cal, _relabel(blk(2, "Caleb and Hezron's later line", 0, 0),
-                             cal), ref="2:18-20")
+    caleb = T.children(cal, _relabel(blk(2, "Caleb and Hezron's later line",
+                                         0, 0), cal), ref="2:18-20")
+    # 2:18-19 — "Azubah his wife, and ... Jerioth", then "Caleb married
+    # Ephrath": three wives, not daughters.
     for w in ("Azubah", "Jerioth", "Ephrath"):
-        T.find(w).kind = "woman"
+        n = T.find(w, under=caleb)
+        n.kind, n.link = "woman", "wife"
+    T.find("Jerioth", under=caleb).note = (
+        "2:18 — the Hebrew can also make her Azubah's daughter, or another "
+        "name for Azubah")
     T.descent("Hur", chain(2, "Caleb and Hezron's later line", 1, 0)[1:],
               ref="2:19-20")
     bez = T.find("Bezalel")
@@ -480,10 +493,11 @@ def _judah(T):
     abij.note = "Hezron's wife, who bore him after he died in Caleb Ephrathah"
     T.child("Hezron", abij, link="wife")
 
-    T.children("Jerahmeel", blk(2, "The sons of Jerahmeel", 0, 0),
-               ref="2:25-33")
-    for w in ("Atarah", "Abihail"):
-        T.find(w).kind = "woman"
+    jerah = T.children("Jerahmeel", blk(2, "The sons of Jerahmeel", 0, 0),
+                       ref="2:25-33")
+    for w in ("Atarah", "Abihail"):             # 2:26, 2:29 — wives
+        n = T.find(w, under=jerah)
+        n.kind, n.link = "woman", "wife"
 
     # 2:34-41 — Sheshan had no sons; the line runs through his daughter and
     # her Egyptian husband, then thirteen generations to Elishama.
@@ -612,9 +626,10 @@ def _judah_more(T):
         n.note = "of the sons of Hur, the firstborn of Ephrathah — 4:4"
         T.child("Hur", n)
 
-    T.children("Ashhur", blk(4, "Families of Judah", 2, 0), ref="4:5-7")
-    for w in ("Naarah", "Helah"):
-        T.find(w).kind = "woman"
+    ash = T.children("Ashhur", blk(4, "Families of Judah", 2, 0), ref="4:5-7")
+    for w in ("Helah", "Naarah"):      # 4:5 "two wives, Helah and Naarah"
+        n = T.find(w, under=ash)
+        n.kind, n.link = "woman", "wife"
     hak = blk(4, "Families of Judah", 2, 1)
     hak.note = "4:8 gives no father"
     T.child("Judah", hak, link="dash", ref="4:8")
@@ -648,9 +663,11 @@ def _judah_more(T):
         n = blk(4, "More families of Judah", col, i)
         n.note = (n.note + " · " if n.note else "") + f"{ref} gives no father"
         T.child("Judah", n, link="dash", ref=ref)
-    T.children("Mered", blk(4, "More families of Judah", 1, 0), ref="4:17-18")
-    T.find("Bithiah").kind = "woman"
-    T.find("Bithiah").note = "Pharaoh's daughter, whom Mered took"
+    mer = T.children("Mered", blk(4, "More families of Judah", 1, 0),
+                     ref="4:17-18")
+    bith = T.find("Bithiah", under=mer)          # 4:18 "whom Mered took"
+    bith.kind, bith.link = "woman", "wife"
+    bith.note = "Pharaoh's daughter, whom Mered took"
     hod = blk(4, "More families of Judah", 2, 1)
     hod.label = "the wife of Hodiah, the sister of Naham"
     hod.kind, hod.link, hod.note = "woman", "dash", "4:19"
@@ -880,8 +897,10 @@ def _northern(T):
     T.children("Manasseh", blk(7, "The sons of Manasseh", 0, 0),
                under=jos, ref="7:14")
     T.find("Asriel").note = "whom his Aramitess concubine bore"
-    T.children("Machir", blk(7, "The sons of Manasseh", 0, 1), ref="7:15-16")
-    T.find("Maacah", 1, under=T.find("Machir")).kind = "woman"
+    mach = T.children("Machir", blk(7, "The sons of Manasseh", 0, 1),
+                      ref="7:15-16")
+    maa = T.find("Maacah", 1, under=mach)     # 7:16 "the wife of Machir"
+    maa.kind, maa.link = "woman", "wife"
     T.find("Zelophehad").note = "who had daughters — Numbers 27:1"
     T.children("Maacah", blk(7, "The sons of Manasseh", 1, 0), nth=1,
                under=T.find("Machir"))
@@ -1014,7 +1033,7 @@ def _benjamin(T):
     gib.note = "8:29 leaves him unnamed; 9:35 gives the name — he lived " \
                "in Gibeon"
     maac = blk(8, "The fathers of Gibeon", 0, 1)
-    maac.kind, maac.note = "woman", "his wife"
+    maac.kind, maac.link, maac.note = "woman", "wife", "his wife"
     gib.kids.insert(0, maac)
     mik = N("Mikloth", "8:31 stops at Zecher, but 8:32 goes on with "
             "Mikloth; 9:37 lists him among the sons", link="dash",

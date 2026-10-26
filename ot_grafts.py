@@ -109,11 +109,15 @@ def _genesis(T):
     haran = N("Haran", "who died before his father Terah, in Ur of the "
               "Chaldees", ref="Gen 11:28")
     lot = N("Lot", "who went with Abram out of Ur", ref="Gen 11:31")
+    # Daughters, not wives: no verse calls it a marriage, so they hang by
+    # the plain line, as Haran's daughters do.
     lot.kids = [
-        W("his firstborn daughter", "in the cave after Sodom", ref="Gen 19:37",
+        N("his firstborn daughter", "in the cave after Sodom · with child "
+          "by her father, Gen 19:36", kind="woman", ref="Gen 19:37",
           kids=[N("Moab", "the father of the Moabites to this day",
                   ref="Gen 19:37")]),
-        W("his younger daughter", None, ref="Gen 19:38",
+        N("his younger daughter", "with child by her father, Gen 19:36",
+          kind="woman", ref="Gen 19:38",
           kids=[N("Ben Ammi", "the father of the children of Ammon to this "
                   "day", ref="Gen 19:38")])]
     haran.kids = [lot,
