@@ -29,6 +29,7 @@ One contiguous family tree of the whole Old Testament, rooted at Adam.
 - Names and spellings are the WEB's, unmodified.
 - The 1 Chronicles 1–9 and Matthew 1:1–17 verse pictures are cameras over this same tree (`svg_chronicles_world.py`, `svg_matthew_world.py`). Matthew 1:18–25 is a figure stage instead (`svg_matthew_nativity.py`).
 - The wall chart and the 1 Chronicles camera use the centred layout (`generate_ot_family_tree_svg.arrange` and `place`). The Matthew camera lays the tree out with the heir under its parent (`arrange_spine` and `place_spine` in the same module), so his line of descent is a straight column.
+- `layout_regions.py` is a third layout, for the 1 Chronicles camera only. Adam to Israel's sons form one fan in strict generation rows, and each son's descendants stand in a titled panel under it. It is registered as `svg_chronicles_world.LAYOUTS["regions"]`, but `LAYOUT` is still `"centred"`, because the verse frames do not yet draw its house labels, routed lines or panels.
 
 **Reading it.** The legend is on the sheet.
 

@@ -400,6 +400,10 @@
           "edit": "the lines that join a family (stem and bus, rail and shelves, marriage bars): RAIL_OFF, RAIL_GAP, the doubled wife strand and the open bead"
         },
         {
+          "file": "layout_regions.py",
+          "edit": "the regions layout (one fan, a titled panel per son of Israel, compact couples): BAR_W, WIFE_GAP, GUTTER, LANE, SONS - used only when svg_chronicles_world.LAYOUT is \"regions\""
+        },
+        {
           "file": "generate_ot_family_tree_svg.py",
           "edit": "tree layout and house colours shared with the OT wall chart and Matthew 1 - editing one changes all three"
         }

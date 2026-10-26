@@ -219,6 +219,7 @@ class MatthewWorld(World):
         # the wall chart and 1 Chronicles still use the other one.
         arrange_spine(self.root, notes=False)
         place_spine(self.root, 0, 0)
+        self.plan = None            # the spine layout returns no plan
 
         self.nodes = list(walk(self.root))
         self.line = MT.MatthewLine(self.tree, self.at)

@@ -38,6 +38,7 @@ import os
 import struct
 
 import chronicles_tree as CT
+import layout_regions
 import svg_family_lines as FL
 from chronicles_tree import walk
 from config import WEB_AUDIO_DIR
@@ -116,9 +117,17 @@ AUDIO_DIR = WEB_AUDIO_DIR      # the narration MP3s that pace each verse
 # The switch stays because the comparison is worth being able to re-run:
 # `--spine` on the driver, `LAYOUT` here, or `World(layout=...)`. Matthew calls
 # arrange_spine directly and is unaffected by this setting.
+#
+# "regions" (layout_regions) keeps the tree one tree with honest rows: Adam
+# to Israel's sons is one fan in strict generation rows, and each son's
+# descendants stand in a titled panel under it, reached by a routed line.
+# Its place() returns a Plan (labels, routes, panels), kept as `World.plan`;
+# the other two return nothing. The verse frames do not draw its labels,
+# routes or panels yet, so it is not the live layout.
 LAYOUT = "centred"
 LAYOUTS = {"spine": (arrange_spine, place_spine),
-           "centred": (arrange, place)}
+           "centred": (arrange, place),
+           "regions": (layout_regions.arrange, layout_regions.place)}
 
 
 def _mp3_seconds(path):
@@ -511,7 +520,9 @@ class World:
 
     `order` is every (chapter, verse) of 1 Chronicles 1-9 in reading order.
     `arrivals[(ch, v)]` are the nodes first read in that verse; `focus` is
-    what the camera should frame for it.
+    what the camera should frame for it. `plan` is what the layout's place()
+    returned: a layout_regions.Plan, or None for the centred and spine
+    layouts.
     """
 
     def __init__(self, ot=True, layout=None):
@@ -519,7 +530,7 @@ class World:
         self.root = self.tree.root
         lay = LAYOUTS[layout or LAYOUT]
         lay[0](self.root, notes=False)
-        lay[1](self.root, 0, 0)
+        self.plan = lay[1](self.root, 0, 0)
 
         self.by_src = {}
         for n in walk(self.root):
