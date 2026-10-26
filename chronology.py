@@ -206,8 +206,16 @@ BIND += [
     (("Zephaniah",),           at_(630, "Zeph 1:1 — in the days of Josiah", soft=True)),
     (("Abiathar", "Hilkiah", "Jeremiah"),
                                at_(627, "Jer 1:2 — Josiah's thirteenth year")),
-    (("Jechoniah", "of the royal offspring, taken to Babylon", "Daniel"),
+    (("Judah", "of the royal offspring and of the nobles", "Daniel"),
                                at_(606, "Dan 1:1 — carried to Babylon")),
+    # Dan 1:6 names the other three in the same deportation. Undated, they
+    # would sit a generation below the house, centuries before Daniel.
+    (("Judah", "of the royal offspring and of the nobles", "Hananiah"),
+                               at_(606, "Dan 1:6 — carried to Babylon with Daniel")),
+    (("Judah", "of the royal offspring and of the nobles", "Mishael"),
+                               at_(606, "Dan 1:6 — carried to Babylon with Daniel")),
+    (("Judah", "of the royal offspring and of the nobles", "Azariah"),
+                               at_(606, "Dan 1:6 — carried to Babylon with Daniel")),
     (("Ezekiel",),             at_(593, "Ezek 1:2 — the fifth year of the captivity")),
     (("Zerubbabel",),          at_(536, "Ezra 2:2 — led the return")),
     (("Jehozadak", "Jeshua"),  at_(536, "Ezra 3:2 — built the altar")),
@@ -376,9 +384,9 @@ def estimate(root, dated):
             else:
                 t = anc_t + anc_d * (GEN_PRE if anc_t < FLOOD else GEN)
         # The tree's structure wins over the date for PLACEMENT: a son is
-        # never drawn above his father, even where the join is an inference
-        # the date contradicts (Daniel, deported in 606, hangs under
-        # Jeconiah, king in 599). The box still prints the true year.
+        # never drawn above his father, even where a dashed join is an
+        # inference the date contradicts. The box still prints the true
+        # year.
         if n.parent is not None:
             t = max(t, year[n.parent] + MIN_STEP)
         year[n] = t

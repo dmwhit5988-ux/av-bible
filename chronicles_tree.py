@@ -348,39 +348,59 @@ def build(ot=True):
     T.child(ab, blk(1, "The sons of Abraham", 1, 0), link="wife")  # Keturah
     T.find("Keturah").kind = "woman"
 
-    T.children("Esau", blk(1, "The sons of Esau", 0, 0), ref="1:35-37")
+    esau = T.children("Esau", blk(1, "The sons of Esau", 0, 0),
+                      ref="1:35-37")
+    # 1:36 lists Timna among Eliphaz's sons; Genesis 36:12 makes her his
+    # concubine, Amalek's mother. She takes the wife line beside the sons,
+    # and Amalek stays in their row.
+    tim1 = T.find("Timna", under=T.find("Eliphaz", under=esau))
+    tim1.kind, tim1.link = "woman", "wife"
 
     # -- Edom: the Horites, the kings, the chiefs --------------------------
     #
     # Seir the Horite is not Esau's descendant. The chart still joins him to
-    # the trunk, because Chronicles gives the join itself: Timna, Lotan's
-    # sister (1:39), is the Timna reckoned with Eliphaz's sons (1:36) — she
-    # bore Amalek to him (Gen 36:12). One dashed edge, and Edom is in.
+    # the trunk by the marriage Genesis states: Esau's wife Oholibamah was
+    # the daughter of Anah, the son of Zibeon the son of Seir (Gen 36:2, 14,
+    # 20, 24-25). Timna, Lotan's sister (1:39), is probably the same Timna
+    # that Genesis 36:12 gives Eliphaz as a concubine. One dashed edge, and
+    # Edom is in.
     seir = blk(1, "The sons of Seir", 0, 0)
     seir.note = ("the Horite house of Seir — joined to Esau by marriage, "
                  "not descent")
     seir.link = "dash"
     seir.ref = "1:38-42"
-    T.child("Esau", seir, link="dash")
-    T.link(T.find("Timna", 2), T.find("Timna", 1),
+    T.child("Esau", seir, under=esau, link="dash")
+    # 1:39 "Timna was Lotan's sister" — Seir's daughter, beside Lotan.
+    tim2 = named(seir, "Timna")
+    tim2.kind = "woman"
+    T.link(tim2, tim1,
            "Lotan's sister, reckoned with Eliphaz — Amalek's mother")
 
+    # 1:43-50 is a succession, not a descent: each king "reigned in his
+    # place", and four are given other fathers (in their notes). The kings
+    # stand side by side; Mehetabel stays under the second Hadad.
     kings = N("the kings of Edom", "before any king reigned over Israel — "
               "each reigned in the place of the one before, not as his son",
               kind="house", link="dash", ref="1:43-50")
-    kings.kids = [blk(1, "The kings of Edom", 0, 1)]
-    kings.kids[0].link = "dash"
-    T.child("Esau", kings, link="dash")
+    kings.kids = chain(1, "The kings of Edom", 0, 1)
+    for k in kings.kids:
+        k.link, k.kind = "dash", "king"
+    T.child("Esau", kings, under=esau, link="dash")
     meh = T.find("Mehetabel", under=kings)       # 1:50 "his wife's name"
     meh.kind, meh.link = "woman", "wife"
 
+    # The chiefs are fresh boxes (clans, not the namesakes of 1:36), but
+    # each keeps its row's src stamp, so 1:51-54 resolve by stamp and not
+    # by guessing among three Timnas and four Kenazes.
     chiefs = N("the chiefs of Edom", "eleven chiefs, after Hadad died — "
                "clans, not a descent", kind="house", link="dash",
                ref="1:51-54")
-    chiefs.kids = [N(k.label, k.note, link="dash") for k in
-                   (blk(1, "The chiefs of Edom", 0, 1).kids +
-                    blk(1, "The chiefs of Edom", 1, 0).kids)]
-    T.child("Esau", chiefs, link="dash")
+    for k in (blk(1, "The chiefs of Edom", 0, 1).kids +
+              blk(1, "The chiefs of Edom", 1, 0).kids):
+        n = N(k.label, k.note, link="dash")
+        n.src = k.src
+        chiefs.kids.append(n)
+    T.child("Esau", chiefs, under=esau, link="dash")
 
     # ===================================================================
     # II.  Israel and his twelve sons                          (1 Chr 2:1-2)
@@ -1195,8 +1215,21 @@ def _return(T):
     mat2.note = "a Korahite, over the things baked in pans — 9:31"
     T.child("Korah", mat2, under=T.find("Kohath"), link="dash", ref="9:31")
 
-    for lbl in ("the priests", "the Levites", "the temple servants"):
-        ret.kids.append(N(lbl, link="dash"))
+    # 9:2 names four classes, not four men: "Israel, the priests, the
+    # Levites, and the temple servants" (Neh 11:3 lists the same). The lay
+    # "Israel" is relabelled so the alias index doesn't find a second
+    # Israel; the rows keep their stamps, so 9:2 lights the classes and not
+    # the patriarch.
+    grp = blk(9, "The first to return", 1, 0)
+    notes = {"the temple servants": "a class, not one man — 9:2 · whom "
+             "David and the princes had given for the service of the "
+             "Levites, Ezra 8:20"}
+    for k in grp.kids:
+        k.kind, k.link = "house", "dash"
+        k.note = notes.get(k.label, "a class, not one man — 9:2")
+    assert grp.kids[0].label == "Israel", grp.kids[0].label
+    grp.kids[0].label = "Israel (the people)"
+    ret.kids = grp.kids
     T.child("Israel", ret, link="dash", ref="9:1-3")
 
 
@@ -1218,12 +1251,16 @@ KINGS_2CH = {
     "Asa":       ("41 years — 2 Chr 16:13", None),
     "Jehoshaphat": ("35 when he began, 25 years",
                     "Azubah the daughter of Shilhi"),
-    "Joram":     ("32 when he began, 8 years; he killed all his brothers "
-                  "with the sword — 2 Chr 21:4. He departed without being "
+    "Joram":     ("32 when he began, 8 years; his father gave the kingdom "
+                  "to him, the firstborn, and to his brothers silver, gold "
+                  "and fortified cities in Judah; he killed all his brothers "
+                  "with the sword — 2 Chr 21:3-4. He departed without being "
                   "missed", None),
     "Ahaziah":   ("42 when he began, 1 year", "Athaliah the daughter of Omri"),
-    "Joash":     ("7 when he began, 40 years; his own servants killed him "
-                  "on his bed for the blood of Jehoiada's sons",
+    "Joash":     ("7 when he began, 40 years; his own servants, Zabad the "
+                  "son of Shimeath the Ammonitess and Jehozabad the son of "
+                  "Shimrith the Moabitess, killed him on his bed for the "
+                  "blood of Jehoiada's sons — 2 Chr 24:25-26",
                   "Zibiah, of Beersheba"),
     "Amaziah":   ("25 when he began, 29 years; they conspired against him "
                   "and killed him at Lachish", "Jehoaddan, of Jerusalem"),
@@ -1254,9 +1291,9 @@ KINGS_2CH = {
 def _second_chronicles(T):
     # Every royal lookup is scoped under David. Chronicles reuses these
     # names freely, and pre-order finds the LEVITE Asa, SAMUEL'S son
-    # Abijah and SHELAH'S son Joash first — five kings' reigns (and
-    # Joash's conspirators) spent a while pinned on the wrong men because
-    # this function trusted bare names.
+    # Abijah and SHELAH'S son Joash first — five kings' reigns spent a
+    # while pinned on the wrong men because this function trusted bare
+    # names.
     dav = T.find("David")
     for label, (reign, mother) in KINGS_2CH.items():
         try:
@@ -1291,15 +1328,13 @@ def _second_chronicles(T):
            "and Mahalath was Eliab's granddaughter")
 
     # 2 Chr 21:2-4 — Jehoshaphat's other sons, all killed by their brother.
-    bros = N("his brothers, the sons of Jehoshaphat",
-             "their father gave them silver, gold and fortified cities, but "
-             "gave the kingdom to Jehoram, the firstborn; when Jehoram had "
-             "strengthened himself he killed them all — 2 Chr 21:2-4",
-             kind="house", link="dash", ref="2 Chr 21:2")
+    # "All these were the sons of Jehoshaphat": a stated sonship, so they
+    # stand solid beside Joram, the firstborn, in his row. What their
+    # father gave them, and what Joram did, is in Joram's note.
+    jehs = T.find("Jehoshaphat", under=dav)
     for s in ("Azariah", "Jehiel", "Zechariah", "Azariah", "Michael",
               "Shephatiah"):
-        bros.kids.append(N(s, link="dash"))
-    T.child("Jehoshaphat", bros, under=dav, link="dash")
+        jehs.kids.append(N(s, link="solid", ref="2 Chr 21:2"))
 
     # 2 Chr 21:17 - 23:11 — the line down to one child, and the priest's
     # wife who kept him alive. This is the hinge of the whole chart.
@@ -1312,7 +1347,7 @@ def _second_chronicles(T):
     raid = N("his other sons", "the Philistines and Arabians carried away "
              "all that were found in the king's house, his sons and his "
              "wives, so that none was left him except the youngest — "
-             "2 Chr 21:16-17", kind="house", link="dash", ref="2 Chr 21:17")
+             "2 Chr 21:16-17", kind="house", link="solid", ref="2 Chr 21:17")
     jor.kids.append(raid)
     ahz = T.find("Ahaziah", under=dav)
     ahz.note = (ahz.note or "") + \
@@ -1327,12 +1362,6 @@ def _second_chronicles(T):
     jor.kids.append(jsh)
     joash = T.find("Joash", under=dav)
     T.link(jsh, joash, "she hid him, and the line of David survived")
-
-    zab = N("those who conspired against him",
-            "Zabad the son of Shimeath the Ammonitess and Jehozabad the son "
-            "of Shimrith the Moabitess — 2 Chr 24:26", kind="house",
-            link="dash", ref="2 Chr 24:26")
-    joash.kids.append(zab)
 
     T.find("Ahaz", under=dav).kids.append(
         N("Maaseiah", "the king's son, whom Zichri of Ephraim killed — "

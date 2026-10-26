@@ -684,16 +684,22 @@ def _after(T):
     T.child("Benjamin", mord, under=T.find("Israel"), link="dash")
 
     # -- Daniel 1:3-6 ----------------------------------------------------
-    T.child("Jeconiah", H("of the royal offspring, taken to Babylon",
-                          "Daniel 1:3-7 — “of the children of Judah”, whom "
-                          "the prince of the eunuchs renamed",
-                          ref="Dan 1:3-7", kids=[
-                              N("Daniel", "Belteshazzar", link="dash",
-                                icon="lion"),
-                              N("Hananiah", "Shadrach", link="dash"),
-                              N("Mishael", "Meshach", link="dash"),
-                              N("Azariah", "Abednego", link="dash")]),
-            link="dash")
+    # "Of the royal offspring and of the nobles … of the children of
+    # Judah": no father, no king and no generation is given, and they were
+    # taken in Jehoiakim's third year, before Jeconiah reigned. The one join
+    # the text states is the tribe.
+    T.child("Judah", H("of the royal offspring and of the nobles",
+                       "of the children of Judah — Daniel 1:3-6; taken in "
+                       "Jehoiakim's third year; the text gives no father or "
+                       "generation · the prince of the eunuchs renamed "
+                       "them, 1:7",
+                       ref="Dan 1:3-7", kids=[
+                           N("Daniel", "Belteshazzar", link="dash",
+                             icon="lion"),
+                           N("Hananiah", "Shadrach", link="dash"),
+                           N("Mishael", "Meshach", link="dash"),
+                           N("Azariah", "Abednego", link="dash")]),
+            under=T.find("Israel"), link="dash")
 
     # -- the prophets whose fathers join them to somebody -----------------
     T.child("Hezekiah", D("Amariah", "Zephaniah 1:1 runs the prophet's "

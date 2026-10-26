@@ -289,7 +289,7 @@ CH1 = [
     ]),
     sc("The sons of Seir", 38, 42, [
         [T(("Seir", [
-            ("Lotan", ["Hori", "Homam", ("Timna", "Lotan’s sister")]),
+            ("Lotan", ["Hori", "Homam"]), ("Timna", "Lotan’s sister"),
             ("Shobal", ["Alian", "Manahath", "Ebal", "Shephi", "Onam"]),
             ("Zibeon", ["Aiah",
                         ("Anah", [("Dishon", ["Hamran", "Eshban",
