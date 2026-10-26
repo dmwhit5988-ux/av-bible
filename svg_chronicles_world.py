@@ -272,7 +272,9 @@ TITLE_HALO = 0.22           # a growing title's halo in the panel's colour,
 F_PANEL = font(TITLE_PX, bold=True)
 LABEL_PX = layout_regions.LABEL_PX      # a house label's italic text
 FLOOR_MARGIN = 1.25         # every focus box must fit at this multiple of
-                            # S_MIN, so no named box rests off screen
+                            # S_MIN, so no ARRIVING box rests off screen
+                            # (a re-named head outside the focus box, such
+                            # as a tribe head standing in the fan, can)
 IPAD_BOX_RECTS = 1050       # <rect> and <text> elements in a whole file:
 IPAD_NAMES = 268            # about the most proven smooth on the owner's
                             # iPad (the centred files peaked at 1,052 rects
