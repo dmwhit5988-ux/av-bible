@@ -423,7 +423,7 @@ CH2 = [
             ("Mareshah", "the father of Hebron")])),
          T(("Hebron", ["Korah", "Tappuah", "Rekem", "Shema"])),
          C("Shema", ("Raham", "the father of Jorkeam"))],
-        [C("Rekem", "Shammai", "Maon", ("Beth Zur", "he was its father")),
+        [C("Rekem", "Shammai", ("Maon", "the father of Beth Zur")),
          T(("Ephah", "Caleb’s concubine", [
              "Haran", "Moza", "Gazez",
              ("~and Haran became the father of", ["Gazez"])]))],
@@ -454,7 +454,8 @@ CH2 = [
                       ("Manahathites", "half of them"), "Zorites"])),
          T(("~the scribes who lived at Jabez:", [
              "Tirathites", "Shimeathites", "Sucathites",
-             ("Kenites", "from Hammath, of the house of Rechab")]))],
+             ("Kenites", "the three families, who came from Hammath", [
+                 ("Hammath", "the father of the house of Rechab")])]))],
     ], explicit={
         51: ["Salma", "Hareph"],
     }),

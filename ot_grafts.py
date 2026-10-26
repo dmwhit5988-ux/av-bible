@@ -728,7 +728,8 @@ def _after(T):
             link="dash")
 
     # -- Jeremiah 35: the Rechabites -------------------------------------
-    T.child("the scribes who lived at Jabez",
+    # Under Hammath, "the father of the house of Rechab" (1 Chr 2:55).
+    T.child("Hammath",
             D("Rechab", None, ref="Jer 35:6", kids=[
                 N("Jonadab", "who commanded his sons to drink no wine, "
                   "build no house and dwell in tents — and they obeyed him",

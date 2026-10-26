@@ -577,11 +577,34 @@ def _judah(T):
     came.note = "2:53 — out of the four families"
     T.children("Shobal", sh, under=hur)
     T.children("Salma", blk(2, "The sons of Hur", 2, 0), under=hur)
-    scribes = blk(2, "The sons of Hur", 2, 1)
-    scribes.label = "the scribes who lived at Jabez"
-    scribes.kind, scribes.link = "house", "dash"
-    scribes.note = "Kenites, of the house of Rechab"
-    T.child("Salma", scribes, under=hur, link="dash")
+    # 2:55 — "the Tirathites, the Shimeathites, and the Sucathites. These
+    # are the Kenites who came from Hammath, the father of the house of
+    # Rechab". The Kenites are those three families, not a fourth beside
+    # them, so the Kenites row becomes the house (keeping its stamp) and its
+    # heading row goes; the families came from Hammath, so they hang under
+    # him and not beside him. Hammath has his own row, the scene's last, so
+    # 2:55 lights him too. Jeremiah 35's Rechab joins him in
+    # ot_grafts._after.
+    scribes = blk(2, "The sons of Hur", 2, 1)        # the heading, dropped
+    ken = scribes.kids[3]
+    assert ken.label == "Kenites", ken.label
+    ham = named(ken, "Hammath")
+    ken.label = "the Kenites — scribes at Jabez"
+    ken.kind, ken.link = "house", "dash"
+    ken.note = "2:55 follows Salma's sons; Kenites by origin (Judges 1:16)"
+    ham.link = "dash"
+    ham.note = "the father of the house of Rechab — 2:55"
+    ham.kids[0:0] = scribes.kids[:3]   # Tirathites, Shimeathites, Sucathites
+    T.child("Salma", ken, under=hur, link="dash")
+    # 2:53-55 — clans and a place, not men: "the families of Kiriath
+    # Jearim", "the families of scribes", "half of the Manahathites", and
+    # Atroth Beth Joab among "the sons of Salma". The links stay as the
+    # text gives them; only the box says it is a group.
+    for lbl in ("Ithrites", "Puthites", "Shumathites", "Mishraites",
+                "Zorathites", "Eshtaolites", "Netophathites", "Manahathites",
+                "Zorites", "Tirathites", "Shimeathites", "Sucathites",
+                "Atroth Beth Joab"):
+        T.find(lbl, under=hur).kind = "house"
 
 
 # ===========================================================================
@@ -661,8 +684,13 @@ def _judah_more(T):
     for k, n in enumerate((judah, perez, hezron, caleb, hur, shobal)):
         T.bind[(4, "Families of Judah", k)] = n
 
+    # 4:3 "the sons of the father of Etam": their father is not named, and
+    # Etam is a town (2 Chr 11:6), so the box is "the father of Etam". This
+    # is the WEB's reading, with the Hebrew; the Greek, and NIV, ESV and
+    # NRSV after it, read "the sons of Etam".
     etam = blk(4, "Families of Judah", 1, 0)
-    etam.note = "4:3 — of the father of Etam, among Hur's sons"
+    etam.label = "the father of Etam"
+    etam.note = "4:3 — among the sons of Hur (4:4)"
     etam.link = "dash"
     T.child("Hur", etam, link="dash", ref="4:3-4")
     T.find("Hazzelelponi").kind = "woman"
@@ -723,6 +751,11 @@ def _judah_more(T):
     hod = blk(4, "More families of Judah", 2, 1)
     hod.label = "the wife of Hodiah, the sister of Naham"
     hod.kind, hod.link, hod.note = "woman", "dash", "4:19"
+    # 4:19 her sons "were the father of Keilah the Garmite, and Eshtemoa":
+    # the son is unnamed, and Keilah is a town (Joshua 15:44).
+    kei = named(hod, "Keilah")
+    kei.label = "the father of Keilah"
+    kei.note = "the Garmite"
     T.child("Judah", hod, link="dash", ref="4:19")
 
     she = T.children("Shelah", strip(blk(4, "The sons of Shelah", 0, 0)),
@@ -1533,6 +1566,7 @@ _STOP = {
     "Hebron", "Bethlehem", "Beersheba", "Gibeon", "Gath", "Manahath",
     "Ono", "Lod", "Jabez", "Tekoa", "Ziph", "Gedor", "Soco", "Zanoah",
     "Eshtemoa", "Madmannah", "Machbena", "Gibea", "Kiriath", "Jearim",
+    "Keilah", "Etam",
     "Behold", "Oh", "May",
 }
 
