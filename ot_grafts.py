@@ -18,10 +18,11 @@ generations run back to a Hezekiah in Josiah's day.
 Where a graft rests on an inference rather than a statement, the edge is
 dashed and the note says what the inference is. Where two books disagree —
 and they do, often — the disagreement is written on the node rather than
-quietly resolved. Usually both lines are drawn. Numbers 26's clan list is
-the exception: its Iezer, Asriel and Shemida are men 1 Chronicles 7 already
-names, so each keeps the box his verse lights and Numbers' reading goes in
-its note.
+quietly resolved. Usually both lines are drawn. Two lists are the
+exception, because they name men 1 Chronicles 7-8 already has: Numbers 26's
+Iezer, Asriel and Shemida, and Genesis 46:21's Bela, Becher and Ashbel. Each
+keeps the box his Chronicles verse lights, and the other book's reading goes
+in its note.
 
 Every entry cites its verse. Spellings are the WEB's throughout.
 """
@@ -250,13 +251,25 @@ def _genesis(T):
     gad.ref = gad.ref or "Gen 46:16"
     _note(gad, "Chronicles never names his sons; these seven are Genesis "
           "46:16 and Numbers 26:15-17")
-    T.child("Benjamin", H("the sons of Benjamin (Genesis 46:21)",
-                          "ten — a third list, against 7:6 and 8:1",
-                          ref="Gen 46:21",
-                          kids=[N(x, link="dash") for x in
-                                ("Bela", "Becher", "Ashbel", "Gera",
-                                 "Naaman", "Ehi", "Rosh", "Muppim",
-                                 "Huppim", "Ard")]), under=isr, link="dash")
+    # Genesis 46:21 is a third list of Benjamin's sons. Its Bela, Becher and
+    # Ashbel are the boxes 1 Chronicles 7-8 already gives him; its other
+    # seven stand dashed beside them, after 8:1-2's sons. The look-alike
+    # names (Ehi and Aharah, Muppim and Shephuphan, Huppim and Huram, Ard
+    # and Addar) are not merged: those identifications are disputed.
+    ben = next(k for k in isr.kids if k.label == "Benjamin")
+    for lbl in ("Bela", "Becher", "Ashbel"):
+        _note(next(k for k in ben.kids if k.label == lbl),
+              "Genesis 46:21 also lists him")
+    gen = "Genesis 46:21 has him among Benjamin's sons"
+    bela_too = {"Gera": "; 8:3-5 counts a Gera among Bela's",
+                "Naaman": "; 8:4 and Numbers 26:40 count him among Bela's",
+                "Ard": "; Numbers 26:40 counts him among Bela's"}
+    rapha = next(k for k in ben.kids if k.label == "Rapha")
+    pos = ben.kids.index(rapha) + 1
+    ben.kids[pos:pos] = [D(x, gen + bela_too.get(x, ""), ref="Gen 46:21")
+                       for x in ("Gera", "Naaman", "Ehi", "Rosh", "Muppim",
+                                 "Huppim", "Ard")]
+    _note(ben, "Genesis 46:21 names ten")
     T.child("Joseph", W("Asenath", "the daughter of Potiphera, priest of "
                         "On, who bore Manasseh and Ephraim in Egypt",
                         ref="Gen 46:20"), link="wife")
@@ -273,16 +286,20 @@ def _exodus(T):
                            ref="Ex 6:20"))
     _note(amram, "he lived a hundred and thirty-seven years")
 
+    # Ex 6:21 "The sons of Izhar: Korah, Nepheg, and Zichri". Korah is
+    # already here, carrying 6:22-28's line (chronicles_tree._levi); the
+    # rebel of Numbers 16 and the man whose sons did not die (Num 26:11)
+    # are the same man, so Exodus adds only his two brothers.
     kohath = T.find("Kohath", 1)
-    T.children("Izhar", N("Izhar", kids=[
-        N("Korah", "who rose against Moses, and the earth swallowed him — "
-          "Numbers 16"),
-        N("Nepheg"), N("Zichri")]), under=kohath, ref="Ex 6:21")
+    ia = "Izhar · Amminadab"
+    izh = T.children(ia, N(ia, kids=[N("Nepheg"), N("Zichri")]),
+                     under=kohath, ref="Ex 6:21")
+    korah = next(k for k in izh.kids if k.label == "Korah")
+    korah.note = ("who rose against Moses, and the earth swallowed him — "
+                  "Numbers 16" + (f" · {korah.note}" if korah.note else ""))
     T.children("Uzziel", N("Uzziel", kids=[
         N("Mishael"), N("Elzaphan"), N("Sithri")]), under=kohath,
         ref="Ex 6:22")
-    T.link(T.find("Korah", 3), T.find("Korah", 2),
-           "Izhar's son Korah and the Korah of 6:22 — the same rebel house")
 
     aaron = T.find("Aaron")
     aaron.kids.insert(0, W("Elisheba", "the daughter of Amminadab, the "

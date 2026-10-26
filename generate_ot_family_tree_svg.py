@@ -516,7 +516,7 @@ REGIONS = [
     ("Zebulun",  "ZEBULUN",     "Gen 46:14 — all the canon gives him"),
     ("Dan",      "DAN",         "Gen 46:23, and Samson"),
     ("Joseph",   "JOSEPH",      "1 Chr 7:14-29 — Manasseh and Ephraim, Gideon and Joshua"),
-    ("Benjamin", "BENJAMIN",    "1 Chr 7:6-12, 8:1-40 — three lists, the house of Saul, and Mordecai"),
+    ("Benjamin", "BENJAMIN",    "1 Chr 7:6-12, 8:1-40 — his sons from three lists, the house of Saul, and Mordecai"),
     ("Naphtali", "NAPHTALI",    "1 Chr 7:13"),
     ("Gad",      "GAD",         "1 Chr 5:11-17"),
     ("Asher",    "ASHER",       "1 Chr 7:30-40"),

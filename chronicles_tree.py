@@ -931,11 +931,18 @@ def _levi(T):
     # 6:20-30 — the three houses carried down.
     T.descent("Libni", chain(6, "The Levite lines", 0, 1)[2:], ref="6:20-21")
     # Korah's line, 6:22-28. The names repeat so freely here that the grafts
-    # hold the nodes themselves rather than looking them up again.
+    # hold the nodes themselves rather than looking them up again. 6:22 has
+    # "Amminadab his son" where 6:2, 6:18 and 6:38 have Izhar, and Korah is
+    # Izhar's son (6:37-38; Ex 6:21; Num 16:1), so the line continues
+    # Izhar, whose box carries both names, and Kohath keeps his four sons.
+    # The 6:22 row is bound to him.
     kch = chain(6, "The Levite lines", 1, 1)[1:]     # Amminadab … Shaul
-    kch[0].note = "6:22 — 'Amminadab his son'; 6:18 has Izhar in this place"
-    kch[0].link = "dash"
-    T.descent("Kohath", kch, ref="6:22-24", link="dash")
+    amm = kch[0]
+    assert amm.label == "Amminadab", amm
+    T.descent("Izhar", kch[1:], under=koh, ref="6:22-24")
+    izhar.label = "Izhar · Amminadab"
+    izhar.note = "6:22 has Amminadab in his place"
+    T.bind[amm.src] = izhar
     korah, elk1 = kch[1], kch[3]
     korah.note = "whose sons did not die — Numbers 26:11"
     for k in blk(6, "The Levite lines", 1, 2).kids:  # Amasai, Ahimoth
@@ -1133,15 +1140,26 @@ def _northern(T):
     # with Shomer · Shemer, one man. The explicit note keeps T.children from
     # copying the scene row's bare "his brother" onto the merged box.
     heber = T.find("Heber", under=ash)
-    T.find("Hotham", under=heber).label = "Hotham · Helem"
+    hot = T.find("Hotham", under=heber)
+    hot.label = "Hotham · Helem"
     T.children("Hotham · Helem",
                _relabel(blk(7, "The sons of Asher", 1, 1), "Hotham · Helem"),
                under=heber, note="7:32 Hotham, 7:35 Helem", ref="7:35-36")
-    for i in (0, 1):
-        n = blk(7, "The sons of Asher", 2, i)
-        n.link = "dash"
-        n.note = "7:38-39 gives no father"
-        T.child("Asher", n, link="dash", ref="7:38-39")
+    # 7:37 ends Zophah's sons with Ithran, and 7:38 goes straight on with
+    # "the sons of Jether": Jether is Ithran's short form, as Shomer is
+    # Shemer, so his sons hang on Zophah's Ithran — one box with both names
+    # (not Dishon's Ithran of 1:41). The 7:38 row is bound to him.
+    zo = next(k for k in hot.kids if k.label == "Zophah")
+    ith = next(k for k in zo.kids if k.label == "Ithran")
+    ith.label = "Ithran · Jether"
+    jeth = _relabel(blk(7, "The sons of Asher", 2, 0), "Ithran · Jether")
+    T.children("Ithran · Jether", jeth, under=zo, ref="7:37-38",
+               note="7:38 calls him Jether")
+    T.bind[jeth.src] = ith
+    ulla = blk(7, "The sons of Asher", 2, 1)        # 7:39
+    ulla.link, ulla.ref = "dash", "7:39"
+    ulla.note = "7:39 gives no father"
+    ash.kids.append(ulla)
     T.find("Asher").note = "26,000 men fit for war, chief of the princes"
 
 
@@ -1150,30 +1168,56 @@ def _northern(T):
 # ===========================================================================
 
 def _benjamin(T):
-    # Two lists, seven chapters apart, and they do not agree. Both hang on
-    # Benjamin, each labelled with the passage it comes from.
-    b7 = blk(7, "The sons of Benjamin", 0, 0)
-    b7.label = "the sons of Benjamin (7:6)"
-    b7.kind, b7.note = "house", "Bela, Becher and Jediael — three"
-    T.children("Benjamin", N("Benjamin", kids=[b7]), ref="7:6-12")
+    # Benjamin's sons are listed three times — 7:6, 8:1-2 and Genesis 46:21
+    # — and the lists do not agree on who the others were. They all have
+    # Bela, and Becher and Ashbel each come twice, so each of the three is
+    # one box, standing directly under Benjamin with the rest of the sons;
+    # the counts and 8:1's places are in the notes. The rows the merge
+    # drops are bound to the boxes they mean (Tree.bind). Genesis 46:21's
+    # own names come in from ot_grafts._genesis.
+    isr = T.find("Israel")
+    ben = next(k for k in isr.kids if k.label == "Benjamin")
+    ben.ref = ben.ref or "7:6-12"
+    ben.note = "7:6 names three sons, 8:1-2 five, and the lists differ"
+    b7 = blk(7, "The sons of Benjamin", 0, 0)        # Benjamin: 7:6
+    b8 = blk(8, "Benjamin: the sons of Bela", 0, 0)  # Benjamin: 8:1-2
+    assert [k.label for k in b7.kids] == ["Bela", "Becher", "Jediael"], b7
+    assert [k.label for k in b8.kids] == \
+        ["Bela", "Ashbel", "Aharah", "Nohah", "Rapha"], b8
+    bela, becher, jediael = b7.kids
+    bela8, ashbel, aharah, nohah, rapha = b8.kids
+    # 7:7 and 8:3-5 give Bela two different sets of sons; both hang on him.
+    bela.kids += blk(8, "Benjamin: the sons of Bela", 1, 0).kids
+    bela.ref = "7:7; 8:3-5"
+    bela.note = ("his firstborn — 8:1 · 7:7: Ezbon … Iri; 8:3-5: Addar … "
+                 "Huram — two lists that do not agree")
+    for k in (ashbel, aharah, nohah, rapha):         # "the second" … "fifth"
+        k.note = f"{k.note} — 8:1"
+    ben.kids += [bela, becher, jediael, ashbel, aharah, nohah, rapha]
+    T.bind[b7.src] = ben
+    T.bind[b8.src] = ben
+    T.bind[bela8.src] = bela
     also = blk(7, "The sons of Benjamin", 1, 0)
     also.label = "and also"
     also.kind, also.link, also.note = "house", "dash", \
         "7:12 — Shuppim and Huppim, the sons of Ir; Hushim, and the sons " \
         "of Aher"
-    b7.kids.append(also)
+    also.ref = "7:12"
+    ben.kids.append(also)
 
-    b8 = blk(8, "Benjamin: the sons of Bela", 0, 0)
-    b8.label = "the sons of Benjamin (8:1)"
-    b8.kind, b8.note = "house", \
-        "Bela, Ashbel, Aharah, Nohah and Rapha — five, and a different list"
-    T.child("Benjamin", b8, ref="8:1-2")
-    T.children("Bela", blk(8, "Benjamin: the sons of Bela", 1, 0),
-               under=b8, ref="8:3-5")
+    # 8:6, 8:8 and 8:29 open three houses with no father given — Jeiel is
+    # Saul's great-grandfather (9:35-39), centuries after Benjamin's sons.
+    # One dashed box says the generations between are not given, so they
+    # do not stand in his sons' row.
+    later = N("later houses of Benjamin", "generations not given — 8:6, "
+              "8:8 and 8:29 name these heads without a father",
+              kind="house", link="dash", ref="8:6-32")
+    ben.kids.append(later)
     ehud = blk(8, "Benjamin: the sons of Bela", 2, 2)
     ehud.link, ehud.note = "dash", \
         "8:6-7 — heads of the households of Geba, carried captive to Manahath"
-    T.child("Benjamin", ehud, link="dash", ref="8:6-7")
+    ehud.ref = "8:6-7"
+    later.kids.append(ehud)
 
     shah = blk(8, "Shaharaim in Moab", 0, 0)
     shah.link = "dash"
@@ -1193,7 +1237,8 @@ def _benjamin(T):
     hush.kind, hush.link = "woman", "wife"
     hush.note = "8:11 — of her he became the father of Abitub and Elpaal"
     shah.kids.insert(0, hush)
-    T.child("Benjamin", shah, link="dash", ref="8:8-13")
+    shah.ref = "8:8-13"
+    later.kids.append(shah)
     T.children("Elpaal", blk(8, "Shaharaim in Moab", 1, 1), ref="8:12-13")
     T.find("Shema", 1, under=T.find("Elpaal")).label = "Shema · Shimei"
     T.find("Shema · Shimei").note = "8:13 Shema, 8:21 Shimei — they drove " \
@@ -1209,10 +1254,19 @@ def _benjamin(T):
                       "Shema · Shimei"), ref="8:21")
     T.children("Shashak", _house(8, "Heads of households in Jerusalem", 2, 0,
                                  "Shashak"), ref="8:25")
-    jer = _house(8, "Heads of households in Jerusalem", 2, 1, "Jeroham")
-    jer.link = "dash"
-    jer.note = "8:27 gives no father; these lived in Jerusalem"
-    T.child("Benjamin", jer, link="dash", ref="8:26-28")
+    # 8:14-27 runs five "sons of X" lists, closed together by 8:28; four of
+    # the heads are their 8:12-14 namesakes, and the fifth, Jeroham, is
+    # read as Beriah's son Jeremoth (8:14) — one box with both names. Not
+    # Becher's Jeremoth of 7:8: scoped to Elpaal's Beriah.
+    elp = T.find("Elpaal", under=later)
+    beriah = next(k for k in elp.kids if k.label == "Beriah")
+    jm = next(k for k in beriah.kids if k.label == "Jeremoth")
+    jm.label = "Jeremoth · Jeroham"
+    jm.note = "8:14 Jeremoth, 8:27 Jeroham"
+    jer = _house(8, "Heads of households in Jerusalem", 2, 1,
+                 "Jeremoth · Jeroham")
+    T.children("Jeremoth · Jeroham", jer, under=beriah, ref="8:26-28")
+    T.bind[jer.src] = jm
 
     # 8:29 leaves the father of Gibeon unnamed; 9:35 names him Jeiel. Ner is
     # among his sons in 9:36, which is how Saul joins the Benjamite tree.
@@ -1232,10 +1286,11 @@ def _benjamin(T):
     gib.kids.append(mik)
     gib.kids.append(N("Ner", "9:36 lists him among Jeiel's sons; 8:30 does "
                       "not", link="dash", ref="9:36"))
-    T.child("Benjamin", gib, link="dash", ref="8:29-32")
+    gib.ref = "8:29-32"
+    later.kids.append(gib)
 
     saul = blk(8, "The house of Saul", 0, 0)          # Ner -> Kish -> Saul …
-    T.children("Ner", saul, ref="8:33-40")
+    T.children("Ner", saul, under=gib, ref="8:33-40")
     king = T.find("Saul", under=saul)
     king.kind = "king"
     king.icon = "sword"
@@ -1248,7 +1303,7 @@ def _benjamin(T):
     for a, b in (("Zecher", "Zechariah"), ("Tarea", "Tahrea"),
                  ("Jehoaddah", "Jarah"), ("Raphah", "Rephaiah")):
         try:
-            n = T.find(a, under=T.find("Benjamin"))
+            n = T.find(a, under=ben)
         except KeyError:
             continue
         n.label = f"{a} · {b}"

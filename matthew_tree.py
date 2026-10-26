@@ -193,9 +193,9 @@ def build():
     }
     # Almost every name from Judah down is ambiguous across the canon —
     # Reuben's son Hezron stands before Perez's in pre-order, there is a
-    # Levite Amminadab, a second Ram in Jerahmeel's house, two Obeds. Names
-    # are no way to reach them. Walk the chain instead, which cannot pick
-    # the wrong man: each of these is the child of the one above it.
+    # second Ram in Jerahmeel's house, and two Obeds. Names are no way to
+    # reach them. Walk the chain instead, which cannot pick the wrong man:
+    # each of these is the child of the one above it.
     at["Judah"] = _kid(at["Jacob"], "Judah")
     at.update(_walk_down(at["Judah"], [
         "Tamar", "Perez", "Hezron", "Ram", "Amminadab", "Nahshon",

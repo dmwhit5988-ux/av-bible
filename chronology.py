@@ -145,7 +145,8 @@ BIND += [
     (("Nahshon",),             at_(1491, "Num 1:7 — prince of Judah at the Exodus", soft=True)),
 
     # -- the united kingdom --------------------------------------------------
-    (JACOB + ("Benjamin", "Jeiel, the father of Gibeon", "Ner", "Kish", "Saul"),
+    (JACOB + ("Benjamin", "later houses of Benjamin",
+              "Jeiel, the father of Gibeon", "Ner", "Kish", "Saul"),
                                reign(1095, 1055, "Acts 13:21 — 40 years")),
     (("David",),               life(1085, 1015, "2 Sam 5:4 — 70 years")),
     (("Solomon",),             reign(1015, 975, "1 Kgs 11:42 — 40 years")),
