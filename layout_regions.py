@@ -53,6 +53,14 @@ packed and which row it stands on. Taking rows from one rule and packing
 from another stands a wife on her husband's row while packing her as his
 child, and the boxes overlap.
 
+A REFERENCE CHIP (chronicles_tree.Tree.chip, a woman's name again in a
+second family) goes by the same rule, through the link it keeps: under her
+father it is one of his children, in his children's row (Leah and Rachel
+under Laban, Milcah under Haran); under her first husband it is a wife on a
+bar beside him (Ruth beside Mahlon). It is a leaf, and a smaller box
+(`measure`) standing a little below its row's top so its middle is on the
+row's name line (`top_of`); nothing else about it needs a rule here.
+
 THE CONTRACT. `svg_chronicles_world.World` calls `arrange(root,
 notes=False)` and then `place(root, 0, 0)`, as for every entry in its
 LAYOUTS. Every node gets x, y, w, h; the root is centred on x = cx with its
@@ -89,7 +97,7 @@ exactly once, and no two boxes or labels overlapping.
 import math
 
 from chronicles_tree import walk
-from generate_ot_family_tree_svg import measure
+from generate_ot_family_tree_svg import measure, top_of
 from generate_tabernacle import font
 
 LABEL_PX = 12       # a house label's text: italic, this size
@@ -636,7 +644,7 @@ class Layout:
             n.y = (y_of_gen(self.gen(n) + 1) - LABEL_BOTTOM - LABEL_H
                    - (self._label_level(n) - 1) * LABEL_STEP)
         else:
-            n.y = y_of_gen(self.gen(n))
+            n.y = top_of(n, y_of_gen(self.gen(n)))
 
     def _y_fan(self):
         for n in self.fan_nodes:

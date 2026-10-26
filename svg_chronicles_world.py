@@ -57,7 +57,7 @@ from generate_ot_family_tree_svg import (BG, FAINT, HL, HOUSE, PANEL,
                                          TEXT, TEXT_DIM, FEMALE, ICON_H, MIN_W,
                                          NAME_H, PAD_X, PAD_Y, _crown, _icon,
                                          accent, arrange, arrange_spine, dim,
-                                         place, place_spine)
+                                         draw_chip, place, place_spine)
 from generate_tabernacle import W, H, F_TITLE, font
 from svg_surface import SvgCanvas, SvgLayer, _fmt, _rgb
 
@@ -850,8 +850,13 @@ class World:
         # tree renames a few people the scenes know by one name only —
         # "Abraham" there is "Abram · Abraham" here, and 1:28 was naming a
         # father the chart could not find.
+        #
+        # A reference chip is never a candidate: it only points at the
+        # woman's real box, which is the one a verse naming her lights.
         self.by_label, self.by_alias = {}, {}
         for n in self.nodes:
+            if n.chip is not None:
+                continue
             self.by_label.setdefault(n.label, []).append(n)
             for part in n.label.split(" · "):
                 part = part.strip()
@@ -945,8 +950,13 @@ class World:
         * Every verse's focus box fits at FLOOR_MARGIN x S_MIN or closer:
           the camera clamps at S_MIN, so a focus wider than that would rest
           with named boxes off screen.
+        * No verse lights a reference chip: the woman's real box lights.
         """
         out = []
+        for n, (ch, v) in self.first_of.items():
+            if n.chip is not None:
+                out.append(f"{ch}:{v} lights the chip {n.label} under "
+                           f"{n.parent.label}, not her box")
         clash = layout_regions.overlaps(self.nodes)
         if clash:
             out.append(f"{len(clash)} boxes overlap: " + ", ".join(
@@ -1370,11 +1380,19 @@ class VerseFrame:
     }
 
     def _node_els(self, n, look, full):
-        """Box and name for one node, in one of the three looks."""
+        """Box and name for one node, in one of the three looks. A
+        reference chip is the wall chart's pill (draw_chip): never lit,
+        since it carries no src and the World's name lookup leaves it out,
+        so the woman's real box is the one a verse lights."""
         alpha, edge_kind, wdt, tint = self.LOOK[look]
         col = accent(n)
         edge = HL if edge_kind == "hl" else dim(col, alpha)
         sub = SvgCanvas(W, H)
+        if n.chip is not None:
+            draw_chip(sub, n, edge, tint, dim(ROYAL, alpha),
+                      fill=dim(PANEL, alpha), width=wdt, name=full)
+            sub._els[0] = _unwidth(sub._els[0], wdt)
+            return sub._els
         sub.rect(n.x, n.y, n.w, n.h, fill=dim(PANEL, alpha), stroke=edge,
                  width=wdt, rx=12 if n.kind == "woman" else 4)
         # the edge's width comes from its _stroke_group

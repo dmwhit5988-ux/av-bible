@@ -416,7 +416,7 @@ def audit(T, at, verbose=True):
     kinds = {}
     for d in dated.values():
         kinds[d.kind] = kinds.get(d.kind, 0) + 1
-    people = sum(1 for n in nodes if n.kind != "house")
+    people = sum(1 for n in nodes if n.kind != "house" and n.chip is None)
     if verbose:
         print(f"bound {len(dated)} dates onto {len(nodes)} nodes "
               f"({people} people): "

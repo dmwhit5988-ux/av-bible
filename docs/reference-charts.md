@@ -15,10 +15,10 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,388 × 16,324 px, about 1.3 MB, 1,255 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 27,155 × 16,502 px, about 1.3 MB, 1,254 boxes | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
-| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,398 × 12,074 px, about 1.4 MB, 1,270 boxes | `generate_ot_timeline_svg.py` |
+| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,408 × 12,134 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
 
 ## The Old Testament family tree
 
@@ -39,6 +39,7 @@ One contiguous family tree of the whole Old Testament, rooted at Adam.
 | dashed line with an open bead | a join the text implies but does not state; the note on the box says what the inference is |
 | doubled line | a wife, or the mother the line is reckoned through |
 | gold line inside a box | a cross-reference: this person is named elsewhere on the sheet, and the line says how. The note is written in both boxes. Pairs close enough together are also tied by a gold arc. |
+| small rose pill with a gold dot | a reference chip: a woman named in a second family. Her one full box is elsewhere, and its gold line points here (see below) |
 | box outline | gold for a king (with a crown), jade for a priest or Levite, rose for a woman the text names, grey for a house or company |
 | small number, bottom right | the generation from Adam, counted father to son; none on a wife's box, and none below a join whose length the text doesn't give |
 
@@ -49,6 +50,14 @@ One contiguous family tree of the whole Old Testament, rooted at Adam.
 - The marks are set where each graft is made (`Tree.child(..., gap=...)`). `seal` raises if a house box would hand a number down without one.
 
 So Abraham prints 20, Perez 24 and David 33, and Abraham to David is the fourteen of Matthew 1:17. The masthead's "the deepest line runs N generations" is computed from the same numbers (`deepest_line`).
+
+**One box per woman.** A woman the canon names in two families has one full box and, where her other box would stand, a reference chip (`chronicles_tree.Tree.chip`): her name in a small pill with a gold dot, with no children, note, reference or number. The real box goes where her children are reckoned, and otherwise under her father:
+- Leah and Rachel stand beside Israel as his wives; Laban keeps a chip for each.
+- Milcah stands beside Nahor over her eight sons; Haran keeps a chip.
+- Ruth stands beside Boaz, through whom Obed is reckoned (Matthew 1 finds her there); Mahlon keeps a chip on the marriage bar her box stood on.
+- Michal had no child, so her one box is Saul's daughter, and David's wife list leaves her out. A cross-reference ties her to David, with no chip.
+
+A chip keeps the link of the box it replaced, so the layouts place it the same way: a child in her father's row, or a wife beside her first husband. It stands a little lower than the names on its row so its middle is on their name line (`generate_ot_family_tree_svg.top_of`). The chip's cross-reference is written in the real box only; when the two are close, the gold arc ends on the chip's dot. Chips carry no `src` stamp and are left out of the verse cameras' name lookup, so a verse that names one of these women lights her real box. The wall chart, the timeline and both verse cameras draw chips through `draw_chip`, and none of them counts a chip as a person.
 
 ```
 .venv/Scripts/python.exe generate_ot_family_tree_svg.py   # rebuild the .svg and .html
@@ -89,7 +98,7 @@ It is a **frozen file with no generator.** It has been deployed since 2026-08-14
 The same tree laid on a year scale: every box sits at its year, and a rail down the left gives the year.
 
 - **The scale.** The axis is one monotone, piecewise-linear map. It opens out where the tree is dense in time, such as the monarchy, and closes up where nothing is recorded. The tick spacing shows where.
-- **What is dated.** 87 of 1,232 people are dated. Undated boxes sit between their nearest dated ancestor and descendant.
+- **What is dated.** 87 of 1,227 people are dated. Undated boxes sit between their nearest dated ancestor and descendant.
 - **The year rails.** Ussher's years run throughout, with Thiele's on a right-hand rail.
 - **The boxes** are drawn by the wall chart's `draw_node`, so they carry the same generation number. Matthew's line runs on to Jesus at 64.
 - **Data.** `chronology.py` holds the dates and their binding to the tree. `matthew_tree.py` carries the line on past Zerubbabel to Jesus.

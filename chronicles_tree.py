@@ -25,7 +25,9 @@ are kept and the node carries the disagreement in its note. Where one man
 goes by two names, one box carries both ("Hotham · Helem"); and where a
 passage only retells a line already drawn (9:11's priests are 6:12-13's),
 its rows are bound to those boxes (Tree.bind) instead of being drawn twice,
-with the difference in a note.
+with the difference in a note. A woman named in two families (Leah as
+Laban's daughter and Israel's wife) has one box, where her children are
+reckoned, and a reference chip in the other family (Tree.chip).
 
 Material that is not genealogy at all (the Levites' city allotments, the
 gatekeepers' duty roster, Simeon's town list, the Hagrite war) is left out;
@@ -53,7 +55,7 @@ class N:
 
     __slots__ = ("label", "note", "kids", "kind", "ref", "icon", "link",
                  "gap", "parent", "depth", "gen", "key",
-                 "xref", "src",
+                 "xref", "src", "chip",
                  # filled by the layout pass
                  "x", "y", "w", "h", "tw", "sw", "sh", "rows", "xw", "lx")
 
@@ -77,6 +79,9 @@ class N:
         self.key = None
         self.xref = []            # [(other node, why)] — gold cross-refs
         self.src = None           # (chapter, scene title, flatten index)
+        # A REFERENCE CHIP: the node this one only points at (Tree.chip),
+        # or None for an ordinary box.
+        self.chip = None
         self.x = self.y = self.w = self.h = 0.0
         # Distance from this node's own centre to the LEFT edge of its
         # subtree. Always sw/2 under the centred layout, and not under the
@@ -313,6 +318,33 @@ class Tree:
         a.xref.append((b, text))
         b.xref.append((a, text))
 
+    def chip(self, node, real, text):
+        """Make `node` a REFERENCE CHIP for `real`: one woman, one box.
+
+        Several women are named in two families — Leah and Rachel as
+        Laban's daughters and as Israel's wives, Milcah as Haran's daughter
+        and as Nahor's wife, Ruth as Mahlon's widow and as Boaz's wife — and
+        two full boxes read as two women. The real box goes where her
+        children are reckoned, otherwise under her father; where her other
+        box stood, `node` stays as a chip: her name in a small box with a
+        gold dot, no children, no note and no number, tied to the real box
+        by a cross-reference (`text`, written in the real box). It keeps
+        its link, so under her father she is still his child and under her
+        first husband still his wife.
+
+        A chip has no src stamp, so no verse can light it: the verse
+        cameras light the real box (svg_chronicles_world.World leaves chips
+        out of its name lookup). Fold whatever the chip's note and ref said
+        into the real box before calling this.
+        """
+        assert not node.kids, f"chip {node.label!r} has children"
+        assert node.src is None, f"chip {node.label!r} is stamped {node.src}"
+        assert real.chip is None and real is not node, real
+        node.chip = real
+        node.note = node.ref = node.icon = None
+        self.link(real, node, text)
+        return node
+
     # -- finishing ---------------------------------------------------------
 
     def seal(self):
@@ -324,7 +356,8 @@ class Tree:
         no father is hung on his tribe. `gen` is the generation from Adam
         (Adam is 1) counted father to son only: a wife, or a box with gap 0,
         keeps her parent's number; a join with gap "?" has none, and
-        neither has anything below it. The wall chart prints it.
+        neither has anything below it, nor has a reference chip. The wall
+        chart prints it.
         """
         seen = {}
         def rec(n, parent, depth):
@@ -337,6 +370,12 @@ class Tree:
             for k in n.kids:
                 rec(k, n, depth + 1)
         rec(self.root, None, 0)
+        present = set(walk(self.root))
+        for n in present:
+            if n.chip is not None:
+                assert n.chip in present and not n.kids and n.src is None, \
+                    f"chip {n.label!r} under {n.parent.label!r} points at " \
+                    f"a box not in the tree, or has children or a stamp"
         return self
 
 
@@ -344,7 +383,9 @@ def _generation(n, parent):
     """N.gen for `n` under `parent` (whose own gen is already set)."""
     if parent is None:
         return 1
-    if parent.gen is None or n.gap == "?":
+    if parent.gen is None or n.gap == "?" or n.chip is not None:
+        # a chip is not a person of its own: her number, if she has one,
+        # is on her real box
         return None
     if n.link == "wife" or n.gap == 0:
         return parent.gen
@@ -1784,7 +1825,8 @@ def _second_chronicles(T):
 
 def audit(T):
     nodes = list(walk(T.root))
-    people = [n for n in nodes if n.kind != "house"]
+    chips = [n for n in nodes if n.chip is not None]
+    people = [n for n in nodes if n.kind != "house" and n.chip is None]
     by_link = {}
     for n in nodes:
         by_link[n.link] = by_link.get(n.link, 0) + 1
@@ -1794,8 +1836,12 @@ def audit(T):
         labels.setdefault(n.label, []).append(n)
     dupes = {k: len(v) for k, v in labels.items() if len(v) > 1}
     print(f"nodes            {len(nodes)}")
-    print(f"  people/houses  {len(people)} / {len(nodes) - len(people)}")
-    print(f"  women          {sum(1 for n in nodes if n.kind == 'woman')}")
+    print(f"  people/houses  {len(people)} / "
+          f"{sum(1 for n in nodes if n.kind == 'house')}")
+    print(f"  chips          {len(chips)} ("
+          + ", ".join(f"{n.label} under {n.parent.label}" for n in chips)
+          + ")")
+    print(f"  women          {sum(1 for n in people if n.kind == 'woman')}")
     print(f"  kings          {sum(1 for n in nodes if n.kind == 'king')}")
     print(f"edges            solid {by_link.get('solid', 0)}  "
           f"dashed {by_link.get('dash', 0)}  wife {by_link.get('wife', 0)}")

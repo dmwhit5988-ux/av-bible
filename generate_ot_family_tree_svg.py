@@ -23,6 +23,10 @@ Layout notes
   descent the text states, dashed is a join the text implies, doubled is a
   wife, or the mother a line is reckoned through. The legend says so on the
   sheet.
+* REFERENCE CHIPS. A woman named in two families (Leah, Rachel, Milcah,
+  Ruth) has one full box; where her other box would stand is a chip, a
+  small pill with a gold dot and her name (`draw_chip`), which the gold
+  line in her real box points at.
 
 Output: web/visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
 """
@@ -83,6 +87,20 @@ NOTE_W       = 208          # box width once a node carries a note
 SIB_GAP      = 20
 ICON_H       = 26
 
+# A REFERENCE CHIP (chronicles_tree.Tree.chip): a woman's name again where a
+# second family names her, in a small pill with a gold dot. Her one full box
+# stands elsewhere; the chip carries no note, ref or number.
+CHIP_PX      = 13           # the chip's name
+F_CHIP       = font(CHIP_PX)
+CHIP_H       = 25
+CHIP_DOT_X   = 11           # the gold dot's centre, from the chip's left
+CHIP_DOT_R   = 3.2
+CHIP_NAME_X  = 20           # the name's left, from the chip's left
+CHIP_PAD_R   = 11
+CHIP_DY      = (PAD_Y * 2 + NAME_H - CHIP_H) / 2   # how far below its row's
+                            # top a chip stands, so its middle is on the
+                            # row's name line (`top_of`)
+
 MARGIN       = 220
 MAST_W       = 540          # left strip for the title block and legend
 
@@ -134,7 +152,16 @@ def measure(n, notes=True):
     Cross-references are measured in here rather than drawn floating between
     boxes, so the space they need is reserved by the layout and they cannot
     land on anybody's name.
+
+    A reference chip is its name alone in a CHIP_H pill, with or without
+    notes; its cross-reference is written in the real box only.
     """
+    if n.chip is not None:
+        # name only, whatever `notes` says: the note is the real box's
+        n.w = CHIP_NAME_X + F_CHIP.getlength(n.label) + CHIP_PAD_R
+        n.h = CHIP_H
+        n.tw = n.xw = []
+        return n
     fnt = F_NAME_B if n.kind in ("king", "priest") else F_NAME
     # a king's name is drawn 16 px right of the pad to make room for the
     # crown — the box has to be measured for that or the name clips its
@@ -216,10 +243,17 @@ def arrange(n, notes=True):
 SPINE = 26                  # gutter a wrapped block keeps for its left rail
 
 
+def top_of(n, top):
+    """A box's y on a row whose top is `top`. A reference chip is shorter
+    than a name box and stands lower, its middle on the row's name line;
+    every layout places through this."""
+    return top + CHIP_DY if n.chip is not None else top
+
+
 def place(n, cx, top):
     """Absolute positions. `cx` is where this subtree is centred, `top` its y."""
     n.x = cx - n.w / 2
-    n.y = top
+    n.y = top_of(n, top)
     if not n.kids:
         return
     y = top + n.h + DROP
@@ -333,7 +367,7 @@ def arrange_spine(n, notes=True):
 def place_spine(n, cx, top):
     """Absolute positions, the parent standing over its first child."""
     n.x = cx - n.w / 2
-    n.y = top
+    n.y = top_of(n, top)
     if not n.kids:
         return
     y = top + n.h + DROP
@@ -419,7 +453,31 @@ def draw_edges(c, n):
         draw_edges(c, k)
 
 
+def draw_chip(c, n, edge, ink, dot, fill=PANEL, width=1.1, name=True):
+    """A reference chip: a pill, a gold dot, the name. The verse cameras
+    draw it through here too, in their own looks; without `name` it is the
+    pill alone."""
+    c.rect(n.x, n.y, n.w, n.h, fill=fill, stroke=edge, width=width,
+           rx=n.h / 2)
+    if name:
+        c.circle(n.x + CHIP_DOT_X, n.y + n.h / 2, CHIP_DOT_R, fill=dot,
+                 stroke=None)
+        c.text((n.x + CHIP_NAME_X, n.y + n.h / 2), n.label, CHIP_PX, ink,
+               anchor="lm")
+
+
+def link_anchor(n):
+    """Where a cross-reference arc meets a box: its centre, or a chip's
+    gold dot."""
+    if n.chip is not None:
+        return n.x + CHIP_DOT_X, n.y + n.h / 2
+    return n.x + n.w / 2, n.y + n.h / 2
+
+
 def draw_node(c, n):
+    if n.chip is not None:
+        draw_chip(c, n, dim(FEMALE, 0.8), FEMALE, dim(ROYAL, 0.95))
+        return
     col = accent(n)
     body = PANEL if n.kind != "house" else BG
     rx = 13 if n.kind == "woman" else 4
@@ -470,9 +528,10 @@ def draw_node(c, n):
 def printed_gen(n):
     """The generation number a box carries (chronicles_tree.Tree.seal), or
     None. A house is not a generation, a wife's number is her own line's
-    and not her husband's, and below a join of unknown length the count is
-    unknown — none of those print one."""
-    if n.kind == "house" or n.link == "wife":
+    and not her husband's, below a join of unknown length the count is
+    unknown, and a reference chip is not a box of her own — none of those
+    print one."""
+    if n.kind == "house" or n.link == "wife" or n.chip is not None:
         return None
     return n.gen
 
@@ -599,8 +658,8 @@ def draw_links(c, T, dots=False):
     to sit on top of the box they mark.
     """
     for a, b, _text in T.links:
-        ax, ay = a.x + a.w / 2, a.y + a.h / 2
-        bx, by = b.x + b.w / 2, b.y + b.h / 2
+        ax, ay = link_anchor(a)
+        bx, by = link_anchor(b)
         if math.hypot(bx - ax, by - ay) > LINK_ARC_MAX:
             continue
         mx, my = (ax + bx) / 2, (ay + by) / 2
@@ -675,6 +734,18 @@ def draw_masthead(c, x, y, T, stats):
                       "person is named somewhere else on the sheet, and the "
                       "line says how. Near pairs are tied by a gold arc too.",
                       F_LEG, MAST_W - 110):
+        c.text((x + 48, ly), line, 14, TEXT_DIM, anchor="lm")
+        ly += 19
+    ly += 8
+
+    ly += 10
+    c.rect(x + 2, ly - 9, 34, 18, fill=dim(PANEL, 1.0),
+           stroke=dim(FEMALE, 0.8), width=1.1, rx=9)
+    c.circle(x + 10, ly, 2.6, fill=dim(ROYAL, 0.95), stroke=None)
+    for line in _wrap("a small box with a gold dot is a woman named in a "
+                      "second family. She is drawn once in full, where her "
+                      "children are reckoned (or under her father), and her "
+                      "box's gold line points here.", F_LEG, MAST_W - 110):
         c.text((x + 48, ly), line, 14, TEXT_DIM, anchor="lm")
         ly += 19
     ly += 8
@@ -760,7 +831,8 @@ def build_svg():
 
     nodes = list(walk(root))
     stats = {
-        "people": sum(1 for n in nodes if n.kind != "house"),
+        "people": sum(1 for n in nodes
+                      if n.kind != "house" and n.chip is None),
         "houses": sum(1 for n in nodes if n.kind == "house"),
         "solid": sum(1 for n in nodes if n.link == "solid") - 1,
         "dash": sum(1 for n in nodes if n.link == "dash"),

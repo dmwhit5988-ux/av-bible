@@ -40,7 +40,8 @@ import matthew_tree as MT
 import chronology as CH
 import generate_ot_family_tree_svg as G
 from generate_ot_family_tree_svg import (
-    measure, draw_edges, draw_node, draw_links, subtree_box, _wrap, dim,
+    measure, draw_edges, draw_node, draw_links, subtree_box, top_of, _wrap,
+    dim,
     BG, PANEL, RULE, SAND, SAND_DIM, TEXT, TEXT_DIM, FAINT, ROYAL, PRIESTLY,
     FEMALE, HOUSE, NOTE_H, SIB_GAP, DROP, ROW_GAP, SPINE, ASPECT, MAST_W,
     F_SUB, F_LEG, F_LEGS)
@@ -182,7 +183,7 @@ class Scale:
 
 def place_t(n, cx, scale, year):
     n.x = cx - n.w / 2
-    n.y = scale(year[n]) + YOFF.get(n, 0.0)
+    n.y = top_of(n, scale(year[n]) + YOFF.get(n, 0.0))
     if not n.kids:
         return
     units = UNITS[n]
@@ -611,7 +612,7 @@ def build_svg():
     draw_dates(c, dated)
     draw_links(c, T, dots=True)
 
-    people = sum(1 for n in nodes if n.kind != "house")
+    people = sum(1 for n in nodes if n.kind != "house" and n.chip is None)
     stats = {"people": people, "dated": len(dated), "nodes": len(nodes)}
     draw_masthead(c, mast_x, top + 130, stats)
 

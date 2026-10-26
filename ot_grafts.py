@@ -124,31 +124,34 @@ def _genesis(T):
           kind="woman", ref="Gen 19:38",
           kids=[N("Ben Ammi", "the father of the children of Ammon to this "
                   "day", ref="Gen 19:38")])]
-    haran.kids = [lot,
-                  N("Milcah", "who married her uncle Nahor", kind="woman",
-                    ref="Gen 11:29"),
+    # Milcah, Leah and Rachel are each named in two families. Each has ONE
+    # box, where her children are reckoned, and a reference chip in her
+    # father's family (Tree.chip): Milcah's box is Nahor's wife over her
+    # eight sons, and Leah's and Rachel's are Israel's wives, below.
+    milcah_d = N("Milcah", kind="woman")
+    haran.kids = [lot, milcah_d,
                   N("Iscah", None, kind="woman", ref="Gen 11:29")]
 
     nahor = N("Nahor", "Abram's brother, who married Milcah his niece",
               ref="Gen 11:29")
+    leah_d = N("Leah", kind="woman")
+    rachel_d = N("Rachel", kind="woman")
     bethuel = N("Bethuel", None, ref="Gen 22:22", kids=[
         N("Rebekah", "whom Abraham's servant brought back for Isaac",
           kind="woman", ref="Gen 24:67"),
-        N("Laban", "the Aramean, in Paddan Aram", ref="Gen 24:29", kids=[
-            N("Leah", "the elder, whom Jacob was given first", kind="woman",
-              ref="Gen 29:16-25"),
-            N("Rachel", "for whom Jacob served seven years, and seven more; "
-              "she died bearing Benjamin on the way to Ephrath",
-              kind="woman", ref="Gen 29:18, 35:16-19")])])
+        N("Laban", "the Aramean, in Paddan Aram", ref="Gen 24:29",
+          kids=[leah_d, rachel_d])])
+    milcah = W("Milcah", "Haran's daughter — these eight she bore to Nahor",
+               ref="Gen 11:29, 22:20-23", kids=[
+                   N("Uz", "his firstborn"), N("Buz"),
+                   N("Kemuel", "the father of Aram"), N("Chesed"),
+                   N("Hazo"), N("Pildash"), N("Jidlaph"), bethuel])
     nahor.kids = [
-        W("Milcah", "Haran's daughter — these eight she bore to Nahor",
-          ref="Gen 22:20-23", kids=[
-              N("Uz", "his firstborn"), N("Buz"),
-              N("Kemuel", "the father of Aram"), N("Chesed"), N("Hazo"),
-              N("Pildash"), N("Jidlaph"), bethuel]),
+        milcah,
         W("Reumah", "his concubine", ref="Gen 22:24", kids=[
             N("Tebah"), N("Gaham"), N("Tahash"), N("Maacah")])]
     terah.kids[0:0] = [nahor, haran]
+    T.chip(milcah_d, milcah, "Nahor married his niece — Genesis 11:29")
 
     T.link(T.find("Rebekah"), T.find("Isaac"),
            "Isaac's wife came back out of Nahor's house — Genesis 24")
@@ -193,16 +196,22 @@ def _genesis(T):
             _note(T.find(son, under=isr), f"of {mum} — Genesis 35:23-26")
         except KeyError:
             pass
+    # Leah and Rachel: their boxes stand here, beside the husband their
+    # children are reckoned to (Decision 19); Laban keeps a chip for each.
+    leah = W("Leah", "Laban's elder daughter, whom Jacob was given first — "
+             "six sons and Dinah", ref="Gen 29:16-35, 30:17-21", kids=[
+                 N("Dinah", "his daughter", kind="woman", ref="Gen 30:21")])
+    rachel = W("Rachel", "Laban's younger daughter, for whom Jacob served "
+               "seven years, and seven more — Joseph and Benjamin; she died "
+               "bearing Benjamin on the way to Ephrath, which is Bethlehem",
+               ref="Gen 29:16-30, 35:16-19")
     isr.kids[0:0] = [
-        W("Leah", "Laban's elder daughter — six sons and Dinah",
-          ref="Gen 29:31-35, 30:17-21", kids=[
-              N("Dinah", "his daughter", kind="woman", ref="Gen 30:21")]),
-        W("Rachel", "Laban's younger daughter — Joseph and Benjamin; she "
-          "died on the way to Ephrath, which is Bethlehem",
-          ref="Gen 35:16-19"),
+        leah, rachel,
         W("Bilhah", "Rachel's servant — Dan and Naphtali", ref="Gen 30:1-8"),
         W("Zilpah", "Leah's servant — Gad and Asher", ref="Gen 30:9-13")]
-    T.link(T.find("Leah", 2), T.find("Leah", 1),
+    T.chip(leah_d, leah,
+           "Jacob's wives were Laban's daughters, of Nahor's house")
+    T.chip(rachel_d, rachel,
            "Jacob's wives were Laban's daughters, of Nahor's house")
 
     # -- 46:8-27  the seventy who went down into Egypt --------------------
@@ -458,8 +467,11 @@ def _ruth(T):
                ref="Ruth 1:4-5, 4:10")
     chilion = N("Chilion", "who took Orpah the Moabitess, and died",
                 ref="Ruth 1:4-5")
-    mahlon.kids = [W("Ruth", "the Moabitess, who would not leave her "
-                     "mother-in-law", ref="Ruth 1:16")]
+    # Ruth is one woman with one box: Boaz's wife, through whom Obed is
+    # reckoned (matthew_tree finds her there). Mahlon keeps a chip beside
+    # him, on the marriage bar her box stood on.
+    ruth_m = W("Ruth")
+    mahlon.kids = [ruth_m]
     chilion.kids = [W("Orpah", "who kissed her mother-in-law and went back",
                       ref="Ruth 1:14")]
     naomi.kids = [mahlon, chilion]
@@ -470,11 +482,12 @@ def _ruth(T):
     _note(boaz, "who bought all that was Elimelech's, and took Ruth to "
                 "raise up the name of the dead on his inheritance — "
                 "Ruth 4:9-10")
-    ruth2 = W("Ruth", "the Moabitess — “a son is born to Naomi”; the women "
-              "named him Obed", ref="Ruth 4:13-17")
-    boaz.kids.insert(0, ruth2)
-    T.link(mahlon.kids[0], ruth2, "Mahlon's widow became Boaz's wife")
-    T.link(ruth2, T.find("Moab"),
+    ruth = W("Ruth", "the Moabitess, who would not leave her mother-in-law "
+             "— “a son is born to Naomi”; the women named him Obed",
+             ref="Ruth 1:16, 4:13-17")
+    boaz.kids.insert(0, ruth)
+    T.chip(ruth_m, ruth, "Mahlon's widow became Boaz's wife")
+    T.link(ruth, T.find("Moab"),
            "Moab in David's line, four generations back — Ruth 4:17-22")
     _note(T.find("Obed", under=boaz),
           "Ruth 4:17 — “he is the father of Jesse, the father of David”")
@@ -535,11 +548,18 @@ def _samuel(T):
           kids=[N("Armoni", "whom the Gibeonites hanged"),
                 N("Mephibosheth", "whom the Gibeonites hanged")])]
     saul.kids.append(N("Merab", "the firstborn daughter, given to Adriel "
-                       "the son of Barzillai the Meholathite",
-                       kind="woman", ref="1 Sam 14:49, 2 Sam 21:8"))
-    saul.kids.append(N("Michal", "the younger daughter, who was David's "
-                       "wife and had no child to the day of her death",
-                       kind="woman", ref="1 Sam 14:49, 2 Sam 6:23"))
+                       "the son of Barzillai the Meholathite · the WEB "
+                       "names Michal in 2 Samuel 21:8; compare 1 Samuel "
+                       "18:19", kind="woman", ref="1 Sam 14:49, 2 Sam 21:8"))
+    # Michal has one box, as Saul's daughter: she had no child, so nothing
+    # is reckoned through her, and the box stays under her father. David's
+    # wife list leaves her out; a cross-reference ties her to him.
+    michal = N("Michal", "the younger daughter, who loved David and was "
+               "given him as wife; Saul gave her to Palti, and David took "
+               "her back · she despised him when he danced before the ark, "
+               "and had no child to the day of her death", kind="woman",
+               ref="1 Sam 14:49, 18:27, 25:44; 2 Sam 3:13-14, 6:16, 6:23")
+    saul.kids.append(michal)
     ner = T.find("Ner", 1)
     ner.kids.append(N("Abner", "the captain of Saul's army — 14:50 makes "
                       "him Saul's cousin, and Joab killed him at Hebron",
@@ -555,11 +575,9 @@ def _samuel(T):
           "Tamar's mother", ref="2 Sam 3:3"),
         W("Haggith", "Adonijah's mother", ref="2 Sam 3:4"),
         W("Abital", "Shephatiah's mother", ref="2 Sam 3:4"),
-        W("Eglah", "Ithream's mother", ref="2 Sam 3:5"),
-        W("Michal", "Saul's daughter, whom he took back and who despised "
-          "him when he danced before the ark", ref="2 Sam 3:13-14, 6:16")]
-    T.link(T.find("Michal", 2), T.find("Michal", 1),
-           "David married Saul's daughter — 1 Samuel 18:27")
+        W("Eglah", "Ithream's mother", ref="2 Sam 3:5")]
+    T.link(michal, dav,
+           "Saul gave him Michal his daughter as wife — 1 Samuel 18:27")
 
     # Bathsheba is "the daughter of Eliam" (2 Sam 11:3) and Bathshua "the
     # daughter of Ammiel" (1 Chr 3:5): one father under two names, stated.
