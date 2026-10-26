@@ -524,7 +524,8 @@ def strands(s):
 
 
 def through_boxes(geom, nodes=None):
-    """Every drawn line (pieces and wife strands) that passes behind a box
+    """Every drawn line (pieces, the second strand of a wife's drop, and the
+    second strand of a marriage bar or comb) that passes behind a box
     -> [(seg, box node)]. Boxes are drawn over lines, so a line through a
     box seems to leave from, or arrive at, the box it passes behind."""
     nodes = geom.nodes if nodes is None else list(nodes)
@@ -535,6 +536,8 @@ def through_boxes(geom, nodes=None):
         st = strands(s)
         if st:
             lines.append(st)
+        if s.style == "bar":
+            lines.append(_bar_strand(s))
         for ln in lines:
             bb = (min(ln[0], ln[2]), min(ln[1], ln[3]),
                   max(ln[0], ln[2]), max(ln[1], ln[3]))

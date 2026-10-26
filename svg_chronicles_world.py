@@ -273,8 +273,10 @@ F_PANEL = font(TITLE_PX, bold=True)
 LABEL_PX = layout_regions.LABEL_PX      # a house label's italic text
 FLOOR_MARGIN = 1.25         # every focus box must fit at this multiple of
                             # S_MIN, so no named box rests off screen
-IPAD_BOX_RECTS = 1050       # per file, the most boxes and names proven
-IPAD_NAMES = 268            # smooth on the owner's iPad (2:2, 4:17)
+IPAD_BOX_RECTS = 1050       # <rect> and <text> elements in a whole file:
+IPAD_NAMES = 268            # about the most proven smooth on the owner's
+                            # iPad (the centred files peaked at 1,052 rects
+                            # in 2:2 and 268 texts in 2:9 and 6:1)
 
 
 def _unwidth(el, width):
@@ -322,8 +324,9 @@ class PanelTitle:
     the panel can hold, so a wide shot can still tell the panels apart. It
     reaches the panel's first row only below scale ~0.25, where those names
     are specks; it is painted opaque (sand as it looks at TITLE_ALPHA on
-    the panel) and haloed in the panel's colour, so the specks it covers do
-    not cut it up. A house's title (the kings of Israel, the first to live
+    the panel) and haloed in the panel's colour, so the faint and read
+    specks it covers do not cut it up. The verse's lit and arriving boxes
+    are drawn over it. A house's title (the kings of Israel, the first to live
     again in their cities) stays at its own size, like the house labels:
     its words are never the largest thing on a wide shot. The size depends
     only on the camera's scale, so a verse ends at exactly the size the
@@ -1103,6 +1106,12 @@ class VerseFrame:
     # a short bar rather than among his children. Matthew 1 keeps the
     # older card until its own files are reviewed.
     card_wives_beside = True
+    # The node cap also pays for the names a file writes outside the world
+    # (the cutaway card's and the HUD's title), so it bounds the names in
+    # the whole FILE, which is what the iPad was proven on. Matthew 1 keeps
+    # the older cap, over the world's boxes only, until its own files are
+    # reviewed.
+    cap_pays_outside = True
 
     def __init__(self, world):
         self.world = world
@@ -1115,7 +1124,6 @@ class VerseFrame:
         self.labels = set(plan.labels) if plan is not None else set()
         self.titles = ({p: PanelTitle(p) for p in plan.panels}
                        if plan is not None else {})
-        self.counts = {}
         # Boxes are drawn over lines, so a line through somebody else's box
         # seems to leave from it or arrive at it: the picture would say that
         # a man is the father of his brother. The driver stops on any.
@@ -1160,10 +1168,12 @@ class VerseFrame:
         flight or its rest -> (rects, titles).
 
         The rects go behind everything else in the world. The titles go
-        over the boxes: in a wide shot a grown title reaches down over the
-        panel's first rows, and drawn under them it was cut up by a row of
-        specks. By the scale it gets there (~0.2) those names are under
-        3 px, and closer in it stays in the band above the first row."""
+        over the faint and read boxes: in a wide shot a grown title reaches
+        down over the panel's first rows, and drawn under them it was cut up
+        by a row of specks. By the scale it gets there (~0.2) those names
+        are under 3 px, and closer in it stays in the band above the first
+        row. A lit or arriving box is drawn over the title (render), so the
+        names a verse reads are never hidden behind one."""
         boxes = [b for b, _s in flight]
         rects, titles = [], []
         for p, tl in self.titles.items():
@@ -1215,11 +1225,16 @@ class VerseFrame:
             skeleton = _union(skeleton, _frame(cam, SKELETON_PAD))
 
         # The regions layout's panels on screen in this flight. Their titles
-        # are names too, so they are paid for out of the node cap, which is
-        # what keeps a file's names within what the iPad has been proven on.
+        # are names too, and so are the cutaway card's and the HUD's title:
+        # all of them are paid for out of the node cap, which is what keeps
+        # a file's names within what the iPad has been proven on.
         scales = _cam_schedule(cam0, cam1, arc_at, dur)
         panels, titles = self._panel_els(flight, scales, cam1[0], dur)
-        max_nodes = self.max_nodes - len(titles)
+        named = list(w.lit.get((ch, v), []))       # verse reading order
+        outside = 0
+        if self.cap_pays_outside:
+            outside = 1 + (len(named) if mode == "card" and named else 0)
+        max_nodes = self.max_nodes - len(titles) - outside
 
         # Everything the camera passes over, capped: a wide pull-back can
         # otherwise sweep in half the canon.
@@ -1298,20 +1313,27 @@ class VerseFrame:
             lines, fine, lines_new = self._family_lines(shown, arriving,
                                                         lit, dur)
 
-        named = list(w.lit.get((ch, v), []))       # verse reading order
         self.read |= arriving
 
+        # Panel titles go over the faint and read boxes (a grown title
+        # reaches the panel's first rows only where their names are specks)
+        # but under the lit and arriving ones, so a box the verse names, and
+        # the ring that rides it, are never hidden behind a tribe's name.
         lit_w = self.LOOK["lit"][2]
+
+        def box_groups(wds):
+            return [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
+                    for wd in wds]
         els_all = (([_stroke_group(panels, PANEL_EDGE_W, scales, cam1[0],
                                    dur)] if panels else [])
                    + self._extra_world_els(ch, v, dur, shown)
                    + [_stroke_group(lines, CONNECTOR_W, scales, cam1[0], dur)]
                    + [_stroke_group(fine, FINE_W, scales, cam1[0], dur)]
                    + lines_new
-                   + [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
-                      for wd in sorted(boxes)]
-                   + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)]
-                   + titles)
+                   + box_groups([wd for wd in sorted(boxes) if wd < lit_w])
+                   + titles
+                   + box_groups([wd for wd in sorted(boxes) if wd >= lit_w])
+                   + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)])
         veil_screen = []
         if mode == "card" and named and cam1[0] < READABLE:
             # the camera group has to be built first: the veil's mask holes
@@ -1323,11 +1345,6 @@ class VerseFrame:
                 veil_alpha=self.veil_alpha)
             els_all = els_all + rings
         world_g = self._camera_group(cam0, cam1, arc_at, dur, els_all)
-        # what this file asks of the device, counted in the elements
-        # actually written: box rects (two for an arrival, its faint box and
-        # the lit one fading in over it) and every name, label and title
-        self.counts = dict(box_rects=world_g.count("<rect") - len(panels),
-                           names=world_g.count("<text"), panels=len(panels))
         c.raw([world_g] + veil_screen)
         if mode == "card" and named:
             self._card(c, named, dur)

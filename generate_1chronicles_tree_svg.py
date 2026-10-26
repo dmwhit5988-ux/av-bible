@@ -25,8 +25,8 @@ report them):
 * every verse's focus fits at 1.25 x the camera's minimum scale or closer;
 * no line that joins a family (`svg_family_lines`) runs behind a box;
 * every wife stands on a bar beside her husband (one wife rule);
-* no file draws more than 1,050 box rects or 268 names, the most proven
-  smooth on the owner's iPad.
+* no file holds more than 1,050 <rect> or 268 <text> elements, counted in
+  the file as written, the most proven smooth on the owner's iPad.
 """
 
 import os
@@ -63,27 +63,31 @@ def main(argv):
     frame = VerseFrame(world)
     problems = world.audit() + frame.audit()
     files = []
-    most = {"box_rects": (0, ""), "names": (0, "")}
+    most = {"rect": (0, ""), "text": (0, "")}
     first = True
     for ch, v, scene in world.order:
         c = frame.render(ch, v, scene, first)
         first = False
-        cn = frame.counts
+        text = c.tostring()
+        # counted in the file as written, every element of the kind
+        # anywhere in it (boxes, panels, the card, the veil and the HUD;
+        # names, labels, titles, the card's names and the HUD's title):
+        # the whole file is what the iPad has been proven on
+        cn = {k: text.count("<" + k) for k in most}
         for k in most:
             if cn[k] > most[k][0]:
                 most[k] = (cn[k], f"{ch}:{v}")
-        if cn["box_rects"] > IPAD_BOX_RECTS:
-            problems.append(f"{ch}:{v} draws {cn['box_rects']} box rects "
+        if cn["rect"] > IPAD_BOX_RECTS:
+            problems.append(f"{ch}:{v} draws {cn['rect']} rects "
                             f"(over {IPAD_BOX_RECTS})")
-        if cn["names"] > IPAD_NAMES:
-            problems.append(f"{ch}:{v} draws {cn['names']} names "
+        if cn["text"] > IPAD_NAMES:
+            problems.append(f"{ch}:{v} draws {cn['text']} names "
                             f"(over {IPAD_NAMES})")
         if only is not None and ch != only:
             continue
-        files.append((ch, f"1_Chronicles_{ch}_{v}.svg", c.tostring()))
-    print(f"most box rects in a file: {most['box_rects'][0]} "
-          f"({most['box_rects'][1]}); most names: {most['names'][0]} "
-          f"({most['names'][1]})")
+        files.append((ch, f"1_Chronicles_{ch}_{v}.svg", text))
+    print(f"most rects in a file: {most['rect'][0]} ({most['rect'][1]}); "
+          f"most names (<text>): {most['text'][0]} ({most['text'][1]})")
 
     if problems:
         print(f"{len(problems)} problems:")
