@@ -537,6 +537,18 @@ def _judah(T):
         blk_ = blk(2, "The descendants of Caleb", 1, 1) if w == "Ephah" \
             else blk(2, "The descendants of Caleb", 2, 1)
         blk_.kind, blk_.link = "woman", "wife"
+        if w == "Ephah":
+            # 2:46 "bore Haran, Moza, and Gazez; and Haran became the father
+            # of Gazez": two men, Ephah's son and Haran's son, who bears his
+            # uncle's name. strip() would make the second Gazez his own
+            # uncle's brother, so his heading's children go under Haran
+            # first. Both keep their stamps, so 2:46 lights both.
+            hd = next(k for k in blk_.kids
+                      if k.label.startswith("~and Haran"))
+            for k in hd.kids:
+                k.note = "2:46 — Haran's son, who shares his uncle's name"
+            named(blk_, "Haran").kids.extend(hd.kids)
+            blk_.kids.remove(hd)
         strip(blk_)
         T.child(cal, blk_, link="wife")
     jah = blk(2, "The descendants of Caleb", 2, 0)               # Jahdai
@@ -550,7 +562,20 @@ def _judah(T):
     # 2:50-55 — "the sons of Caleb the son of Hur": the chapter re-roots on
     # the Hur of 2:19, so his three sons join there.
     hur = T.children("Hur", blk(2, "The sons of Hur", 0, 2), ref="2:50-55")
-    T.children("Shobal", strip(blk(2, "The sons of Hur", 1, 0)), under=hur)
+    # 2:53 — "the families of Kiriath Jearim" are clans of the town Shobal
+    # fathered, not his sons, and "from them came" the Zorathites and the
+    # Eshtaolites: out of all four families, so they hang from the
+    # families' house and not from the Mishraites, the last one named.
+    sh = strip(blk(2, "The sons of Hur", 1, 0),
+               keep=("~the families of Kiriath Jearim:", "~from them came"))
+    fam = named(sh, "~the families of Kiriath Jearim:")
+    fam.label = "the families of Kiriath Jearim"
+    fam.kind, fam.link = "house", "dash"
+    fam.note = "2:53 — clans of Kiriath Jearim, whose father was Shobal"
+    came = named(fam, "~from them came")
+    came.label, came.kind, came.link = "from them came", "house", "dash"
+    came.note = "2:53 — out of the four families"
+    T.children("Shobal", sh, under=hur)
     T.children("Salma", blk(2, "The sons of Hur", 2, 0), under=hur)
     scribes = blk(2, "The sons of Hur", 2, 1)
     scribes.label = "the scribes who lived at Jabez"
@@ -685,9 +710,16 @@ def _judah_more(T):
         T.child("Judah", n, link="dash", ref=ref)
     mer = T.children("Mered", blk(4, "More families of Judah", 1, 0),
                      ref="4:17-18")
+    mer.note = "4:18 — he took Bithiah, Pharaoh's daughter"
     bith = T.find("Bithiah", under=mer)          # 4:18 "whom Mered took"
     bith.kind, bith.link = "woman", "wife"
     bith.note = "Pharaoh's daughter, whom Mered took"
+    # 4:18 "His wife the Jewess bore Jered ..., Heber ... and Jekuthiel": a
+    # wife, with her three sons under her. Her row says "the Jewess" so the
+    # verse's text lights it; the box takes the verse's fuller wording.
+    jew = T.find("the Jewess", under=mer)
+    jew.label = "his wife the Jewess"
+    jew.kind, jew.link, jew.note = "woman", "wife", "4:18"
     hod = blk(4, "More families of Judah", 2, 1)
     hod.label = "the wife of Hodiah, the sister of Naham"
     hod.kind, hod.link, hod.note = "woman", "dash", "4:19"
@@ -960,6 +992,12 @@ def _northern(T):
               ref="7:20-21")
     T.find("Ephraim").note = ("his sons Ezer and Elead were killed by the "
                               "men of Gath, and he mourned many days")
+    # 7:21-22 — Ezer and Elead are Ephraim's own sons ("Ephraim their father
+    # mourned"), so they stand after Shuthelah and before Beriah, who was
+    # born after their deaths (7:23).
+    for k in blk(7, "The sons of Ephraim", 0, 2).kids:
+        k.note = "killed by the men of Gath when they came for the livestock"
+        T.child("Ephraim", k, under=jos, ref="7:21")
     ber = blk(7, "The sons of Ephraim", 1, 0)
     ber.note = "“there was trouble with his house” — born to Ephraim after"
     T.child("Ephraim", ber, ref="7:23")
@@ -1015,7 +1053,8 @@ def _benjamin(T):
     also = blk(7, "The sons of Benjamin", 1, 0)
     also.label = "and also"
     also.kind, also.link, also.note = "house", "dash", \
-        "7:12 — Shuppim, Huppim and the sons of Aher"
+        "7:12 — Shuppim and Huppim, the sons of Ir; Hushim, and the sons " \
+        "of Aher"
     b7.kids.append(also)
 
     b8 = blk(8, "Benjamin: the sons of Bela", 0, 0)
@@ -1034,13 +1073,18 @@ def _benjamin(T):
     shah.link = "dash"
     shah.note = "in the field of Moab, after he had sent away Hushim and " \
                 "Baara his wives — 8:8"
-    strip(shah, keep=("~by Hodesh his wife:",))
-    for k in shah.kids:
-        if k.label.startswith("~"):
-            k.label, k.kind, k.link = "Hodesh", "woman", "wife"
-            k.note = "his wife, who bore him in the country of Moab"
+    # His three wives are rows of their own, so 8:8, 8:9 and 8:11 light
+    # them; they stand in the order 8:8-9 names them.
+    baara, hod = shah.kids
+    assert (baara.label, hod.label) == ("Baara", "Hodesh"), shah.kids
+    baara.kind, baara.link = "woman", "wife"
+    baara.note = ("his wife, whom he sent away — 8:8; some identify her "
+                  "with Hodesh (8:9)")
+    hod.kind, hod.link = "woman", "wife"
+    hod.note = "his wife, who bore him in the country of Moab"
     hush = blk(8, "Shaharaim in Moab", 1, 0)
-    hush.label, hush.kind, hush.link = "Hushim", "woman", "wife"
+    assert hush.label == "Hushim", hush
+    hush.kind, hush.link = "woman", "wife"
     hush.note = "8:11 — of her he became the father of Abitub and Elpaal"
     shah.kids.insert(0, hush)
     T.child("Benjamin", shah, link="dash", ref="8:8-13")
@@ -1109,7 +1153,13 @@ def _benjamin(T):
 
 
 def _house(ch, title, col, i, label):
-    """A '~the sons of X:' heading block, re-labelled as X for grafting."""
+    """A "the sons of X" block, re-labelled as the tree's X for grafting.
+
+    Its row is X itself ("Shimei", for the man the tree calls Shema ·
+    Shimei), so the verse that ends "the sons of X" lights him. Shashak's
+    stays the heading '~the sons of Shashak:': his own row among Beriah's
+    sons already lights him at 8:25.
+    """
     n = blk(ch, title, col, i)
     n.label = label
     return n

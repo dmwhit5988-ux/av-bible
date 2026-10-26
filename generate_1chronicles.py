@@ -590,7 +590,7 @@ CH4 = [
         [T(("Mered", "married Pharaoh’s daughter:", [
             ("Bithiah", ["Miriam", "Shammai",
                          ("Ishbah", "father of Eshtemoa")]),
-            ("~and his Jewish wife bore:", [
+            ("the Jewess", [
                 ("Jered", "father of Gedor"),
                 ("Heber", "father of Soco"),
                 ("Jekuthiel", "father of Zanoah")])]))],
@@ -956,12 +956,14 @@ CH7 = [
                 ("Bilhan", ["Jeush", "Benjamin", "Ehud", "Chenaanah",
                             "Zethan", "Tarshish",
                             ("Ahishahar", "17,200 for war")])])]))],
-        [T(("~also:", [("Shuppim", "and"), "Huppim",
-                       ("Ir", "their sons —"),
+        [T(("~also:", [("Ir", ["Shuppim", "Huppim"]),
                        ("Hushim", "the sons of Aher")]))],
     ], explicit={
         9: ["Becher", "Alemeth"],
         11: ["Jediael", "Ahishahar"],
+        # Ir's row now comes before his sons'; light them in the verse's
+        # order, "Shuppim, Huppim, the sons of Ir, Hushim".
+        12: ["Shuppim", "Huppim", "Ir", "Hushim"],
     }),
     sc("The sons of Naphtali", 13, 13, [
         [T(("Naphtali", ["Jahziel", "Guni", "Jezer",
@@ -991,8 +993,7 @@ CH7 = [
         [T(("~the sons of Ephraim, in descent:", [])),
          C("Ephraim", "Shuthelah", "Bered", "Tahath", "Eleadah",
            "Tahath", "Zabad", "Shuthelah"),
-         T(("~also his sons Ezer and Elead, killed by the", [])),
-         T(("~men of Gath when they came for the livestock;", [])),
+         T(("~his sons killed by the men of Gath:", ["Ezer", "Elead"])),
          T(("~Ephraim their father mourned many days", []))],
         [T(("Beriah", "“there was trouble with his house”")),
          T(("Sheerah", "his daughter — built the Beth Horons")),
@@ -1008,10 +1009,8 @@ CH7 = [
     ], explicit={
         20: ["Ephraim", "Shuthelah", "Bered", "Tahath", "Eleadah",
              "Tahath#2"],
-        21: ["Zabad", "Shuthelah#2",
-             "~also his sons Ezer and Elead, killed by the",
-             "~men of Gath when they came for the livestock;"],
-        22: ["~Ephraim their father mourned many days"],
+        21: ["Zabad", "Shuthelah#2", "Ezer", "Elead"],
+        22: ["Ephraim", "~Ephraim their father mourned many days"],
     }, places={28, 29}),
     sc("The sons of Asher", 30, 40, [
         [T(("Asher", ["Imnah", "Ishvah", "Ishvi",
@@ -1062,31 +1061,32 @@ CH8 = [
     }),
     sc("Shaharaim in Moab", 8, 13, [
         [T(("Shaharaim", "in Moab, after sending his wives away", [
-            ("~by Hodesh his wife:", [
+            "Baara",
+            ("Hodesh", [
                 "Jobab", "Zibia", "Mesha", "Malcam", "Jeuz", "Shachia",
                 ("Mirmah", "heads of households")])]))],
-        [T(("~by Hushim:", ["Abitub", "Elpaal"])),
+        [T(("Hushim", ["Abitub", "Elpaal"])),
          T(("Elpaal", ["Eber", "Misham",
                        ("Shemed", "who built Ono and Lod"),
                        "Beriah",
                        ("Shema", "they drove out the men of Gath")]))],
     ]),
     sc("Heads of households in Jerusalem", 14, 28, [
-        [T(("~the sons of Beriah:", [
+        [T(("Beriah", [
             "Ahio", "Shashak", "Jeremoth", "Zebadiah", "Arad", "Eder",
             "Michael", "Ishpah", "Joha"])),
          T(("~heads of households, chief men —", [])),
          T(("~these lived in Jerusalem", []))],
-        [T(("~the sons of Elpaal:", [
+        [T(("Elpaal", [
             "Zebadiah", "Meshullam", "Hizki", "Heber", "Ishmerai",
             "Izliah", "Jobab"])),
-         T(("~the sons of Shimei:", [
+         T(("Shimei", [
              "Jakim", "Zichri", "Zabdi", "Elienai", "Zillethai",
              "Eliel", "Adaiah", "Beraiah", "Shimrath"]))],
         [T(("~the sons of Shashak:", [
             "Ishpan", "Eber", "Eliel", "Abdon", "Zichri", "Hanan",
             "Hananiah", "Elam", "Anthothijah", "Iphdeiah", "Penuel"])),
-         T(("~the sons of Jeroham:", [
+         T(("Jeroham", [
              "Shamsherai", "Shehariah", "Athaliah", "Jaareshiah",
              "Elijah", "Zichri"]))],
     ], explicit={
@@ -1102,7 +1102,11 @@ CH8 = [
         [C("Mikloth", "Shimeah"),
          T(("~they too lived in Jerusalem,", [])),
          T(("~near their brothers", []))],
-    ]),
+    ], explicit={
+        # "The father of Gibeon" is Jeiel's row, the heading the tree
+        # relabels; no text match can reach it.
+        29: ["~his sons:", "Maacah"],
+    }),
     sc("The house of Saul", 33, 40, [
         [T(CT("Ner", "Kish",
               ("Saul", None, [
@@ -1125,7 +1129,7 @@ CH8 = [
          T(("~Ulam’s sons: mighty archers — 150 sons", [])),
          T(("~and sons’ sons, all of Benjamin", []))],
     ], explicit={
-        40: ["~Ulam’s sons: mighty archers — 150 sons",
+        40: ["Ulam", "~Ulam’s sons: mighty archers — 150 sons",
              "~and sons’ sons, all of Benjamin"],
     }),
 ]
