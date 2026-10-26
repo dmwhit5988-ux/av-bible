@@ -52,13 +52,13 @@ class N:
     """One person (or, occasionally, one house) in the master tree."""
 
     __slots__ = ("label", "note", "kids", "kind", "ref", "icon", "link",
-                 "parent", "depth", "key",
+                 "gap", "parent", "depth", "gen", "key",
                  "xref", "src",
                  # filled by the layout pass
                  "x", "y", "w", "h", "tw", "sw", "sh", "rows", "xw", "lx")
 
     def __init__(self, label, note=None, kids=None, kind="person",
-                 ref=None, icon=None, link="solid"):
+                 ref=None, icon=None, link="solid", gap=None):
         self.label = label
         self.note = note
         self.kids = list(kids or [])
@@ -66,8 +66,14 @@ class N:
         self.ref = ref            # "1 Chr 2:9" — shown as a small chip
         self.icon = icon          # svg_figures subject name
         self.link = link          # solid | dash | wife
+        # How many generations the join above this node spans, for the
+        # generation number (see Tree.seal): None for an ordinary step, 0
+        # for a box that only groups its parent's own children, and "?"
+        # for a join whose length the text doesn't give.
+        self.gap = gap
         self.parent = None
-        self.depth = 0
+        self.depth = 0            # edges from Adam, whatever they mean
+        self.gen = None           # generation from Adam, or None (seal)
         self.key = None
         self.xref = []            # [(other node, why)] — gold cross-refs
         self.src = None           # (chapter, scene title, flatten index)
@@ -264,12 +270,19 @@ class Tree:
             tgt.kids.append(k)
         return tgt
 
-    def child(self, label, src, nth=1, under=None, link="solid", ref=None):
-        """Hang `src` (a whole subtree) under an existing node."""
+    def child(self, label, src, nth=1, under=None, link="solid", ref=None,
+              gap=None):
+        """Hang `src` (a whole subtree) under an existing node.
+
+        `gap` marks the join for the generation number (N.gap): "?" when
+        the text doesn't say how many generations it spans.
+        """
         tgt = self.find(label, nth, under)
         src.link = link
         if ref:
             src.ref = ref
+        if gap is not None:
+            src.gap = gap
         tgt.kids.append(src)
         return src
 
@@ -303,10 +316,20 @@ class Tree:
     # -- finishing ---------------------------------------------------------
 
     def seal(self):
-        """Wire parents/depth and give every node a stable id."""
+        """Wire parents/depth/gen and give every node a stable id.
+
+        `depth` counts edges from Adam, and an edge is not always a
+        generation: a wife hangs under her husband, a house box stands
+        between a father and the sons it gathers, and a man the text gives
+        no father is hung on his tribe. `gen` is the generation from Adam
+        (Adam is 1) counted father to son only: a wife, or a box with gap 0,
+        keeps her parent's number; a join with gap "?" has none, and
+        neither has anything below it. The wall chart prints it.
+        """
         seen = {}
         def rec(n, parent, depth):
             n.parent, n.depth = parent, depth
+            n.gen = _generation(n, parent)
             base = re.sub(r"[^A-Za-z0-9]+", "_", n.label).strip("_") or "n"
             i = seen.get(base, 0) + 1
             seen[base] = i
@@ -315,6 +338,23 @@ class Tree:
                 rec(k, n, depth + 1)
         rec(self.root, None, 0)
         return self
+
+
+def _generation(n, parent):
+    """N.gen for `n` under `parent` (whose own gen is already set)."""
+    if parent is None:
+        return 1
+    if parent.gen is None or n.gap == "?":
+        return None
+    if n.link == "wife" or n.gap == 0:
+        return parent.gen
+    # A house box is never a generation of its own, so one that would hand
+    # a number down to the people under it has to say which kind it is.
+    if n.kind == "house" and n.kids:
+        raise ValueError(f"house {n.label!r} under {parent.label!r} needs "
+                         "gap=0 (it groups its parent's own children) or "
+                         "gap='?' (the text gives no generations)")
+    return parent.gen + 1
 
 
 # ===========================================================================
@@ -374,7 +414,7 @@ def build(ot=True):
                  "not descent")
     seir.link = "dash"
     seir.ref = "1:38-42"
-    T.child("Esau", seir, under=esau, link="dash")
+    T.child("Esau", seir, under=esau, link="dash", gap="?")
     # 1:39 "Timna was Lotan's sister" — Seir's daughter, beside Lotan.
     tim2 = named(seir, "Timna")
     tim2.kind = "woman"
@@ -390,7 +430,7 @@ def build(ot=True):
     kings.kids = chain(1, "The kings of Edom", 0, 1)
     for k in kings.kids:
         k.link, k.kind = "dash", "king"
-    T.child("Esau", kings, under=esau, link="dash")
+    T.child("Esau", kings, under=esau, link="dash", gap="?")
     meh = T.find("Mehetabel", under=kings)       # 1:50 "his wife's name"
     meh.kind, meh.link = "woman", "wife"
 
@@ -405,7 +445,7 @@ def build(ot=True):
         n = N(k.label, k.note, link="dash")
         n.src = k.src
         chiefs.kids.append(n)
-    T.child("Esau", chiefs, under=esau, link="dash")
+    T.child("Esau", chiefs, under=esau, link="dash", gap="?")
 
     # ===================================================================
     # II.  Israel and his twelve sons                          (1 Chr 2:1-2)
@@ -559,7 +599,7 @@ def _judah(T):
     jah = blk(2, "The descendants of Caleb", 2, 0)               # Jahdai
     jah.note = "2:47 gives him no father; the list stands among Caleb's"
     jah.link = "dash"
-    T.child(cal, jah, link="dash")
+    T.child(cal, jah, link="dash", gap="?")
     ach = blk(2, "The descendants of Caleb", 2, 2)               # Achsah
     ach.kind = "woman"
     T.child(cal, ach)
@@ -575,7 +615,7 @@ def _judah(T):
                keep=("~the families of Kiriath Jearim:", "~from them came"))
     fam = named(sh, "~the families of Kiriath Jearim:")
     fam.label = "the families of Kiriath Jearim"
-    fam.kind, fam.link = "house", "dash"
+    fam.kind, fam.link, fam.gap = "house", "dash", "?"
     fam.note = "2:53 — clans of Kiriath Jearim, whose father was Shobal"
     came = named(fam, "~from them came")
     came.label, came.kind, came.link = "from them came", "house", "dash"
@@ -600,7 +640,7 @@ def _judah(T):
     ham.link = "dash"
     ham.note = "the father of the house of Rechab — 2:55"
     ham.kids[0:0] = scribes.kids[:3]   # Tirathites, Shimeathites, Sucathites
-    T.child("Salma", ken, under=hur, link="dash")
+    T.child("Salma", ken, under=hur, link="dash", gap="?")
     # 2:53-55 — clans and a place, not men: "the families of Kiriath
     # Jearim", "the families of scribes", "half of the Manahathites", and
     # Atroth Beth Joab among "the sons of Salma". The links stay as the
@@ -739,16 +779,16 @@ def _judah_more(T):
     har.link = "dash"
     har.note = ("4:8 — Hakkoz fathered 'the families of Aharhel the son of "
                 "Harum'; how Harum joins Hakkoz is not said")
-    T.child("Judah", hak, link="dash", ref="4:8")
+    T.child("Judah", hak, link="dash", ref="4:8", gap="?")
 
     jab = blk(4, "The prayer of Jabez", 0, 0)
     jab.note = ("more honorable than his brothers — “Oh that you would bless "
                 "me indeed, and enlarge my border!” · and God granted it")
-    T.child("Judah", jab, link="dash", ref="4:9-10")
+    T.child("Judah", jab, link="dash", ref="4:9-10", gap="?")
 
     chelub = blk(4, "Kenaz and Caleb's families", 0, 0)
     chelub.note = "4:11 — brother of Shuhah; no father given"
-    T.child("Judah", chelub, link="dash", ref="4:11-12")
+    T.child("Judah", chelub, link="dash", ref="4:11-12", gap="?")
 
     # 4:13-15 — Kenaz, Othniel and Caleb son of Jephunneh. A DIFFERENT Caleb
     # from Hezron's son, and the chart says so rather than merging them.
@@ -759,9 +799,9 @@ def _judah_more(T):
     calj = named(jeph, "Caleb")
     calj.note = ("the son of Jephunneh — the spy (Numbers 13:6), not the "
                  "Caleb son of Hezron")
-    T.child("Judah", jeph, link="dash", ref="4:15")
+    T.child("Judah", jeph, link="dash", ref="4:15", gap="?")
     kenaz = blk(4, "Kenaz and Caleb's families", 1, 0)
-    T.child("Judah", kenaz, link="dash", ref="4:13-14")
+    T.child("Judah", kenaz, link="dash", ref="4:13-14", gap="?")
     oth = T.children("Othniel", blk(4, "Kenaz and Caleb's families", 1, 1))
     T.children("Seraiah", blk(4, "Kenaz and Caleb's families", 1, 2))
     oth.note = "Israel's first judge — Judges 3:9"
@@ -780,7 +820,7 @@ def _judah_more(T):
                         (2, 1, "4:20"), (2, 2, "4:20")):
         n = blk(4, "More families of Judah", col, i)
         n.note = (n.note + " · " if n.note else "") + f"{ref} gives no father"
-        T.child("Judah", n, link="dash", ref=ref)
+        T.child("Judah", n, link="dash", ref=ref, gap="?")
     mer = T.children("Mered", blk(4, "More families of Judah", 1, 0),
                      ref="4:17-18")
     mer.note = "4:18 — he took Bithiah, Pharaoh's daughter"
@@ -806,7 +846,7 @@ def _judah_more(T):
     kei = named(nah, "Keilah")
     kei.label = "the father of Keilah"
     kei.note = "the Garmite"
-    T.child("Judah", hod, link="dash", ref="4:19")
+    T.child("Judah", hod, link="dash", ref="4:19", gap="?")
 
     she = T.children("Shelah", strip(blk(4, "The sons of Shelah", 0, 0)),
                      under=T.find("Judah"), ref="4:21-23")
@@ -833,7 +873,7 @@ def _simeon(T):
     princes.label = "princes in their families"
     princes.kind, princes.link = "house", "dash"
     princes.note = "4:34-38 — heads of Simeon's houses, fathers not traced"
-    T.child("Simeon", princes, link="dash", ref="4:34-38")
+    T.child("Simeon", princes, link="dash", ref="4:34-38", gap="?")
     # 4:37 climbs: "Ziza the son of Shiphi … the son of Shemaiah". Turned
     # right way up, Shemaiah heads the line and Ziza, the prince, is its foot.
     top = upward(4, "The princes of Simeon", 1, 1)
@@ -846,7 +886,7 @@ def _simeon(T):
     ishi.note = "his sons led five hundred to Mount Seir, and struck the " \
                 "remnant of the Amalekites there — 4:42-43"
     ishi.link = "dash"
-    T.child("Simeon", ishi, link="dash", ref="4:42-43")
+    T.child("Simeon", ishi, link="dash", ref="4:42-43", gap="?")
 
 
 # ===========================================================================
@@ -866,7 +906,7 @@ def _reuben_gad_manasseh(T):
         a.kids.append(b)
     joel, beerah = jc[0], jc[-1]
     joel.note = "5:4-6 — Joel's descent; his own father is not given"
-    T.child("Reuben", joel, under=reu, link="dash", ref="5:4-6")
+    T.child("Reuben", joel, under=reu, link="dash", ref="5:4-6", gap="?")
     beerah.note = ("prince of the Reubenites, whom Tilgath Pilneser "
                    "carried away")
     beerah.icon = "shackle"
@@ -877,7 +917,7 @@ def _reuben_gad_manasseh(T):
     bros.label = "Beerah's brothers by their families"
     bros.kind, bros.link, bros.note = "house", "dash", \
         "5:7-9 — kinsmen of Beerah; from Aroer to Nebo and Baal Meon"
-    T.child("Reuben", bros, under=reu, link="dash", ref="5:7-9")
+    T.child("Reuben", bros, under=reu, link="dash", ref="5:7-9", gap="?")
 
     # 5:11-17 is one register of Gadites in Bashan, listed in Jotham's and
     # Jeroboam's days — not Gad's own sons (those are Genesis 46:16, grafted
@@ -891,12 +931,13 @@ def _reuben_gad_manasseh(T):
                "5:11-17 — in Bashan to Salecah; listed in the days of "
                "Jotham king of Judah and Jeroboam king of Israel",
                kids=sons.kids + [ahi], kind="house")
-    T.child("Gad", bashan, under=gad, link="dash", ref="5:11-17")
+    T.child("Gad", bashan, under=gad, link="dash", ref="5:11-17",
+            gap="?")
     # 5:14 climbs from Abihail to Buz; turned right way up, Buz heads it.
     buz = upward(5, "The sons of Gad", 2, 1)
     buz.note = "5:14 read upward: Abihail's line climbs to Buz, whose own " \
                "descent from Gad is not given"
-    T.child("Gad", buz, under=gad, link="dash", ref="5:14")
+    T.child("Gad", buz, under=gad, link="dash", ref="5:14", gap="?")
     # "These were the sons of Abihail" (5:14) — the seven of 5:13.
     abi = named(buz, "Abihail")
     abi.note = "5:13-14 — father of the seven, 'their brothers, of their " \
@@ -1177,7 +1218,8 @@ def _northern(T):
     half.note = ("mighty men of valor, from Bashan to Baal Hermon, Senir "
                  "and Mount Hermon — carried away by Tilgath Pilneser "
                  "with Reuben and Gad")
-    T.child("Manasseh", half, under=jos, link="dash", ref="5:23-26")
+    T.child("Manasseh", half, under=jos, link="dash", ref="5:23-26",
+            gap="?")
 
     ash = T.children("Asher", blk(7, "The sons of Asher", 0, 0),
                      ref="7:30-32")
@@ -1209,7 +1251,7 @@ def _northern(T):
                note="7:38 calls him Jether")
     T.bind[jeth.src] = ith
     ulla = blk(7, "The sons of Asher", 2, 1)        # 7:39
-    ulla.link, ulla.ref = "dash", "7:39"
+    ulla.link, ulla.ref, ulla.gap = "dash", "7:39", "?"
     ulla.note = "7:39 gives no father"
     ash.kids.append(ulla)
     T.find("Asher").note = "26,000 men fit for war, chief of the princes"
@@ -1254,7 +1296,7 @@ def _benjamin(T):
     also.kind, also.link, also.note = "house", "dash", \
         "7:12 — Shuppim and Huppim, the sons of Ir; Hushim, and the sons " \
         "of Aher"
-    also.ref = "7:12"
+    also.ref, also.gap = "7:12", "?"
     ben.kids.append(also)
 
     # 8:6, 8:8 and 8:29 open three houses with no father given — Jeiel is
@@ -1263,7 +1305,7 @@ def _benjamin(T):
     # do not stand in his sons' row.
     later = N("later houses of Benjamin", "generations not given — 8:6, "
               "8:8 and 8:29 name these heads without a father",
-              kind="house", link="dash", ref="8:6-32")
+              kind="house", link="dash", ref="8:6-32", gap="?")
     ben.kids.append(later)
     ehud = blk(8, "Benjamin: the sons of Bela", 2, 2)
     ehud.link, ehud.note = "dash", \
@@ -1390,20 +1432,23 @@ def _return(T):
     ret = N("the first to live again in their cities",
             "1 Chr 9:1-3 — after Judah was carried to Babylon for their "
             "disobedience; in Jerusalem lived children of Judah, Benjamin, "
-            "Ephraim and Manasseh", kind="house", link="dash", ref="9:1-3")
+            "Ephraim and Manasseh", kind="house", link="dash", ref="9:1-3",
+            gap="?")
 
     # Judah's returnees, each hung where the text puts them.
     uthai = upward(9, "Of Judah and Benjamin in Jerusalem", 0, 1)
     uthai.link, uthai.note = "dash", \
         "9:4 read upward, 'of the children of Perez' — the generations " \
         "between are not given"
-    T.child("Perez", uthai, link="dash", ref="9:4")
+    T.child("Perez", uthai, link="dash", ref="9:4", gap="?")
     asa = blk(9, "Of Judah and Benjamin in Jerusalem", 0, 2)
     asa.link, asa.note = "dash", "the firstborn of the Shilonites — 9:5"
-    T.child("Shelah", asa, under=T.find("Judah"), link="dash", ref="9:5")
+    T.child("Shelah", asa, under=T.find("Judah"), link="dash", ref="9:5",
+            gap="?")
     jeu = blk(9, "Of Judah and Benjamin in Jerusalem", 0, 3)
     jeu.link, jeu.note = "dash", "of the sons of Zerah — 690 brothers, 9:6"
-    T.child("Zerah", jeu, nth=1, under=T.find("Tamar"), link="dash", ref="9:6")
+    T.child("Zerah", jeu, nth=1, under=T.find("Tamar"), link="dash",
+            ref="9:6", gap="?")
 
     ben = N("of Benjamin, in Jerusalem", "9:7-9 — 956 brothers by their "
             "generations, all heads of fathers' households", kind="house",
@@ -1414,7 +1459,7 @@ def _return(T):
         c = upward(9, "Of Judah and Benjamin in Jerusalem", col, i)
         c.link = "dash"
         ben.kids.append(c)
-    T.child("Benjamin", ben, link="dash", ref="9:7-9")
+    T.child("Benjamin", ben, link="dash", ref="9:7-9", gap="?")
 
     # The priests: 9:11 "Azariah the son of Hilkiah, the son of Meshullam, the
     # son of Zadok, the son of Meraioth, the son of Ahitub" is the high
@@ -1449,7 +1494,7 @@ def _return(T):
         c = upward(9, "The priests", col, i)
         c.link, c.note = "dash", note
         courses.kids.append(c)
-    T.child("Aaron", courses, link="dash", ref="9:10-13")
+    T.child("Aaron", courses, link="dash", ref="9:10-13", gap="?")
 
     # The Levites: two of these lines join singers already in the tree.
     mat = upward(9, "The Levites", 0, 3)                 # Asaph -> Mattaniah
@@ -1465,17 +1510,17 @@ def _return(T):
     T.child("Ethan · Jeduthun", oba, link="dash", ref="9:16")
     shem = upward(9, "The Levites", 0, 1)                # Merari -> Shemaiah
     shem.link, shem.note = "dash", "9:14 read upward — of the sons of Merari"
-    T.child("Merari", shem, link="dash", ref="9:14")
+    T.child("Merari", shem, link="dash", ref="9:14", gap="?")
     ber = upward(9, "The Levites", 1, 1)
     ber.link, ber.note = "dash", \
         "9:16 read upward — he lived in the villages of the Netophathites"
-    T.child("Levi", ber, link="dash", ref="9:16")
+    T.child("Levi", ber, link="dash", ref="9:16", gap="?")
     misc = blk(9, "The Levites", 0, 2)
     misc.label = "and of the Levites"
     misc.kind, misc.link, misc.note = "house", "dash",         "9:15 names them without a father"
     for k in misc.kids:
         k.link = "dash"
-    T.child("Levi", misc, link="dash", ref="9:15")
+    T.child("Levi", misc, link="dash", ref="9:15", gap="?")
 
     # The gatekeepers: 9:19 read upward lands on Korah's son Ebiasaph.
     gate = upward(9, "The gatekeepers", 0, 3, drop=2)    # Kore > Shallum
@@ -1507,7 +1552,7 @@ def _return(T):
     for k in four.kids[1:]:
         k.link = "dash"
         keepers.kids.append(k)
-    T.child("Levi", keepers, link="dash", ref="9:17-26")
+    T.child("Levi", keepers, link="dash", ref="9:17-26", gap="?")
     T.bind[(9, "The gatekeepers", 1)] = shal
     # 9:20 "Phinehas the son of Eleazar" is Aaron's grandson (6:4), not
     # Eli's son of Ithamar's house; the row has no node of its own.
@@ -1657,7 +1702,8 @@ def _second_chronicles(T):
     raid = N("his other sons", "the Philistines and Arabians carried away "
              "all that were found in the king's house, his sons and his "
              "wives, so that none was left him except the youngest — "
-             "2 Chr 21:16-17", kind="house", link="solid", ref="2 Chr 21:17")
+             "2 Chr 21:16-17", kind="house", link="solid", ref="2 Chr 21:17",
+             gap=0)
     jor.kids.append(raid)
     ahz = T.find("Ahaziah", under=dav)
     ahz.note = (ahz.note or "") + \
@@ -1718,7 +1764,7 @@ def _second_chronicles(T):
           "and withstood him at the altar of incense — 2 Chr 26:17",
           kind="priest", link="dash"),
     ]
-    T.child("Aaron", named_2ch, link="dash")
+    T.child("Aaron", named_2ch, link="dash", gap="?")
 
     jhd = N("Jehoiada", "the priest who hid Joash, made him king in the "
             "seventh year and ordered the house of Yahweh; he died at 130 "
@@ -1728,7 +1774,7 @@ def _second_chronicles(T):
                       "commanded to be stoned in the court of Yahweh's "
                       "house — 2 Chr 24:20-22", link="solid",
                       ref="2 Chr 24:20"))
-    T.child("Aaron", jhd, link="dash")
+    T.child("Aaron", jhd, link="dash", gap="?")
     T.link(jhd, jsh, "the priest's house and the king's, joined by marriage")
 
 
@@ -1754,8 +1800,13 @@ def audit(T):
     print(f"edges            solid {by_link.get('solid', 0)}  "
           f"dashed {by_link.get('dash', 0)}  wife {by_link.get('wife', 0)}")
     print(f"cross-links      {len(T.links)}")
-    print(f"deepest descent  {depth} generations "
+    print(f"deepest descent  {depth} edges "
           f"({' → '.join(_spine(max(nodes, key=lambda n: n.depth)))})")
+    numbered = [n for n in people if n.gen is not None and n.link != "wife"]
+    deep = max(numbered, key=lambda n: n.gen)
+    print(f"generation no.   {len(numbered)} people numbered, "
+          f"{len(people) - len(numbered)} not (wives, and below a join of "
+          f"unknown length); deepest {deep.gen} ({deep.label})")
     print(f"repeated names   {len(dupes)} "
           f"(most: {sorted(dupes.items(), key=lambda kv: -kv[1])[:6]})")
     _coverage(nodes)

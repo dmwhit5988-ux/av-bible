@@ -9,8 +9,12 @@ Layout notes
 ------------
 * GENERATION BANDS. Every node at depth d sits at the same y. That is the
   whole value of a reference chart of this size: Nahshon and Amram and
-  Eliphaz line up, and the ruler down the left says which generation from
-  Adam you are looking at. Bands are sized to the tallest box on them.
+  Eliphaz line up. Bands are sized to the tallest box on them.
+* GENERATION NUMBERS. The small number in each box is `N.gen`, its
+  generation from Adam counted father to son (chronicles_tree.Tree.seal),
+  which is not its depth: a wife or a house box is an edge but not a
+  generation. Wives, houses, and everything below a join whose length the
+  text doesn't give carry none (`printed_gen`).
 * LEAF GRIDS. Joktan has thirteen sons and Azel six; laid out as one row
   they would set the width of everything above them. A parent whose children
   are all childless and numerous gets them stacked column-major under a bus
@@ -458,9 +462,33 @@ def draw_node(c, n):
                    anchor="lm", italic=True)
             y += NOTE_H
     # the generation from Adam, so a name can be placed in time at a glance
-    if n.kind != "house":
-        c.text((n.x + n.w - 4, n.y + n.h - 1), str(n.depth + 1), 8,
+    if printed_gen(n) is not None:
+        c.text((n.x + n.w - 4, n.y + n.h - 1), str(n.gen), 8,
                dim(FAINT, 0.75), anchor="rb")
+
+
+def printed_gen(n):
+    """The generation number a box carries (chronicles_tree.Tree.seal), or
+    None. A house is not a generation, a wife's number is her own line's
+    and not her husband's, and below a join of unknown length the count is
+    unknown — none of those print one."""
+    if n.kind == "house" or n.link == "wife":
+        return None
+    return n.gen
+
+
+def deepest_line(nodes):
+    """(generations, the deepest numbered box, its father) for the masthead.
+
+    The father is the nearest box above that is neither a wife (the line is
+    reckoned through her husband) nor a house. Ties go to the first box in
+    reading order."""
+    deep = max((n for n in nodes if printed_gen(n) is not None),
+               key=lambda n: n.gen)
+    up = deep.parent
+    while up is not None and (up.link == "wife" or up.kind == "house"):
+        up = up.parent
+    return deep.gen, deep, up
 
 
 def _crown(c, x, cy):
@@ -659,8 +687,11 @@ def draw_masthead(c, x, y, T, stats):
         "%(people)d people and %(houses)d houses; %(solid)d stated "
         "descents, %(dash)d implied ones and %(wife)d doubled lines to a "
         "wife or mother. Every one of them reaches Adam." % stats,
-        "The deepest line runs 59 generations, Adam to Hodaviah son of "
-        "Elioenai. The small grey number in each box says which.",
+        "The deepest line runs %(deep)d generations, Adam to %(deep_who)s. "
+        "The small grey number in each box is its generation from Adam, "
+        "counted father to son. A wife's box has none, and it is left off "
+        "below any join where the text does not say how many generations "
+        "lie between." % stats,
         "A person is here only if the text gives a join. Isaiah is not — "
         "\u201cson of Amoz\u201d joins nothing. Zephaniah is: his four "
         "fathers run back to a Hezekiah in Josiah\u2019s day.",
@@ -735,6 +766,11 @@ def build_svg():
         "dash": sum(1 for n in nodes if n.link == "dash"),
         "wife": sum(1 for n in nodes if n.link == "wife"),
     }
+    gens, deep, father = deepest_line(nodes)
+    stats["deep"] = gens
+    stats["deep_who"] = deep.label + (
+        f" {'daughter' if deep.kind == 'woman' else 'son'} of {father.label}"
+        if father is not None else "")
     mast_x = x0 - MAST_W - 90
     below = draw_masthead(c, mast_x, top + 130, T, stats)
     draw_silent(c, mast_x, below + 40)

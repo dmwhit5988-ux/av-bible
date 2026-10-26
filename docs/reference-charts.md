@@ -15,10 +15,10 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,388 × 16,324 px, about 1.4 MB, 1,255 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,388 × 16,324 px, about 1.3 MB, 1,255 boxes | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
-| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,398 × 12,074 px, about 1.5 MB, 1,270 boxes | `generate_ot_timeline_svg.py` |
+| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,398 × 12,074 px, about 1.4 MB, 1,270 boxes | `generate_ot_timeline_svg.py` |
 
 ## The Old Testament family tree
 
@@ -40,7 +40,15 @@ One contiguous family tree of the whole Old Testament, rooted at Adam.
 | doubled line | a wife, or the mother the line is reckoned through |
 | gold line inside a box | a cross-reference: this person is named elsewhere on the sheet, and the line says how. The note is written in both boxes. Pairs close enough together are also tied by a gold arc. |
 | box outline | gold for a king (with a crown), jade for a priest or Levite, rose for a woman the text names, grey for a house or company |
-| small number, bottom right | the generation from Adam |
+| small number, bottom right | the generation from Adam, counted father to son; none on a wife's box, and none below a join whose length the text doesn't give |
+
+**The generation number.** It is `N.gen`, which `chronicles_tree.Tree.seal` computes from Adam (1) down, and `generate_ot_family_tree_svg.printed_gen` decides where it prints. It is not the box's depth in the tree:
+- A wife keeps her husband's number, so her sons are his sons' generation. Her own box prints none, because her generation is her own line's.
+- A house box is never a generation. One that only gathers its parent's own children (`gap=0`, such as Absalom's "three sons") passes the parent's number down.
+- A join marked `gap="?"` has no number, and neither does anything below it. That covers the companies the text gives no generations for (the kings and chiefs of Edom, the kings of Israel, the later houses of Benjamin, the 7:12 "and also" group, the priests' courses, the gatekeepers) and the men hung on their tribe or clan with no father named (1 Chronicles 4's families of Judah, Jephunneh and Hodiah among them, the fathers of the Numbers princes and spies, Eli, Ahithophel, Elimelech, Mordecai's Kish, Jahdai). Seir, joined to Esau by marriage, is marked too.
+- The marks are set where each graft is made (`Tree.child(..., gap=...)`). `seal` raises if a house box would hand a number down without one.
+
+So Abraham prints 20, Perez 24 and David 33, and Abraham to David is the fourteen of Matthew 1:17. The masthead's "the deepest line runs N generations" is computed from the same numbers (`deepest_line`).
 
 ```
 .venv/Scripts/python.exe generate_ot_family_tree_svg.py   # rebuild the .svg and .html
@@ -83,6 +91,7 @@ The same tree laid on a year scale: every box sits at its year, and a rail down 
 - **The scale.** The axis is one monotone, piecewise-linear map. It opens out where the tree is dense in time, such as the monarchy, and closes up where nothing is recorded. The tick spacing shows where.
 - **What is dated.** 87 of 1,232 people are dated. Undated boxes sit between their nearest dated ancestor and descendant.
 - **The year rails.** Ussher's years run throughout, with Thiele's on a right-hand rail.
+- **The boxes** are drawn by the wall chart's `draw_node`, so they carry the same generation number. Matthew's line runs on to Jesus at 64.
 - **Data.** `chronology.py` holds the dates and their binding to the tree. `matthew_tree.py` carries the line on past Zerubbabel to Jesus.
 - **Design record.** [design/ot-timeline.md](design/ot-timeline.md).
 

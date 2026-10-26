@@ -322,7 +322,7 @@ def _exodus(T):
     jethro = D("Reuel · Jethro", "the priest of Midian, Moses' "
                "father-in-law, who had seven daughters",
                ref="Ex 2:16-18, 18:1")
-    T.child("Midian", jethro, link="dash")
+    T.child("Midian", jethro, link="dash", gap="?")
     T.link(jethro, T.find("Zipporah"),
            "Moses married into Keturah's line — Exodus 2:21")
 
@@ -354,12 +354,14 @@ def _numbers(T, jos):
                       f"his son", ref="Num 1:5-15",
                       kids=[N(prince, "prince of the tribe, who stood with "
                               "Moses at the census")]),
-                under=None if tr not in ("Manasseh",) else jos, link="dash")
+                under=None if tr not in ("Manasseh",) else jos, link="dash",
+                gap="?")
     for tr, spy, father in SPIES:
         T.child(tr, D(father, "his son was sent to spy out the land",
                       ref="Num 13:4-15",
                       kids=[N(spy, "one of the twelve spies")]),
-                under=None if tr not in ("Manasseh",) else jos, link="dash")
+                under=None if tr not in ("Manasseh",) else jos, link="dash",
+                gap="?")
     _note(T.find("Ammihud", under=T.find("Ephraim", under=jos)),
           "Numbers 1:10 makes his son Elishama prince of Ephraim — the "
           "same Elishama, Joshua's grandfather")
@@ -420,7 +422,7 @@ def _numbers(T, jos):
                                      "brothers on one stone and reigned "
                                      "three years", ref="Judg 9",
                                      kind="king")])]),
-            under=machir, link="dash")
+            under=machir, link="dash", gap="?")
     # Judges 11:1 "Gilead became the father of Jephthah" — a father of the
     # judges' day, not Machir's son. Jephthah hangs solid under him; only
     # the join to the clan of Gilead is inferred, so that edge is dashed.
@@ -432,14 +434,14 @@ def _numbers(T, jos):
                               "valor, the son of a prostitute, whom his "
                               "brothers drove out — and who judged Israel "
                               "six years", ref="Judg 11:1-2", icon="sword")]),
-            under=machir, link="dash")
+            under=machir, link="dash", gap="?")
     T.link(T.find("Jair", 1), T.find("Jephthah"),
            "Jair the Gileadite, who judged Israel — Judges 10:3")
     T.child("Dan", D("Manoah", "of Zorah, of the family of the Danites",
                      ref="Judg 13:2", kids=[
                          N("Samson", "who judged Israel twenty years",
                            icon="lion", ref="Judg 13:24")]),
-            under=T.find("Israel"), link="dash")
+            under=T.find("Israel"), link="dash", gap="?")
 
 
 # ===========================================================================
@@ -462,7 +464,7 @@ def _ruth(T):
                       ref="Ruth 1:14")]
     naomi.kids = [mahlon, chilion]
     elim.kids = [naomi]
-    T.child("Judah", elim, link="dash")
+    T.child("Judah", elim, link="dash", gap="?")
 
     boaz = T.find("Boaz")
     _note(boaz, "who bought all that was Elimelech's, and took Ruth to "
@@ -504,7 +506,7 @@ def _samuel(T):
                              kind="priest")])])])
     eli.kids = [N("Hophni", "a son of Belial, who didn't know Yahweh",
                   ref="1 Sam 2:12"), phin]
-    T.child("Ithamar", eli, link="dash")
+    T.child("Ithamar", eli, link="dash", gap="?")
 
     # -- Samuel's mother --------------------------------------------------
     # Elkanah's two wives (1 Sam 1:2) stand beside Samuel; Samuel stays
@@ -575,7 +577,7 @@ def _samuel(T):
                       N("Bathsheba · Bathshua", "Uriah the Hittite's wife, "
                         "who bore Solomon", kind="woman",
                         ref="2 Sam 11:3, 1 Chr 3:5")])])
-    T.child("Judah", ahi, link="dash")
+    T.child("Judah", ahi, link="dash", gap="?")
     T.link(T.find("Bathsheba · Bathshua"), T.find("Solomon"),
            "Solomon's mother was David's counsellor's granddaughter, if her "
            "father Eliam is Ahithophel's son (2 Sam 23:34)")
@@ -583,9 +585,11 @@ def _samuel(T):
     abs_ = T.find("Absalom")
     _note(abs_, "who stole the hearts of the men of Israel and was caught "
                 "in the oak by his head — 2 Samuel 15-18")
-    abs_.kids.append(H("three sons", "2 Samuel 14:27 counts them and does "
-                       "not name them; 18:18 says he had no son to keep his "
-                       "name in remembrance", ref="2 Sam 14:27"))
+    sons3 = H("three sons", "2 Samuel 14:27 counts them and does not name "
+              "them; 18:18 says he had no son to keep his name in "
+              "remembrance", ref="2 Sam 14:27")
+    sons3.gap = 0
+    abs_.kids.append(sons3)
     abs_.kids.append(N("Tamar", "his daughter, a woman with a beautiful "
                        "face", kind="woman", ref="2 Sam 14:27"))
     _note(T.find("Daniel", 1), "2 Samuel 3:3 calls him Chileab")
@@ -627,7 +631,7 @@ def _kings(T, jos):
                                      ref="1 Kgs 15:25-28"),
                                    N("Abijah", "who died as the prophet "
                                      "said", ref="1 Kgs 14:1-18")])]),
-            under=jos, link="dash")
+            under=jos, link="dash", gap="?")
     T.child("Issachar", D("Ahijah", "of the house of Issachar",
                           ref="1 Kgs 15:27", kids=[
                               N("Baasha", "who destroyed all the house of "
@@ -637,7 +641,7 @@ def _kings(T, jos):
                                       "servant killed as he drank himself "
                                       "drunk", kind="king",
                                       ref="1 Kgs 16:8-10")])]),
-            under=isr, link="dash")
+            under=isr, link="dash", gap="?")
 
     omri = N("Omri", "the captain of the host, who bought the hill of "
              "Samaria and built on it — 12 years", kind="king",
@@ -694,7 +698,7 @@ def _kings(T, jos):
     ]
     for k in north.kids:
         k.link = "dash" if k.link != "dash" else k.link
-    T.child("Israel", north, link="dash")
+    T.child("Israel", north, link="dash", gap="?")
 
     # Athaliah is the hinge between the two houses; she is drawn once, as
     # Ahab's daughter, and tied to Judah by a link rather than a second box.
@@ -764,7 +768,7 @@ def _after(T):
     shim.kids.append(D("Abihail", "Mordecai's uncle — Est 2:15, 9:29; "
                        "'uncle' read as his father's brother",
                        ref="Est 2:15", kids=[est]))
-    T.child("Benjamin", mord, under=T.find("Israel"), link="dash")
+    T.child("Benjamin", mord, under=T.find("Israel"), link="dash", gap="?")
     T.link(est, m, "he took her for his own daughter — Est 2:7, 15")
 
     # -- Daniel 1:3-6 ----------------------------------------------------
@@ -783,7 +787,7 @@ def _after(T):
                            N("Hananiah", "Shadrach", link="dash"),
                            N("Mishael", "Meshach", link="dash"),
                            N("Azariah", "Abednego", link="dash")]),
-            under=T.find("Israel"), link="dash")
+            under=T.find("Israel"), link="dash", gap="?")
 
     # -- the prophets whose fathers join them to somebody -----------------
     T.child("Hezekiah", D("Amariah", "Zephaniah 1:1 runs the prophet's "
@@ -800,16 +804,17 @@ def _after(T):
                               N("Jeremiah", "the prophet, to whom Yahweh's "
                                 "word came in the thirteenth year of "
                                 "Josiah", icon="scroll", kind="priest")]),
-            link="dash")
+            link="dash", gap="?")
     T.child("Aaron", D("Buzi", None, ref="Ezek 1:3", kids=[
         N("Ezekiel", "the priest, by the river Chebar in the land of the "
-          "Chaldeans", kind="priest", icon="scroll")]), link="dash")
+          "Chaldeans", kind="priest", icon="scroll")]), link="dash",
+            gap="?")
     T.child("Levi", D("Iddo", "a priest who came up with Zerubbabel — "
                       "Nehemiah 12:4", ref="Zech 1:1", kids=[
                           N("Berechiah", None, kids=[
                               N("Zechariah", "the prophet, in the second "
                                 "year of Darius", icon="scroll")])]),
-            link="dash")
+            link="dash", gap="?")
 
     # -- Jeremiah 35: the Rechabites -------------------------------------
     # Under Hammath, "the father of the house of Rechab" (1 Chr 2:55).
@@ -817,7 +822,7 @@ def _after(T):
             D("Rechab", None, ref="Jer 35:6", kids=[
                 N("Jonadab", "who commanded his sons to drink no wine, "
                   "build no house and dwell in tents — and they obeyed him",
-                  icon="tent")]), link="dash")
+                  icon="tent")]), link="dash", gap="?")
 
 
 def extend(T):
