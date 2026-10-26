@@ -396,6 +396,10 @@
           "edit": "World/VerseFrame: the camera rules, HUD, ghost boxes and audio timing (AUDIO_DIR)"
         },
         {
+          "file": "svg_family_lines.py",
+          "edit": "the lines that join a family (stem and bus, rail and shelves, marriage bars): RAIL_OFF, RAIL_GAP, the doubled wife strand and the open bead"
+        },
+        {
           "file": "generate_ot_family_tree_svg.py",
           "edit": "tree layout and house colours shared with the OT wall chart and Matthew 1 - editing one changes all three"
         }

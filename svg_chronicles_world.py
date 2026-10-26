@@ -38,6 +38,7 @@ import os
 import struct
 
 import chronicles_tree as CT
+import svg_family_lines as FL
 from chronicles_tree import walk
 from config import WEB_AUDIO_DIR
 from generate_1chronicles import (CHAPTERS, assign, flatten,
@@ -220,6 +221,10 @@ def _anim(attr, vals, dur):
 
 
 CONNECTOR_W = 1.5           # a static connector's stroke, in world units
+FINE_W = 1.0                # the second strand of a wife's line, and beads
+TRACE_W = 1.6               # an arrival's line as it draws itself
+TRACE_FINE_W = 1.1          # and the second strand of a wife's drop
+LINE_ALPHA = {"lit": 0.95, "read": 0.8, "ahead": 0.2}
 
 
 def _unwidth(el, width):
@@ -904,11 +909,28 @@ class VerseFrame:
     # what an ordinary verse costs.
     max_nodes = MAX_NODES
     veil_alpha = VEIL_ALPHA
+    # How a family is joined. True: the wall chart's drawing, one family at
+    # a time (svg_family_lines) — a stem and a bus over a row, a rail with a
+    # shelf to each row of a wrapped family, nothing behind anybody else's
+    # box. False: the older elbow, one per child, from the parent down to a
+    # bus halfway and on down to the child, which in a wrapped family ran
+    # behind the brothers and nephews in between (399 of them on this
+    # tree) so that a son seemed to hang from his brother. Matthew 1 keeps
+    # the elbow until its own files are reviewed.
+    family_lines = True
 
     def __init__(self, world):
         self.world = world
         self.camera = Camera(world)
         self.read = set(world.context_nodes())
+        self.lines = None
+        # Boxes are drawn over lines, so a line through somebody else's box
+        # seems to leave from it or arrive at it: the picture would say that
+        # a man is the father of his brother. The driver stops on any.
+        self.lines_behind = []
+        if self.family_lines:
+            self.lines = FL.Geometry(world.nodes)
+            self.lines_behind = FL.through_boxes(self.lines)
 
     def render(self, ch, v, scene, first):
         w = self.world
@@ -1016,6 +1038,10 @@ class VerseFrame:
                      "read" if n in self.read else "ahead")
             self._draw(lines, lines_new, boxes, boxes_new, n, state,
                        n in seen and n not in outline, dur)
+        fine = []
+        if self.lines is not None:
+            lines, fine, lines_new = self._family_lines(shown, arriving,
+                                                        lit, dur)
 
         named = list(w.lit.get((ch, v), []))       # verse reading order
         self.read |= arriving
@@ -1024,6 +1050,7 @@ class VerseFrame:
         lit_w = self.LOOK["lit"][2]
         els_all = (self._extra_world_els(ch, v, dur, shown)
                    + [_stroke_group(lines, CONNECTOR_W, scales, cam1[0], dur)]
+                   + [_stroke_group(fine, FINE_W, scales, cam1[0], dur)]
                    + lines_new
                    + [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
                       for wd in sorted(boxes)]
@@ -1098,25 +1125,73 @@ class VerseFrame:
         exactly where it was and the lit version cross-fades on top of it
         while the connector traces out. Nothing disappears; the branch
         lights up.
+
+        With `family_lines` the lines are drawn per family afterwards
+        (_family_lines) and this draws the boxes only.
         """
+        elbow = self.lines is None
         if state != "new":
-            lines.append(self._connector(n, state))
+            if elbow:
+                lines.append(self._connector(n, state))
             boxes.setdefault(self.LOOK[state][2], []).extend(
                 self._node_els(n, state, full))
             return
         gdur, gbegin = _grow_timing(dur)
-        lines.append(self._connector(n, "ahead"))
+        if elbow:
+            lines.append(self._connector(n, "ahead"))
         boxes.setdefault(self.LOOK["ahead"][2], []).extend(
             self._node_els(n, "ahead", full))
-        lines_new.append(self._connector(n, "lit", gdur, trace=True))
+        if elbow:
+            lines_new.append(self._connector(n, "lit", gdur, trace=True))
         boxes_new.append(_fade_group(self._node_els(n, "lit", full),
                                      gbegin, gdur))
 
+    def _family_lines(self, shown, arriving, lit, dur):
+        """This verse's lines, one family at a time -> (static, fine,
+        growing).
+
+        Every piece leading to a drawn box is drawn ONCE, in the brightest
+        look of the people it leads to: a bus that serves a lit brother and
+        three faint ones is lit as far as the lit one and faint beyond him.
+        A name arriving here stands faint like its box (its lines in the
+        "ahead" look), and its own path from the parent — stem, bus or
+        rail and shelf, drop — then draws itself over them in the lit look,
+        on the old trace's timing, while the box brightens. Arrivals that
+        share a stem each trace it; the standing stem is still drawn once.
+        """
+        rank = ("ahead", "read", "lit")
+
+        def standing(k):
+            if k in arriving:
+                return 0
+            if k in lit:
+                return 2
+            return 1 if k in self.read else 0
+
+        segs, taken = [], set()
+        for n in shown:
+            for s in self.lines.node_segments.get(n, ()):
+                if id(s) not in taken:
+                    taken.add(id(s))
+                    segs.append(s)
+        lines, fine = FL.static_els(
+            segs, lambda s: rank[max(standing(k) for k in s.serves)],
+            LINE_ALPHA)
+        gdur, _gbegin = _grow_timing(dur)
+        growing = []
+        for n in shown:
+            if n in arriving:
+                growing.extend(FL.trace_els(self.lines, n, LINE_ALPHA["lit"],
+                                            TRACE_W, TRACE_FINE_W, gdur))
+        return lines, fine, growing
+
     def _connector(self, n, look, gdur=None, trace=False):
+        """The older elbow from the parent to one child (family_lines
+        off)."""
         p = n.parent
         if p is None:
             return ""
-        alpha = {"lit": 0.95, "read": 0.8, "ahead": 0.2}[look]
+        alpha = LINE_ALPHA[look]
         col = dim(FEMALE if n.link == "wife" else SAND_DIM, alpha)
         px, py = p.x + p.w / 2, p.y + p.h
         nx, ny = n.x + n.w / 2, n.y

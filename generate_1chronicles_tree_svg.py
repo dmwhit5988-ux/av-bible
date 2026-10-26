@@ -13,6 +13,10 @@ backups/1_Chronicles_svg_v2_camera under config.ARCHIVE_DIR.)
     python generate_1chronicles_tree_svg.py --out DIR  # somewhere else
     python generate_1chronicles_tree_svg.py --spine     # the layout tried
                                                         # and rejected here
+
+It writes nothing if any of the lines that join a family
+(`svg_family_lines`) would run behind a box; under --spine it only reports
+them.
 """
 
 import os
@@ -44,6 +48,15 @@ def main(argv):
           f"{len(world.nodes) - named} standing as context")
 
     frame = VerseFrame(world)
+    if frame.lines_behind:
+        print(f"family lines behind boxes: {len(frame.lines_behind)}")
+        for s, n in frame.lines_behind[:12]:
+            print(f"   the {s.role} of {s.fam.label}'s family, behind {n.label}")
+        if layout is None:
+            # the spine is only re-run for comparison, and leaves its rails
+            # no gutter; the live layout must come out clean
+            print("stopped: nothing written")
+            return 1
     total = bytes_ = 0
     per_chapter = {}
     first = True

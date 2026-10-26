@@ -1,7 +1,8 @@
 """Matthew 1:1-17 as a camera over the Old Testament family tree.
 
 The same world, the same camera and the same frame as 1 Chronicles 1-9 —
-`svg_chronicles_world.VerseFrame` does the drawing here unchanged — with two
+`svg_chronicles_world.VerseFrame` does the drawing here, keeping the older
+per-child elbow for its lines (`MatthewFrame.family_lines`) — with two
 differences that come from what Matthew is doing:
 
   * THE OLD TESTAMENT IS ALREADY STANDING. In Chronicles a name arrives when
@@ -312,6 +313,8 @@ class MatthewFrame(VerseFrame):
 
     PANORAMA = PANORAMA
     panorama = False
+    family_lines = False        # the older elbow, until Matthew's own files
+                                # are reviewed under the family lines
 
     def render(self, ch, v, scene, first):
         """Verses 1 and 17 get the whole tree, and a thinner veil.
