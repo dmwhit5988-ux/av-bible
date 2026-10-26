@@ -228,9 +228,10 @@ class Tree:
         # row lights nothing". A node keeps the one `src` stamp of the row it
         # was lifted from; 4:1 recites a descent chapter 2 already built, and
         # 6:33-38 climbs back up the Kohathite line of 6:22-28, so their rows
-        # have no node of their own. The verse camera reads this after a miss
-        # on the stamp (svg_chronicles_world.World._resolve_verse). Fill it
-        # from node handles held at graft time, never from a bare find().
+        # (all but 6:35's Mahath) have no node of their own. The verse camera
+        # reads this after a miss on the stamp
+        # (svg_chronicles_world.World._resolve_verse). Fill it from node
+        # handles held at graft time, never from a bare find().
         self.bind = {}
 
     # -- lookup ------------------------------------------------------------
@@ -943,17 +944,64 @@ def _levi(T):
     izhar.label = "Izhar · Amminadab"
     izhar.note = "6:22 has Amminadab in his place"
     T.bind[amm.src] = izhar
-    korah, elk1 = kch[1], kch[3]
+    assert [n.label for n in kch[1:]] == [
+        "Korah", "Assir", "Elkanah", "Ebiasaph", "Assir", "Tahath", "Uriel",
+        "Uzziah", "Shaul"], kch
+    korah, as1, elk1, ebi = kch[1:5]
+    tah, uri, uzz, shaul = kch[6:10]
     korah.note = "whose sons did not die — Numbers 26:11"
-    for k in blk(6, "The Levite lines", 1, 2).kids:  # Amasai, Ahimoth
-        elk1.kids.append(k)
-    zoph = chain(6, "The Levite lines", 2, 0)[1:]    # Zophai … Elkanah
-    zoph[0].note = "6:26 begins again from Elkanah without saying which"
-    zoph[0].link = "dash"
-    cur = elk1
-    for n in zoph:
+    # 6:22-23 runs "Assir his son, Elkanah his son, and Ebiasaph his son",
+    # but Ex 6:24 names the three as Korah's sons, and 6:37 and 9:19 have
+    # "Ebiasaph, the son of Korah": brothers. Ebiasaph keeps 6:23-24's
+    # Assir > Tahath > Uriel > Uzziah > Shaul, the line 6:36-37 climbs.
+    korah.kids = [as1, elk1, ebi]
+    as1.kids, elk1.kids = [], []
+    as1.note = ("6:22-23 runs them 'his son'; Ex 6:24 names all three sons "
+                "of Korah, and 6:37 and 9:19 make Ebiasaph Korah's son")
+    # Heman's line, 6:33-38, climbs the same men to Tahath under other names
+    # at three places (6:36 against 6:24), so those boxes carry both.
+    uri.label, uri.note = "Uriel · Zephaniah", "6:36 has Zephaniah in his place"
+    uzz.label, uzz.note = "Uzziah · Azariah", "6:36 has Azariah in his place"
+    shaul.label, shaul.note = "Shaul · Joel", "6:36 has Joel in his place"
+    # 6:25-27 then goes on from Shaul, as 6:35-36 tells it upward: Joel's son
+    # Elkanah, whose sons are Amasai and Ahimoth (6:25); Amasai's son Mahath
+    # (6:35); Mahath's son Elkanah, from whom 6:26-27 runs on to Samuel's
+    # father. 6:25 and 6:26 each say only "Elkanah", so both joins are
+    # dashed. Mahath is not merged with Ahimoth, whom 6:25 makes Amasai's
+    # brother.
+    e25 = blk(6, "The Levite lines", 1, 2)           # Elkanah > Amasai, Ahimoth
+    assert e25.label == "Elkanah", e25
+    assert [k.label for k in e25.kids] == ["Amasai", "Ahimoth"], e25.kids
+    ama = e25.kids[0]
+    e25.link, e25.ref = "dash", "6:25"
+    e25.note = ("the Elkanah of 6:36 — 6:25 does not say which Elkanah; "
+                "6:36 makes him Joel's son")
+    shaul.kids.append(e25)
+    heman_up = chain(6, "The temple singers", 0, 3)  # Joel … Israel (6:33-38)
+    mah = heman_up[8]
+    assert mah.label == "Mahath", mah
+    mah.ref = "6:35"
+    mah.note = ("6:35 has Mahath, son of Amasai, where 6:25 has Ahimoth, "
+                "Amasai's brother")
+    ama.kids.append(mah)
+    z26 = chain(6, "The Levite lines", 2, 0)         # Elkanah, Zophai … Elkanah
+    assert [n.label for n in z26] == ["Elkanah", "Zophai", "Nahath", "Eliab",
+                                      "Jeroham", "Elkanah"], z26
+    e26, zoph = z26[0], z26[1:]
+    e26.link, e26.ref = "dash", "6:26"
+    e26.note = "6:26 does not say which Elkanah; 6:35 makes him Mahath's son"
+    cur = mah
+    for n in z26:
         cur.kids.append(n)
         cur = n
+    # 1 Samuel 1:1 climbs the same run from Samuel's father: "Elkanah, the
+    # son of Jeroham, the son of Elihu, the son of Tohu, the son of Zuph".
+    zoph[0].label = "Zophai · Zuph"
+    zoph[0].note = "6:35 and 1 Samuel 1:1 call him Zuph"
+    zoph[1].label = "Nahath · Toah"
+    zoph[1].note = "6:34 has Toah; Tohu in 1 Samuel 1:1"
+    zoph[2].label = "Eliab · Eliel"
+    zoph[2].note = "6:34 has Eliel; Elihu in 1 Samuel 1:1"
     sam = blk(6, "The Levite lines", 2, 1)           # Samuel + Joel, Abijah
     sam.note = "the seer, who with David ordained the gatekeepers in " \
                "their office of trust — 9:22"
@@ -973,30 +1021,23 @@ def _levi(T):
     heman.note = "the singer, in the midst — his line read upward to Israel"
     heman.icon = "harp"
     heman.ref = "6:33-38"
-    T.child("Joel", heman, nth=1, under=T.find("Samuel"))
+    T.child("Joel", heman, nth=1, under=sam)
 
-    # 6:33-38 climbs Heman's line back up to Israel through men 6:22-28
-    # already built, so its rows are bound to them rather than lifted (a
-    # lift would draw Samuel and Joel twice). The run Elkanah, Jeroham,
-    # Eliel, Toah, Zuph matches 6:26-27 and 1 Samuel 1:1 (Elihu, Tohu,
-    # Zuph): Eliel is Eliab, Toah Nahath, Zuph Zophai. Rows 10-16 (Elkanah,
-    # Mahath, Amasai, Elkanah, Joel, Azariah, Zephaniah) have no right box
-    # yet — the tree hangs Amasai under Assir's son Elkanah, above Tahath,
-    # where 6:35-36 puts him below — so they light nothing rather than a
-    # namesake.
+    # 6:33-38 climbs Heman's line back up to Israel through the men 6:22-28
+    # built above, so its rows are bound to them rather than lifted (a lift
+    # would draw Samuel and Joel twice). Only Mahath (6:35) is new, and he
+    # carries his own row's stamp. The three Elkanahs of 6:34-36 are three
+    # boxes: Samuel's father, Mahath's son and Joel's son.
     joel = next(k for k in sam.kids if k.label == "Joel")
     isr = T.find("Israel")
     assert lv in isr.kids
-    assert [n.label for n in zoph] == ["Zophai", "Nahath", "Eliab",
-                                       "Jeroham", "Elkanah"]
-    assert [n.label for n in kch[1:7]] == ["Korah", "Assir", "Elkanah",
-                                           "Ebiasaph", "Assir", "Tahath"]
+    assert mah.src == (6, "The temple singers", 11), mah.src
     heman_line = {3: joel, 4: sam, 5: zoph[4], 6: zoph[3], 7: zoph[2],
                   8: zoph[1], 9: zoph[0],
-                  17: kch[6], 18: kch[5], 19: kch[4], 20: kch[1],
+                  10: e26, 12: ama, 13: e25,
+                  14: shaul, 15: uzz, 16: uri,
+                  17: tah, 18: kch[5], 19: ebi, 20: korah,
                   21: izhar, 22: koh, 23: lv, 24: isr}
-    for k in range(10, 17):
-        heman_line[k] = None
     for k, n in heman_line.items():
         T.bind[(6, "The temple singers", k)] = n
 
