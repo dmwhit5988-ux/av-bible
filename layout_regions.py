@@ -20,7 +20,10 @@ This layout keeps one tree and makes its rows honest:
   PANEL HEADS. A head's box stays in the fan, so 2:1-2 see the twelve
   together, and everything below him is laid out in his own panel, a
   rectangle titled with his name (EDOM for Esau). A routed line runs from
-  the head down the gutters into his panel.
+  the head down the gutters into his panel. The two houses are not boxes
+  in the sons' row, where they stood like a thirteenth and fourteenth son:
+  each is a LABEL on Israel's line, in the gap over that row, with nothing
+  under it there, and its routed line leaves the label.
 * INSIDE A PANEL the rows are generations too, counted on the same table as
   the fan. Brothers keep birth order on one row. A wife stands beside her
   husband (see COUPLES below), and a wife's children hang under her. A
@@ -46,7 +49,17 @@ the bar grows. BAR_W prices a px of longer bar against a px of the husband
 sliding off the middle of his own children. At 1.0 every couple on the tree
 is compact except Caleb's: Hur's house under Ephrath is too wide for a
 compact row to keep the buses of his four wives' children apart, so those
-wives stand over their own children, up to about 3,500 px from him.
+wives stand over their own children, up to about 3,500 px from him. (Hur's
+seven sons fill the next row for 2,600 px, and Ephah's Haran has a son on
+that row, so her group and Maacah's stand past them. Reversing the order of
+his wives' groups, or standing the first two on his brothers' side as the
+V1 prototype would, brings 2:49 to reading size, but each breaks the order
+of his children or the rule below and makes 2:18 or 2:46 wider.)
+
+A wife stands on the side of her husband away from his brothers: one
+standing between them stands under their father's bus and reads as his
+child too. So the wives go to the side of his row with fewer of his
+brothers and sisters (see `Layout.unit_item`).
 
 ONE RULE FOR A WIFE. `is_wife` (link "wife") decides both where a node is
 packed and which row it stands on. Taking rows from one rule and packing
@@ -72,11 +85,14 @@ spine layouts):
                  and h are the label's (12 px italic, LABEL_H high), and
                  they stand in the gap above the row of the people they
                  gather; a family whose children are a mix of people and
-                 labels is still one row.
+                 labels is still one row. A house that heads a panel
+                 stands over its parent's children's row, gathering
+                 nobody there.
   plan.routes    {node: [(y, x), ...]}: a panel head, or a head's wife whose
-                 children are in the panel. Its stem leaves the box's bottom
-                 centre, runs down to y and across to x for each point in
-                 turn, and then down to the bus over its children.
+                 children are in the panel. Its stem leaves the box's (or
+                 label's) bottom centre, runs down to y and across to x for
+                 each point in turn, and then down to the bus over its
+                 children.
   plan.panels    [Panel], each with its head, title, rect (x0, y0, x1, y1),
                  shelf, nodes, and title_side / title_room: the top corner
                  the entering lines leave free, and how wide it is.
@@ -109,6 +125,8 @@ GROUP_GAP = 40      # between one wife's children and the next group, and on
 COUSIN = 44         # between different families' boxes in deeper rows
 WIFE_GAP = 18       # husband to wife: the marriage bar
 BUS_GAP = 16        # least gap between two parents' buses on one row
+SIDE_W = 1000.0     # a wife with children standing on the side of more of
+                    # her husband's brothers, in px of slide or bar
 BAR_W = 1.0         # a px of longer marriage bar, priced against a px of the
                     # husband sliding off the middle of his children:
                     # COMPACT COUPLES (at 0.6 Leah stands about 1,000 px
@@ -424,10 +442,10 @@ class Layout:
 
     def gen(self, n):
         """The generation row a node stands on. A house BOX (a house with
-        nobody under it, or a head) stands in its parent's children's row;
-        a label is placed from the row it gathers, gen + 1."""
+        nobody under it) stands in its parent's children's row; a label is
+        placed from the row it gathers, gen + 1."""
         g = self.gen_all[n]
-        if is_house(n) and (not n.kids or n in self.head_set):
+        if is_house(n) and not n.kids:
             g += 1
         return g
 
@@ -437,9 +455,25 @@ class Layout:
         return [self.make_item(k) for k in P.kids if not is_wife(k)]
 
     def make_item(self, k):
-        if is_house(k) and k.kids and k not in self.head_set:
+        if is_house(k) and k.kids:
+            if k in self.head_set:
+                return self.head_label_item(k)
             return self.label_item(k)
         return self.unit_item(k)
+
+    def head_label_item(self, H):
+        """A house that heads a panel (the first to live again in their
+        cities, the kings of Israel): a label on its parent's line, in the
+        gap over his children's row, with nothing under it there; its
+        people are in its panel, and its routed stem drops from the label
+        through a clear column. As a box it stood in Israel's sons' row
+        like a thirteenth and fourteenth son."""
+        it = Item(H, "label")
+        H.w, H.h = label_w(H), LABEL_H
+        self.plan.labels.add(H)
+        it.contour = [[-H.w / 2, H.w / 2]] + \
+            [[-COLUMN_PAD, COLUMN_PAD] for _d in range(HEAD_COLUMN)]
+        return it
 
     def label_item(self, H):
         it = Item(H, "label")
@@ -468,7 +502,18 @@ class Layout:
         P free to slide off the middle of his children while every bus
         stays clear of the next), and the END row (each wife over the near
         end of her own group, P centred over his). The cheaper wins: the
-        slide in px, or the extra bar length times BAR_W."""
+        slide in px, or the extra bar length times BAR_W.
+
+        THE FAR SIDE FROM HIS BROTHERS. A wife standing between a man and
+        his brother stands under their father's bus, and reads as one more
+        of his children. So P's wives go to the side of his row with fewer
+        of his father's other children (in birth order, those listed before
+        him stand to his left), which is the empty side when he is the
+        first or the last: the childless wives all stand there, and a wife
+        with children standing on the other side costs SIDE_W. With as many
+        on either side, the sides are balanced. 2:13-15's David, whose
+        wives stood between Ozem and him, has six brothers to his left and
+        two sisters to his right."""
         it = Item(P, "unit")
         wives = [k for k in P.kids if is_wife(k)]
         head = P in self.head_set
@@ -476,13 +521,21 @@ class Layout:
         wg = {wv: ([] if head else self.child_items(wv)) for wv in wives}
         kidw = [wv for wv in wives if wg[wv]]
         nokid = [wv for wv in wives if not wg[wv]]
+        sib = [k for k in (P.parent.kids if P.parent is not None else [])
+               if not is_wife(k)] or [P]
+        ip = sib.index(P)
+        n_l, n_r = ip, len(sib) - 1 - ip        # his brothers on each side
+        away = 0 if n_l == n_r else (1 if n_r < n_l else -1)
         best = None
         for cfg_i, sides in enumerate(_side_configs(len(kidw))):
             R = [wv for wv, sd in zip(kidw, sides) if sd > 0]
             L = [wv for wv, sd in zip(kidw, sides) if sd < 0]
+            side_pen = SIDE_W * len(L if away > 0 else R if away < 0 else [])
             nr, nl = [], []
             for wv in nokid:
-                if len(L) + len(nl) < len(R) + len(nr):
+                if away:
+                    (nr if away > 0 else nl).append(wv)
+                elif len(L) + len(nl) < len(R) + len(nr):
                     nl.append(wv)
                 else:
                     nr.append(wv)
@@ -502,15 +555,21 @@ class Layout:
                 best = (0, 0, row, rc, owners, groups, [], [], None)
                 break
             anchors = pack(items, gaps)
-            spans, k = [], 0
+            spans, clear, k = [], [], 0
             for g in groups:
                 spans.append([anchors[k], anchors[k + len(g) - 1]])
+                # a label stands in the gap the stems cross, so a group
+                # that ends in one keeps the next owner's stem clear of it
+                clear.append([spans[-1][0] - (g[0].node.w / 2 if
+                                              g[0].kind == "label" else 0),
+                              spans[-1][1] + (g[-1].node.w / 2 if
+                                              g[-1].kind == "label" else 0)])
                 k += len(g)
             lo, hi = -math.inf, math.inf
             for i in range(len(owners) - 1):
                 oi, oj = owners[i], owners[i + 1]
-                lo = max(lo, spans[i][1] + BUS_GAP - rc[oj])
-                hi = min(hi, spans[i + 1][0] - BUS_GAP - rc[oi])
+                lo = max(lo, clear[i][1] + BUS_GAP - rc[oj])
+                hi = min(hi, clear[i + 1][0] - BUS_GAP - rc[oi])
             if P in owners:
                 s_ = spans[owners.index(P)]
                 want = (s_[0] + s_[1]) / 2
@@ -519,7 +578,8 @@ class Layout:
             cands = []
             if lo <= hi:
                 t = min(max(want, lo), hi)
-                cands.append((abs(t - want) + 0.5 * cfg_i, ("compact", t)))
+                cands.append((abs(t - want) + 0.5 * cfg_i + side_pen,
+                              ("compact", t)))
             pos, gsh = _end_anchored(P, row, owners, spans, want)
             extra = sum(abs(pos[b_] - pos[P]) - abs(rc[b_])
                         for b_ in row if b_ is not P)
@@ -527,9 +587,6 @@ class Layout:
             # husband's brothers (under their father's bus she reads as his
             # sister, as Leah did under Isaac's): only on a side where P
             # has no brothers.
-            sib = [k for k in (P.parent.kids if P.parent is not None else [])
-                   if not is_wife(k)]
-            ip = sib.index(P) if P in sib else 0
             safe_l, safe_r = ip == 0, ip == len(sib) - 1
             moved_bad = any(
                 abs(pos[b_] - pos[P]) - abs(rc[b_]) > 40 and
@@ -538,7 +595,7 @@ class Layout:
                 for b_ in row if b_ is not P)
             if not moved_bad or not cands:
                 cands.append((BAR_W * max(0.0, extra) + 0.5 * cfg_i + 1.0
-                              + (1e6 if moved_bad else 0.0),
+                              + side_pen + (1e6 if moved_bad else 0.0),
                               ("end", pos, gsh)))
             for cost, sol in cands:
                 if best is None or cost < best[0]:
@@ -612,6 +669,8 @@ class Layout:
     # -- the band table --------------------------------------------------------
 
     def _label_level(self, n):
+        if n in self.head_set:      # it gathers nobody on the row it is over
+            return 1
         lv = 0
         for k in n.kids:
             if k in self.plan.labels:

@@ -33,7 +33,9 @@ layout can say that positions cannot, both from the regions layout's Plan
   when its parent's family is sorted into rows, so a parent whose children
   are a mix of sons and labels gets one bus over the labels; the drop runs
   into the label's top and its own stem leaves from its bottom, so the
-  label sits on the line.
+  label sits on the line. A label that heads a panel (it has a route) has
+  its people in the panel, so it counts as standing in the row it hangs
+  over, its parent's other children's.
 * ROUTES. A panel head stands in the fan, far above the children in his
   panel. His stem runs from his box down to each waypoint's y and across to
   its x in turn (the lanes under the fan and down the corridors), then down
@@ -59,7 +61,7 @@ the people it leads to, and trace one arrival's own path from the parent
 import math
 
 from generate_ot_family_tree_svg import BG, DROP, FEMALE, SAND_DIM, dim
-from layout_regions import is_wife
+from layout_regions import LABEL_BOTTOM, is_wife
 from svg_surface import _fmt, _opacity, _rgb
 
 RAIL_OFF = 18       # a rail sits this far left of the leftmost box in its
@@ -213,9 +215,15 @@ class Geometry:
 
     def _span(self, k):
         """Where k counts as standing when its family is sorted into rows:
-        its box, or for a label the rows of the people it gathers."""
+        its box, or for a label the rows of the people it gathers. A label
+        with a routed stem (a panel head drawn as a label) gathers nobody
+        nearby, since its people are in its panel: it counts as standing in
+        the row it hangs over, LABEL_BOTTOM under its own bottom."""
         if k not in self.labels or not k.kids:
             return k.y, k.y + k.h
+        if k in self.routes:
+            y = k.y + k.h + LABEL_BOTTOM
+            return y, y + 1.0
         if k not in self._spans:
             ss = [self._span(c) for c in k.kids]
             self._spans[k] = (min(a for a, _b in ss), max(b for _a, b in ss))
