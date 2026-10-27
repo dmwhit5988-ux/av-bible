@@ -228,6 +228,16 @@ def named(node, label, nth=1):
     return hits[nth - 1]
 
 
+def kid(node, label):
+    """`node`'s only direct child labelled `label`; raises unless there is
+    exactly one."""
+    kids = [k for k in node.kids if k.label == label]
+    if len(kids) != 1:
+        raise LookupError(f"{label!r} under {node.label!r} has {len(kids)} "
+                          "matches")
+    return kids[0]
+
+
 # ---------------------------------------------------------------------------
 # The master tree
 # ---------------------------------------------------------------------------
@@ -246,23 +256,43 @@ class Tree:
         # (svg_chronicles_world.World._resolve_verse). Fill it from node
         # handles held at graft time, never from a bare find().
         self.bind = {}
-        # Every find() with no `under` whose label is repeated on the tree at
-        # that moment: (call site, label, nth, matches, node got). Pre-order
-        # takes whichever namesake the walk reaches first, which can put a
-        # note or a cross-reference on the wrong man. audit() lists them for
-        # review; new code holds node handles or scopes the lookup.
+        # Every find() whose label is repeated, at that moment, in the scope
+        # it searched (the tree, or `under`): (call site, label, nth,
+        # matches, node got). Pre-order takes whichever namesake the walk
+        # reaches first, which can put a note or a cross-reference on the
+        # wrong man. audit() lists them for review; code holds node handles
+        # or reaches the box by a path (at()) instead.
         self.ambiguous = []
 
     # -- lookup ------------------------------------------------------------
 
     def find(self, label, nth=1, under=None):
+        """The nth node labelled `label`, pre-order, on the tree or inside
+        `under`. `label` may instead be a node already held, which is
+        returned as it is, so the grafting calls below take a handle too.
+        A lookup whose name repeats in the scope searched is recorded in
+        `ambiguous`."""
+        if isinstance(label, N):
+            return label
         base = under if under is not None else self.root
         got = named(base, label, nth)
-        if under is None:
-            hits = sum(1 for n in walk(self.root) if n.label == label)
-            if hits > 1:
-                self.ambiguous.append((_call_site(), label, nth, hits, got))
+        hits = sum(1 for n in walk(base) if n.label == label)
+        if hits > 1:
+            self.ambiguous.append((_call_site(), label, nth, hits, got))
         return got
+
+    def at(self, head, *path):
+        """The node at `path`: `head` must be the only node with that label
+        on the tree, and each later label the only child of that name under
+        the one before. This is the lookup for a name the tree repeats; it
+        raises rather than guess."""
+        hits = [n for n in walk(self.root) if n.label == head]
+        if len(hits) != 1:
+            raise LookupError(f"{head!r} has {len(hits)} matches on the tree")
+        cur = hits[0]
+        for lab in path:
+            cur = kid(cur, lab)
+        return cur
 
     # -- grafting ----------------------------------------------------------
 
@@ -274,8 +304,8 @@ class Tree:
         Hezron is already in the tree as a son of Perez.
         """
         tgt = self.find(label, nth, under)
-        assert src.label == label, \
-            f"graft mismatch: {src.label!r} onto {label!r}"
+        assert src.label == tgt.label, \
+            f"graft mismatch: {src.label!r} onto {tgt.label!r}"
         if ref and not tgt.ref:
             tgt.ref = ref
         if note:
@@ -1053,9 +1083,9 @@ def _levi(T):
     lv.icon = "lampstand"
     T.children("Kohath", blk(6, "The line of the high priests", 0, 1),
                ref="6:2")
-    T.children("Amram", blk(6, "The line of the high priests", 0, 2),
-               ref="6:3")
-    T.find("Miriam").kind = "woman"
+    amram = T.children("Amram", blk(6, "The line of the high priests", 0, 2),
+                       ref="6:3")
+    kid(amram, "Miriam").kind = "woman"         # not Mered's Miriam (4:17)
     T.find("Moses").icon = "scroll"
     koh = T.find("Kohath", under=lv)
     izhar = next(k for k in koh.kids if k.label == "Izhar")       # 6:2
@@ -1590,8 +1620,8 @@ def _return(T):
             gap="?")
     jeu = blk(9, "Of Judah and Benjamin in Jerusalem", 0, 3)
     jeu.link, jeu.note = "dash", "of the sons of Zerah — 690 brothers, 9:6"
-    T.child("Zerah", jeu, nth=1, under=T.find("Tamar"), link="dash",
-            ref="9:6", gap="?")
+    T.child(T.at("Judah", "Tamar", "Zerah"), jeu, link="dash", ref="9:6",
+            gap="?")
 
     ben = N("of Benjamin, in Jerusalem", "9:7-9 — 956 brothers by their "
             "generations, all heads of fathers' households", kind="house",
@@ -1602,7 +1632,8 @@ def _return(T):
         c = upward(9, "Of Judah and Benjamin in Jerusalem", col, i)
         c.link = "dash"
         ben.kids.append(c)
-    T.child("Benjamin", ben, link="dash", ref="9:7-9", gap="?")
+    T.child(T.at("Israel", "Benjamin"), ben, link="dash", ref="9:7-9",
+            gap="?")
 
     # The priests: 9:11 "Azariah the son of Hilkiah, the son of Meshullam, the
     # son of Zadok, the son of Meraioth, the son of Ahitub" is the high
@@ -1894,9 +1925,10 @@ def _second_chronicles(T):
     # him one generation before Seraiah, and 2 Chr 34 has him find the book
     # in Josiah's day. The other two the chart will not pin to a generation
     # it cannot show, so they hang beside the line instead of on it.
-    hil = T.find("Hilkiah", under=T.find("Shallum · Meshullam",
-                                         under=T.find("Zadok", 2)))
-    hil.note = ((hil.note + " · ") if hil.note else "") +         "who found the book of the law of Yahweh given by Moses, in "         "Josiah's eighteenth year — 2 Chr 34:14"
+    hil = T.at("Shallum · Meshullam", "Hilkiah")
+    hil.note = ((hil.note + " · ") if hil.note else "") + \
+        "who found the book of the law of Yahweh given by Moses, in " \
+        "Josiah's eighteenth year — 2 Chr 34:14"
     hil.kind, hil.icon = "priest", "scroll"
 
     named_2ch = N("priests 2 Chronicles names",
@@ -1967,16 +1999,17 @@ def audit(T):
 def _lookups(T, labels):
     """The review list for notes and cross-references on namesakes.
 
-    Every find() that took a repeated name with no `under=` (Tree.ambiguous),
-    with where it landed, and every cross-reference whose ends bear repeated
-    names, marked "!" when an end came from one of those finds. Each line
-    should be the man meant; new code holds node handles instead.
+    Every find() whose name repeated in the scope it searched
+    (Tree.ambiguous), with where it landed, and every cross-reference whose
+    ends bear repeated names, marked "!" when an end came from one of those
+    finds. Each line should be the man meant; code holds node handles or
+    uses Tree.at instead.
     """
     def tail(n, k=3):
         return " > ".join(_spine(n)[-k:])
 
-    print(f"ambiguous finds  {len(T.ambiguous)} (find() with no under= on a "
-          "repeated name; each must land on the man meant)")
+    print(f"ambiguous finds  {len(T.ambiguous)} (find() on a name repeated in "
+          "the scope searched; each must land on the man meant)")
     for site, label, nth, hits, got in T.ambiguous:
         print(f"   {site:24s} {label} #{nth} of {hits} -> {tail(got)}")
     guessed = {id(got) for *_, got in T.ambiguous}

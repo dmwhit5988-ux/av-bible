@@ -181,7 +181,8 @@ def build():
     # them a reader following the narration hears "Jacob" and "Salmon" and
     # finds no such box on the sheet.
     _relabel(T, "Israel", "Jacob · Israel")
-    _relabel(T, "Salma", "Salma · Salmon", "Matthew 1:4-5 reads Salmon")
+    _relabel(T, T.at("Nahshon", "Salma"), "Salma · Salmon",
+             "Matthew 1:4-5 reads Salmon")
     _relabel(T, "Jeconiah", "Jeconiah · Jechoniah")
 
     david = T.find("David")

@@ -467,11 +467,29 @@ def draw_chip(c, n, edge, ink, dot, fill=PANEL, width=1.1, name=True):
 
 
 def link_anchor(n):
-    """Where a cross-reference arc meets a box: its centre, or a chip's
-    gold dot."""
+    """The point a cross-reference's length is measured from
+    (LINK_ARC_MAX): a box's centre, or a chip's gold dot."""
     if n.chip is not None:
         return n.x + CHIP_DOT_X, n.y + n.h / 2
     return n.x + n.w / 2, n.y + n.h / 2
+
+
+def link_ends(n):
+    """Where a cross-reference arc may meet box `n`, each with the way out.
+
+    A box offers the quarter points of its top and bottom edges and the
+    middle of each side, so the end dot sits on the box's edge: not inside,
+    where it would cover a letter of the reference it marks, and not at the
+    middle of the top or bottom, where the box's family lines join it. A
+    chip offers only its own gold dot, left by way of up, down or left."""
+    if n.chip is not None:
+        p = (n.x + CHIP_DOT_X, n.y + n.h / 2)
+        return [(p, (0, -1)), (p, (0, 1)), (p, (-1, 0))]
+    x0, y0, x1, y1 = n.x, n.y, n.x + n.w, n.y + n.h
+    q1, q3, ym = x0 + n.w / 4, x0 + n.w * 3 / 4, y0 + n.h / 2
+    return [((q1, y0), (0, -1)), ((q3, y0), (0, -1)),
+            ((q1, y1), (0, 1)), ((q3, y1), (0, 1)),
+            ((x0, ym), (-1, 0)), ((x1, ym), (1, 0))]
 
 
 def draw_node(c, n):
@@ -628,20 +646,13 @@ SILENT = ("Dan", "Zebulun")
 
 
 def region_node(T, label):
-    """The node a REGIONS band frames; raises rather than guess."""
-    head, *rest = REGION_AT.get(label, (label,))
-    hits = [n for n in walk(T.root) if n.label == head]
-    if len(hits) != 1:
-        raise LookupError(f"band {label!r}: {head!r} has {len(hits)} "
-                          "matches on the tree; give REGION_AT a path")
-    cur = hits[0]
-    for lab in rest:
-        kids = [k for k in cur.kids if k.label == lab]
-        if len(kids) != 1:
-            raise LookupError(f"band {label!r}: {lab!r} under "
-                              f"{cur.label!r} has {len(kids)} matches")
-        cur = kids[0]
-    return cur
+    """The node a REGIONS band frames (`Tree.at`); raises rather than
+    guess."""
+    try:
+        return T.at(*REGION_AT.get(label, (label,)))
+    except LookupError as e:
+        raise LookupError(f"band {label!r}: {e}; give REGION_AT a path") \
+            from None
 
 
 def subtree_box(n, pad=16):
@@ -668,10 +679,161 @@ def draw_regions(c, T):
 
 
 LINK_ARC_MAX = 3200         # beyond this an arc is longer than it is useful
+LINK_STEP = 3               # px between the points a route is tested at
+LINK_CLEAR = 5              # px a route keeps clear of a box it passes
+LINK_CELL = 240             # the box grid a route is tested against
+LINK_HANDLES = (0.12, 0.25, 0.4, 0.6)   # how far an end runs straight out,
+LINK_HANDLE_MAX = 240                   # as a share of the span, and at most
 
 
-def draw_links(c, T, dots=False):
-    """The gold ties between two boxes that name each other.
+def _box_grid(nodes):
+    grid = {}
+    for n in nodes:
+        if n.w <= 0 or n.h <= 0:
+            continue
+        x0, y0 = n.x - LINK_CLEAR, n.y - LINK_CLEAR
+        x1, y1 = n.x + n.w + LINK_CLEAR, n.y + n.h + LINK_CLEAR
+        for gx in range(int(x0 // LINK_CELL), int(x1 // LINK_CELL) + 1):
+            for gy in range(int(y0 // LINK_CELL), int(y1 // LINK_CELL) + 1):
+                grid.setdefault((gx, gy), []).append(n)
+    return grid
+
+
+def _bezier(cv, t):
+    (x0, y0), (x1, y1), (x2, y2), (x3, y3) = cv
+    u = 1 - t
+    a, b, c, d = u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t
+    return (a * x0 + b * x1 + c * x2 + d * x3,
+            a * y0 + b * y1 + c * y2 + d * y3)
+
+
+def link_route(a, b, grid):
+    """The cubic a cross-reference arc is drawn as, from the edge of box `a`
+    to the edge of box `b` (its four points; the end dots go on the first
+    and last), or None when the two are further apart than LINK_ARC_MAX.
+
+    The candidates are the arc that springs between the two boxes' centres
+    (`link_anchor`), cut where it leaves each box, and curves that leave
+    each box square to one of the edges `link_ends` offers. A line behind a
+    box reads as a line through that name, so the route that passes the
+    fewest boxes bearing either end's name wins, then the one behind the
+    fewest boxes, then the one that keeps clear of the most, then the
+    shortest (`_route_score`). Either way an end dot sits on the box's
+    edge, or on a chip's own dot, never on the reference it marks. `grid` is
+    `_box_grid` of every box on the sheet."""
+    ax, ay = link_anchor(a)
+    bx, by = link_anchor(b)
+    if math.hypot(bx - ax, by - ay) > LINK_ARC_MAX:
+        return None
+    mx, my = (ax + bx) / 2, (ay + by) / 2
+    lift = min(240, max(90, abs(bx - ax) * 0.22 + abs(by - ay) * 0.18))
+    cx, cy = mx, my - lift
+    arc = ((ax, ay), (ax + (cx - ax) * 2 / 3, ay + (cy - ay) * 2 / 3),
+           (bx + (cx - bx) * 2 / 3, by + (cy - by) * 2 / 3), (bx, by))
+    t0 = 0.0 if a.chip is not None else _leave(arc, a, False)
+    t1 = 1.0 if b.chip is not None else _leave(arc, b, True)
+    cands = [_split(arc, t0, t1)] if t0 < t1 else []
+    for p, dp in link_ends(a):
+        for q, dq in link_ends(b):
+            span = math.hypot(q[0] - p[0], q[1] - p[1])
+            for fa in LINK_HANDLES:
+                for fb in LINK_HANDLES:
+                    ka = min(LINK_HANDLE_MAX, max(20.0, fa * span))
+                    kb = min(LINK_HANDLE_MAX, max(20.0, fb * span))
+                    cands.append((p, (p[0] + dp[0] * ka, p[1] + dp[1] * ka),
+                                  (q[0] + dq[0] * kb, q[1] + dq[1] * kb), q))
+    best = None
+    for cv in cands:
+        score = _route_score(cv, a, b, grid, best[0] if best else None)
+        if score is not None and (best is None or score < best[0]):
+            best = (score, cv)
+    return best[1]
+
+
+def _inside(n, x, y, pad=-1):
+    """Whether (x, y) is inside box `n` grown by `pad` px."""
+    return (n.x - pad < x < n.x + n.w + pad
+            and n.y - pad < y < n.y + n.h + pad)
+
+
+def _leave(cv, n, back):
+    """Where the curve `cv`, starting (or with `back`, ending) inside box
+    `n`, crosses its edge, as a parameter t."""
+    inside, out = (1.0, 0.0) if back else (0.0, 1.0)
+    for i in range(1, 201):
+        t = (1 - i / 200) if back else i / 200
+        if not _inside(n, *_bezier(cv, t)):
+            out = t
+            break
+        inside = t
+    for _ in range(30):
+        mid = (inside + out) / 2
+        if _inside(n, *_bezier(cv, mid)):
+            inside = mid
+        else:
+            out = mid
+    return out
+
+
+def _split(cv, t0, t1):
+    """The piece of cubic `cv` between t0 and t1, as a cubic."""
+    def cut(c, t):                  # de Casteljau: (left part, right part)
+        p01 = [c[0][i] + (c[1][i] - c[0][i]) * t for i in (0, 1)]
+        p12 = [c[1][i] + (c[2][i] - c[1][i]) * t for i in (0, 1)]
+        p23 = [c[2][i] + (c[3][i] - c[2][i]) * t for i in (0, 1)]
+        p012 = [p01[i] + (p12[i] - p01[i]) * t for i in (0, 1)]
+        p123 = [p12[i] + (p23[i] - p12[i]) * t for i in (0, 1)]
+        mid = tuple(p012[i] + (p123[i] - p012[i]) * t for i in (0, 1))
+        return ((c[0], tuple(p01), tuple(p012), mid),
+                (mid, tuple(p123), tuple(p23), c[3]))
+    left = cut(cv, t1)[0]
+    return cut(left, t0 / t1)[1] if t0 > 0 else left
+
+
+def _route_score(cv, a, b, grid, worst):
+    """How a route reads, best first: (boxes bearing the name of either end
+    that it passes behind or within LINK_CLEAR of, boxes it passes behind,
+    other boxes it passes within LINK_CLEAR of, its length). By a namesake,
+    the line would seem to point at the wrong man. None as soon as the
+    first two pass `worst`'s."""
+    poly = sum(math.hypot(cv[i + 1][0] - cv[i][0], cv[i + 1][1] - cv[i][1])
+               for i in range(3))
+    steps = max(24, int(poly / LINK_STEP))
+    pts = [_bezier(cv, i / steps) for i in range(steps + 1)]
+    names = (a.label, b.label)
+    behind, near, same = set(), set(), set()
+    for x, y in pts:
+        for n in grid.get((int(x // LINK_CELL), int(y // LINK_CELL)), ()):
+            if n is a or n is b:
+                if n.chip is None and _inside(n, x, y):
+                    behind.add(id(n))     # back into its own box (a chip's
+                continue                  # curve starts on its own dot)
+            if not _inside(n, x, y, LINK_CLEAR):
+                continue
+            if n.label in names:
+                same.add(id(n))
+            if _inside(n, x, y, 0):
+                behind.add(id(n))
+            else:
+                near.add(id(n))
+        if worst is not None and (len(same), len(behind)) > worst[:2]:
+            return None
+    length = sum(math.hypot(u[0] - v[0], u[1] - v[1])
+                 for u, v in zip(pts, pts[1:]))
+    return len(same), len(behind), len(near - behind), length
+
+
+def link_routes(T):
+    """`link_route` for every cross-reference on a laid-out tree, in
+    `T.links` order, leaving out those too far apart to draw."""
+    grid = _box_grid(walk(T.root))
+    return [cv for cv in (link_route(a, b, grid) for a, b, _ in T.links)
+            if cv is not None]
+
+
+def draw_links(c, routes, dots=False):
+    """The gold ties between two boxes that name each other, along
+    `link_routes`.
 
     The reason for the tie is written inside both boxes (see `measure`), so
     the arc carries no label of its own — a floating label on a sheet this
@@ -681,22 +843,16 @@ def draw_links(c, T, dots=False):
     two boxes still point at each other in words.
 
     Called twice: once before the boxes for the arcs, so a curve passes
-    BEHIND any name it crosses, and once after for the end dots, which have
-    to sit on top of the box they mark.
+    BEHIND any name it crosses, and once after for the end dots, which sit
+    on the edge of the box they mark.
     """
-    for a, b, _text in T.links:
-        ax, ay = link_anchor(a)
-        bx, by = link_anchor(b)
-        if math.hypot(bx - ax, by - ay) > LINK_ARC_MAX:
-            continue
-        mx, my = (ax + bx) / 2, (ay + by) / 2
-        lift = min(240, max(90, abs(bx - ax) * 0.22 + abs(by - ay) * 0.18))
+    for cv in routes:
         if dots:
-            for px, py in ((ax, ay), (bx, by)):
+            for px, py in (cv[0], cv[3]):
                 c.circle(px, py, 3.4, fill=dim(ROYAL, 0.8), stroke=None)
             continue
-        d = ("M %s %s Q %s %s %s %s" % (_fmt(ax), _fmt(ay), _fmt(mx),
-                                        _fmt(my - lift), _fmt(bx), _fmt(by)))
+        d = "M %s %s C %s %s %s %s %s %s" % tuple(
+            _fmt(v) for pt in cv for v in pt)
         c.path(d, fill=None, stroke=dim(ROYAL, 0.5), width=1.6)
 
 
@@ -851,10 +1007,11 @@ def build_svg():
     # that is a BOX, so no connector and no cross-reference arc is drawn
     # across a name. Only the arcs' end dots come back on top.
     draw_edges(c, root)
-    draw_links(c, T)
+    routes = link_routes(T)
+    draw_links(c, routes)
     for n in walk(root):
         draw_node(c, n)
-    draw_links(c, T, dots=True)
+    draw_links(c, routes, dots=True)
 
     nodes = list(walk(root))
     stats = {

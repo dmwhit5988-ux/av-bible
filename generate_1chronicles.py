@@ -522,7 +522,7 @@ CH3 = [
                                "Shaphat"]))],
         [T(("Neariah", ["Elioenai", "Hizkiah", "Azrikam"]))],
         [T(("Elioenai", ["Hodaviah", "Eliashib", "Pelaiah", "Akkub",
-                         "Johanan", "Delaiah", ("Anani", "seven")]))],
+                         "Johanan", "Delaiah", "Anani"]))],
     ]),
 ]
 

@@ -40,7 +40,8 @@ import matthew_tree as MT
 import chronology as CH
 import generate_ot_family_tree_svg as G
 from generate_ot_family_tree_svg import (
-    measure, draw_edges, draw_node, draw_links, subtree_box, top_of, _wrap,
+    measure, draw_edges, draw_node, draw_links, link_routes, subtree_box,
+    top_of, _wrap,
     dim,
     BG, PANEL, RULE, SAND, SAND_DIM, TEXT, TEXT_DIM, FAINT, ROYAL, PRIESTLY,
     FEMALE, HOUSE, NOTE_H, SIB_GAP, DROP, ROW_GAP, SPINE, ASPECT, MAST_W,
@@ -606,11 +607,12 @@ def build_svg():
     draw_luke(c, scale, lanes_left)
 
     draw_edges_t(c, root)
-    draw_links(c, T)
+    routes = link_routes(T)
+    draw_links(c, routes)
     for n in nodes:
         draw_node(c, n)
     draw_dates(c, dated)
-    draw_links(c, T, dots=True)
+    draw_links(c, routes, dots=True)
 
     people = sum(1 for n in nodes if n.kind != "house" and n.chip is None)
     stats = {"people": people, "dated": len(dated), "nodes": len(nodes)}

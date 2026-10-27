@@ -27,38 +27,19 @@ in its note.
 Every entry cites its verse. Spellings are the WEB's throughout.
 """
 
-from chronicles_tree import N, walk
+from chronicles_tree import N, kid as _kid, walk
+
+# Where a name already repeats on the tree when a note, a cross-reference or
+# a graft is placed, the box is held from where it was made, reached by a
+# path (`Tree.at`, `_kid`, which raise rather than guess), or looked up
+# inside a subtree; a bare `T.find` would take whichever namesake pre-order
+# reaches first. `Tree.find` records any lookup whose name repeats in the
+# scope it searched, and the audit lists them.
 
 
 def _note(n, text):
     n.note = f"{n.note} · {text}" if n.note else text
     return n
-
-
-def _at(T, head, *path):
-    """The node at `path`: `head` must be the only node with that label on
-    the tree, and each later label the only child of the one before.
-
-    Notes and cross-references are hung through this (or through handles
-    held at graft time), never a bare `T.find` on a repeated name, which
-    takes whichever namesake pre-order reaches first.
-    """
-    hits = [n for n in walk(T.root) if n.label == head]
-    if len(hits) != 1:
-        raise LookupError(f"{head!r} has {len(hits)} matches on the tree")
-    cur = hits[0]
-    for lab in path:
-        cur = _kid(cur, lab)
-    return cur
-
-
-def _kid(node, label):
-    """`node`'s only direct child labelled `label`."""
-    kids = [k for k in node.kids if k.label == label]
-    if len(kids) != 1:
-        raise LookupError(f"{label!r} under {node.label!r} has {len(kids)} "
-                          "matches")
-    return kids[0]
 
 
 def W(label, note=None, kids=None, ref=None, icon=None):
@@ -133,12 +114,12 @@ def _genesis(T):
              "36:26"),
             (("Seir", "Ezer"), "Jaakan", "Akan", "36:27"),
             (("Esau", "Eliphaz"), "Zephi", "Zepho", "36:11")):
-        _note(_kid(_at(T, *parent), label),
+        _note(_kid(T.at(*parent), label),
               f"Genesis {ref} spells it {other}")
     # 1:17 lists Uz, Hul, Gether and Meshech among Shem's sons; Genesis
     # 10:23 makes them Aram's (Meshech as Mash). They stay where 1 Chronicles
     # puts them.
-    shem = _at(T, "Shem")
+    shem = T.at("Shem")
     for lbl in ("Uz", "Hul", "Gether"):
         _note(_kid(shem, lbl), "Genesis 10:23 makes him a son of Aram")
     _note(_kid(shem, "Meshech"), "Genesis 10:23 calls him Mash, a son of Aram")
@@ -218,7 +199,7 @@ def _genesis(T):
     # Her father is Zibeon's son Anah (Genesis 36:24-25), not Seir's son of
     # the same name; and Timna's tie to Eliphaz is not a stated marriage, so
     # this is the one marriage into Seir.
-    T.link(ohol, _at(T, "Seir", "Zibeon", "Anah"),
+    T.link(ohol, T.at("Seir", "Zibeon", "Anah"),
            "Esau married into Seir — Genesis 36:2")
     _note(_kid(_kid(esau, "Eliphaz"), "Timna"),
           "Genesis 36:12 makes her Eliphaz's concubine and Amalek's "
@@ -233,10 +214,7 @@ def _genesis(T):
         "Dan": "Bilhah", "Naphtali": "Bilhah",
         "Gad": "Zilpah", "Asher": "Zilpah"}
     for son, mum in mothers.items():
-        try:
-            _note(T.find(son, under=isr), f"of {mum} — Genesis 35:23-26")
-        except KeyError:
-            pass
+        _note(_kid(isr, son), f"of {mum} — Genesis 35:23-26")
     # Leah and Rachel: their boxes stand here, beside the husband their
     # children are reckoned to (Decision 19); Laban keeps a chip for each.
     leah = W("Leah", "Laban's elder daughter, whom Jacob was given first — "
@@ -400,19 +378,22 @@ SPIES = [                                          # Numbers 13:4-15
 
 
 def _numbers(T, jos):
+    def tribe(tr):
+        # Israel's son, or Joseph's: Manasseh is also a king's name and
+        # Benjamin a later man's (7:10)
+        return _kid(jos, tr) if tr == "Manasseh" else T.at("Israel", tr)
+
     for tr, prince, father in PRINCES:
-        T.child(tr, D(father, f"the prince of {tr} in the wilderness was "
-                      f"his son", ref="Num 1:5-15",
-                      kids=[N(prince, "prince of the tribe, who stood with "
-                              "Moses at the census")]),
-                under=None if tr not in ("Manasseh",) else jos, link="dash",
-                gap="?")
+        T.child(tribe(tr), D(father, f"the prince of {tr} in the wilderness "
+                             f"was his son", ref="Num 1:5-15",
+                             kids=[N(prince, "prince of the tribe, who stood "
+                                     "with Moses at the census")]),
+                link="dash", gap="?")
     for tr, spy, father in SPIES:
-        T.child(tr, D(father, "his son was sent to spy out the land",
-                      ref="Num 13:4-15",
-                      kids=[N(spy, "one of the twelve spies")]),
-                under=None if tr not in ("Manasseh",) else jos, link="dash",
-                gap="?")
+        T.child(tribe(tr), D(father, "his son was sent to spy out the land",
+                             ref="Num 13:4-15",
+                             kids=[N(spy, "one of the twelve spies")]),
+                link="dash", gap="?")
     _note(T.find("Ammihud", under=T.find("Ephraim", under=jos)),
           "Numbers 1:10 makes his son Elishama prince of Ephraim — the "
           "same Elishama, Joshua's grandfather")
@@ -766,11 +747,11 @@ def _kings(T, jos):
 
     # Athaliah is the hinge between the two houses; she is drawn once, as
     # Ahab's daughter, and tied to Judah by a link rather than a second box.
-    jor = T.find("Joram", 1)
+    jor = T.at("Jehoshaphat", "Joram")
     jor.kids = [k for k in jor.kids if k.label != "Athaliah"]
     _note(jor, "he walked in the way of the kings of Israel, for he married "
                "Ahab's daughter — 2 Kings 8:18")
-    T.link(T.find("Athaliah", 2), jor,
+    T.link(T.at("Ahab", "Athaliah"), jor,
            "the house of Omri married into the house of David — and very "
            "nearly ended it")
 
@@ -781,7 +762,7 @@ def _kings(T, jos):
 
 def _after(T):
     # -- Ezra 7:1-5: the priest's own line, and it lands on Seraiah -------
-    ser = T.find("Seraiah", 1)
+    ser = T.at("Shallum · Meshullam", "Hilkiah", "Azariah", "Seraiah")
     ser.kids.append(N("Ezra", "the scribe, skilled in the law of Moses — "
                       "Ezra 7:1-5 runs his fathers back through Azariah, "
                       "Hilkiah, Shallum, Zadok, Ahitub, Amariah, Azariah, "
@@ -832,7 +813,7 @@ def _after(T):
     shim.kids.append(D("Abihail", "Mordecai's uncle — Est 2:15, 9:29; "
                        "'uncle' read as his father's brother",
                        ref="Est 2:15", kids=[est]))
-    T.child("Benjamin", mord, under=T.find("Israel"), link="dash", gap="?")
+    T.child(T.at("Israel", "Benjamin"), mord, link="dash", gap="?")
     T.link(est, m, "he took her for his own daughter — Est 2:7, 15")
 
     # -- Daniel 1:3-6 ----------------------------------------------------
