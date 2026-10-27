@@ -1,5 +1,5 @@
 {
-  "_readme": "Master pronunciation list for Bible proper nouns, used to help the neural TTS. 'say' is tuned by ear -- whatever sounds right spoken is stored, and (lowercased) is what the voice is fed when 'override' is true; on-screen text is never changed. 'ipa' is an optional formal reference. Keys are WEB spellings: the exact form a name takes in the World English Bible, the only text the app reads. 'use_ipa' true means Azure renders speak the name from 'ipa' instead (Edge renders still use 'say' or the plain spelling). 'status' records what checking the audio concluded -- ok (reads correctly as spelled), fixed (override or IPA in place and working), suggested (a better spelling is known but unapplied, decide by ear), unfixed (wrong, nothing found yet), unsure (checked only against a generated reference, so it needs an ear); absent means never checked, which is NOT the same as ok. 'score' is the agreement measured at that check, 0-1. Edit with the GUI: python pronunciation_tool.py (it plays names back and rewrites this file + PRONUNCIATIONS.md); check against real audio with python pronunciation_check.py.",
+  "_readme": "Master pronunciation list for Bible proper nouns, used to help the neural TTS. 'say' is tuned by ear -- whatever sounds right spoken is stored, and (lowercased) is what the voice is fed when 'override' is true; on-screen text is never changed. 'ipa' is an optional formal reference. Keys are WEB spellings: the exact form a name takes in the World English Bible, the only text the app reads. 'use_ipa' true means Azure renders speak the name from 'ipa' instead (Edge renders still use 'say' or the plain spelling). 'status' records what checking the audio concluded -- ok (reads correctly as spelled), fixed (override or IPA in place and working), suggested (a better spelling is known but unapplied, decide by ear), unfixed (wrong, nothing found yet), unsure (checked only against a generated reference, so it needs an ear); absent means never checked, which is NOT the same as ok. 'score' is the agreement measured at that check, 0-1. 'verses' holds words that one verse needs said differently (a heteronym like 'Separate' the verb in Acts 13:2): {\"Book c:v\": {exact words in the verse: what to say, as typed}}. Edit with the GUI: python pronunciation_tool.py (it plays names back and rewrites this file + PRONUNCIATIONS.md); check against real audio with python pronunciation_check.py.",
   "names": {
     "Spirit": {
       "say": "Spirit",
@@ -24006,8 +24006,7 @@
       "ipa": "/ˈsæb.æθ/",
       "ref": "Acts 1:12",
       "override": false,
-      "use_ipa": true,
-      "status": "fixed",
+      "status": "ok",
       "ipa_src": "isbe"
     },
     "Andrew": {
@@ -26455,6 +26454,11 @@
       "status": "ok",
       "score": 0.929,
       "ipa_src": "cmudict"
+    }
+  },
+  "verses": {
+    "Acts 13:2": {
+      "Separate": "Separayte"
     }
   }
 }
