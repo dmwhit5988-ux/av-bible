@@ -35,6 +35,32 @@ def _note(n, text):
     return n
 
 
+def _at(T, head, *path):
+    """The node at `path`: `head` must be the only node with that label on
+    the tree, and each later label the only child of the one before.
+
+    Notes and cross-references are hung through this (or through handles
+    held at graft time), never a bare `T.find` on a repeated name, which
+    takes whichever namesake pre-order reaches first.
+    """
+    hits = [n for n in walk(T.root) if n.label == head]
+    if len(hits) != 1:
+        raise LookupError(f"{head!r} has {len(hits)} matches on the tree")
+    cur = hits[0]
+    for lab in path:
+        cur = _kid(cur, lab)
+    return cur
+
+
+def _kid(node, label):
+    """`node`'s only direct child labelled `label`."""
+    kids = [k for k in node.kids if k.label == label]
+    if len(kids) != 1:
+        raise LookupError(f"{label!r} under {node.label!r} has {len(kids)} "
+                          "matches")
+    return kids[0]
+
+
 def W(label, note=None, kids=None, ref=None, icon=None):
     return N(label, note, kids, kind="woman", link="wife", ref=ref, icon=icon)
 
@@ -93,20 +119,29 @@ def _genesis(T):
     _note(T.find("Seth"), "“God has given me another child instead of "
           "Abel, for Cain killed him” — Genesis 4:25")
 
-    # -- Genesis 10 against 1 Chronicles 1 --------------------------------
-    for label, other in (("Diphath", "Riphath"), ("Rodanim", "Dodanim"),
-                         ("Ebal", "Obal"), ("Meshech", "Mash"),
-                         ("Sabteca", "Sabteca"), ("Homam", "Hemam"),
-                         ("Alian", "Alvan"), ("Shephi", "Shepho"),
-                         ("Hamran", "Hemdan"), ("Jaakan", "Akan"),
-                         ("Zephi", "Zepho"), ("Amram", "Hemdan")):
-        if label == other:
-            continue
-        try:
-            n = T.find(label)
-        except KeyError:
-            continue
-        _note(n, f"Genesis 10 / 36 spells it {other}")
+    # -- Genesis 10 and 36 against 1 Chronicles 1 -------------------------
+    # Each spelling note names the father whose son it is, so it cannot land
+    # on a namesake: Joktan's Ebal is Genesis 10's Obal, Shobal's is not.
+    for parent, label, other, ref in (
+            (("Japheth", "Gomer"), "Diphath", "Riphath", "10:3"),
+            (("Japheth", "Javan"), "Rodanim", "Dodanim", "10:4"),
+            (("Joktan",), "Ebal", "Obal", "10:28"),
+            (("Seir", "Lotan"), "Homam", "Heman", "36:22"),
+            (("Seir", "Shobal"), "Alian", "Alvan", "36:23"),
+            (("Seir", "Shobal"), "Shephi", "Shepho", "36:23"),
+            (("Seir", "Zibeon", "Anah", "Dishon"), "Hamran", "Hemdan",
+             "36:26"),
+            (("Seir", "Ezer"), "Jaakan", "Akan", "36:27"),
+            (("Esau", "Eliphaz"), "Zephi", "Zepho", "36:11")):
+        _note(_kid(_at(T, *parent), label),
+              f"Genesis {ref} spells it {other}")
+    # 1:17 lists Uz, Hul, Gether and Meshech among Shem's sons; Genesis
+    # 10:23 makes them Aram's (Meshech as Mash). They stay where 1 Chronicles
+    # puts them.
+    shem = _at(T, "Shem")
+    for lbl in ("Uz", "Hul", "Gether"):
+        _note(_kid(shem, lbl), "Genesis 10:23 makes him a son of Aram")
+    _note(_kid(shem, "Meshech"), "Genesis 10:23 calls him Mash, a son of Aram")
 
     # -- 11:26-32, 19:36-38, 22:20-24  Terah's other sons -----------------
     terah = T.find("Terah")
@@ -164,22 +199,28 @@ def _genesis(T):
         W("Hagar", "Sarai's Egyptian servant, Ishmael's mother",
           ref="Gen 16:1-15")]
     _note(T.find("Isaac"), "Sarah bore him when Abraham was a hundred")
-    _note(T.find("Ishmael"), "Hagar the Egyptian bore him")
+    # Abraham's own son: a bare find("Ishmael") reaches Azel's son (8:38)
+    # first, deep in Isaac's line.
+    _note(_kid(ab, "Ishmael"), "Hagar the Egyptian bore him")
 
-    # -- 36:1-14  Esau's wives, and the second marriage into Seir ---------
+    # -- 36:1-14  Esau's wives, and the marriage into Seir ----------------
     esau = T.find("Esau")
+    ohol = W("Oholibamah", "the daughter of Anah, the daughter of Zibeon the "
+             "Hivite — she bore Jeush, Jalam and Korah", ref="Gen 36:2, 5")
     esau.kids[0:0] = [
         W("Adah", "the daughter of Elon the Hittite — she bore Eliphaz",
           ref="Gen 36:2, 4"),
         W("Basemath", "Ishmael's daughter, sister of Nebaioth — she bore "
           "Reuel", ref="Gen 36:3, 4"),
-        W("Oholibamah", "the daughter of Anah, the daughter of Zibeon the "
-          "Hivite — she bore Jeush, Jalam and Korah", ref="Gen 36:2, 5")]
+        ohol]
     T.link(T.find("Basemath"), T.find("Nebaioth"),
            "Esau married his uncle Ishmael's daughter — Genesis 36:3")
-    T.link(T.find("Oholibamah", 1), T.find("Anah", 1),
-           "and married into Seir a second time — Genesis 36:2")
-    _note(T.find("Timna", 1),
+    # Her father is Zibeon's son Anah (Genesis 36:24-25), not Seir's son of
+    # the same name; and Timna's tie to Eliphaz is not a stated marriage, so
+    # this is the one marriage into Seir.
+    T.link(ohol, _at(T, "Seir", "Zibeon", "Anah"),
+           "Esau married into Seir — Genesis 36:2")
+    _note(_kid(_kid(esau, "Eliphaz"), "Timna"),
           "Genesis 36:12 makes her Eliphaz's concubine and Amalek's "
           "mother; 1 Chr 1:36 lists her among Eliphaz's sons")
 
@@ -227,8 +268,9 @@ def _genesis(T):
         N("Hushim", "Numbers 26:42 calls him Shuham")]), under=isr,
         ref="Gen 46:23")
     _note(T.find("Dan", under=isr),
-          "Chronicles never traces him either — one son, and the tribe "
-          "counted 64,400 (Numbers 26:43)")
+          "Chronicles never plainly traces him (unless 7:12's “the sons of "
+          "Aher” means Dan) — one son, and the tribe counted 64,400 "
+          "(Numbers 26:43)")
 
     T.child("Simeon", D("Ohad", "Genesis 46:10 has him among Simeon's sons; "
                         "the Chronicles list drops him", ref="Gen 46:10"))
@@ -405,8 +447,14 @@ def _numbers(T, jos):
     sh.ref = "7:19; Num 26:32"
     hepher = N("Hepher", "Zelophehad's father — Numbers 26:33; 27:1; "
                "Joshua 17:3", ref="Num 26:32")
-    gilead.kids += [N("Helek", ref="Num 26:30"), N("Shechem", ref="Num 26:31"),
-                    sh, hepher]
+    shechem = N("Shechem", ref="Num 26:31")
+    gilead.kids += [N("Helek", ref="Num 26:30"), shechem, sh, hepher]
+    # Numbers 26 makes Shechem Shemida's brother; 1 Chr 7:19 names a Shechem
+    # among Shemida's sons. A namesake nephew or one clan counted two ways:
+    # both boxes stay, tied by what each text says.
+    T.link(shechem, _kid(sh, "Shechem"),
+           "Numbers 26:31-32 makes Shechem Shemida's brother; 1 Chr 7:19 "
+           "makes a Shechem his son")
     # 7:15's "the second" names no father; Numbers 26:33, 27:1 and Joshua
     # 17:3 all make Zelophehad Hepher's son. He keeps his 7:15 stamp.
     zel = next(k for k in machir.kids if k.label == "Zelophehad")
@@ -444,8 +492,6 @@ def _numbers(T, jos):
                               "brothers drove out — and who judged Israel "
                               "six years", ref="Judg 11:1-2", icon="sword")]),
             under=machir, link="dash", gap="?")
-    T.link(T.find("Jair", 1), T.find("Jephthah"),
-           "Jair the Gileadite, who judged Israel — Judges 10:3")
     T.child("Dan", D("Manoah", "of Zorah, of the family of the Danites",
                      ref="Judg 13:2", kids=[
                          N("Samson", "who judged Israel twenty years",

@@ -15,10 +15,10 @@ Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, w
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 27,155 × 16,502 px, about 1.3 MB, 1,254 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,946 × 16,736 px, about 1.3 MB, 1,254 boxes | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
-| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,408 × 12,134 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
+| [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
 
 ## The Old Testament family tree
 
@@ -59,9 +59,13 @@ So Abraham prints 20, Perez 24 and David 33, and Abraham to David is the fourtee
 
 A chip keeps the link of the box it replaced, so the layouts place it the same way: a child in her father's row, or a wife beside her first husband. It stands a little lower than the names on its row so its middle is on their name line (`generate_ot_family_tree_svg.top_of`). The chip's cross-reference is written in the real box only; when the two are close, the gold arc ends on the chip's dot. Chips carry no `src` stamp and are left out of the verse cameras' name lookup, so a verse that names one of these women lights her real box. The wall chart, the timeline and both verse cameras draw chips through `draw_chip`, and none of them counts a chip as a person.
 
+**Notes, cross-references and bands.** Notes and cross-references appear on the wall chart and the timeline only; the verse cameras draw names. A note says what the text says. Where it rests on an inference it says so ("some read", "probably"), and where two books disagree the disagreement is written on the box rather than resolved. A count or a description the text gives a whole family, such as a muster total or "heads of fathers' households", goes on the father or the family's mother, not on the last son listed. Notes on 1 Chronicles boxes start as the scene rows' notes in `generate_1chronicles.py`, and `chronicles_tree.py` adds to them or replaces them.
+
+Every note and cross-reference is hung on a box held where the graft is made, or reached by a path (`ot_grafts._at`), never by a bare `Tree.find` on a name the tree repeats: pre-order takes whichever namesake it reaches first. `Tree.find` records each lookup of a repeated name made with no `under=` (`Tree.ambiguous`). The audit prints those lookups with where each landed, and every cross-reference whose ends bear repeated names, so each can be checked. The bands behind the big subtrees are anchored the same way: where a band's name repeats, `REGION_AT` gives it a path, and `region_node` raises rather than guess. The timeline anchors its bands by `chronology.locate` paths (`generate_ot_timeline_svg.REGION_LOC`).
+
 ```
 .venv/Scripts/python.exe generate_ot_family_tree_svg.py   # rebuild the .svg and .html
-.venv/Scripts/python.exe chronicles_tree.py               # audit the tree without drawing it
+.venv/Scripts/python.exe chronicles_tree.py               # audit the tree without drawing it, with the lookups to check
 ```
 
 ## The V6 heir-spine variant

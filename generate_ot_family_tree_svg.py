@@ -611,7 +611,37 @@ REGIONS = [
      "1 Kgs 12 - 2 Kgs 17 — nine houses in two hundred years"),
 ]
 
+# Where a band's name repeats on the tree, its anchor is a path: the first
+# label must be the only one of its name, and each later one the only child
+# of that name under the one before. A bare find() takes whichever namesake
+# pre-order reaches first: "Nahor" finds Serug's son (all of Terah's house),
+# "Ishmael" Azel's son and "Joseph" a spy's father. The timeline anchors its
+# bands the same way (generate_ot_timeline_svg.REGION_LOC).
+REGION_AT = {
+    "Nahor":    ("Terah", "Nahor"),
+    "Ishmael":  ("Abram · Abraham", "Ishmael"),
+    "Joseph":   ("Israel", "Joseph"),
+    "Benjamin": ("Israel", "Benjamin"),
+}
+
 SILENT = ("Dan", "Zebulun")
+
+
+def region_node(T, label):
+    """The node a REGIONS band frames; raises rather than guess."""
+    head, *rest = REGION_AT.get(label, (label,))
+    hits = [n for n in walk(T.root) if n.label == head]
+    if len(hits) != 1:
+        raise LookupError(f"band {label!r}: {head!r} has {len(hits)} "
+                          "matches on the tree; give REGION_AT a path")
+    cur = hits[0]
+    for lab in rest:
+        kids = [k for k in cur.kids if k.label == lab]
+        if len(kids) != 1:
+            raise LookupError(f"band {label!r}: {lab!r} under "
+                              f"{cur.label!r} has {len(kids)} matches")
+        cur = kids[0]
+    return cur
 
 
 def subtree_box(n, pad=16):
@@ -625,10 +655,7 @@ def subtree_box(n, pad=16):
 def draw_regions(c, T):
     boxes = []
     for label, title, sub in REGIONS:
-        try:
-            n = T.find(label)
-        except KeyError:
-            continue
+        n = region_node(T, label)
         boxes.append((subtree_box(n), title, sub, n))
     boxes.sort(key=lambda b: -( (b[0][2] - b[0][0]) * (b[0][3] - b[0][1]) ))
     for (x0, y0, x1, y1), title, sub, n in boxes:

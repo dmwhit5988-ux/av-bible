@@ -40,7 +40,9 @@ by verse as the 1 Chronicles 1-9 camera (svg_chronicles_world.py).
 Run `python chronicles_tree.py` for a structural audit.
 """
 
+import os
 import re
+import sys
 
 from generate_1chronicles import CHAPTERS, _node
 from passages import load_chapter
@@ -244,12 +246,23 @@ class Tree:
         # (svg_chronicles_world.World._resolve_verse). Fill it from node
         # handles held at graft time, never from a bare find().
         self.bind = {}
+        # Every find() with no `under` whose label is repeated on the tree at
+        # that moment: (call site, label, nth, matches, node got). Pre-order
+        # takes whichever namesake the walk reaches first, which can put a
+        # note or a cross-reference on the wrong man. audit() lists them for
+        # review; new code holds node handles or scopes the lookup.
+        self.ambiguous = []
 
     # -- lookup ------------------------------------------------------------
 
     def find(self, label, nth=1, under=None):
         base = under if under is not None else self.root
-        return named(base, label, nth)
+        got = named(base, label, nth)
+        if under is None:
+            hits = sum(1 for n in walk(self.root) if n.label == label)
+            if hits > 1:
+                self.ambiguous.append((_call_site(), label, nth, hits, got))
+        return got
 
     # -- grafting ----------------------------------------------------------
 
@@ -379,6 +392,17 @@ class Tree:
         return self
 
 
+def _call_site():
+    """file:line of the code that asked Tree for a node, past Tree itself."""
+    f = sys._getframe(2)
+    while f is not None and f.f_code.co_filename == __file__ and \
+            f.f_code.co_name in ("find", "children", "child", "descent"):
+        f = f.f_back
+    if f is None:
+        return "?"
+    return f"{os.path.basename(f.f_code.co_filename)}:{f.f_lineno}"
+
+
 def _generation(n, parent):
     """N.gen for `n` under `parent` (whose own gen is already set)."""
     if parent is None:
@@ -460,7 +484,8 @@ def build(ot=True):
     tim2 = named(seir, "Timna")
     tim2.kind = "woman"
     T.link(tim2, tim1,
-           "Lotan's sister, reckoned with Eliphaz — Amalek's mother")
+           "Lotan's sister; Genesis 36:12 gives a Timna as Eliphaz's "
+           "concubine and Amalek's mother, probably her")
 
     # 1:43-50 is a succession, not a descent: each king "reigned in his
     # place", and four are given other fathers (in their notes). The kings
@@ -583,7 +608,12 @@ def _judah(T):
     seg = chain(2, "Caleb and Hezron's later line", 1, 2)[1:]     # Segub, Jair
     mach_dau.kids = [seg[0]]
     seg[0].kids = [seg[1]]
-    seg[1].note = "twenty-three cities in Gilead; Geshur and Aram took them"
+    # The Jair of Numbers 32:41, not the judge of Judges 10:3, who came long
+    # after him; no cross-reference ties him to Jephthah's house.
+    seg[1].note = ("twenty-three cities in Gilead; Geshur and Aram took them "
+                   "· Jair the son of Manasseh, who called them Havvoth Jair "
+                   "(Numbers 32:41); the judge Jair of Judges 10:3 came long "
+                   "after")
     T.child("Hezron", mach_dau, link="wife")
     # She has no row of her own, so she takes the heading that introduces
     # her ('~Hezron, at sixty, married the daughter of'), and 2:21 lights
@@ -641,8 +671,14 @@ def _judah(T):
     jah.note = "2:47 gives him no father; the list stands among Caleb's"
     jah.link = "dash"
     T.child(cal, jah, link="dash", gap="?")
+    # 2:49 makes Achsah this Caleb's daughter, and she stays here; Joshua and
+    # Judges give an Achsah to Caleb son of Jephunneh (4:15), and the note
+    # says so without making the two Calebs one man.
     ach = blk(2, "The descendants of Caleb", 2, 2)               # Achsah
     ach.kind = "woman"
+    ach.note = ((ach.note + " · ") if ach.note else "") + \
+        "Joshua 15:13-17 and Judges 1:12-13 make Achsah the daughter of " \
+        "Caleb son of Jephunneh, given to Othniel"
     T.child(cal, ach)
 
     # 2:50-55 — "the sons of Caleb the son of Hur": the chapter re-roots on
@@ -754,6 +790,9 @@ def _david(T):
                      chain(3, "The last generations recorded", 0, 0)[1:],
                      ref="3:22")
     assert shem.label == "Shemaiah", shem
+    # 3:22 "Hattush, Igal, Bariah, Neariah, and Shaphat, six": the count is
+    # the family's, and the text names five.
+    shem.note = "3:22 counts his sons as six and names five"
     T.children("Neariah", blk(3, "The last generations recorded", 1, 0),
                under=shem, ref="3:23")
     T.children("Elioenai", blk(3, "The last generations recorded", 2, 0),
@@ -792,6 +831,12 @@ def _judah_more(T):
     hro.label = "Haroeh · Reaiah"
     hro.note = ((hro.note + " · ") if hro.note else "") + \
         "2:52 Haroeh, 4:2 Reaiah — commonly read as one man"
+    # 4:2 "Jahath became the father of Ahumai and Lahad. These are the
+    # families of the Zorathites": both sons' houses, so the note is their
+    # father's, not Lahad's alone.
+    jah = next(k for k in hro.kids if k.label == "Jahath")
+    jah.note = "his sons Ahumai and Lahad: the families of the Zorathites " \
+               "— 4:2"
 
     # 4:3 "the sons of the father of Etam": their father is not named, and
     # Etam is a town (2 Chr 11:6), so the box is "the father of Etam". This
@@ -842,6 +887,7 @@ def _judah_more(T):
                  "Caleb son of Hezron")
     T.child("Judah", jeph, link="dash", ref="4:15", gap="?")
     kenaz = blk(4, "Kenaz and Caleb's families", 1, 0)
+    kenaz.note = "4:13 gives no father"
     T.child("Judah", kenaz, link="dash", ref="4:13-14", gap="?")
     oth = T.children("Othniel", blk(4, "Kenaz and Caleb's families", 1, 1))
     T.children("Seraiah", blk(4, "Kenaz and Caleb's families", 1, 2))
@@ -854,8 +900,11 @@ def _judah_more(T):
     meo.link = "dash"
     meo.note = ("4:14 gives no father; some Greek copies and the Latin read "
                 "“the sons of Othniel: Hathath and Meonothai”")
-    T.link(T.find("Kenaz", 2), T.find("Kenaz", 3),
-           "Caleb the Kenizzite and Othniel son of Kenaz — Joshua 15:17")
+    # Joshua 15:17 "Othniel the son of Kenaz, the brother of Caleb": the
+    # tie is between the two boxes held here, Caleb son of Jephunneh and
+    # Othniel's father. Four men are called Kenaz, so no lookup by name.
+    T.link(calj, kenaz, "Othniel the son of Kenaz, the brother of Caleb — "
+           "Joshua 15:17; Judges 1:13")
 
     for col, i, ref in ((0, 0, "4:16"), (0, 1, "4:17-18"),
                         (2, 1, "4:20"), (2, 2, "4:20")):
@@ -867,7 +916,9 @@ def _judah_more(T):
     mer.note = "4:18 — he took Bithiah, Pharaoh's daughter"
     bith = T.find("Bithiah", under=mer)          # 4:18 "whom Mered took"
     bith.kind, bith.link = "woman", "wife"
-    bith.note = "Pharaoh's daughter, whom Mered took"
+    bith.note = ("Pharaoh's daughter, whom Mered took · mother of Miriam, "
+                 "Shammai and Ishbah when 4:18b is read with 4:17's "
+                 "“she bore”")
     # 4:18 "His wife the Jewess bore Jered ..., Heber ... and Jekuthiel": a
     # wife, with her three sons under her. Her row says "the Jewess" so the
     # verse's text lights it; the box takes the verse's fuller wording.
@@ -889,10 +940,13 @@ def _judah_more(T):
     kei.note = "the Garmite"
     T.child("Judah", hod, link="dash", ref="4:19", gap="?")
 
+    # 4:23 "These were the potters" means the descendants 4:21-22 lists, in
+    # the kings' days, not Shelah himself; his 2:3 note stays.
     she = T.children("Shelah", strip(blk(4, "The sons of Shelah", 0, 0)),
                      under=T.find("Judah"), ref="4:21-23")
-    she.note = ("the potters, who lived at Netaim and Gederah with the "
-                "king for his work")
+    she.note = ((she.note + " · ") if she.note else "") + \
+        "4:23 — his descendants were the potters and the inhabitants of " \
+        "Netaim and Gederah, who lived there with the king for his work"
 
 
 def _only(node, label):
@@ -1012,8 +1066,9 @@ def _levi(T):
     T.find("Jehozadak").note = ("went into captivity when Yahweh carried "
                                 "Judah and Jerusalem away by Nebuchadnezzar")
     T.find("Jehozadak").icon = "shackle"
-    T.find("Azariah", 1, under=T.find("Eleazar")).note = \
-        "he executed the priest's office in the temple Solomon built — 6:10"
+    # 6:10's "who executed the priest's office in the house that Solomon
+    # built" is said of Johanan's son Azariah, whose row carries it; Ahimaaz's
+    # son Azariah (6:9) gets no such note.
 
     # 6:16-19 re-lists the three houses; Gershon of 6:1 is Gershom here.
     T.find("Gershon").label = "Gershon · Gershom"
@@ -1023,7 +1078,8 @@ def _levi(T):
     T.children("Merari", blk(6, "The families of Levi", 2, 0), ref="6:19")
 
     # 6:20-30 — the three houses carried down.
-    T.descent("Libni", chain(6, "The Levite lines", 0, 1)[2:], ref="6:20-21")
+    libni = chain(6, "The Levite lines", 0, 1)[2:]   # Jahath … Jeatherai
+    T.descent("Libni", libni, ref="6:20-21")
     # Korah's line, 6:22-28. The names repeat so freely here that the grafts
     # hold the nodes themselves rather than looking them up again. 6:22 has
     # "Amminadab his son" where 6:2, 6:18 and 6:38 have Izhar, and Korah is
@@ -1136,9 +1192,20 @@ def _levi(T):
 
     asaph = upward(6, "The temple singers", 1, 1, drop=2)   # after Levi,Gershom
     asaph.link = "dash"
-    asaph.note = "6:39-43 read upward; 6:20 puts Libni, not Jahath, first " \
-                 "under Gershom"
+    asaph.note = "6:39-43 read upward; 6:20 has Libni above Jahath and no " \
+                 "Shimei between Jahath and Zimmah"
     T.child("Gershon · Gershom", asaph, link="dash", ref="6:39-43")
+    # Gershom's line is told twice, 6:20-21 down and 6:39-43 up. Only
+    # Zimmah and Zerah match by name and by place, so both lines stay
+    # drawn and those two pairs are tied, from the boxes held here (a bare
+    # "Zerah" finds Esau's grandson). Joah/Ethan, Iddo/Adaiah and
+    # Jeatherai/Ethni match by place alone and are not equated.
+    zim20, zer21 = (next(n for n in libni if n.label == lb)
+                    for lb in ("Zimmah", "Zerah"))
+    T.link(zim20, named(asaph, "Zimmah"), "6:20 and 6:42 may be one line: "
+           "Zimmah, three generations below Gershom in both")
+    T.link(zer21, named(asaph, "Zerah"), "6:21 and 6:41 may be one line: "
+           "Zerah, six generations below Gershom in both")
     asaph_leaf = named(asaph, "Berechiah")
     ap = blk(6, "The temple singers", 1, 0)
     ap.note = "his brother, who stood at his right hand"
@@ -1168,11 +1235,17 @@ def _levi(T):
 # ===========================================================================
 
 def _northern(T):
+    # The muster counts belong to the house the verse counts (7:2, 7:3), so
+    # they go on the father, not on the last son the list names.
     T.children("Issachar", blk(7, "The sons of Issachar", 0, 0), ref="7:1")
-    T.children("Tola", blk(7, "The sons of Issachar", 1, 0), ref="7:2")
+    tola = T.children("Tola", blk(7, "The sons of Issachar", 1, 0), ref="7:2")
+    tola.note = "his sons' houses counted 22,600 mighty men of valor in " \
+                "David's days — 7:2"
     T.children("Uzzi", blk(7, "The sons of Issachar", 2, 0), nth=1,
-               under=T.find("Tola"), ref="7:3")
-    T.children("Izrahiah", blk(7, "The sons of Issachar", 2, 1), ref="7:3")
+               under=tola, ref="7:3")
+    izr = T.children("Izrahiah", blk(7, "The sons of Issachar", 2, 1),
+                     ref="7:3")
+    izr.note = "with his four sons, five; all of them chief men — 7:3"
     T.find("Issachar").note = "87,000 mighty men of valor in all — 7:5"
 
     T.children("Naphtali", blk(7, "The sons of Naphtali", 0, 0), ref="7:13")
@@ -1198,6 +1271,8 @@ def _northern(T):
     aram.note = "his concubine — she bore Asriel and Machir — 7:14"
     mach = T.children("Machir", blk(7, "The sons of Manasseh", 0, 1),
                       ref="7:15-16")
+    mach.note = ((mach.note + " · ") if mach.note else "") + \
+        "the Aramitess, Manasseh's concubine, bore him — 7:14"
     maa = T.find("Maacah", 1, under=mach)     # 7:16 "the wife of Machir"
     maa.kind, maa.link = "woman", "wife"
     T.children("Maacah", blk(7, "The sons of Manasseh", 1, 0), nth=1,
@@ -1209,7 +1284,13 @@ def _northern(T):
         n.note = (n.note + " · " if n.note else "") + \
             "7:18-19, among Gilead's house"
         T.child("Machir", n, link="dash", ref="7:18-19")
-    T.find("Hammolecheth").kind = "woman"
+        if n.label == "Hammolecheth":
+            # 7:17-18 "the sons of Gilead … His sister Hammolecheth": the
+            # "his" is Gilead, so under Machir she is his daughter. The
+            # scene row's bare "his sister" would read as Machir's.
+            n.kind = "woman"
+            n.note = "Gilead's sister — 7:18"
+    assert T.find("Hammolecheth").kind == "woman"
 
     # The Judah/Joseph knot: Hezron's wife was Machir's daughter (2:21).
     T.link(T.find("the daughter of Machir"), T.find("Machir"),
@@ -1226,7 +1307,8 @@ def _northern(T):
         k.note = "killed by the men of Gath when they came for the livestock"
         T.child("Ephraim", k, under=jos, ref="7:21")
     ber = blk(7, "The sons of Ephraim", 1, 0)
-    ber.note = "“there was trouble with his house” — born to Ephraim after"
+    ber.note = "“there was trouble with his house” — born to Ephraim after " \
+               "his sons were killed"
     T.child("Ephraim", ber, ref="7:23")
     # 7:24 "His daughter was Sheerah": "his" may be Beriah, just named, or
     # Ephraim, the subject of 7:22-23. She stays under Beriah, dashed.
@@ -1256,9 +1338,9 @@ def _northern(T):
     half = blk(5, "The half-tribe of Manasseh", 0, 2)
     half.label = "heads of their fathers' houses in Bashan"
     half.kind, half.link = "house", "dash"
-    half.note = ("mighty men of valor, from Bashan to Baal Hermon, Senir "
-                 "and Mount Hermon — carried away by Tilgath Pilneser "
-                 "with Reuben and Gad")
+    half.note = ("mighty men of valor, famous men, from Bashan to Baal "
+                 "Hermon, Senir and Mount Hermon — carried away by Tilgath "
+                 "Pilneser with Reuben and Gad")
     T.child("Manasseh", half, under=jos, link="dash", ref="5:23-26",
             gap="?")
 
@@ -1324,8 +1406,14 @@ def _benjamin(T):
     # 7:7 and 8:3-5 give Bela two different sets of sons; both hang on him.
     bela.kids += blk(8, "Benjamin: the sons of Bela", 1, 0).kids
     bela.ref = "7:7; 8:3-5"
-    bela.note = ("his firstborn — 8:1 · 7:7: Ezbon … Iri; 8:3-5: Addar … "
-                 "Huram — two lists that do not agree")
+    # The muster counts of 7:7, 7:9 and 7:11 are the fathers' houses', not
+    # the last son's in each list.
+    bela.note = ("his firstborn — 8:1 · 7:7: Ezbon … Iri, whose houses "
+                 "counted 22,034 mighty men of valor; 8:3-5: Addar … Huram "
+                 "— two lists that do not agree")
+    becher.note = "his sons' houses counted 20,200 mighty men of valor — 7:9"
+    jediael.note = ("his sons' houses counted 17,200 mighty men of valor, "
+                    "able to go out for war — 7:11")
     for k in (ashbel, aharah, nohah, rapha):         # "the second" … "fifth"
         k.note = f"{k.note} — 8:1"
     ben.kids += [bela, becher, jediael, ashbel, aharah, nohah, rapha]
@@ -1338,6 +1426,11 @@ def _benjamin(T):
         "7:12 — Shuppim and Huppim, the sons of Ir; Hushim, and the sons " \
         "of Aher"
     also.ref, also.gap = "7:12", "?"
+    # Some read 7:12's "the sons of Aher" as Dan, whose one son is Hushim
+    # (Genesis 46:23). Both Hushims keep their boxes; the note says so.
+    hus = next(k for k in also.kids if k.label == "Hushim")
+    hus.note = ("the sons of Aher — some read Aher as Dan, whose son is "
+                "Hushim (Genesis 46:23)")
     ben.kids.append(also)
 
     # 8:6, 8:8 and 8:29 open three houses with no father given — Jeiel is
@@ -1366,7 +1459,8 @@ def _benjamin(T):
     baara.note = ("his wife, whom he sent away — 8:8; some identify her "
                   "with Hodesh (8:9)")
     hod.kind, hod.link = "woman", "wife"
-    hod.note = "his wife, who bore him in the country of Moab"
+    hod.note = ("his wife, who bore him in the country of Moab · her seven "
+                "sons were heads of fathers' households — 8:10")
     hush = blk(8, "Shaharaim in Moab", 1, 0)
     assert hush.label == "Hushim", hush
     hush.kind, hush.link = "woman", "wife"
@@ -1375,13 +1469,23 @@ def _benjamin(T):
     shah.ref = "8:8-13"
     later.kids.append(shah)
     T.children("Elpaal", blk(8, "Shaharaim in Moab", 1, 1), ref="8:12-13")
-    T.find("Shema", 1, under=T.find("Elpaal")).label = "Shema · Shimei"
-    T.find("Shema · Shimei").note = "8:13 Shema, 8:21 Shimei — they drove " \
-                                    "out the men of Gath"
+    # 8:13 "and Beriah, and Shema, who were heads of fathers' households of
+    # the inhabitants of Aijalon, who put to flight the inhabitants of
+    # Gath": said of both brothers.
+    elp = T.find("Elpaal", under=later)
+    shema = next(k for k in elp.kids if k.label == "Shema")
+    shema.label = "Shema · Shimei"
+    shema.note = ("8:13 Shema, 8:21 Shimei · with Beriah, heads of fathers' "
+                  "households of the inhabitants of Aijalon, who put to "
+                  "flight the inhabitants of Gath")
+    beriah = next(k for k in elp.kids if k.label == "Beriah")
+    beriah.note = ("with Shema, heads of fathers' households of the "
+                   "inhabitants of Aijalon, who put to flight the "
+                   "inhabitants of Gath — 8:13")
 
     T.children("Beriah", _house(8, "Heads of households in Jerusalem", 0, 0,
                                 "Beriah"),
-               under=T.find("Elpaal"), ref="8:16")
+               under=elp, ref="8:16")
     T.children("Elpaal", _house(8, "Heads of households in Jerusalem", 1, 0,
                                 "Elpaal"), ref="8:18")
     T.children("Shema · Shimei",
@@ -1393,8 +1497,6 @@ def _benjamin(T):
     # the heads are their 8:12-14 namesakes, and the fifth, Jeroham, is
     # read as Beriah's son Jeremoth (8:14) — one box with both names. Not
     # Becher's Jeremoth of 7:8: scoped to Elpaal's Beriah.
-    elp = T.find("Elpaal", under=later)
-    beriah = next(k for k in elp.kids if k.label == "Beriah")
     jm = next(k for k in beriah.kids if k.label == "Jeremoth")
     jm.label = "Jeremoth · Jeroham"
     jm.note = "8:14 Jeremoth, 8:27 Jeroham"
@@ -1564,12 +1666,15 @@ def _return(T):
     T.child("Levi", misc, link="dash", ref="9:15", gap="?")
 
     # The gatekeepers: 9:19 read upward lands on Korah's son Ebiasaph.
+    # The trim leaves Kore on top, but the chief of 9:17-19 is his son
+    # Shallum: the note goes on Shallum, and Kore's says how he joins.
     gate = upward(9, "The gatekeepers", 0, 3, drop=2)    # Kore > Shallum
     gate.link = "dash"
-    gate.note = "9:17-19 — the chief of the gatekeepers, who with his " \
-                "brothers kept the thresholds of the tent as their fathers " \
-                "kept the entry of Yahweh's camp"
+    gate.note = "9:19 read upward — the son of Ebiasaph, the son of Korah"
     shal = named(gate, "Shallum")
+    shal.note = "the chief of the gatekeepers, who with his brothers kept " \
+                "the thresholds of the tent as their fathers kept the entry " \
+                "of Yahweh's camp — 9:17-19"
     # 9:21 "Zechariah the son of Meshelemiah"; 26:1-2 "Meshelemiah the son
     # of Kore … Zechariah the firstborn". Not Shallum under another name:
     # 9:31 gives Shallum a different firstborn.
@@ -1855,7 +1960,34 @@ def audit(T):
           f"unknown length); deepest {deep.gen} ({deep.label})")
     print(f"repeated names   {len(dupes)} "
           f"(most: {sorted(dupes.items(), key=lambda kv: -kv[1])[:6]})")
+    _lookups(T, labels)
     _coverage(nodes)
+
+
+def _lookups(T, labels):
+    """The review list for notes and cross-references on namesakes.
+
+    Every find() that took a repeated name with no `under=` (Tree.ambiguous),
+    with where it landed, and every cross-reference whose ends bear repeated
+    names, marked "!" when an end came from one of those finds. Each line
+    should be the man meant; new code holds node handles instead.
+    """
+    def tail(n, k=3):
+        return " > ".join(_spine(n)[-k:])
+
+    print(f"ambiguous finds  {len(T.ambiguous)} (find() with no under= on a "
+          "repeated name; each must land on the man meant)")
+    for site, label, nth, hits, got in T.ambiguous:
+        print(f"   {site:24s} {label} #{nth} of {hits} -> {tail(got)}")
+    guessed = {id(got) for *_, got in T.ambiguous}
+    shared = [(a, b) for a, b, _ in T.links
+              if len(labels.get(a.label, ())) > 1
+              or len(labels.get(b.label, ())) > 1]
+    print(f"cross-refs       {len(shared)} of {len(T.links)} join a repeated "
+          "name (! = an end came from an ambiguous find)")
+    for a, b in shared:
+        mark = "!" if id(a) in guessed or id(b) in guessed else " "
+        print(f"   {mark} {tail(a)}  <->  {tail(b)}")
 
 
 def _spine(n):

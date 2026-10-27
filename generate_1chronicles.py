@@ -479,7 +479,7 @@ CH3 = [
             ("Solomon", "four of Bathshua"),
             "Ibhar", "Elishama", "Eliphelet", "Nogah", "Nepheg",
             "Japhia", "Elishama", "Eliada",
-            ("Eliphelet", "nine in all")]))],
+            "Eliphelet"]))],
         [T(("~seven years and six months in Hebron,", [])),
          T(("~thirty-three years in Jerusalem", [])),
          T(("Tamar", "their sister")),
@@ -509,7 +509,7 @@ CH3 = [
                 ("Zerubbabel", ["Meshullam", "Hananiah",
                                 ("Shelomith", "their sister"),
                                 "Hashubah", "Ohel", "Berechiah",
-                                "Hasadiah", ("Jushab Hesed", "five")]),
+                                "Hasadiah", "Jushab Hesed"]),
                 "Shimei"]),
             "Shenazzar", "Jekamiah", "Hoshama", "Nedabiah"]))],
         [T(("Hananiah", ["Pelatiah", "Jeshaiah"])),
@@ -519,8 +519,8 @@ CH3 = [
     sc("The last generations recorded", 22, 24, [
         [C("Shecaniah",
            ("Shemaiah", None, ["Hattush", "Igal", "Bariah", "Neariah",
-                               ("Shaphat", "six")]))],
-        [T(("Neariah", ["Elioenai", "Hizkiah", ("Azrikam", "three")]))],
+                               "Shaphat"]))],
+        [T(("Neariah", ["Elioenai", "Hizkiah", "Azrikam"]))],
         [T(("Elioenai", ["Hodaviah", "Eliashib", "Pelaiah", "Akkub",
                          "Johanan", "Delaiah", ("Anani", "seven")]))],
     ]),
@@ -537,8 +537,7 @@ CH4 = [
                           ("Reaiah", [
                               ("Jahath", [
                                   "Ahumai",
-                                  ("Lahad", "the families of the "
-                                            "Zorathites")])])])]))],
+                                  "Lahad"])])])]))],
         [T(("Etam", "the sons of his father:", [
             "Jezreel", "Ishma", "Idbash",
             ("Hazzelelponi", "their sister")])),
@@ -644,7 +643,7 @@ CH4 = [
             "Meshobab", "Jamlech",
             ("Joshah", "the son of Amaziah"),
             "Joel",
-            ("Jehu", "son of Joshibiah, son of Seraiah"),
+            ("Jehu", "son of Joshibiah, son of Seraiah, son of Asiel"),
             "Elioenai", "Jaakobah", "Jeshohaiah", "Asaiah", "Adiel",
             "Jesimiel", "Benaiah"]))],
         [T(("~and Ziza — his line, each the son of the next:", [])),
@@ -700,11 +699,12 @@ CH5 = [
             ("Shaphat", "in Bashan")]))],
         [T(("~their brothers, of their fathers’ houses:", [
             "Michael", "Meshullam", "Sheba", "Jorai", "Jacan", "Zia",
-            ("Eber", "seven")]))],
+            "Eber"]))],
         [T(("~the sons of Abihail — his line:", [])),
          C("Abihail", "Huri", "Jaroah", "Gilead", "Michael",
            "Jeshishai", "Jahdo", "Buz"),
-         T(("Ahi", "son of Abdiel, son of Guni")),
+         T(("Ahi", "son of Abdiel, son of Guni, chief of their fathers’ "
+               "houses")),
          T(("~listed in the days of Jotham of Judah", [])),
          T(("~and Jeroboam of Israel", []))],
     ], explicit={
@@ -741,7 +741,7 @@ CH5 = [
          T(("~the heads of their fathers’ houses:", [
              "Epher", "Ishi", "Eliel", "Azriel", "Jeremiah",
              "Hodaviah",
-             ("Jahdiel", "mighty men of valor, famous men")]))],
+             "Jahdiel"]))],
         [T(("~but they played the prostitute after the gods", [])),
          T(("~of the peoples of the land — so God stirred up", [])),
          T(("Pul", "king of Assyria")),
@@ -930,12 +930,12 @@ CH6 = [
 CH7 = [
     sc("The sons of Issachar", 1, 5, [
         [T(("Issachar", ["Tola", "Puah", "Jashub",
-                         ("Shimron", "four")]))],
+                         "Shimron"]))],
         [T(("Tola", ["Uzzi", "Rephaiah", "Jeriel", "Jahmai", "Ibsam",
-                     ("Shemuel", "22,600 in David’s days")]))],
+                     "Shemuel"]))],
         [T(("Uzzi", ["Izrahiah"])),
          T(("Izrahiah", ["Michael", "Obadiah", "Joel",
-                         ("Isshiah", "five; all of them chief men")])),
+                         "Isshiah"])),
          T(("~bands of the army for war: 36,000", [])),
          T(("~all their families: 87,000 mighty men", []))],
     ], explicit={
@@ -947,14 +947,14 @@ CH7 = [
     sc("The sons of Benjamin", 6, 12, [
         [T(("Benjamin", [
             ("Bela", ["Ezbon", "Uzzi", "Uzziel", "Jerimoth",
-                      ("Iri", "22,034 mighty men")]),
+                      "Iri"]),
             ("Becher", ["Zemirah", "Joash", "Eliezer", "Elioenai",
                         "Omri", "Jeremoth", "Abijah", "Anathoth",
-                        ("Alemeth", "20,200 listed")]),
+                        "Alemeth"]),
             ("Jediael", [
                 ("Bilhan", ["Jeush", "Benjamin", "Ehud", "Chenaanah",
                             "Zethan", "Tarshish",
-                            ("Ahishahar", "17,200 for war")])])]))],
+                            "Ahishahar"])])]))],
         [T(("~also:", [("Ir", ["Shuppim", "Huppim"]),
                        ("Hushim", "the sons of Aher")]))],
     ], explicit={
@@ -966,7 +966,7 @@ CH7 = [
     }),
     sc("The sons of Naphtali", 13, 13, [
         [T(("Naphtali", ["Jahziel", "Guni", "Jezer",
-                         ("Shallum", "the sons of Bilhah")]))],
+                         "Shallum"]))],
     ]),
     sc("The sons of Manasseh", 14, 19, [
         [T(("Manasseh", [
@@ -1066,12 +1066,12 @@ CH8 = [
             "Baara",
             ("Hodesh", [
                 "Jobab", "Zibia", "Mesha", "Malcam", "Jeuz", "Shachia",
-                ("Mirmah", "heads of households")])]))],
+                "Mirmah"])]))],
         [T(("Hushim", ["Abitub", "Elpaal"])),
          T(("Elpaal", ["Eber", "Misham",
                        ("Shemed", "who built Ono and Lod"),
                        "Beriah",
-                       ("Shema", "they drove out the men of Gath")]))],
+                       "Shema"]))],
     ]),
     sc("Heads of households in Jerusalem", 14, 28, [
         [T(("Beriah", [

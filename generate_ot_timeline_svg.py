@@ -430,6 +430,9 @@ def draw_luke(c, scale, x):
                bold=end)
 
 
+# Each band's anchor is a locator (chronology.locate), never a bare name: a
+# repeated name would frame whichever namesake comes first. A band whose
+# locator does not resolve stops the build instead of going missing.
 REGION_LOC = {
     "Cain": ("root", "Cain"),
     "Nahor": ("Terah", "Nahor"),
@@ -449,10 +452,7 @@ def draw_regions_t(c, T, at):
         loc = REGION_LOC.get(label, ("Jacob", label))
         if loc[0] == "Noah":
             loc = CH._chain(CH._G5)[-1] + loc[1:]
-        try:
-            n = CH.locate(T, at, loc)
-        except CH.BindError:
-            continue
+        n = CH.locate(T, at, loc)
         boxes.append((subtree_box(n), title, sub))
     boxes.sort(key=lambda b: -((b[0][2] - b[0][0]) * (b[0][3] - b[0][1])))
     for (x0, y0, x1, y1), title, sub in boxes:
