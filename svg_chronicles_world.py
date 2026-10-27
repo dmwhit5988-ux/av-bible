@@ -1724,7 +1724,7 @@ class VerseFrame:
         sil_els = None
         if self.lines is not None:
             lines, fine, lines_new, sil_els = self._family_lines(
-                shown, arriving, lit, dur, sil, opened)
+                shown, arriving, lit, dur, sil, opened, flight)
 
         self.read |= arriving
 
@@ -1915,7 +1915,7 @@ class VerseFrame:
         return [_unwidth(e, BLOCK_EDGE_W) for e in sub._els]
 
     def _family_lines(self, shown, arriving, lit, dur, sil=None,
-                      opened=frozenset()):
+                      opened=frozenset(), flight=()):
         """This verse's lines, one family at a time -> (static, fine,
         growing, silhouettes).
 
@@ -1935,6 +1935,12 @@ class VerseFrame:
         out. `silhouettes` is then (blocks kept, blocks going, blocks
         coming, lines going, fine going, lines coming, fine coming), else
         None.
+
+        A piece toward boxes the flight never shows is drawn too wherever
+        the flight (`flight`, as _flight_seen gives it) crosses it, so a
+        family's line runs on off the edge instead of stopping at the last
+        box drawn: Kohath's bus to Amram, off screen left at 6:38. A piece
+        that leads only into blocks is theirs to draw.
         """
         rank = ("ahead", "read", "lit")
         # a box folded into a block is not standing: the stem into the
@@ -1965,6 +1971,21 @@ class VerseFrame:
                 if id(s) not in taken:
                     taken.add(id(s))
                     segs.append(s)
+        # pieces toward boxes never on screen: standing, or fading in with
+        # boxes that stand up out of a block off screen
+        crossing, rising = [], []
+        folding = folded | was
+        for s in self.lines.segs:
+            if id(s) in taken or not any(_hits(s.bbox(), fb)
+                                         for fb, _sc in flight):
+                continue
+            if any(k not in folding for k in s.serves):
+                crossing.append(s)
+            elif any(k not in folded for k in s.serves):
+                rising.append(s)
+            else:
+                continue
+            taken.add(id(s))
         silhouettes = None
         if sil is not None:
             prev, cur, drawn = sil
@@ -1990,11 +2011,12 @@ class VerseFrame:
                 [s for g, s in stem.values() if g == 1], look_was,
                 LINE_ALPHA, bead_fill=bead)
             l_new, f_new = FL.static_els(
-                rose + [s for g, s in stem.values() if g == 2], look,
+                rose + rising + [s for g, s in stem.values() if g == 2], look,
                 LINE_ALPHA, bead_fill=bead)
             silhouettes = (self._block_els(keep), self._block_els(gone),
                            self._block_els(come), l_gone, f_gone, l_new,
                            f_new)
+        segs += crossing
         lines, fine = FL.static_els(segs, look, LINE_ALPHA, bead_fill=bead)
         gdur, _gbegin = _grow_timing(dur)
         growing = []

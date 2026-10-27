@@ -363,7 +363,7 @@ class MatthewFrame(VerseFrame):
         return VerseFrame.render(self, ch, v, scene, first)
 
     def _family_lines(self, shown, arriving, lit, dur, sil=None,
-                      opened=frozenset()):
+                      opened=frozenset(), flight=()):
         """VerseFrame's lines, checked as this file draws them.
 
         1 Chronicles stops on a line behind a box anywhere in its world
@@ -373,7 +373,12 @@ class MatthewFrame(VerseFrame):
         looks. So the check here is the file's own: a line it draws passing
         behind a box it draws, or two lines it draws on one stretch. Each
         goes into `problems`, and the driver writes nothing if there are
-        any."""
+        any.
+
+        The pieces toward boxes off screen that 1 Chronicles draws where
+        the flight crosses them (`flight`) are left out here: Perez's bus
+        toward Zerah's family runs along its head, and in 1:1-5 and 1:17 the
+        flight crosses it."""
         segs = list({id(s): s for n in shown
                      for s in self.lines.node_segments.get(n, ())}.values())
         ch, v = self._verse
