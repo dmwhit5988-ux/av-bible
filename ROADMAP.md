@@ -5,7 +5,7 @@
 - Long-form designs live in [docs/design/](docs/design/).
 - The Studio's phases are designed in [docs/studio.md](docs/studio.md).
 
-**Recently done:** Azure TTS beside edge-tts (2026-10-18). Names can be spoken from their IPA on Azure (`use_ipa`, ▶ IPA in the Pronunciation tool), and the Audio tool picks Edge, Azure for verses with IPA names, or Azure for everything, with a free-tier meter ([docs/pronunciation.md](docs/pronunciation.md#ipa-through-azure)). edge-tts had to go to 7.3.x the same day: Microsoft began refusing older versions' token around 2026-10-13, so every verse fell back to SAPI. Before that, the cleanup of 2026-10-16/17 (Step 0, WS1–WS7): WEB only, the simpler web app with its "isn't illustrated yet" pointer, no stills, shared pictures (D17), the Theoria Studio shell, a content-only Publish and these docs. Its last step, WS4f / D7(c), serves `web/` directly: `visuals/` and `bibles/WEB` moved into `web/`, `wrangler.toml` points at `./web` with `web/.assetsignore` beside it, `deploy_bundle/` and `prepare-deploy.ps1` are gone, and Publish is two steps (manifest, then commit and push). Each content file is now tracked once, about 5,900 tracked files in all. The Cloudflare build then builds only for pushes that touch `web/`, `wrangler.toml`, `package.json` or `package-lock.json`, and no longer pip-installs `requirements.txt` (2026-10-18). The plan and its decisions D1–D17 are in [docs/archive/CLEANUP_PLAN.md](docs/archive/CLEANUP_PLAN.md).
+**Recently done:** the Reference shelf (2026-10-27): a Reference button beside ✦ opens charts full screen over the app, starting with the OT family tree, and the chart viewer now pinches and zooms a search hit to reading size ([docs/reference-charts.md](docs/reference-charts.md)). The pages to follow are planned in [docs/design/reference-library.md](docs/design/reference-library.md). Before that, Azure TTS beside edge-tts (2026-10-18). Names can be spoken from their IPA on Azure (`use_ipa`, ▶ IPA in the Pronunciation tool), and the Audio tool picks Edge, Azure for verses with IPA names, or Azure for everything, with a free-tier meter ([docs/pronunciation.md](docs/pronunciation.md#ipa-through-azure)). edge-tts had to go to 7.3.x the same day: Microsoft began refusing older versions' token around 2026-10-13, so every verse fell back to SAPI. Before that, the cleanup of 2026-10-16/17 (Step 0, WS1–WS7): WEB only, the simpler web app with its "isn't illustrated yet" pointer, no stills, shared pictures (D17), the Theoria Studio shell, a content-only Publish and these docs. Its last step, WS4f / D7(c), serves `web/` directly: `visuals/` and `bibles/WEB` moved into `web/`, `wrangler.toml` points at `./web` with `web/.assetsignore` beside it, `deploy_bundle/` and `prepare-deploy.ps1` are gone, and Publish is two steps (manifest, then commit and push). Each content file is now tracked once, about 5,900 tracked files in all. The Cloudflare build then builds only for pushes that touch `web/`, `wrangler.toml`, `package.json` or `package-lock.json`, and no longer pip-installs `requirements.txt` (2026-10-18). The plan and its decisions D1–D17 are in [docs/archive/CLEANUP_PLAN.md](docs/archive/CLEANUP_PLAN.md).
 
 ## Where things stand (2026-10-17)
 
@@ -49,11 +49,22 @@
 | Now | **Unify the attribution wording** | The web footer says "Scripture: World English Bible (public domain)". The Studio and Video Studio use `passages.ATTRIBUTION`, "World English Bible — public domain." |
 | Next | **Deep links** (`?b=&c=&v=`, or a hash form) | Shareable, and needed by the Studio Preview. `web/js` reads nothing from the URL today. |
 | Next | **Cloudflare Web Analytics** for `theoria-bible.net` | The domain is bought and live. Optionally rename the Worker and the repo from `av-bible` afterwards. Renaming the Worker changes its workers.dev URL, so check that the custom domain stays attached. |
-| Later | **A Charts entry** next to ✦ | Once you choose which family-tree version belongs in the app. The OT tree, the V6 heir spine, the 1–2 Chronicles tree and the OT timeline are all deployed but unlinked (D14, [docs/reference-charts.md](docs/reference-charts.md)). |
+| Now | **Try the Reference shelf on the iPad and iPhone** | Pinch, pan and search in the OT family tree, inside the installed app. The 26,946 px sheet's speed on a phone is unmeasured. |
 | Later | Selectable colour themes | Cheap only while no SVG is hand-edited |
 | Later | Open Graph preview cards per verse | Each card is a picture's end frame; `svg_freeze.freeze_animations` already freezes SMIL to its final values |
 | Later | An app-shell service worker | Cache-first shell, with runtime caching only for chapters visited. It isn't needed to install the app (`web/manifest.webmanifest` exists), and iOS evicts storage anyway. |
 | Later | The reference in fullscreen | Shown alongside the tap-to-reveal controls |
+
+## Reference
+
+The pages, the shared viewer and data modules, and the open questions are in [docs/design/reference-library.md](docs/design/reference-library.md). Each page is the face of a data module that verse generators also draw from.
+
+| When | Item | Notes |
+|---|---|---|
+| Now (decide) | **The open questions** in the design doc | Above all: which map comes first (Paul's Journey 1 or the Israel atlas), and whether to link the built OT timeline now as an interim timeline |
+| Next | **Shared viewer** (`reference_viewer.py`) and **the tree's tap, trace and jump** (page 1) | A settling camera, detail bands, a sidecar JSON, held highlight and cards, and the `theoria:goto` message to the app |
+| Next | **The Tabernacle** (page 2), **Paul's Journey 1** (page 3), **Kings and prophets** (page 4), **The twelve tribes** (page 5) | `sanctuary.py` settles the three disagreeing courts (the Numbers 1–4 pictures change); Journey 1 is already on point facts in `acts_geography.py` |
+| Later | The Next and Later tiers (pages 6–17) | The Israel atlas and the Bible world wait on `gazetteer.py`, rebuilt from point facts; no atlas-traced line may be drawn on any page |
 
 ## Studio
 

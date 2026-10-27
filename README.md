@@ -316,4 +316,5 @@ There are 65 tests in five modules:
   - [Matthew 1](docs/design/matthew-1.md)
   - [Short books](docs/design/short-books.md)
   - [OT timeline](docs/design/ot-timeline.md)
+  - [Reference library](docs/design/reference-library.md)
 - [docs/archive/](docs/archive/README.md): superseded plans and records.
