@@ -1,11 +1,9 @@
 """Matthew 1:1-17 as a camera over the Old Testament family tree.
 
 The same world, the same camera and the same frame as 1 Chronicles 1-9 —
-`svg_chronicles_world.VerseFrame` does the drawing here, keeping the older
-per-child elbow for its lines (`MatthewFrame.family_lines`), the older
-cutaway card (`MatthewFrame.card_wives_beside`) and the older node cap
-(`MatthewFrame.cap_pays_outside`) — with two differences that
-come from what Matthew is doing:
+`svg_chronicles_world.VerseFrame` does the drawing here, the lines that join
+each family (`svg_family_lines`), the cutaway card and the node cap included
+— with two differences that come from what Matthew is doing:
 
   * THE OLD TESTAMENT IS ALREADY STANDING. In Chronicles a name arrives when
     the verse first reads it, because the reader is watching the family be
@@ -29,9 +27,18 @@ come from what Matthew is doing:
     chasing a column that will not stand still. With the heir directly under
     his father the line is a straight vertical run: verse 3 went from a
     3,224 px flight to a 251 px nudge, the panoramas rest at 0.141 instead
-    of 0.080, and no verse has to drop a name any more. 1 Chronicles and the
-    wall chart still use the centred layout — see `arrange_spine` for what
-    the spine costs (birth order).
+    of 0.080, and no verse has to drop a name any more. The wall chart uses
+    the centred layout and 1 Chronicles the regions one — see
+    `arrange_spine` for what the spine costs (birth order).
+
+The lines are the wall chart's, drawn on the spine. The spine stands a wife
+in her sons' row as her husband's child, so her line is the doubled rose
+drop rather than a marriage bar. A family it wraps hangs from a rail down
+the left of its block: David's sons stand below the whole of Solomon's line,
+because the heir stands under his father, and their rail runs down beside
+the kings rather than behind them. Across the whole sheet the spine leaves a
+few lines behind boxes where it tucks one family into the span of another's
+rail, so the check is made on what each file draws (`MatthewFrame.problems`).
 
 Verse matching is not a resolver here. Matthew names forty-two people in
 seventeen verses and `matthew_tree.READING` lists them; the hard part —
@@ -44,6 +51,7 @@ Rendered by generate_matthew1_svg.py.
 import os
 
 import matthew_tree as MT
+import svg_family_lines as FL
 from chronicles_tree import walk
 from generate_ot_family_tree_svg import (DROP, SIB_GAP, arrange_spine,
                                          place_spine)
@@ -316,12 +324,11 @@ class MatthewFrame(VerseFrame):
 
     PANORAMA = PANORAMA
     panorama = False
-    family_lines = False        # the older elbow, until Matthew's own files
-                                # are reviewed under the family lines
-    card_wives_beside = False   # and the older card, with a wife standing
-                                # among the children
-    cap_pays_outside = False    # and the older node cap, over the world's
-                                # boxes only
+
+    def __init__(self, world):
+        VerseFrame.__init__(self, world)
+        self.problems = []          # what the files draw wrong (_family_lines)
+        self._verse = None
 
     def render(self, ch, v, scene, first):
         """Verses 1 and 17 get the whole tree, and a thinner veil.
@@ -330,12 +337,15 @@ class MatthewFrame(VerseFrame):
         chapter's title, one as its summary — so the camera goes out to a
         twentieth of reading scale, and at that scale the ordinary settings
         are wrong twice over. The 260-node budget, which exists so a wide
-        Chronicles shot cannot balloon a file, culls four fifths of the tree
-        and leaves the rings floating over a few scattered specks; and the
-        veil, sized for dimming legible boxes, takes the rest down to black.
-        A verse that is *about* the reach of the line has to be able to show
-        the thing it reaches across.
+        Chronicles shot cannot balloon a file, would leave some of what the
+        shot spans as bare outlines, so these two lift it: the names they write
+        stop only at what the iPad was proven on (IPAD_NAMES), the limit
+        VerseFrame.render holds every file to. And the veil, sized for
+        dimming legible boxes, takes the rest down to black. A verse that
+        is *about* the reach of the line has to be able to show the thing
+        it reaches across.
         """
+        self._verse = (ch, v)
         pan = self.panorama = v in self.PANORAMA
         _focus, mode = self.world.focus_box(ch, v)
         if pan:
@@ -351,6 +361,31 @@ class MatthewFrame(VerseFrame):
             self.max_nodes = VerseFrame.max_nodes
             self.veil_alpha = VerseFrame.veil_alpha
         return VerseFrame.render(self, ch, v, scene, first)
+
+    def _family_lines(self, shown, arriving, lit, dur, sil=None,
+                      opened=frozenset()):
+        """VerseFrame's lines, checked as this file draws them.
+
+        1 Chronicles stops on a line behind a box anywhere in its world
+        (`VerseFrame.audit`). The spine leaves a few across the whole sheet,
+        and Perez's bus runs along the head of Zerah's family once
+        `_settle_kin` stands Zerah beside him, all where no Matthew file
+        looks. So the check here is the file's own: a line it draws passing
+        behind a box it draws, or two lines it draws on one stretch. Each
+        goes into `problems`, and the driver writes nothing if there are
+        any."""
+        segs = list({id(s): s for n in shown
+                     for s in self.lines.node_segments.get(n, ())}.values())
+        ch, v = self._verse
+        for s, n in FL.through_boxes(self.lines, shown, segs):
+            self.problems.append(f"{ch}:{v} the {s.role} of {s.fam.label}'s "
+                                 f"family runs behind {n.label}")
+        for a, b in FL.overlapping(self.lines, segs=segs):
+            self.problems.append(f"{ch}:{v} the {a.role} of {a.fam.label}'s "
+                                 f"family runs along the {b.role} of "
+                                 f"{b.fam.label}'s")
+        return VerseFrame._family_lines(self, shown, arriving, lit, dur, sil,
+                                        opened)
 
     def card_pos(self, cw, ch_, pad):
         """On a panorama the card goes to the bottom LEFT.

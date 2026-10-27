@@ -342,6 +342,10 @@
           "edit": "camera, HUD and audio timing shared with 1 Chronicles"
         },
         {
+          "file": "svg_family_lines.py",
+          "edit": "the lines that join a family (stem and bus, rail and shelves, the doubled wife strand), shared with 1 Chronicles"
+        },
+        {
           "file": "generate_ot_family_tree_svg.py",
           "edit": "tree layout (arrange_spine) and colours shared with the OT wall chart and 1 Chronicles"
         }

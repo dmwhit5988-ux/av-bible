@@ -1449,8 +1449,8 @@ class VerseFrame:
     """One verse's SVG: the world seen through a moving camera."""
 
     # Per-frame, so a book whose wide shots are meant to show the WHOLE
-    # tree can spend more on them (Matthew 1:1 and 1:17) without changing
-    # what an ordinary verse costs.
+    # tree can spend more on them (Matthew 1:1 and 1:17), up to IPAD_NAMES
+    # (render), without changing what an ordinary verse costs.
     max_nodes = MAX_NODES
     veil_alpha = VEIL_ALPHA
     # How a family is joined. True: the wall chart's drawing, one family at
@@ -1459,18 +1459,17 @@ class VerseFrame:
     # box. False: the older elbow, one per child, from the parent down to a
     # bus halfway and on down to the child, which in a wrapped family ran
     # behind the brothers and nephews in between (399 of them on this
-    # tree) so that a son seemed to hang from his brother. Matthew 1 keeps
-    # the elbow until its own files are reviewed.
+    # tree) so that a son seemed to hang from his brother. 1 Chronicles and
+    # Matthew 1 both draw families; False is kept for comparison runs.
     family_lines = True
     # The cutaway card's star layout stands the head's wives beside him on
-    # a short bar rather than among his children. Matthew 1 keeps the
-    # older card until its own files are reviewed.
+    # a short bar rather than among his children (False: the older card,
+    # for comparison runs).
     card_wives_beside = True
     # The node cap also pays for the names a file writes outside the world
     # (the cutaway card's and the HUD's title), so it bounds the names in
-    # the whole FILE, which is what the iPad was proven on. Matthew 1 keeps
-    # the older cap, over the world's boxes only, until its own files are
-    # reviewed.
+    # the whole FILE, which is what the iPad was proven on (False: the
+    # older cap, over the world's boxes only, for comparison runs).
     cap_pays_outside = True
     # A branch nobody has read yet (someone will, later in 1-9) is drawn as
     # one faint block under its first person, and a tribe's panel nobody

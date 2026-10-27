@@ -1,10 +1,11 @@
 """The lines that join a family, for the camera-read genealogy worlds.
 
 1 Chronicles 1-9 is read as a camera over one laid-out tree
-(`svg_chronicles_world`). Every box there stands where the layout put it;
-this module decides how the lines between them run. It draws a FAMILY, not
-one line per child, the way the wall chart (`generate_ot_family_tree_svg.
-draw_edges`) does:
+(`svg_chronicles_world`), and Matthew 1:1-17 as a camera over the same tree
+on the spine layout (`svg_matthew_world`). Every box there stands where the
+layout put it; this module decides how the lines between them run. It draws
+a FAMILY, not one line per child, the way the wall chart
+(`generate_ot_family_tree_svg.draw_edges`) does:
 
 * A family whose children stand on one row gets a STEM from the parent's
   bottom centre, a BUS just above the row and a DROP into each child.
@@ -17,16 +18,16 @@ draw_edges`) does:
   COMB over the row, so no bar runs behind the wife nearer to him. Her
   children drop from her own box. A wife is `layout_regions.is_wife`, the
   one rule the regions layout also packs and rows her by; that layout
-  stands every wife beside her husband. (The centred layout stands a wife
-  in her sons' row, as a child of her husband, so it draws no bars: her
-  drop is doubled in rose instead.)
+  stands every wife beside her husband. (The centred and spine layouts
+  stand a wife in her sons' row, as a child of her husband, so they draw
+  no bars: her drop is doubled in rose instead.)
 * A child that is not below its parent at all gets a SIDE LINK (an elbow
-  from the parent's facing side). Neither layout produces any.
+  from the parent's facing side). None of the layouts produces any.
 
 Rows are read from where the boxes stand (`rows_of`), never from a layout's
 own bookkeeping, so any layout that places boxes can be drawn. Two things a
 layout can say that positions cannot, both from the regions layout's Plan
-(`layout_regions`), and both empty for the centred layout:
+(`layout_regions`), and both empty for the centred and spine layouts:
 
 * LABELS. A house drawn as a small label, not a box, stands in the gap
   above the row of the people it gathers. It counts as standing in THAT row
@@ -180,8 +181,8 @@ class Geometry:
 
     `labels`: houses drawn as labels (they count as standing in the row
     they gather). `routes`: {parent: [(y, x), ...]}, the waypoints of a
-    routed stem. Both come from the regions layout's Plan; the centred
-    layout passes neither."""
+    routed stem. Both come from the regions layout's Plan; the centred and
+    spine layouts pass neither."""
 
     def __init__(self, nodes, labels=(), routes=None):
         self.nodes = list(nodes)
@@ -581,15 +582,17 @@ def strands(s):
             s.x1 + STRAND_DX, max(s.y0, s.y1))
 
 
-def through_boxes(geom, nodes=None):
+def through_boxes(geom, nodes=None, segs=None):
     """Every drawn line (pieces, the second strand of a wife's drop, and the
     second strand of a marriage bar or comb) that passes behind a box
     -> [(seg, box node)]. Boxes are drawn over lines, so a line through a
-    box seems to leave from, or arrive at, the box it passes behind."""
+    box seems to leave from, or arrive at, the box it passes behind.
+    `nodes` and `segs` narrow it to the boxes and pieces one file draws
+    (the whole world's by default)."""
     nodes = geom.nodes if nodes is None else list(nodes)
     idx = _BoxIndex(nodes)
     hits = []
-    for s in geom.segs:
+    for s in (geom.segs if segs is None else segs):
         for ln in _drawn_lines(s):
             bb = (min(ln[0], ln[2]), min(ln[1], ln[3]),
                   max(ln[0], ln[2]), max(ln[1], ln[3]))
@@ -611,14 +614,16 @@ def _drawn_lines(s):
     return out
 
 
-def overlapping(geom, tol=0.5):
+def overlapping(geom, tol=0.5, segs=None):
     """Pairs of different pieces lying on one line and sharing more than
     `tol` of it -> [(seg, seg)]. Two pieces on one stretch draw as one line
     and read as one family's: the routed stems' trunk is the one place
     lines are meant to be shared, and _share_routes makes each shared
-    stretch a single piece, so on a sound drawing this is empty."""
+    stretch a single piece, so on a sound drawing this is empty. `segs`
+    narrows it to the pieces one file draws (the whole world's by
+    default)."""
     on_line = {}
-    for s in geom.segs:
+    for s in (geom.segs if segs is None else segs):
         for x0, y0, x1, y1 in _drawn_lines(s):
             if abs(y1 - y0) < 1e-6:
                 key, lo, hi = ("h", round(y0, 2)), min(x0, x1), max(x0, x1)

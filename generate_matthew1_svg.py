@@ -5,6 +5,12 @@ Nativity in figures.
     .venv\\Scripts\\python.exe generate_matthew1_svg.py --dry
     .venv\\Scripts\\python.exe generate_matthew1_svg.py --out DIR
 
+Every frame is rendered before anything is written, and NOTHING is written
+if a file draws a line that joins a family (`svg_family_lines`) behind a
+box it draws, or two such lines on one stretch (`MatthewFrame.problems`),
+or holds more than 1,050 <rect> or 268 <text> elements, counted in the file
+as written, the most proven smooth on the owner's iPad.
+
 THE DESIGN. Matthew 1 is two chapters wearing one number, and it gets two
 drawings.
 
@@ -45,6 +51,7 @@ import os
 import sys
 
 from generate_tabernacle import out_path
+from svg_chronicles_world import IPAD_BOX_RECTS, IPAD_NAMES
 from svg_matthew_nativity import NativityFrame, VERSES as NATIVITY_VERSES
 from svg_matthew_world import (BOOK, CHAPTER, MatthewFrame,
                                MatthewWorld)
@@ -77,15 +84,44 @@ def main(argv):
     for v in NATIVITY_VERSES:
         canvases.append((v, nativity.render(v)))
 
+    problems = list(frame.problems)
+    files = []
+    most = {"rect": (0, ""), "text": (0, "")}
     for v, c in canvases:
+        text = c.tostring()
+        # every element of the kind anywhere in the file, as the 1
+        # Chronicles driver counts them: the whole file is what the iPad
+        # has been proven on
+        cn = {k: text.count("<" + k) for k in most}
+        for k in most:
+            if cn[k] > most[k][0]:
+                most[k] = (cn[k], f"{CHAPTER}:{v}")
+        if cn["rect"] > IPAD_BOX_RECTS:
+            problems.append(f"{CHAPTER}:{v} draws {cn['rect']} rects "
+                            f"(over {IPAD_BOX_RECTS})")
+        if cn["text"] > IPAD_NAMES:
+            problems.append(f"{CHAPTER}:{v} draws {cn['text']} names "
+                            f"(over {IPAD_NAMES})")
+        files.append((v, text))
+    print(f"most rects in a file: {most['rect'][0]} ({most['rect'][1]}); "
+          f"most names (<text>): {most['text'][0]} ({most['text'][1]})")
+    if problems:
+        print(f"{len(problems)} problems:")
+        for p in problems[:16]:
+            print("   " + p)
+        print("stopped: nothing written")
+        return 1
+
+    for v, text in files:
         name = f"Matthew_{CHAPTER}_{v}.svg"
         if dry:
-            bytes_ += len(c.tostring())
+            bytes_ += len(text)
             total += 1
             continue
         path = (os.path.join(out_dir, name) if out_dir
                 else out_path(BOOK, CHAPTER, name))
-        c.save(path)
+        with open(path, "w", encoding="utf-8") as f:   # as SvgCanvas.save
+            f.write(text)
         bytes_ += os.path.getsize(path)
         total += 1
 
