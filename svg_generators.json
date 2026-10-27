@@ -404,6 +404,10 @@
           "edit": "the regions layout (one fan, a titled panel per son of Israel, compact couples): BAR_W, WIFE_GAP, GUTTER, LANE, SONS - used only when svg_chronicles_world.LAYOUT is \"regions\""
         },
         {
+          "file": "svg_silhouettes.py",
+          "edit": "which branches not read yet stand as one block in each verse's file, and the sweep that keeps a block off other branches: MIN_FOLD, PAD, PAD_TOP (the look and the fade are BLOCK_* and OPEN_* in svg_chronicles_world)"
+        },
+        {
           "file": "generate_ot_family_tree_svg.py",
           "edit": "tree layout and house colours shared with the OT wall chart and Matthew 1 - editing one changes all three"
         }

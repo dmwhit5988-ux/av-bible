@@ -26,6 +26,9 @@ report them):
 * no line that joins a family (`svg_family_lines`) runs behind a box, and
   no two lines share a stretch (the panel heads' routed stems share their
   trunk as single pieces);
+* no block standing for a branch not read yet (`svg_silhouettes`) covers
+  another branch's box, label, line or block, or crosses a panel's edge,
+  in any verse's state;
 * every wife stands on a bar beside her husband (one wife rule);
 * no verse lights a reference chip (the woman's real box lights);
 * no file holds more than 1,050 <rect> or 268 <text> elements, counted in

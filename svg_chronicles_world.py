@@ -16,11 +16,16 @@ routed line from the son's box. A wife stands beside her husband on a
 marriage bar, and a house that gathers people is a small italic label on
 the line rather than a box.
 
-Three consequences worth knowing:
+Four consequences worth knowing:
 
 * THE TREE ACCUMULATES. `read` is global across chapters 1-9 in reading
   order, not per chapter. Judah lights up at 2:1 and is still lit when 4:1
   comes back to him, so by chapter 9 the whole thing is standing.
+* WHAT IS STILL TO COME IS A BLOCK. A branch the reading has not reached
+  yet stands as one faint block under its first person, and a tribe's
+  panel nobody has been read in yet as its titled panel alone
+  (`svg_silhouettes`); when the reading gets there, the block gives way to
+  its boxes.
 * NEW NAMES GROW IN. A name first read in this verse arrives: its connector
   draws itself from the parent while its box, already standing faint,
   brightens. That is what makes a family spread across a wide row read as
@@ -48,6 +53,7 @@ from xml.sax.saxutils import escape
 import chronicles_tree as CT
 import layout_regions
 import svg_family_lines as FL
+import svg_silhouettes as SIL
 from chronicles_tree import walk
 from config import WEB_AUDIO_DIR
 from generate_1chronicles import (CHAPTERS, assign, flatten,
@@ -281,6 +287,16 @@ TITLE_HALO = 0.22           # a growing title's halo in the panel's colour,
                             # as a fraction of its size
 F_PANEL = font(TITLE_PX, bold=True)
 LABEL_PX = layout_regions.LABEL_PX      # a house label's italic text
+# A branch nobody has read yet stands as one quiet block (svg_silhouettes):
+# a plain rounded rect in world space like the panels, no mask, filter or
+# clip, its edge in a stroke-floor group. When the reading reaches it, it
+# fades out while the boxes it held fade in, from OPEN_AT of the move over
+# OPEN_LEN, so the boxes stand before the arriving names brighten (0.60).
+BLOCK_RX = 10
+BLOCK_FILL = dim(SAND_DIM, 0.07)
+BLOCK_EDGE = dim(SAND_DIM, 0.40)
+BLOCK_EDGE_W = 1.0
+OPEN_AT, OPEN_LEN = 0.30, 0.30
 FLOOR_MARGIN = 1.25         # every focus box must fit at this multiple of
                             # S_MIN, so no ARRIVING box rests off screen
                             # (a re-named person outside the focus box can:
@@ -1420,9 +1436,11 @@ def _cam_wrap(tracks, dur, els):
         + "".join(els) + "</g></g>")
 
 
-def _fade_group(els, begin, dur=GROW_DUR):
-    return (f'<g opacity="0">{"".join(els)}'
-            f'<animate attributeName="opacity" values="0;1" dur="{dur}" '
+def _fade_group(els, begin, dur=GROW_DUR, out=False):
+    """Elements fading in (or, `out`, fading away) together."""
+    a, b = ("1", "0") if out else ("0", "1")
+    return (f'<g opacity="{a}">{"".join(els)}'
+            f'<animate attributeName="opacity" values="{a};{b}" dur="{dur}" '
             f'begin="{begin}" fill="freeze" calcMode="spline" '
             f'keyTimes="0;1" keySplines="{EASE}"/></g>')
 
@@ -1454,6 +1472,12 @@ class VerseFrame:
     # the older cap, over the world's boxes only, until its own files are
     # reviewed.
     cap_pays_outside = True
+    # A branch nobody has read yet (someone will, later in 1-9) is drawn as
+    # one faint block under its first person, and a tribe's panel nobody
+    # has been read in yet as its panel alone (svg_silhouettes). Only under
+    # the regions layout: Matthew 1's spine world and the comparison
+    # layouts have no plan, and draw every box.
+    silhouettes = True
 
     def __init__(self, world):
         self.world = world
@@ -1474,10 +1498,14 @@ class VerseFrame:
                 world.nodes, labels=self.labels,
                 routes=plan.routes if plan is not None else None)
             self.lines_behind = FL.through_boxes(self.lines)
+        self.sil = None
+        if self.silhouettes and plan is not None and self.lines is not None:
+            self.sil = SIL.Silhouettes(world, self.lines)
 
     def audit(self):
         """-> [problem] in the frames' own drawing, for the driver: lines
-        behind boxes, two lines on one stretch, and THE ONE WIFE RULE. The
+        behind boxes, two lines on one stretch, a silhouette block over
+        another branch (svg_silhouettes), and THE ONE WIFE RULE. The
         regions layout packs and rows a wife by `layout_regions.is_wife`,
         and svg_family_lines draws a marriage bar by the same rule, so under
         that layout every wife must come out on a bar beside her husband:
@@ -1485,6 +1513,11 @@ class VerseFrame:
         which is what once overlapped twelve boxes."""
         out = [f"the {s.role} of {s.fam.label}'s family runs behind "
                f"{n.label}" for s, n in self.lines_behind]
+        if self.sil is not None:
+            # a block over another branch's box, line or block (the sweep
+            # opens such a head a generation further, so this is empty
+            # unless it failed to)
+            out += self.sil.problems
         if self.lines is not None:
             # two pieces on one stretch draw as one line: only the routed
             # stems' trunk is shared, and it is drawn as single pieces
@@ -1570,7 +1603,18 @@ class VerseFrame:
         # all of the midpoint once a wide one fell below TEXT_MIN_SCALE and
         # was dropped, flew by empty (66 verses, 7:13 the worst).
         flight = _flight_seen(cam0, cam1, arc_at, dur)
-        seen = _seen_scale(w.nodes, flight)
+        # Silhouettes: the boxes this verse rests with folded into blocks
+        # are not drawn, and the boxes the verse opened on folded and rests
+        # with standing (`opened`) fade in while their blocks fade out.
+        pool, opened, sil = w.nodes, frozenset(), None
+        if self.sil is not None:
+            i = self.sil.pos[(ch, v)]
+            cur = self.sil.state(i)
+            prev = cur if first else self.sil.state(i - 1)
+            pool = [n for n in w.nodes if n not in cur.hidden]
+            opened = prev.hidden - cur.hidden
+            sil = (prev, cur, self._blocks_seen(prev, cur, flight))
+        seen = _seen_scale(pool, flight)
         detail = _frame(cam1, DETAIL_PAD)
         skeleton = detail
         for cam in (cam0, apex):
@@ -1587,6 +1631,10 @@ class VerseFrame:
         if self.cap_pays_outside:
             outside = 1 + (len(named) if mode == "card" and named else 0)
         max_nodes = self.max_nodes - len(titles) - outside
+        if sil is not None:
+            # a block is one item, like a box (a whole panel's block is
+            # the panel, drawn anyway)
+            max_nodes -= sum(1 for b in sil[2] if b.panel is None)
         if self.cap_pays_outside:
             # An arriving name is written twice — the faint box it stood as
             # and the lit one that fades in over it — so the names in the
@@ -1609,7 +1657,7 @@ class VerseFrame:
         # destination first. A box on screen mid-flight is in the pool even
         # outside the skeleton's bounding box, which never quite held the
         # whole arc.
-        shown = [n for n in w.nodes
+        shown = [n for n in pool
                  if n in seen or _hits(node_box(n), skeleton)]
         if len(shown) > max_nodes:
             def near(cam, pool):
@@ -1641,7 +1689,7 @@ class VerseFrame:
             take(near(cam1, [n for n in shown
                              if _hits(node_box(n), detail)]))
             take(near(cam1, shown))
-            shown = [n for n in w.nodes if n in keep]
+            shown = [n for n in pool if n in keep]
 
         # The cap keeps the file to what can be NAMED. Past it, every other
         # box the flight puts on screen is drawn as an outline only — box
@@ -1649,10 +1697,10 @@ class VerseFrame:
         # the whole shape of the tree instead of two lit patches with
         # nothing between them (5:19, 9:10, 9:35 drew nothing at the apex).
         kept = set(shown)
-        outline = {n for n in _seen_scale(w.nodes, flight, 0.0)
+        outline = {n for n in _seen_scale(pool, flight, 0.0)
                    if n not in kept}
         if outline:
-            shown = [n for n in w.nodes if n in kept or n in outline]
+            shown = [n for n in pool if n in kept or n in outline]
 
         c = SvgCanvas(W, H, bg=BG)
         # Four layers, and the order is the point: a connector drawn while
@@ -1665,16 +1713,19 @@ class VerseFrame:
         # holds a screen-pixel floor through the zoom (_stroke_group).
         # Boxes do not overlap, so grouping them by width costs no order.
         lines, lines_new, boxes, boxes_new = [], [], {}, []
+        boxes_open = {}             # boxes standing up out of a block
         for n in shown:
             state = ("new" if n in arriving else
                      "lit" if n in lit else
                      "read" if n in self.read else "ahead")
-            self._draw(lines, lines_new, boxes, boxes_new, n, state,
-                       n in seen and n not in outline, dur)
+            self._draw(lines, lines_new, boxes_open if n in opened else boxes,
+                       boxes_new, n, state, n in seen and n not in outline,
+                       dur)
         fine = []
+        sil_els = None
         if self.lines is not None:
-            lines, fine, lines_new = self._family_lines(shown, arriving,
-                                                        lit, dur)
+            lines, fine, lines_new, sil_els = self._family_lines(
+                shown, arriving, lit, dur, sil, opened)
 
         self.read |= arriving
 
@@ -1684,18 +1735,38 @@ class VerseFrame:
         # the ring that rides it, are never hidden behind a tribe's name.
         lit_w = self.LOOK["lit"][2]
 
+        # The blocks lie over the panels and under every line and box. The
+        # ones this verse opens fade out, the ones it leaves fade in, and so
+        # do their lines and the boxes standing up out of them; each fade is
+        # a group inside the stroke group of its width, so a verse that
+        # opens a block adds no stroke-width animation.
+        o_begin, o_dur = "%.2fs" % (dur * OPEN_AT), "%.2fs" % (dur * OPEN_LEN)
+
+        def fade(els, out=False):
+            return [_fade_group(els, o_begin, o_dur, out)] if els else []
+
+        def stroked(els, wd, gone=(), come=()):
+            return _stroke_group(list(els) + fade(gone, out=True)
+                                 + fade(come), wd, scales, cam1[0], dur)
+
         def box_groups(wds):
-            return [_stroke_group(boxes[wd], wd, scales, cam1[0], dur)
+            return [stroked(boxes.get(wd, ()), wd, come=boxes_open.get(wd, ()))
                     for wd in wds]
+
+        b_keep = b_gone = b_new = l_gone = f_gone = l_new = f_new = ()
+        if sil_els is not None:
+            (b_keep, b_gone, b_new, l_gone, f_gone, l_new, f_new) = sil_els
+        widths = sorted(set(boxes) | set(boxes_open))
         els_all = (([_stroke_group(panels, PANEL_EDGE_W, scales, cam1[0],
                                    dur)] if panels else [])
+                   + [stroked(b_keep, BLOCK_EDGE_W, b_gone, b_new)]
                    + self._extra_world_els(ch, v, dur, shown)
-                   + [_stroke_group(lines, CONNECTOR_W, scales, cam1[0], dur)]
-                   + [_stroke_group(fine, FINE_W, scales, cam1[0], dur)]
+                   + [stroked(lines, CONNECTOR_W, l_gone, l_new)]
+                   + [stroked(fine, FINE_W, f_gone, f_new)]
                    + lines_new
-                   + box_groups([wd for wd in sorted(boxes) if wd < lit_w])
+                   + box_groups([wd for wd in widths if wd < lit_w])
                    + titles
-                   + box_groups([wd for wd in sorted(boxes) if wd >= lit_w])
+                   + box_groups([wd for wd in widths if wd >= lit_w])
                    + [_stroke_group(boxes_new, lit_w, scales, cam1[0], dur)])
         veil_screen = []
         if mode == "card" and named and cam1[0] < READABLE:
@@ -1820,9 +1891,34 @@ class VerseFrame:
                  self.LOOK[look][3], anchor="mm", italic=True)
         return sub._els
 
-    def _family_lines(self, shown, arriving, lit, dur):
+    def _blocks_seen(self, prev, cur, flight):
+        """The silhouettes this verse's file draws: every block of the state
+        it opens on or the one it rests on that the flight puts on screen at
+        any scale, as a past-the-cap outline would be."""
+        boxes = [b for b, _s in flight]
+        out = {}
+        for st in (prev, cur):
+            for k, b in st.blocks.items():
+                if k not in out and any(_hits(b.reach, fb)
+                                        for fb in boxes):
+                    out[k] = b
+        return list(out.values())
+
+    def _block_els(self, blocks):
+        """Block rects, their edges' width left to a stroke group."""
+        sub = SvgCanvas(W, H)
+        for b in blocks:
+            if b.panel is not None:
+                continue                    # the panel itself stands for it
+            x0, y0, x1, y1 = b.rect
+            sub.rect(x0, y0, x1 - x0, y1 - y0, fill=BLOCK_FILL,
+                     stroke=BLOCK_EDGE, width=BLOCK_EDGE_W, rx=BLOCK_RX)
+        return [_unwidth(e, BLOCK_EDGE_W) for e in sub._els]
+
+    def _family_lines(self, shown, arriving, lit, dur, sil=None,
+                      opened=frozenset()):
         """This verse's lines, one family at a time -> (static, fine,
-        growing).
+        growing, silhouettes).
 
         Every piece leading to a drawn box is drawn ONCE, in the brightest
         look of the people it leads to: a bus that serves a lit brother and
@@ -1832,32 +1928,82 @@ class VerseFrame:
         rail and shelf, drop — then draws itself over them in the lit look,
         on the old trace's timing, while the box brightens. Arrivals that
         share a stem each trace it; the standing stem is still drawn once.
+
+        `sil` = (state opened on, state rested on, blocks drawn), or None.
+        A block's stem is drawn with it. The lines of the boxes standing up
+        out of a block this verse (`opened`), and the stems of the blocks
+        the verse leaves, fade in; the stems of the blocks it opens fade
+        out. `silhouettes` is then (blocks kept, blocks going, blocks
+        coming, lines going, fine going, lines coming, fine coming), else
+        None.
         """
         rank = ("ahead", "read", "lit")
+        # a box folded into a block is not standing: the stem into the
+        # block is in the faint look unless a box it leads to stands. The
+        # stems of the blocks this verse opens keep the look they had in
+        # the state it opened on.
+        folded = sil[1].hidden if sil is not None else frozenset()
+        was = sil[0].hidden if sil is not None else frozenset()
 
-        def standing(k):
-            if k in arriving:
+        def standing(k, hid):
+            if k in arriving or k in hid:
                 return 0
             if k in lit:
                 return 2
             return 1 if k in self.read else 0
 
+        def look(s):
+            return rank[max(standing(k, folded) for k in s.serves)]
+
+        def look_was(s):
+            return rank[max(standing(k, was) for k in s.serves)]
+
+        bead = self._bead_fill if self.titles else None
         segs, taken = [], set()
+        rose = []                   # pieces of the boxes standing up
         for n in shown:
             for s in self.lines.node_segments.get(n, ()):
                 if id(s) not in taken:
                     taken.add(id(s))
                     segs.append(s)
-        lines, fine = FL.static_els(
-            segs, lambda s: rank[max(standing(k) for k in s.serves)],
-            LINE_ALPHA, bead_fill=self._bead_fill if self.titles else None)
+        silhouettes = None
+        if sil is not None:
+            prev, cur, drawn = sil
+            # a piece stands from the start if a box it leads to does
+            stood = {id(s) for n in shown if n not in opened
+                     for s in self.lines.node_segments.get(n, ())}
+            rose = [s for s in segs if id(s) not in stood]
+            segs = [s for s in segs if id(s) in stood]
+            keep, gone, come = [], [], []
+            for b in drawn:
+                (keep if b.key in prev.blocks and b.key in cur.blocks else
+                 gone if b.key in prev.blocks else come).append(b)
+            stem = {}
+            for group, b_list in ((0, keep), (1, gone), (2, come)):
+                for b in b_list:
+                    for s in b.stubs:
+                        if id(s) in taken:
+                            continue
+                        g = stem.get(id(s), (group, s))[0]
+                        stem[id(s)] = (0 if g != group else group, s)
+            segs += [s for g, s in stem.values() if g == 0]
+            l_gone, f_gone = FL.static_els(
+                [s for g, s in stem.values() if g == 1], look_was,
+                LINE_ALPHA, bead_fill=bead)
+            l_new, f_new = FL.static_els(
+                rose + [s for g, s in stem.values() if g == 2], look,
+                LINE_ALPHA, bead_fill=bead)
+            silhouettes = (self._block_els(keep), self._block_els(gone),
+                           self._block_els(come), l_gone, f_gone, l_new,
+                           f_new)
+        lines, fine = FL.static_els(segs, look, LINE_ALPHA, bead_fill=bead)
         gdur, _gbegin = _grow_timing(dur)
         growing = []
         for n in shown:
             if n in arriving:
                 growing.extend(FL.trace_els(self.lines, n, LINE_ALPHA["lit"],
                                             TRACE_W, TRACE_FINE_W, gdur))
-        return lines, fine, growing
+        return lines, fine, growing, silhouettes
 
     def _connector(self, n, look, gdur=None, trace=False):
         """The older elbow from the parent to one child (family_lines
