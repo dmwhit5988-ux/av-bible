@@ -20,10 +20,12 @@ This layout keeps one tree and makes its rows honest:
   PANEL HEADS. A head's box stays in the fan, so 2:1-2 see the twelve
   together, and everything below him is laid out in his own panel, a
   rectangle titled with his name (EDOM for Esau). A routed line runs from
-  the head down the gutters into his panel. The two houses are not boxes
-  in the sons' row, where they stood like a thirteenth and fourteenth son:
-  each is a LABEL on Israel's line, in the gap over that row, with nothing
-  under it there, and its routed line leaves the label.
+  the head down the gutters into his panel; the routes share one trunk
+  under the fan and one line down each corridor and over each shelf, so
+  they draw as one branching line system (Layout._route). The two houses
+  are not boxes in the sons' row, where they stood like a thirteenth and
+  fourteenth son: each is a LABEL on Israel's line, in the gap over that
+  row, with nothing under it there, and its routed line leaves the label.
 * INSIDE A PANEL the rows are generations too, counted on the same table as
   the fan. Brothers keep birth order on one row. A wife stands beside her
   husband (see COUPLES below), and a wife's children hang under her. A
@@ -92,7 +94,9 @@ spine layouts):
                  children are in the panel. Its stem leaves the box's (or
                  label's) bottom centre, runs down to y and across to x for
                  each point in turn, and then down to the bus over its
-                 children.
+                 children. Different routes' points lie on the same lines
+                 (the trunk's y, a corridor's x, a shelf's gutter y),
+                 which svg_family_lines draws once as a shared trunk.
   plan.panels    [Panel], each with its head, title, rect (x0, y0, x1, y1),
                  shelf, nodes, and title_side / title_room: the top corner
                  the entering lines leave free, and how wide it is.
@@ -141,9 +145,12 @@ COLUMN_PAD = 14     # half-width of that clear column
 PANEL_PAD = 34      # a panel's rect round its content, sides and bottom
 PANEL_TOP = 64      # and above its first row (title and bus)
 GUTTER = 90         # clear gutter between panels
-LANE = 9            # spacing of routed lanes
-FAN_GAP = 70        # the fan's lowest box to the first routing lane
-CORRIDOR_PAD = 26   # each side of a corridor's lanes
+LANE = 9            # room per route in the gaps the routes run through
+                    # (under the fan, a corridor, over a shelf): it sizes
+                    # the gaps, not the lines, which share (Layout._route)
+FAN_GAP = 70        # the fan's lowest box to the trunk of the routes
+GUTTER_LINE = 6     # a gutter's top to the routes' line over its shelf
+CORRIDOR_PAD = 26   # each side of a corridor's room
 ASPECT = 1.75       # target width:height of the whole sheet
 BALANCE_W = 1.0     # penalty for unequal left and right segments
 SIDE_WIDTHS = [1500.0 + 500 * i for i in range(24)]   # tried for a segment
@@ -926,19 +933,24 @@ class Layout:
 
     def _route(self):
         """Every head (and wife of a head) whose children are in a panel
-        gets a route: down from the box to its own lane under the fan,
-        across to the panel (first shelf) or to its own lane in a
-        corridor, down the corridor, across its own lane in the gutter
-        above its shelf, and down into the panel's bus.
+        gets a route, and the routes SHARE THEIR LINES: down from the box
+        to THE TRUNK, one line FAN_GAP under the fan; along it to over the
+        panel (first shelf) or to a corridor; down the corridor's centre
+        line; along the one gutter line over its shelf (GUTTER_LINE under
+        the gutter's top); and down into the panel's bus.
 
-        Lanes are ordered so that routes do not cross where the geometry
-        allows: in a corridor, routes branching left sit left (shallower
-        shelf further left; same shelf by target x) and routes branching
-        right sit right (shallower further right); in a shelf's gutter a
-        route branching further out turns higher; under the fan, leftward
-        routes give the higher lane to the source further left, and
-        rightward ones mirror that."""
-        lane0 = self.fan_bottom + FAN_GAP
+        Routes that run together are on the same line, so svg_family_lines
+        draws each shared stretch once, as a bus that branches off to each
+        panel. A lane per route, 9 px apart, would make a cable of up to 16
+        parallel lines round Judah's panel, the strongest thing in every
+        wide shot. A route still has its own waypoints, so an arrival traces
+        its father's own way from the fan to him.
+
+        The gaps the routes run through are still sized at LANE per route
+        (_pack), more than one line needs. Sized for one line, every panel
+        would move, for at most 4% on five wide card rests (6:1, 6:16,
+        6:38, 7:6, 9:16) and nothing on the rest."""
+        trunk = self.fan_bottom + FAN_GAP
         reqs = []
         for p in self.panels:
             pn = set(p.nodes)
@@ -952,41 +964,15 @@ class Layout:
                 else:                           # the end nearest the corridor
                     cx = self.corridors[p.corridor]
                     ex = kmin if cx < kmin else (kmax if cx > kmax else cx)
-                reqs.append(dict(o=o, p=p, sx=sx, ex=ex))
-        for cid, cx in self.corridors.items():
-            rs = [r for r in reqs if r["p"].corridor == cid]
-            lb = sorted([r for r in rs if r["ex"] < cx],
-                        key=lambda r: (r["p"].shelf, r["ex"]))
-            rb = sorted([r for r in rs if r["ex"] >= cx],
-                        key=lambda r: (-r["p"].shelf, r["ex"]))
-            seq = lb + rb
-            for i, r in enumerate(seq):
-                r["x1"] = cx + (i - (len(seq) - 1) / 2) * LANE
+                reqs.append(dict(o=o, p=p, ex=ex))
         for r in reqs:
-            if r["p"].corridor is None:
-                r["x1"] = r["ex"]
-        left = sorted([r for r in reqs if r["x1"] < r["sx"]],
-                      key=lambda r: r["sx"])
-        right = sorted([r for r in reqs if r["x1"] >= r["sx"]],
-                       key=lambda r: -r["sx"])
-        for i, r in enumerate(left + right):
-            r["lane"] = lane0 + i * LANE
-        for s in range(1, len(self.shelves)):
-            rs = [r for r in reqs if r["p"].shelf == s]
-            lt = self.shelf_lane_top[s] + 6
-            lft = sorted([r for r in rs if r["ex"] < r["x1"]],
-                         key=lambda r: r["ex"])
-            rgt = sorted([r for r in rs if r["ex"] >= r["x1"]],
-                         key=lambda r: -r["ex"])
-            for i, r in enumerate(lft):
-                r["lane2"] = lt + i * LANE
-            for i, r in enumerate(rgt):
-                r["lane2"] = lt + i * LANE
-        for r in reqs:
-            if r["p"].corridor is None:
-                route = [(r["lane"], r["ex"])]
+            p = r["p"]
+            if p.corridor is None:
+                route = [(trunk, r["ex"])]
             else:
-                route = [(r["lane"], r["x1"]), (r["lane2"], r["ex"])]
+                gutter = self.shelf_lane_top[p.shelf] + GUTTER_LINE
+                route = [(trunk, self.corridors[p.corridor]),
+                         (gutter, r["ex"])]
             self.plan.routes[r["o"]] = route
         # a title goes in the top corner the entering lines leave free, and
         # is sized by the renderer to fit that room

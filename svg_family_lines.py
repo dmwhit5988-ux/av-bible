@@ -38,10 +38,14 @@ layout can say that positions cannot, both from the regions layout's Plan
   over, its parent's other children's.
 * ROUTES. A panel head stands in the fan, far above the children in his
   panel. His stem runs from his box down to each waypoint's y and across to
-  its x in turn (the lanes under the fan and down the corridors), then down
-  to the bus over his children. The route is part of every child's path,
-  so it is drawn once in the brightest look among them and an arrival
-  traces along it (trace_els: a long path draws its far part fast).
+  its x in turn, then down to the bus over his children. The layout puts
+  the waypoints of different heads on shared lines (the trunk under the
+  fan, a corridor's centre line, the line over a shelf), and here the
+  stems are cut where they meet and drawn as ONE line system, a bus that
+  branches off to each panel (Geometry._share_routes). Each piece is part
+  of the path of every child beyond it, so it is drawn once in the
+  brightest look among them, and an arrival traces his father's own way
+  along it (trace_els: a long path draws its far part fast).
 
 WHERE A RAIL GOES. Left of the whole block over its height: left of the
 leftmost box among the children AND their descendants between the rail's
@@ -89,9 +93,10 @@ class Seg:
     """One axis-aligned piece of line.
 
     role: stem | bus | head | rail | shelf | drop | entry | side | bar |
-    arch. style: solid | dash | wife | bar. fam: the parent whose family it
-    belongs to. serves: the children whose path from the parent uses it.
-    bead: an open bead at the child end (a dashed drop or entry)."""
+    arch | route | trunk. style: solid | dash | wife | bar. fam: the parent
+    whose family it belongs to (for a trunk, the first family sharing it).
+    serves: the children whose path from the parent uses it. bead: an open
+    bead at the child end (a dashed drop or entry)."""
 
     __slots__ = ("x0", "y0", "x1", "y1", "role", "style", "fam", "serves",
                  "bead")
@@ -188,6 +193,7 @@ class Geometry:
         self.bars = []              # (husband, wife, seg)
         self.side_links = []        # (parent, child)
         self._spans = {}
+        self._routed = []           # (parent, stem polyline, children)
         for p in self.nodes:
             if not p.kids:
                 continue
@@ -209,6 +215,7 @@ class Geometry:
         self._place_rails()
         for p, info in self.families.items():
             self._emit(p, info)
+        self._share_routes()
         for s in self.segs:
             for k in s.serves:
                 self.node_segments.setdefault(k, []).append(s)
@@ -369,14 +376,14 @@ class Geometry:
             row = info["rows"][0]
             bus = info["bus_y"]
             if route:
-                sv, st = frozenset(row), _shared_style(row)
-                x, y = pcx, pb
+                # the stem's pieces are cut and shared with the other
+                # routed stems once every family is planned (_share_routes)
+                pts = [(pcx, pb)]
                 for ly, lx in route:
-                    self._add(x, y, x, ly, "route", st, p, sv)
-                    self._add(x, ly, lx, ly, "route", st, p, sv)
-                    x, y = lx, ly
-                self._add(x, y, x, bus, "route", st, p, sv)
-                pcx = x
+                    pts += [(pts[-1][0], ly), (lx, ly)]
+                pts.append((pts[-1][0], bus))
+                self._routed.append((p, pts, frozenset(row)))
+                pcx = pts[-1][0]
             else:
                 self._add(pcx, pb, pcx, bus, "stem", _shared_style(row), p,
                           frozenset(row))
@@ -438,6 +445,49 @@ class Geometry:
         self._add(xm, pm, xm, km, "side", k.link, p, sv)
         self._add(xm, km, x1, km, "side", k.link, p, sv,
                   bead=(k.link == "dash"))
+
+    def _share_routes(self):
+        """The routed stems, drawn as one line system: THE TRUNK.
+
+        The regions layout runs its routes on shared lines (one under the
+        fan, one down each corridor, one over each shelf), so two stems that
+        run together lie on exactly the same line. Every line a stem uses
+        is cut wherever any stem joins or leaves it, and each piece is one
+        Seg serving every child whose path crosses it, as a bus serves the
+        brothers beyond each cut. So a shared stretch is drawn once, in the
+        brightest look of the people it leads to, and a wide shot shows one
+        thin line where parallel lanes would make a cable. A piece one stem
+        alone uses keeps role "route"; one several share is "trunk", and
+        its `fam` is the first of them, for the audit's wording. A child's
+        path is still exactly his parent's stem, so his arrival traces from
+        his father's box along the trunk to him."""
+        lines = {}
+        for p, pts, kids in self._routed:
+            for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+                if abs(x1 - x0) + abs(y1 - y0) < 1e-6:
+                    continue
+                if abs(y1 - y0) < 1e-6:
+                    key, lo, hi = ("h", y0), min(x0, x1), max(x0, x1)
+                else:
+                    key, lo, hi = ("v", x0), min(y0, y1), max(y0, y1)
+                lines.setdefault(key, []).append((lo, hi, p, kids))
+        for (axis, c), spans in lines.items():
+            cuts = sorted({v for lo, hi, _p, _k in spans for v in (lo, hi)})
+            pieces = []                     # [a, b, families, children]
+            for a, b in zip(cuts, cuts[1:]):
+                on = [(p, k) for lo, hi, p, k in spans if lo <= a and b <= hi]
+                if not on:
+                    continue
+                fams = list(dict.fromkeys(p for p, _k in on))
+                sv = frozenset().union(*(k for _p, k in on))
+                if pieces and pieces[-1][1] == a and pieces[-1][3] == sv:
+                    pieces[-1][1] = b
+                else:
+                    pieces.append([a, b, fams, sv])
+            for a, b, fams, sv in pieces:
+                role = "route" if len(fams) == 1 else "trunk"
+                ends = (a, c, b, c) if axis == "h" else (c, a, c, b)
+                self._add(*ends, role, _shared_style(sv), fams[0], sv)
 
     # -- one child's path ----------------------------------------------------
 
@@ -540,19 +590,53 @@ def through_boxes(geom, nodes=None):
     idx = _BoxIndex(nodes)
     hits = []
     for s in geom.segs:
-        lines = [(s.x0, s.y0, s.x1, s.y1)]
-        st = strands(s)
-        if st:
-            lines.append(st)
-        if s.style == "bar":
-            lines.append(_bar_strand(s))
-        for ln in lines:
+        for ln in _drawn_lines(s):
             bb = (min(ln[0], ln[2]), min(ln[1], ln[3]),
                   max(ln[0], ln[2]), max(ln[1], ln[3]))
             for n in idx.query(*bb):
                 if _line_hits_box(*ln, n):
                     hits.append((s, n))
     return hits
+
+
+def _drawn_lines(s):
+    """A piece's ink as lines: the piece, and the second strand of a wife's
+    drop or of a marriage bar or comb."""
+    out = [(s.x0, s.y0, s.x1, s.y1)]
+    st = strands(s)
+    if st:
+        out.append(st)
+    if s.style == "bar":
+        out.append(_bar_strand(s))
+    return out
+
+
+def overlapping(geom, tol=0.5):
+    """Pairs of different pieces lying on one line and sharing more than
+    `tol` of it -> [(seg, seg)]. Two pieces on one stretch draw as one line
+    and read as one family's: the routed stems' trunk is the one place
+    lines are meant to be shared, and _share_routes makes each shared
+    stretch a single piece, so on a sound drawing this is empty."""
+    on_line = {}
+    for s in geom.segs:
+        for x0, y0, x1, y1 in _drawn_lines(s):
+            if abs(y1 - y0) < 1e-6:
+                key, lo, hi = ("h", round(y0, 2)), min(x0, x1), max(x0, x1)
+            elif abs(x1 - x0) < 1e-6:
+                key, lo, hi = ("v", round(x0, 2)), min(y0, y1), max(y0, y1)
+            else:
+                continue
+            on_line.setdefault(key, []).append((lo, hi, s))
+    out = []
+    for spans in on_line.values():
+        spans.sort(key=lambda t: t[0])
+        for i, (lo, hi, s) in enumerate(spans):
+            for lo2, hi2, s2 in spans[i + 1:]:
+                if lo2 >= hi - tol:
+                    break
+                if s2 is not s and min(hi, hi2) - lo2 > tol:
+                    out.append((s, s2))
+    return out
 
 
 # ===========================================================================

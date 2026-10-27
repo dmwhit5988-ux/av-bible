@@ -23,7 +23,9 @@ report them):
 
 * no two boxes overlap, and Israel, Esau and Judah stand in the tree;
 * every verse's focus fits at 1.25 x the camera's minimum scale or closer;
-* no line that joins a family (`svg_family_lines`) runs behind a box;
+* no line that joins a family (`svg_family_lines`) runs behind a box, and
+  no two lines share a stretch (the panel heads' routed stems share their
+  trunk as single pieces);
 * every wife stands on a bar beside her husband (one wife rule);
 * no verse lights a reference chip (the woman's real box lights);
 * no file holds more than 1,050 <rect> or 268 <text> elements, counted in

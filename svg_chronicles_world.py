@@ -1148,14 +1148,20 @@ class VerseFrame:
 
     def audit(self):
         """-> [problem] in the frames' own drawing, for the driver: lines
-        behind boxes, and THE ONE WIFE RULE. The regions layout packs and
-        rows a wife by `layout_regions.is_wife`, and svg_family_lines draws
-        a marriage bar by the same rule, so under that layout every wife
-        must come out on a bar beside her husband: one standing anywhere
-        else means two rules have drifted apart, which is what once
-        overlapped twelve boxes."""
+        behind boxes, two lines on one stretch, and THE ONE WIFE RULE. The
+        regions layout packs and rows a wife by `layout_regions.is_wife`,
+        and svg_family_lines draws a marriage bar by the same rule, so under
+        that layout every wife must come out on a bar beside her husband:
+        one standing anywhere else means two rules have drifted apart,
+        which is what once overlapped twelve boxes."""
         out = [f"the {s.role} of {s.fam.label}'s family runs behind "
                f"{n.label}" for s, n in self.lines_behind]
+        if self.lines is not None:
+            # two pieces on one stretch draw as one line: only the routed
+            # stems' trunk is shared, and it is drawn as single pieces
+            out += [f"the {a.role} of {a.fam.label}'s family runs along the "
+                    f"{b.role} of {b.fam.label}'s"
+                    for a, b in FL.overlapping(self.lines)]
         if self.world.plan is not None and self.lines is not None:
             wives = {n for n in self.world.nodes if layout_regions.is_wife(n)}
             barred = {wv for _p, wv, _s in self.lines.bars}
