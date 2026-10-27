@@ -660,11 +660,12 @@ function closeReferenceView() {
 }
 
 // Keys pressed inside the chart stay in its own document, so its Escape is
-// listened for there too. The pages are same-origin; about:blank is as well.
+// listened for there too, unless the page used it itself (to close something
+// of its own). The pages are same-origin; about:blank is as well.
 els.refFrame.addEventListener("load", () => {
   try {
     els.refFrame.contentWindow.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !els.refView.hidden) closeReferenceView();
+      if (e.key === "Escape" && !e.defaultPrevented && !els.refView.hidden) closeReferenceView();
     });
   } catch {
     // a cross-origin page: Back still closes it
@@ -762,7 +763,8 @@ let autoEnteredFs = false;
 function onOrientationChange() {
   if (!COARSE || !COARSE.matches) return; // phones/tablets only
   if (LANDSCAPE.matches) {
-    if (isFullscreen()) return;
+    // API fullscreen shows only the stage, so it would hide an open panel.
+    if (isFullscreen() || dialogOpen()) return;
     setFullscreen(true);
     autoEnteredFs = true;
   } else if (isFullscreen() && autoEnteredFs) {
