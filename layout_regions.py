@@ -948,8 +948,9 @@ class Layout:
 
         The gaps the routes run through are still sized at LANE per route
         (_pack), more than one line needs. Sized for one line, every panel
-        would move, for at most 4% on five wide card rests (6:1, 6:16,
-        6:38, 7:6, 9:16) and nothing on the rest."""
+        would move and no verse would rest more than 0.5% closer: a head
+        far above his panel no longer widens a rest (svg_chronicles_world.
+        World.focus_box frames the panel and lets its title stand in)."""
         trunk = self.fan_bottom + FAN_GAP
         reqs = []
         for p in self.panels:

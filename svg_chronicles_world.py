@@ -112,9 +112,9 @@ AUDIO_DIR = WEB_AUDIO_DIR      # the narration MP3s that pace each verse
 # husband and a house is a label on the line. Its place() returns a Plan
 # (labels, routes, panels), kept as `World.plan`, which the frames draw. The
 # front of the book's fans rest far tighter than under either tree layout
-# below (1:17, 2:1 and 2:2 at reading size); the price is a few later
-# verses whose head stands in the fan far above his panel (6:1, 6:16, 7:6)
-# and rest wider.
+# below (1:17, 2:1 and 2:2 at reading size). A verse whose head stands in
+# the fan far above his panel rests on the panel, with the panel's title
+# standing in for him (World.focus_box).
 #
 # The two tree layouts stay selectable for comparison — `--centred` or
 # `--spine` on the driver, or `World(layout=...)`:
@@ -226,12 +226,22 @@ def _cam_schedule(cam0, cam1, arc_at, dur):
     return [arc_at(_smooth(i / n))[0] for i in range(n + 1)]
 
 
-def _ride_r(nd, s, floor):
-    """Highlight radius in world units at camera scale s: hugs the node's
-    box while the camera is close, floors at a constant screen size once
-    the node is small."""
-    hug = math.hypot(nd.w, nd.h) / 2 + 10
+def _ride_r(w, h, s, floor):
+    """Highlight radius in world units at camera scale s: hugs a w x h box
+    while the camera is close, floors at a constant screen size once the
+    box is small."""
+    hug = math.hypot(w, h) / 2 + 10
     return max(floor, hug * s) / s
+
+
+def _spot(nd, s):
+    """-> (cx, cy, w, h) of what a highlight rides at camera scale s: a
+    node's box, or a panel title standing in for its head, which grows from
+    its corner as the camera pulls out."""
+    if isinstance(nd, PanelTitle):
+        x0, y0, x1, y1 = nd.box_at(s)
+        return (x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0
+    return nd.x + nd.w / 2, nd.y + nd.h / 2, nd.w, nd.h
 
 
 def _anim(attr, vals, dur):
@@ -273,12 +283,17 @@ F_PANEL = font(TITLE_PX, bold=True)
 LABEL_PX = layout_regions.LABEL_PX      # a house label's italic text
 FLOOR_MARGIN = 1.25         # every focus box must fit at this multiple of
                             # S_MIN, so no ARRIVING box rests off screen
-                            # (a re-named head outside the focus box, such
-                            # as a tribe head standing in the fan, can)
+                            # (a re-named person outside the focus box can:
+                            # a tribe head left in the fan is shown by his
+                            # panel's title only where it can come into
+                            # the frame, see World.focus_box)
 IPAD_BOX_RECTS = 1050       # <rect> and <text> elements in a whole file:
 IPAD_NAMES = 268            # about the most proven smooth on the owner's
                             # iPad (the centred files peaked at 1,052 rects
-                            # in 2:2 and 268 texts in 2:9 and 6:1)
+                            # in 2:2 and 268 texts in 2:9 and 6:1). The
+                            # node cap keeps the names within it by
+                            # construction (render); the rects are counted
+                            # in each file as written
 
 
 def _unwidth(el, width):
@@ -332,7 +347,12 @@ class PanelTitle:
     again in their cities) stays at its own size, like the house labels:
     its words are never the largest thing on a wide shot. The size depends
     only on the camera's scale, so a verse ends at exactly the size the
-    next one opens with."""
+    next one opens with.
+
+    A title can STAND IN for its head (World.focus_box): when a verse rests
+    on the panel and leaves the head's box in the fan out of the frame, the
+    title is drawn in the lit colour, and on a wide card rest it gets a
+    ring, so the name the narrator reads is on screen."""
 
     def __init__(self, p):
         x0, y0, x1, y1 = p.rect
@@ -363,17 +383,25 @@ class PanelTitle:
             self.hold = max(TITLE_HOLD_MIN, TITLE_HOLD_PX * self.px / TITLE_PX)
         else:
             self.px_max = self.px
-        w = max(_title_w(L, self.px_max) for L in lines)
-        h = self.px_max * (1.2 + 1.15 * (len(lines) - 1))
+        self.box = self._box(self.px_max)       # as large as it ever grows
+
+    def _box(self, px):
+        w = max(_title_w(L, px) for L in self.lines)
+        h = px * (1.2 + 1.15 * (len(self.lines) - 1))
         bx0 = self.x if self.anchor == "start" else self.x - w
-        self.box = (bx0, self.y, bx0 + w, self.y + h)
+        return (bx0, self.y, bx0 + w, self.y + h)
 
     def size(self, s):
         if not self.grows:
             return self.px
         return min(self.px_max, max(self.px, self.hold / s))
 
-    def els(self, scales, s_end, dur):
+    def box_at(self, s):
+        """Where the title stands at camera scale s: it grows from its
+        anchor corner as the camera pulls out."""
+        return self._box(self.size(s))
+
+    def els(self, scales, s_end, dur, lit=False):
         vals = [self.size(s) for s in (scales or [s_end])]
         moves = any(round(v, 2) != round(vals[0], 2) for v in vals)
         anim = _anim("font-size", vals, dur) if moves else ""
@@ -392,7 +420,7 @@ class PanelTitle:
                 f'<text x="{_fmt(self.x)}" y="{_fmt(y)}" '
                 f'font-size="{vals[0]:.2f}" text-anchor="{self.anchor}" '
                 f'dominant-baseline="text-before-edge" '
-                f'fill="{_rgb(TITLE_INK)}"{halo} '
+                f'fill="{_rgb(HL if lit else TITLE_INK)}"{halo} '
                 f'font-weight="bold" letter-spacing="1">'
                 f'{escape(line)}{anim}</text>')
         return out
@@ -414,34 +442,47 @@ def _ride_els(named, scales, s_end, dur, uid, tracks,
     camera transform so they still ride their nodes in world coordinates.
     Same values, same keyTimes, same duration: SMIL drives both copies in
     lockstep.
+
+    `named` may hold a PanelTitle standing in for its head: its ring and
+    hole follow the title's box as it grows, so they move as well as size.
     """
     hlrgb = "rgb(%d,%d,%d)" % HL[:3]
     bgrgb = "rgb(%d,%d,%d)" % BG[:3]
     holes, rings = [], []
     for nd in named:
-        cx, cy = nd.x + nd.w / 2, nd.y + nd.h / 2
         if scales is None:
-            hr = _ride_r(nd, s_end, HOLE_MIN) + 8
+            cx, cy, bw, bh = _spot(nd, s_end)
+            hr = _ride_r(bw, bh, s_end, HOLE_MIN) + 8
             holes.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" '
                          f'r="{hr:.1f}" fill="black"/>')
-            rr = _ride_r(nd, s_end, RING_MIN)
+            rr = _ride_r(bw, bh, s_end, RING_MIN)
             rings.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" '
                          f'r="{rr:.1f}" fill="none" stroke="{hlrgb}" '
                          f'stroke-opacity="0.85" '
                          f'stroke-width="{2.2 / s_end:.2f}"/>')
         else:
-            hv = [_ride_r(nd, sc, HOLE_MIN) + 8 for sc in scales]
+            spots = [_spot(nd, sc) for sc in scales]
+            cx, cy = spots[0][0], spots[0][1]
+            move = ""
+            for i, attr in ((0, "cx"), (1, "cy")):
+                vals = [sp[i] for sp in spots]
+                if any(round(v, 2) != round(vals[0], 2) for v in vals):
+                    move += _anim(attr, vals, dur)
+            hv = [_ride_r(sp[2], sp[3], sc, HOLE_MIN) + 8
+                  for sp, sc in zip(spots, scales)]
             holes.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" '
                          f'r="{hv[0]:.1f}" fill="black">'
-                         + _anim("r", hv, dur) + '</circle>')
-            rv = [_ride_r(nd, sc, RING_MIN) for sc in scales]
+                         + _anim("r", hv, dur) + move + '</circle>')
+            rv = [_ride_r(sp[2], sp[3], sc, RING_MIN)
+                  for sp, sc in zip(spots, scales)]
             wv = [2.2 / sc for sc in scales]
             rings.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" '
                          f'r="{rv[0]:.1f}" fill="none" stroke="{hlrgb}" '
                          f'stroke-opacity="0.85" '
                          f'stroke-width="{wv[0]:.2f}">'
                          + _anim("r", rv, dur)
-                         + _anim("stroke-width", wv, dur) + '</circle>')
+                         + _anim("stroke-width", wv, dur) + move
+                         + '</circle>')
     vy, vh = HUD_H, H - HUD_H
     mask = (f'<defs><mask id="{uid}" maskUnits="userSpaceOnUse" '
             f'x="0" y="{vy}" width="{W}" height="{vh}">'
@@ -647,6 +688,190 @@ def _seen_scale(nodes, intervals, min_scale=NAME_MIN_SCALE):
     return seen
 
 
+# -- where a verse rests ------------------------------------------------------
+
+TITLE_COST = 0.75           # a card rest takes in the panel title standing
+                            # for its head only if it keeps this much of
+                            # its scale (7:6's BENJAMIN stands at the far
+                            # corner of its panel, and would cost 3/4)
+NEAR = 0.01                 # a card keeps its frame unless leaving the fan
+                            # out rests it at least this much closer
+
+
+def _bbox(nodes):
+    box = None
+    for n in nodes:
+        b = node_box(n)
+        box = b if box is None else _union(box, b)
+    return box
+
+
+def _parts(core, lit, leave=()):
+    """-> (wide, box): what a verse can frame. `box` is the core (the
+    arrivals, or everyone named when nobody arrives); `wide` adds each core
+    person's father and everyone else the verse names. A father in `leave`
+    is not pulled in."""
+    box = _bbox(core)
+    wide = box
+    for n in core:
+        if n.parent is not None and n.parent not in leave:
+            wide = _union(wide, node_box(n.parent))
+    for n in lit:
+        wide = _union(wide, node_box(n))
+    return wide, box
+
+
+def _ladder(wide, box):
+    """The ordinary rest: the whole family if it reads, else the core if
+    that reads, else a card resting wide on the whole family."""
+    if _fit(_grow_min(wide), pad=70)[0] >= READABLE:
+        return _grow_min(wide), "tight"
+    if _fit(_grow_min(box), pad=70)[0] >= READABLE:
+        return _grow_min(box), "tight"
+    return _grow_min(wide), "card"
+
+
+def _with_title(raw, tl, floor):
+    """`raw` and the panel title `tl` framed together -> the focus box, or
+    None if it would rest under `floor`. A tribe's title grows as the camera
+    pulls out, so its box is taken at the scale the frame rests at."""
+    s, b = S_MAX, None
+    for _ in range(8):
+        b = _grow_min(_union(raw, tl.box_at(s)))
+        s2 = _fit(b, pad=70)[0]
+        if abs(s2 - s) < 1e-6:
+            break
+        s = s2
+    return b if s2 >= floor else None
+
+
+def _in_shot(focus, rects):
+    """Every rect wholly on screen at the rest `focus` gives."""
+    x0, y0, x1, y1 = _on_screen(_fit(focus, pad=70), margin=0.0)
+    return all(r[0] >= x0 and r[1] >= y0 and r[2] <= x1 and r[3] <= y1
+               for r in rects)
+
+
+# -- the cutaway card's size, which a card rest keeps its people clear of ----
+
+CARD_BH = 27                # box height on the card
+CARD_WG = 18                # husband to wife on the card
+CARD_PAD = 16               # the card's plate round its boxes
+CARD_GAP = 8                # screen px between a card rest's people and it
+
+
+def _card_anc(a, b, k=3):
+    """a is b's father, grandfather or great-grandfather."""
+    q = b.parent
+    while q is not None and k:
+        if q is a:
+            return True
+        q, k = q.parent, k - 1
+    return False
+
+
+def _card_bw(n):
+    """A box's width on the card."""
+    fnt = F_NODE_B if n.kind in ("king", "priest") else F_NODE
+    w_ = fnt.getlength(n.label) + 2 * PAD_X
+    return w_ + (16 if n.kind == "king" else 0)
+
+
+def card_layout(named, wives_beside, w_max):
+    """How the cutaway card sets the people a verse names -> (star, head,
+    wives, kids, rows, cw, ch_, hw): rows of (node, x offset) for a star,
+    (node, x offset, joint) for a recital, and the card's content width,
+    height and (a star's) head-row width. VerseFrame._card draws it; a card
+    rest measures it to keep its people clear of it (_card_clear)."""
+    anc, bw, BH = _card_anc, _card_bw, CARD_BH
+    head, rest = named[0], named[1:]
+    # The head's wives stand beside him on a short bar, as they do in the
+    # tree, not in the row of his children; the children of one wife drop
+    # from her.
+    wives = ([n for n in rest if n.parent is head and
+              layout_regions.is_wife(n)]
+             if wives_beside else [])
+    kids = [n for n in rest if n not in wives]
+    star = (len(named) > 2 and kids and all(anc(head, n) for n in kids)
+            and not any(anc(a, b) for a in kids for b in kids
+                        if a is not b))
+    rows, row, x = [], [], 0.0
+    if star:
+        for n in kids:
+            step = bw(n) + (14 if row else 0)
+            if row and x + step > w_max:
+                rows.append(row)
+                row, x, step = [], 0.0, bw(n)
+            row.append((n, x + (14 if row else 0)))
+            x += step
+        if row:
+            rows.append(row)
+        row_ws = [r[-1][1] + bw(r[-1][0]) for r in rows]
+        hw = bw(head) + sum(CARD_WG + bw(wv) for wv in wives)
+        cw = max(max(row_ws), hw)
+        ch_ = BH + 22 + len(rows) * BH + (len(rows) - 1) * 24
+    else:
+        for i2, n in enumerate(named):
+            joint = None
+            if row:
+                joint = "line" if anc(named[i2 - 1], n) else "dot"
+            gap = 22 if joint else 0
+            step = bw(n) + gap
+            if row and x + step > w_max:
+                rows.append(row)
+                row, x, joint, step = [], 0.0, None, bw(n)
+            row.append((n, x + gap, joint))
+            x += step
+        if row:
+            rows.append(row)
+        row_ws = [r[-1][1] + bw(r[-1][0]) for r in rows]
+        hw = None
+        cw = max(row_ws)
+        ch_ = len(rows) * BH + (len(rows) - 1) * 16
+    return star, head, wives, kids, rows, cw, ch_, hw
+
+
+def _card_pos(cw, ch_, pad):
+    """The card's content corner at its usual place, bottom-centre."""
+    return (W - cw) / 2, VIEW_BOT - ch_ - pad * 2 - 10
+
+
+def _card_clear(focus, marks, named):
+    """A card rest that keeps the people it names clear of its card.
+
+    `marks` are the world rects the rest must show (the named boxes, and a
+    title standing in for a head). If the rest `focus` gives puts any of
+    them under the card's plate, the frame is fitted into the part of the
+    screen above the card instead -> the focus box Camera.move turns into
+    exactly that rest. Otherwise `focus` comes back unchanged."""
+    _st, _h, _wv, _k, _rows, cw, ch_, _hw = card_layout(
+        named, VerseFrame.card_wives_beside, VerseFrame.CARD_W_MAX)
+    px, py = _card_pos(cw, ch_, CARD_PAD)
+    plate = (px - CARD_PAD, py - CARD_PAD, px + cw + CARD_PAD,
+             py + ch_ + CARD_PAD)
+    s, cx, cy = _fit(focus, pad=70)
+    tx, ty = _cam_T((s, cx, cy))
+    hidden = False
+    for r in marks:
+        x0, y0 = tx + s * r[0], ty + s * r[1]
+        x1, y1 = tx + s * r[2], ty + s * r[3]
+        if x0 < plate[2] and x1 > plate[0] and y0 < plate[3] \
+                and y1 > plate[1]:
+            hidden = True
+    if not hidden:
+        return focus
+    top = plate[1] - CARD_GAP                 # the screen above the card
+    fw, fh = focus[2] - focus[0], focus[3] - focus[1]
+    vh = VIEW_BOT - VIEW_TOP
+    s2 = min(S_MAX, max(S_MIN, min(W / (fw + 140),
+                                   (top - VIEW_TOP) / (fh + 140))))
+    # centred in [VIEW_TOP, top] rather than [VIEW_TOP, VIEW_BOT], with a
+    # height _fit reads back as exactly s2
+    cy2 = cy + (VIEW_BOT - top) / 2 / s2
+    hh = (vh / s2 - 140) / 2
+    return (focus[0], cy2 - hh, focus[2], cy2 + hh)
+
+
 # ===========================================================================
 # The world
 # ===========================================================================
@@ -677,11 +902,16 @@ class World:
                           min(n.y for n in self.nodes),
                           max(n.x + n.w for n in self.nodes),
                           max(n.y + n.h for n in self.nodes))
+        # How each panel's title is set, and which verses rest on a panel
+        # with its title standing in for a head left out of the frame
+        # (focus_box): (ch, v) -> Panel.
+        self.panel_titles, self.title_stands = {}, {}
         if self.plan is not None:
             # the panels reach past their boxes, and the opening shot and
             # the quiet breathe-outs must frame them whole
             for p in self.plan.panels:
                 self.world_box = _union(self.world_box, p.rect)
+            self.panel_titles = {p: PanelTitle(p) for p in self.plan.panels}
 
         self.order = []             # [(chapter, verse, scene)]
         self.arrivals = {}          # (ch, v) -> [node]  first read here
@@ -996,27 +1226,127 @@ class World:
         2026-08-14): a veil dims the world with holes over the named
         people, gold rings hold them, and the card still carries the names.
         "quiet": nothing named; the camera breathes out.
+
+        THE PANEL TITLE STANDS IN FOR A FAR HEAD (regions layout). A
+        panel's head stands in the fan, and his family thousands of px below
+        in his panel, so the ordinary rest of a verse that names both ("the
+        sons of Levi: Gershon, Kohath and Merari") is a card wide enough to
+        take in the fan and the panel at once (6:1 at 0.096), or the sons
+        alone with the head off screen (4:24, 7:30). When
+        everything else the frame takes in stands in that one panel, and
+        the fan boxes it takes in are only the head, his wife or the
+        forefathers above him, none of them arriving (_far_head), the frame
+        leaves the fan out and rests on the panel, and the panel's TITLE
+        stands in for the head (`title_stands`, which the frame draws lit,
+        and ringed on a wide card rest):
+          * a verse that names the head, and nobody else in the fan, rests
+            tight on the panel with the title in frame whenever that still
+            reads (READABLE);
+          * otherwise a tight verse keeps its ordinary rest;
+          * a card verse rests on the panel at whatever scale that takes,
+            taking the title in when that keeps TITLE_COST of its scale,
+            and keeps its card if the frame leaves out anybody it names
+            (the card names everyone, as Matthew's dropped names do), even
+            at a close rest (6:38, which also names Israel).
+        A fan box that ARRIVES is never left out (Tamar, beside Judah at
+        2:4), and a card that leaving the fan out would not bring closer
+        is kept (4:1, where Judah stands over his panel).
+
+        A CARD REST KEEPS ITS PEOPLE CLEAR OF THE CARD (regions layout): if
+        the rest would put a named box, or the title standing in for one,
+        under the card's plate, it is fitted into the screen above the card
+        instead (_card_clear; 9:16's two lines fill the screen's height).
         """
+        box, mode = self._rest(ch, v)
+        if mode == "card" and self.plan is not None:
+            named = self.lit[(ch, v)]
+            stand = self.title_stands.get((ch, v))
+            marks = [node_box(n) for n in named
+                     if stand is None or n is not stand.head]
+            if stand is not None:
+                tl = self.panel_titles[stand]
+                marks.append(tl.box_at(_fit(box, pad=70)[0]))
+            box = _card_clear(box, marks, named)
+        return box, mode
+
+    def _rest(self, ch, v):
+        """focus_box before the card is cleared."""
         arriving = self.arrivals.get((ch, v)) or []
         lit = self.lit.get((ch, v)) or []
         core = arriving or lit
         if not core:
             return None, "quiet"
-        box = None
-        for n in core:
-            b = node_box(n)
-            box = b if box is None else _union(box, b)
-        wide = box
-        for n in core:
-            if n.parent is not None:
-                wide = _union(wide, node_box(n.parent))
-        for n in lit:
-            wide = _union(wide, node_box(n))
-        if _fit(_grow_min(wide), pad=70)[0] >= READABLE:
-            return _grow_min(wide), "tight"
-        if _fit(_grow_min(box), pad=70)[0] >= READABLE:
-            return _grow_min(box), "tight"
-        return _grow_min(wide), "card"
+        box, mode = _ladder(*_parts(core, lit))
+        if self.plan is None:
+            return box, mode
+        self.title_stands.pop((ch, v), None)
+        far = self._far_head(arriving, core, lit)
+        if far is None:
+            return box, mode
+        p, above = far
+        named = [n for n in above if n in lit]
+        if mode == "tight" and _in_shot(box, [node_box(n) for n in named]):
+            return box, mode                 # the head is in shot already
+        tl = self.panel_titles[p]
+        core2 = [n for n in core if n not in above]
+        lit2 = [n for n in lit if n not in above]
+        wide2, box2 = _parts(core2, lit2, leave=above)
+        stands = named == [p.head]           # the title can stand for all
+        if stands:
+            for raw in (wide2, box2):
+                b = _with_title(raw, tl, READABLE)
+                if b is not None:
+                    self.title_stands[(ch, v)] = p
+                    return b, "tight"
+        if mode == "tight":
+            return box, mode
+        new, mode2 = _ladder(wide2, box2)
+        if mode2 == "tight" and named:
+            mode2 = "card"
+        if mode2 == "card" and stands:
+            b = _with_title(wide2, tl, TITLE_COST * _fit(new, pad=70)[0])
+            if b is not None:
+                new = b
+        s_new = _fit(new, pad=70)[0]
+        if s_new <= _fit(box, pad=70)[0] * (1 + NEAR):
+            return box, mode
+        if stands and _in_shot(new, [tl.box_at(s_new)]):
+            self.title_stands[(ch, v)] = p
+        return new, mode2
+
+    def _far_head(self, arriving, core, lit):
+        """-> (panel, above) when this verse's frame would take in a panel
+        head standing in the fan as well as his panel, else None.
+
+        `above` is every fan box the ordinary frame takes in: the head
+        (named, or pulled in as a named son's father), his wife, and the
+        forefathers above him that a recital climbs through. Everything
+        else it takes in must stand in that one panel, and none of `above`
+        may be arriving: an arrival always rests on screen."""
+        plan = self.plan
+        take = []
+        for n in (list(core) + [m.parent for m in core if m.parent]
+                  + list(lit)):
+            if n not in take:
+                take.append(n)
+        below = [n for n in take if n in plan.panel_of]
+        above = [n for n in take if n not in plan.panel_of]
+        if not below or not above:
+            return None
+        panels = {plan.panel_of[n] for n in below}
+        if len(panels) != 1:
+            return None
+        p = panels.pop()
+        line = {p.head} | {k for k in p.head.kids if layout_regions.is_wife(k)}
+        q = p.head.parent
+        while q is not None:
+            line.add(q)
+            q = q.parent
+        if any(n not in line for n in above):
+            return None
+        if any(n in arriving for n in above):
+            return None
+        return p, above
 
 
 class Camera:
@@ -1134,8 +1464,7 @@ class VerseFrame:
         # The regions layout's houses drawn as labels on the line, and its
         # panels' titles; both empty for the tree layouts and for Matthew.
         self.labels = set(plan.labels) if plan is not None else set()
-        self.titles = ({p: PanelTitle(p) for p in plan.panels}
-                       if plan is not None else {})
+        self.titles = dict(world.panel_titles) if plan is not None else {}
         # Boxes are drawn over lines, so a line through somebody else's box
         # seems to leave from it or arrive at it: the picture would say that
         # a man is the father of his brother. The driver stops on any.
@@ -1181,7 +1510,7 @@ class VerseFrame:
                 return PANEL_BLEND
         return None
 
-    def _panel_els(self, flight, scales, s_end, dur):
+    def _panel_els(self, flight, scales, s_end, dur, stand=None):
         """The regions layout's panels on screen at some moment of this
         flight or its rest -> (rects, titles).
 
@@ -1191,7 +1520,10 @@ class VerseFrame:
         by a row of specks. By the scale it gets there (~0.2) those names
         are under 3 px, and closer in it stays in the band above the first
         row. A lit or arriving box is drawn over the title (render), so the
-        names a verse reads are never hidden behind one."""
+        names a verse reads are never hidden behind one. The title of
+        `stand`, the panel whose title stands in for its head this verse
+        (World.focus_box), is drawn in the lit colour, like a box the verse
+        names again."""
         boxes = [b for b, _s in flight]
         rects, titles = [], []
         for p, tl in self.titles.items():
@@ -1205,12 +1537,14 @@ class VerseFrame:
                      width=PANEL_EDGE_W, rx=PANEL_RX)
             rects.append(_unwidth(sub._els[0], PANEL_EDGE_W))
             if any(_hits(tl.box, b) for b in boxes):
-                titles.extend(tl.els(scales, s_end, dur))
+                titles.extend(tl.els(scales, s_end, dur, lit=p is stand))
         return rects, titles
 
     def render(self, ch, v, scene, first):
         w = self.world
         focus, mode = w.focus_box(ch, v)
+        # the panel whose title stands in for a head the frame leaves out
+        stand = w.title_stands.get((ch, v)) if self.titles else None
         cam0, cam1 = self.camera.move(focus, scene, first)
         arc_at, apex_scale = _vw(cam0, cam1)
         apex = arc_at(0.5)
@@ -1247,12 +1581,20 @@ class VerseFrame:
         # all of them are paid for out of the node cap, which is what keeps
         # a file's names within what the iPad has been proven on.
         scales = _cam_schedule(cam0, cam1, arc_at, dur)
-        panels, titles = self._panel_els(flight, scales, cam1[0], dur)
+        panels, titles = self._panel_els(flight, scales, cam1[0], dur, stand)
         named = list(w.lit.get((ch, v), []))       # verse reading order
         outside = 0
         if self.cap_pays_outside:
             outside = 1 + (len(named) if mode == "card" and named else 0)
         max_nodes = self.max_nodes - len(titles) - outside
+        if self.cap_pays_outside:
+            # An arriving name is written twice — the faint box it stood as
+            # and the lit one that fades in over it — so the names in the
+            # whole file stay within IPAD_NAMES by construction: each drawn
+            # box writes at most one name, an arrival one more, and the
+            # titles, the card and the HUD are counted above.
+            max_nodes = min(max_nodes, IPAD_NAMES - len(titles) - outside
+                            - len(arriving))
 
         # Everything the camera passes over, capped: a wide pull-back can
         # otherwise sweep in half the canon.
@@ -1280,6 +1622,9 @@ class VerseFrame:
                     n.x + n.w / 2 - cam1[1], n.y + n.h / 2 - cam1[2])))
 
             keep = set(arriving) | set(lit)
+            if len(keep) > max_nodes:
+                raise ValueError(f"{ch}:{v} names {len(keep)} people, more "
+                                 f"than its node cap of {max_nodes}")
 
             def take(ordered, cap=max_nodes):
                 room = cap - len(keep)
@@ -1357,8 +1702,13 @@ class VerseFrame:
             # the camera group has to be built first: the veil's mask holes
             # reuse its transform tracks so they ride the same flight
             probe = self._camera_group(cam0, cam1, arc_at, dur, [])
+            ridden = named
+            if stand is not None:
+                # the head's ring moves onto the title standing in for him
+                ridden = ([n for n in named if n is not stand.head]
+                          + [self.titles[stand]])
             rings, veil_screen = _ride_els(
-                named, scales, cam1[0],
+                ridden, scales, cam1[0],
                 dur, "veil%d_%d" % (ch, v), self.cam_tracks,
                 veil_alpha=self.veil_alpha)
             els_all = els_all + rings
@@ -1538,7 +1888,7 @@ class VerseFrame:
         """Where the cutaway card sits. Bottom-centre unless a book moves
         it — Matthew's two panorama verses put it out of the way of the
         highlights, which on those shots run down the middle of the sheet."""
-        return (W - cw) / 2, VIEW_BOT - ch_ - pad * 2 - 10
+        return _card_pos(cw, ch_, pad)
 
     def _card(self, c, named, dur):
         """The verse, drawn as its own close-up when the tree cannot hold it.
@@ -1555,32 +1905,9 @@ class VerseFrame:
         gap-dot where it moves to the next brother.  The next verse dives
         back into the tree and the card is gone.
         """
-        def anc(a, b, k=3):
-            q = b.parent
-            while q is not None and k:
-                if q is a:
-                    return True
-                q, k = q.parent, k - 1
-            return False
-
-        head, rest = named[0], named[1:]
-        # The head's wives stand beside him on a short bar, as they do in
-        # the tree, not in the row of his children; the children of one
-        # wife drop from her.
-        wives = ([n for n in rest if n.parent is head and
-                  layout_regions.is_wife(n)]
-                 if self.card_wives_beside else [])
-        kids = [n for n in rest if n not in wives]
-        star = (len(named) > 2 and kids and all(anc(head, n) for n in kids)
-                and not any(anc(a, b) for a in kids for b in kids
-                            if a is not b))
-
-        BH = 27                                    # box height on the card
-
-        def bw(n):
-            fnt = F_NODE_B if n.kind in ("king", "priest") else F_NODE
-            w_ = fnt.getlength(n.label) + 2 * PAD_X
-            return w_ + (16 if n.kind == "king" else 0)
+        star, head, wives, kids, rows, cw, ch_, hw = card_layout(
+            named, self.card_wives_beside, self.CARD_W_MAX)
+        bw, BH, WG, pad = _card_bw, CARD_BH, CARD_WG, CARD_PAD
 
         def draw_box(sub, n, x, y):
             sub.rect(x, y, bw(n), BH, fill=dim(PANEL, 1.0), stroke=HL,
@@ -1595,22 +1922,6 @@ class VerseFrame:
 
         sub = SvgCanvas(W, H)
         if star:
-            rows, row, x = [], [], 0.0
-            for n in kids:
-                step = bw(n) + (14 if row else 0)
-                if row and x + step > self.CARD_W_MAX:
-                    rows.append(row)
-                    row, x, step = [], 0.0, bw(n)
-                row.append((n, x + (14 if row else 0)))
-                x += step
-            if row:
-                rows.append(row)
-            row_ws = [r[-1][1] + bw(r[-1][0]) for r in rows]
-            WG = 18                                # husband to wife
-            hw = bw(head) + sum(WG + bw(wv) for wv in wives)
-            cw = max(max(row_ws), hw)
-            ch_ = BH + 22 + len(rows) * BH + (len(rows) - 1) * 24
-            pad = 16
             px, py = self.card_pos(cw, ch_, pad)
             sub.rect(px - pad, py - pad, cw + 2 * pad, ch_ + 2 * pad,
                      fill=BG + (234,), stroke=dim(SAND_DIM, 0.95),
@@ -1669,24 +1980,6 @@ class VerseFrame:
                     draw_box(sub, n, rx0 + off, y)
                 y += BH + 24
         else:
-            rows, row, x = [], [], 0.0
-            for i2, n in enumerate(named):
-                joint = None
-                if row:
-                    joint = "line" if anc(named[i2 - 1], n) else "dot"
-                gap = 22 if joint else 0
-                step = bw(n) + gap
-                if row and x + step > self.CARD_W_MAX:
-                    rows.append(row)
-                    row, x, joint, step = [], 0.0, None, bw(n)
-                row.append((n, x + gap, joint))
-                x += step
-            if row:
-                rows.append(row)
-            row_ws = [r[-1][1] + bw(r[-1][0]) for r in rows]
-            cw = max(row_ws)
-            ch_ = len(rows) * BH + (len(rows) - 1) * 16
-            pad = 16
             px, py = self.card_pos(cw, ch_, pad)
             sub.rect(px - pad, py - pad, cw + 2 * pad, ch_ + 2 * pad,
                      fill=BG + (234,), stroke=dim(SAND_DIM, 0.95),
