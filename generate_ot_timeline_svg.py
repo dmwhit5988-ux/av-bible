@@ -639,7 +639,8 @@ def main():
         f.write(svg)
     vp = os.path.join(OUT_DIR, STEM + ".html")
     with open(vp, "w", encoding="utf-8") as f:
-        f.write(G.VIEWER % {"stem": STEM, "w": _fmt(W), "h": _fmt(H)})
+        f.write(G.VIEWER % {"stem": STEM, "w": _fmt(W), "h": _fmt(H),
+                            "title": "The Old Testament family tree, in time"})
     size = os.path.getsize(path) / 1024
     print(path)
     print(f"  {stats['nodes']} nodes, {stats['dated']} dated · "

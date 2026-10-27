@@ -70,8 +70,13 @@ header {
   white-space: nowrap;
 }
 
-/* On the narrowest phones the tagline would crowd the ✦ launcher. */
-@media (max-width: 400px) {
+/* On phones Reference shrinks to its icon (it keeps its aria-label), and
+   below that the tagline would crowd the launchers. */
+@media (max-width: 520px) {
+  .launch-label { display: none; }
+}
+
+@media (max-width: 440px) {
   .brand-tag { display: none; }
 }
 
@@ -104,8 +109,15 @@ select {
   min-height: 40px;
 }
 
-/* Illustrated-chapters launcher: right end of the brand row (its ✦ echoes
-   the dropdown markers). */
+/* The launchers at the right end of the brand row: Reference, then the
+   illustrated chapters (its ✦ echoes the dropdown markers). */
+.launchers {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+#btn-reference,
 #btn-illustrated {
   flex: none;
   min-height: 40px;
@@ -115,9 +127,18 @@ select {
   white-space: nowrap;
 }
 
-/* Illustrated-chapters jump panel (modal over everything, incl. the
-   fullscreen stage overlay at z-index 1000). */
-#illustrated-overlay {
+#btn-reference .ic { width: 16px; height: 16px; vertical-align: -3px; }
+
+/* The narrowest phones (320px) need a little of the launchers' padding back
+   to keep the whole name in view. */
+@media (max-width: 360px) {
+  #btn-reference, #btn-illustrated { padding: 8px 9px; }
+}
+
+/* Illustrated-chapters jump panel and the Reference list (modal over
+   everything, incl. the fullscreen stage overlay at z-index 1000). */
+#illustrated-overlay,
+#reference-overlay {
   position: fixed;
   inset: 0;
   z-index: 2000;
@@ -128,9 +149,11 @@ select {
   padding: 16px;
 }
 
-#illustrated-overlay[hidden] { display: none; }
+#illustrated-overlay[hidden],
+#reference-overlay[hidden] { display: none; }
 
-#illustrated-panel {
+#illustrated-panel,
+#reference-panel {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -155,7 +178,8 @@ select {
   color: var(--gold);
 }
 
-#btn-illustrated-close {
+#btn-illustrated-close,
+#btn-reference-close {
   min-width: 40px;
   min-height: 40px;
   padding: 4px 10px;
@@ -200,6 +224,94 @@ select {
   padding: 6px 10px;
   font-size: 14px;
   border-radius: 7px;
+}
+
+#reference-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ref-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.ref-item-title {
+  font-size: 15px;
+  color: var(--gold);
+}
+
+.ref-item-blurb {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #9a9aa8;
+}
+
+/* A reference chart, open over the app: a bar to get back, and the chart's
+   own page in a frame below it. */
+#reference-view {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  background: #0d0d14;
+}
+
+#reference-view[hidden] { display: none; }
+
+.ref-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(6px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 6px calc(10px + env(safe-area-inset-left));
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+#btn-reference-back {
+  flex: none;
+  min-height: 40px;
+  padding: 6px 12px;
+}
+
+#reference-view-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#reference-open {
+  flex: none;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #1c1c26;
+  color: var(--sand);
+  font-size: 17px;
+  text-decoration: none;
+}
+
+#reference-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  background: #0d0d14;
 }
 
 .attribution {

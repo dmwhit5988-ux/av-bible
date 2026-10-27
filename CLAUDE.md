@@ -83,9 +83,10 @@ explains the project, and `docs/` has the detail.
 - Generators (`generate_*_svg.py` and the spec modules named in
   `svg_generators.json`) are the source of truth. Never hand-edit a generated SVG.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
-  `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt: they
-  stay deployed and unlinked, and the 1–2 Chronicles chart is a frozen file with no
-  generator ([docs/reference-charts.md](docs/reference-charts.md)).
+  `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt. All of
+  them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today just
+  the OT family tree) are linked from the app. The 1–2 Chronicles chart is a frozen
+  file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
   lengths.
 - Animate with SMIL, and keep the motion.

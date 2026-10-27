@@ -17,7 +17,9 @@ in the Studio shows the current numbers.
 
 On a verse without a picture, the stage says the verse or chapter "isn't illustrated
 yet" and offers a button that opens the ✦ list of illustrated chapters. When
-consecutive verses share a picture, it keeps playing and doesn't restart.
+consecutive verses share a picture, it keeps playing and doesn't restart. The
+Reference button opens charts that stand on their own, not tied to a verse; today
+that is the Old Testament family tree.
 
 ## How it's made
 
@@ -89,7 +91,7 @@ Studio's **Save + manifest** before you look.
 | `web/` | The site root, which Cloudflare serves as it is. It holds the web app (`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`) and the three content folders below. `web/.assetsignore` lists the files the upload leaves out. |
 | `web/audio/` | The narration MP3s and their manifest. |
 | `web/bibles/WEB/` | The WEB text, one JSON file per chapter. |
-| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. The charts are deployed but nothing on the site links to them ([docs/reference-charts.md](docs/reference-charts.md)). |
+| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree ([docs/reference-charts.md](docs/reference-charts.md)). |
 | `sources/` | Ignored: `eng-web.usfx.xml`, the source text that `import_translation.py` turns into `web/bibles/WEB/`. |
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
@@ -105,9 +107,11 @@ Superseded designs, old renders and scratch work live outside the repo in
 **The web app** (`web/`, plain ES modules that `index.html` loads with no build step):
 
 - `web/index.html` and `web/css/style.css`: the page, with the Book, Chapter and Verse
-  pickers, the stage, the player controls and the ✦ dialog.
-- `web/js/app.js`: the UI and playback, the ✦ list, the "isn't illustrated yet" pointer,
-  the screen Wake Lock, and loading `web/audio/manifest.json`.
+  pickers, the stage, the player controls, the ✦ dialog, the Reference list and the
+  full-screen chart view.
+- `web/js/app.js`: the UI and playback, the ✦ list, the Reference list (`REFERENCES`),
+  the "isn't illustrated yet" pointer, the screen Wake Lock, and loading
+  `web/audio/manifest.json`.
 - `web/js/bible.js`: fetches the chapter JSON from `/bibles/WEB/`.
 - `web/js/data.js`: the book list and chapter counts, ported from `books.py`.
 - `web/js/tts.js`: the per-verse player, which plays the verse's MP3 where there is one

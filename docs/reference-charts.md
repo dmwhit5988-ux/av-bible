@@ -2,16 +2,25 @@
 
 `web/visuals/reference/` holds the standalone wall charts. Nothing in them is tied to a verse.
 
-Each chart is an SVG plus an `.html` viewer page. The viewer adds drag-to-pan, wheel zoom, fit / + / − buttons, and a name search that steps through the hits (↑ ↓). All four viewers are the same page; the two generators write theirs from `generate_ot_family_tree_svg.VIEWER`. You can also open an `.svg` directly in a browser.
+Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-## Status (D14)
+**The viewer.** The two generators write their viewer pages from `generate_ot_family_tree_svg.VIEWER`. It offers:
+- one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
+- a name search that steps through the hits (↑ ↓) and zooms each one to at least full size, where names are 15 px.
+
+The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus. The V6 and 1–2 Chronicles pages are older copies of the same viewer, with no pinch and no zoom-to-hit, because nothing writes them.
+
+## Status
 
 - **Deployed.** All four charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Not linked.** Nothing in the web app links to them, because which family-tree version belongs in the app hasn't been chosen. Anyone with the exact URL can open one.
+- **Linked: the OT family tree only.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. Today that list has just the OT family tree. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+  - the frame keeps the passage, and any narration playing, as they were underneath;
+  - the installed home-screen app has no Back button of its own, so the bar provides one;
+  - ↗ opens the chart's page on its own, at the address you can share.
+  The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
+- **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **None is archived.** The V6 heir-spine variant stays until the choice is made.
-- **Cost.** The charts are 8 deploy files.
-- **Later.** A Charts entry in the app is on the [roadmap](../ROADMAP.md), once the version is chosen.
+- **Cost.** The charts are 8 deploy files. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|

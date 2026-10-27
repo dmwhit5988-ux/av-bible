@@ -28,6 +28,15 @@ const els = {
   illOverlay: $("illustrated-overlay"),
   illClose: $("btn-illustrated-close"),
   illList: $("illustrated-list"),
+  btnReference: $("btn-reference"),
+  refOverlay: $("reference-overlay"),
+  refClose: $("btn-reference-close"),
+  refList: $("reference-list"),
+  refView: $("reference-view"),
+  refBack: $("btn-reference-back"),
+  refViewTitle: $("reference-view-title"),
+  refOpen: $("reference-open"),
+  refFrame: $("reference-frame"),
 };
 
 const STORE_KEY = "theoria.selection";
@@ -583,6 +592,100 @@ els.illOverlay.addEventListener("click", (e) => {
 });
 
 // ---------------------------------------------------------------------
+// Reference shelf: charts that stand on their own, not tied to a verse.
+// Each is a page under /visuals/reference/ written by its generator
+// (docs/reference-charts.md). It opens in a frame over the app rather than
+// in place of it, because the installed app has no Back button, and so
+// that the passage and the narration carry on underneath. The ↗ link opens
+// the same page on its own, which is also the address to share.
+// ---------------------------------------------------------------------
+
+const REFERENCES = [
+  {
+    title: "The Old Testament family tree",
+    blurb: "One family tree of the whole Old Testament, from Adam. Drag, pinch or scroll, and find anyone by name.",
+    href: "/visuals/reference/Old_Testament_family_tree.html",
+  },
+];
+
+function buildReferenceList() {
+  els.refList.innerHTML = REFERENCES.map(
+    (r, i) =>
+      `<button class="ref-item" data-index="${i}"><span class="ref-item-title">${r.title}</span><span class="ref-item-blurb">${r.blurb}</span></button>`
+  ).join("");
+  els.refList.querySelectorAll(".ref-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      closeReferenceList({ restoreFocus: false });
+      openReferenceView(REFERENCES[Number(item.dataset.index)]);
+    });
+  });
+}
+
+let refReturnFocus = null;
+
+function openReferenceList() {
+  refReturnFocus = document.activeElement;
+  setBehindInert(true);
+  els.refOverlay.hidden = false;
+  els.refClose.focus();
+}
+
+function closeReferenceList({ restoreFocus = true } = {}) {
+  els.refOverlay.hidden = true;
+  if (!restoreFocus) return; // the chart opens next and keeps things inert
+  setBehindInert(false);
+  const back = refReturnFocus && document.contains(refReturnFocus)
+    ? refReturnFocus
+    : els.btnReference;
+  refReturnFocus = null;
+  back.focus();
+}
+
+function openReferenceView(ref) {
+  setBehindInert(true);
+  els.refViewTitle.textContent = ref.title;
+  els.refFrame.title = ref.title;
+  els.refOpen.href = ref.href;
+  els.refFrame.src = ref.href;
+  els.refView.hidden = false;
+  els.refBack.focus();
+}
+
+function closeReferenceView() {
+  els.refView.hidden = true;
+  // A chart can be a megabyte of SVG; don't keep it alive behind the app.
+  els.refFrame.src = "about:blank";
+  setBehindInert(false);
+  els.btnReference.focus();
+}
+
+// Keys pressed inside the chart stay in its own document, so its Escape is
+// listened for there too. The pages are same-origin; about:blank is as well.
+els.refFrame.addEventListener("load", () => {
+  try {
+    els.refFrame.contentWindow.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !els.refView.hidden) closeReferenceView();
+    });
+  } catch {
+    // a cross-origin page: Back still closes it
+  }
+});
+
+buildReferenceList();
+els.btnReference.addEventListener("click", openReferenceList);
+els.refClose.addEventListener("click", () => closeReferenceList());
+els.refOverlay.addEventListener("click", (e) => {
+  if (e.target === els.refOverlay) closeReferenceList(); // backdrop tap
+});
+els.refBack.addEventListener("click", closeReferenceView);
+
+// True while any panel is over the app. Its own buttons take the keys then;
+// the app's shortcuts don't.
+function dialogOpen() {
+  return !els.illOverlay.hidden || !els.refOverlay.hidden || !els.refView.hidden;
+}
+
+// ---------------------------------------------------------------------
 // Fullscreen + stage gestures
 //
 // Where the Fullscreen API exists (desktop, Android) we use it for true
@@ -739,13 +842,15 @@ els.stage.addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
-  // Inside the ✦ dialog, keys work its chips and close button; only Escape
-  // (close) is handled here.
-  if (!els.illOverlay.hidden && e.code !== "Escape") return;
+  // Inside a dialog (the ✦ list, the Reference list or a chart), keys work
+  // its own buttons; only Escape (close) is handled here.
+  if (dialogOpen() && e.code !== "Escape") return;
   if (e.code === "Space") { e.preventDefault(); togglePlay(); }
   else if (e.code === "ArrowRight") player.next();
   else if (e.code === "ArrowLeft") player.prev();
   else if (e.code === "Escape") {
+    if (!els.refView.hidden) { closeReferenceView(); return; }
+    if (!els.refOverlay.hidden) { closeReferenceList(); return; }
     if (!els.illOverlay.hidden) { closeIllustrated(); return; }
     setFullscreen(false);
     autoEnteredFs = false;

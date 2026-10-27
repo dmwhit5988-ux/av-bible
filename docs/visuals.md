@@ -176,4 +176,4 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 ## Reference charts
 
-`web/visuals/reference/` holds the wall charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree and the OT timeline. They deploy with the site, but nothing links to them. See [reference-charts.md](reference-charts.md).
+`web/visuals/reference/` holds the wall charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree and the OT timeline. They all deploy with the site. The app's Reference list links the OT family tree; the other three stay unlinked. See [reference-charts.md](reference-charts.md).
