@@ -39,6 +39,7 @@ import math
 import os
 
 from svg_surface import SvgCanvas
+from sanctuary import COURT, GATE, TENT, VEIL_X, Plan, plan_box, plan_point
 from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, RED, BROWN, WHITE_LINEN,
@@ -189,9 +190,9 @@ def draw_compass(c, cx, cy, r):
 
 
 def draw_tabernacle(c):
-    """The middle of the camp: the Levite ring, and inside it the courtyard
-    drawn to the Exodus 27 proportions (100 x 50 cubits) with its gate on the
-    east — which, on this plan, is the top."""
+    """The middle of the camp: the Levite ring, and inside it the court,
+    drawn to scale from the one Tabernacle model (sanctuary.py), with its
+    gate on the east — which, on this plan, is the top."""
     c.rect(COL_M + 8, MID_Y + 8, MID_W - 16, MID_H - 16, fill=PANEL,
            stroke=None, rx=4)
     c.raw([f'<rect x="{COL_M + 8}" y="{MID_Y + 8}" width="{MID_W - 16}" '
@@ -202,19 +203,19 @@ def draw_tabernacle(c):
            bold=True)
 
     s = 1.24                                   # px per cubit
-    cw, chh = 50 * s, 100 * s                  # 50 wide (N-S), 100 long (E-W)
+    cw, chh = (COURT[3] - COURT[1]) * s, (COURT[2] - COURT[0]) * s
     x0 = COL_M + (MID_W - cw) / 2
-    y0 = MID_Y + (MID_H - chh) / 2 + 6
-    c.rect(x0, y0, cw, chh, fill=BG, stroke=WHITE_LINEN, width=1.4)
-    gx = x0 + (cw - 20 * s) / 2                # the gate, 20 cubits, east end
-    c.line((gx, y0), (gx + 20 * s, y0), GOLD, 2.8)
-    c.rect(x0 + cw / 2 - 3.1, y0 + 12 * s, 6.2, 6.2, fill=None, stroke=SAND,
-           width=1.1)                          # the bronze altar
-    c.circle(x0 + cw / 2, y0 + 27 * s, 2.8, fill=None, stroke=SILVER, width=1)
-    tw, th = 10 * s, 30 * s                    # the tent, in the western half
-    tx, ty = x0 + (cw - tw) / 2, y0 + 56 * s
-    c.rect(tx, ty, tw, th, fill=dim(BROWN, 190), stroke=GOLD, width=1.3)
-    c.line((tx, ty + 20 * s), (tx + tw, ty + 20 * s), GOLD, 1.2)   # the veil
+    y0 = MID_Y + (MID_H - chh) / 2 + 6         # clear of the LEVITES label
+    plan = Plan(x0, y0, s, east="up")
+    c.rect(*plan.box(*COURT), fill=BG, stroke=WHITE_LINEN, width=1.4)
+    c.line(plan.pt(COURT[2], GATE[0]), plan.pt(COURT[2], GATE[1]), GOLD, 2.8)
+    c.rect(*plan.box(*plan_box("altar")), fill=None, stroke=SAND,
+           width=1.1)                          # the altar of burnt offering
+    c.circle(*plan.pt(*plan_point("basin")), 2.8, fill=None, stroke=SILVER,
+             width=1)                          # the basin
+    c.rect(*plan.box(*TENT), fill=dim(BROWN, 190), stroke=GOLD, width=1.3)
+    c.line(plan.pt(VEIL_X, TENT[1]), plan.pt(VEIL_X, TENT[3]), GOLD,
+           1.2)                                # the veil
 
 
 def draw_wide_camp(c, side, ch, v):

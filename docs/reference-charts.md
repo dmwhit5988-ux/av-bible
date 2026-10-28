@@ -1,14 +1,14 @@
 # Reference charts
 
-`web/visuals/reference/` holds the standalone wall charts. Nothing in them is tied to a verse.
+`web/visuals/reference/` holds the standalone reference charts. Nothing in them is tied to a verse.
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The two generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The three generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`, today only the family tree's) gets more:
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's and the Tabernacle's) gets more. The family tree's cards are people (below); the Tabernacle's are parts (`"card": "parts"`, see [The Tabernacle](#the-tabernacle)):
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -20,20 +20,22 @@ A chart whose generator also writes a **sidecar** (`<stem>.json`, today only the
 - **A verse chip** shows the verse, read from `/bibles/WEB/`. Inside the app, "Open in Theoria" posts `{type: "theoria:goto", book, chapter, verse}`, and the app closes the chart and goes to that verse without playing it.
 - **The address** keeps the selection (`#id=<id>`), so ↗ opens and shares what is on screen. The app opens a chart at `#at=<Book>.<chapter>.<verse>`, and the page starts on the names that verse speaks.
 - **Escape** closes the results, then the card, then (in the app) the chart.
+- **Layers.** A sheet can mark groups `<g data-layer="...">` and list them in the sidecar's `layers`; chips in the bar show and hide them. A part on a hidden layer takes no tap, and a part found by search or named by `#at` shows its layer.
+- **Hit areas.** The smallest box under a tap wins. A part can also be tapped on more boxes (`hb`: the court and the tent, on their walls and labels, since other parts fill their insides), on none (`nohit`: the mercy seat lies on the ark), and a duplicate card (`nos`: a part's drawing) is left out of search and `#at`.
 
 Without a sidecar (the OT timeline), the search steps through the sheet's own text and zooms each hit to at least full size, where names are 15 px. The V6 and 1–2 Chronicles pages are older copies of the viewer, with no pinch and no zoom-to-hit, because nothing writes them.
 
 ## Status
 
-- **Deployed.** All four charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree only.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. Today that list has just the OT family tree. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Deployed.** All five charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
+- **Linked: the OT family tree and the Tabernacle.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 9 deploy files, the tree's sidecar among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 12 deploy files, the two sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -41,6 +43,7 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
 | [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
+| [The Tabernacle](#the-tabernacle) | `Tabernacle.svg` / `.json` / `.html` | 2,860 × 2,906 px, about 100 KB, 34 cards | `generate_tabernacle_reference.py` |
 
 ## The Old Testament family tree
 
@@ -154,4 +157,33 @@ The same tree laid on a year scale: every box sits at its year, and a rail down 
 ```
 .venv/Scripts/python.exe generate_ot_timeline_svg.py   # rebuild the .svg and .html
 .venv/Scripts/python.exe chronology.py                 # the dating coverage report
+```
+
+## The Tabernacle
+
+The court, the tent and its furnishings, drawn to scale (14 px a cubit) from `sanctuary.py`, the one Tabernacle model the Exodus 25–27 and Numbers 1–4 pictures also draw from. East is to the right, as in the Exodus plan.
+
+**The sheet.**
+- The plan: the court with its hangings, its sixty pillars and the gate's four colours; the tent, with the veil and the door screen in their colours; and the ark, the altar of incense, the table with its twelve loaves, the lamp stand, the basin and the altar of burnt offering, each labelled.
+- **Measurements** (a layer, on): the court's 100 and 50, the gate's 20, and the tent's 30, 10, and 10 and 20 either side of the veil.
+- **The camp** (a layer, off): the Levites on the four sides (Numbers 3:23–38) and the twelve tribes beyond them by their standards, with their counts (Numbers 2, from `generate_numbers1_2_svg.CAMPS` and `COUNT`). It is not to scale, and says so.
+- **In detail** (a layer, on): the Exodus 25–27 drawings (`generate_tabernacle.INSETS`) of the ark, the table, the lamp stand, the altar, the veil, the door screen, the boards, the curtains, the coverings and the materials, each drawn whole, without a verse's highlight.
+
+**The cards** come from `sanctuary.PARTS`:
+- each measurement, marked **stated** (the text gives it), **derived** (it follows from what the text gives: the tent's 30 cubits from twenty boards a cubit and a half wide) or **not given** (the lamp stand and the basin have no size at all), with its verse;
+- where the part stands, marked the same way. The text says which side a thing stands on, or what it stands between, but gives no distances inside the court, so the plan's spots are one common arrangement;
+- what it was made of, and who carried it on the march (Numbers 4);
+- its verses, grouped as commanded, made, set up and named elsewhere;
+- links: a part to its drawing and back, and the ark and the mercy seat to each other.
+
+Tapping a Levite or tribe card on the camp layer opens what they camped by and carried. Opened from a verse, the sheet starts on the parts that verse names: from Exodus 25:10, the ark.
+
+**The model.** `sanctuary.py` keeps the plan in cubits (x east from the west hanging, y south from the north) with the Exodus plan's own literals. Making it the one model corrected three things in the published pictures:
+- **The pillars.** There are now sixty, one every five cubits round the court with each corner counted once: 20, 20, 10, and on the east 3, 3 and 4 for the gate at 20–35 (Exodus 27:10–16). The Exodus 25–27 plan drew five uneven posts across the gate while its highlight ringed four others, and its per-side rings counted the corners twice.
+- **The Numbers 1–4 courts.** Numbers 1–2 had the altar 12–17 cubits inside the gate, the basin at 27 and the tent 14 cubits from the west; Numbers 3–4 drew a court of the wrong shape with no altar, basin or veil. Both now draw the model.
+- **WEB's wording** on the Exodus drawings: brass, lamp stand, sea cow hides, sockets, fillets.
+
+```
+.venv/Scripts/python.exe generate_tabernacle_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_sanctuary          # the model's counts and verses
 ```

@@ -61,6 +61,17 @@
   #vv .vv-go{margin-top:6px;color:#16130a;background:#d8c68f;border-color:#fff4aa}
   .line{margin-top:6px;line-height:2}
   .line .sep{color:#5a5468;margin-right:4px}
+  .lay{font-size:13px;padding:5px 10px;border-radius:14px;color:#a89f88}
+  .lay.on{background:#2a2636;color:#fff4aa;border-color:#8a6d2c}
+  .c-dims{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  .c-dims th{text-align:left;color:#a89f88;font-weight:normal;padding:4px 10px 4px 0;
+       vertical-align:top;white-space:nowrap}
+  .c-dims td{padding:4px 0;color:#e8e0cc;line-height:1.4}
+  .flag{display:inline-block;font-size:10px;letter-spacing:.5px;text-transform:uppercase;
+       padding:1px 6px;border-radius:8px;border:1px solid #4a4658;margin:0 4px 0 6px;
+       color:#a89f88;white-space:nowrap}
+  .flag.stated{color:#fff4aa;border-color:#8a6d2c}
+  .flag.not-given{font-style:italic}
 </style>
 <div id="bar">
   <div id="find">
@@ -70,6 +81,7 @@
   <button id="prev" aria-label="Previous match">&#8593;</button><button id="next" aria-label="Next match">&#8595;</button>
   <span id="hits"></span>
   <button id="fit">fit</button><button id="in" aria-label="Zoom in">+</button><button id="out" aria-label="Zoom out">&minus;</button>
+  <span id="layers"></span>
 </div>
 <div id="stage"></div>
 <div id="banner" hidden><span id="banner-text"></span><button id="banner-x" aria-label="Clear">&#x2715;</button></div>
@@ -93,8 +105,9 @@ Promise.all([fetch(STEM+'.svg').then(r=>r.text()),
 function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
   for(const[name,px]of[['at',2.5],['trace',2.5],['sel',3.5]])
     if(layers[name])layers[name].setAttribute('stroke-width',(px/k).toFixed(3))}
-function fit(){k=Math.min(innerWidth/W,innerHeight/H);
-  kmin=Math.min(0.01,k);tx=(innerWidth-W*k)/2;ty=(innerHeight-H*k)/2;apply()}
+// the whole sheet, below the bar
+function fit(){const top=$('bar').offsetHeight;k=Math.min(innerWidth/W,(innerHeight-top)/H);
+  kmin=Math.min(0.01,k);tx=(innerWidth-W*k)/2;ty=top+(innerHeight-top-H*k)/2;apply()}
 function init(){svg=stage.querySelector('svg');
   svg.removeAttribute('width');svg.removeAttribute('height');
   svg.setAttribute('width',W);svg.setAttribute('height',H);
@@ -105,7 +118,23 @@ function init(){svg=stage.querySelector('svg');
                              ['sel','#fff4aa','#fff4aa1c']]){
     const g=document.createElementNS(NS,'g');g.setAttribute('stroke',col);
     g.setAttribute('fill',fill);hl.appendChild(g);layers[name]=g}
-  fit();if(DATA)readHash()}
+  // the layer chips first, so fit() measures the bar as it will stand
+  if(DATA)buildLayers();fit();if(DATA)readHash()}
+
+// -- layers ---------------------------------------------------------------
+// A sheet's <g data-layer="..."> groups, listed in the sidecar's `layers`,
+// shown and hidden by chips in the bar. A part on a hidden layer takes no
+// tap, and selecting it from search shows its layer.
+function layerOn(id){const l=(data.layers||[]).find(x=>x.id===id);return !l||l.on}
+function showLayer(id,on){const l=(data.layers||[]).find(x=>x.id===id);if(l)l.on=on;
+  for(const g of svg.querySelectorAll(`[data-layer="${id}"]`))g.style.display=on?'':'none';
+  const b=$('layers').querySelector(`[data-layer="${id}"]`);
+  if(b){b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))}}
+function buildLayers(){const box=$('layers');if(!data.layers)return;
+  box.innerHTML=data.layers.map(l=>`<button class="lay" data-layer="${esc(l.id)}">${esc(l.label)}</button>`).join('');
+  for(const l of data.layers)showLayer(l.id,l.on)}
+$('layers').addEventListener('click',e=>{const b=e.target.closest('button[data-layer]');
+  if(b)showLayer(b.dataset.layer,!layerOn(b.dataset.layer))});
 
 // -- moving ---------------------------------------------------------------
 function zoomAt(x,y,f){const nk=Math.min(8,Math.max(kmin,k*f));
@@ -165,7 +194,7 @@ $('out').onclick=()=>{halt();zoomAt(innerWidth/2,innerHeight/2,1/1.3);apply()};
 // whole names first, then the start of a name, then anywhere in one; a name
 // found only in a box's note comes last.
 function rank(s){const out=[];
-  items.forEach((it,i)=>{if(it.x!=null)return;let best=4;
+  items.forEach((it,i)=>{if(it.x!=null||it.nos)return;let best=4;
     for(const part of it.n.split('·').concat(it.a||[])){const t=part.trim().toLowerCase();
       if(t===s){best=0;break}
       if(t.startsWith(s))best=Math.min(best,1);else if(t.includes(s))best=Math.min(best,2)}
@@ -211,11 +240,16 @@ function outline(layer,list){const g=layers[layer];g.textContent='';
     r.setAttribute('width',b[2]+2*pad);r.setAttribute('height',b[3]+2*pad);
     r.setAttribute('rx',8);g.appendChild(r)}
   apply()}
+// The smallest box under the finger wins. A part can be tapped on more than
+// its own box (`hb`: the court and the tent on their walls and labels, since
+// other parts fill their insides), not at all (`nohit`: the mercy seat lies
+// on the ark), or not while its layer is hidden.
 function onTap(x,y){if(!DATA||!svg)return;const sx=(x-tx)/k,sy=(y-ty)/k,tol=6/k;
   let best=-1,area=Infinity;
-  items.forEach((it,i)=>{const b=it.b;
-    if(sx>=b[0]-tol&&sx<=b[0]+b[2]+tol&&sy>=b[1]-tol&&sy<=b[1]+b[3]+tol&&b[2]*b[3]<area){
-      best=i;area=b[2]*b[3]}});
+  items.forEach((it,i)=>{if(!it.b||it.nohit||(it.ly&&!layerOn(it.ly)))return;
+    for(const b of [it.b].concat(it.hb||[]))
+      if(sx>=b[0]-tol&&sx<=b[0]+b[2]+tol&&sy>=b[1]-tol&&sy<=b[1]+b[3]+tol&&b[2]*b[3]<area){
+        best=i;area=b[2]*b[3]}});
   if(best>=0)select(best,{fly:k<0.6})}
 function ancestors(i){const out=[];for(let j=i;j!=null;j=items[j].p)out.unshift(j);return out}
 // Where a box's own line to Adam starts. A wife hangs under her husband, so
@@ -226,6 +260,7 @@ function lineFrom(i){const it=items[i];
   const own=items.findIndex(c=>c.x===i&&c.p!=null&&c.l!=='wife');
   return own>=0?own:null}
 function select(i,{fly=false}={}){const via=items[i].x!=null;if(via)i=items[i].x;
+  if(items[i].ly&&!layerOn(items[i].ly))showLayer(items[i].ly,true);
   state.sel=i;state.trace=false;outline('sel',[i]);outline('trace',[]);
   renderCard();
   try{history.replaceState(null,'','#id='+encodeURIComponent(items[i].id))}catch(e){}
@@ -255,12 +290,41 @@ function merged(rows){const out=[],ranges=rows.filter(r=>!single(r));
       p[4]=r[2];continue}
     out.push(r.slice())}
   return out}
+function cardHead(it){return `<div class="c-head"><div><div class="c-name">${esc(it.n)}</div>`+
+    (it.s?`<div class="c-sub">${esc(it.s)}</div>`:'')+`</div>`+
+    `<button id="card-x" aria-label="Close">&#x2715;</button></div>`}
+function showCard(h,keep){card.innerHTML=h;card.hidden=false;document.body.classList.add('carded');
+  if(!keep)card.scrollTop=0}
+// verse chips, the book named where it changes (and not at all for `home`,
+// the card's own book, in the short rows beside a measurement)
+function verseChips(rows,home=-1){let h='',last=home;
+  for(const r of merged(rows)){if(r[0]!==last){last=r[0];h+=`<span class="c-book">${esc(data.books[r[0]])}</span>`}
+    h+=`<button class="chip v" data-ref="${r.join(',')}">${refLabel(r)}</button>`}
+  return h}
+const flag=f=>f?`<span class="flag ${esc(f.replace(/ /g,'-'))}">${esc(f)}</span>`:'';
+// A sheet of parts (the Tabernacle): what the text measures, where each part
+// stands, what it was made of, the verses that command, make and set it up,
+// and the link between a part on the plan and its drawing.
+function renderPart(keep){const i=state.sel,it=items[i];let h=cardHead(it);
+  const home=((it.rg||[])[0]||[null,[[-1]]])[1].concat([[-1]])[0][0];
+  if((it.dims||[]).length)h+='<table class="c-dims">'+it.dims.map(([w,v,f,rs])=>
+    `<tr><th>${esc(w)}</th><td>${esc(v)}${flag(f)}${rs.length?verseChips(rs,home):''}</td></tr>`).join('')+'</table>';
+  if(it.pl)h+=`<div class="c-row"><span class="c-lab">Where</span>${esc(it.pl[0])}${flag(it.pl[1])}${it.pl[2].length?verseChips(it.pl[2],home):''}</div>`;
+  for(const[label,text]of it.tx||[])h+=`<div class="c-row"><span class="c-lab">${esc(label)}</span>${esc(text)}</div>`;
+  if(it.note)h+=`<p class="c-note">${esc(it.note)}</p>`;
+  const links=[];
+  for(const j of it.dt||[])links.push(`<button class="chip v" data-go="${j}">The drawing of ${esc(items[j].dl||items[j].n)} ▸</button>`);
+  if(it.of!=null)links.push(`<button class="chip v" data-go="${it.of}">On the plan ▸</button>`);
+  for(const j of it.see||[])links.push(chip(j));
+  if(links.length)h+=`<div class="c-row"><span class="c-lab">See</span>${links.join('')}</div>`;
+  for(const[g,rs]of it.rg||[])if(rs.length)h+=`<div class="c-row"><span class="c-lab">${esc(g)}</span>${verseChips(rs)}</div>`;
+  h+=`<div id="vv" hidden></div>`;
+  showCard(h,keep)}
 function renderCard(keep=false){const i=state.sel,it=items[i];if(i==null)return;
+  if(data.card==='parts')return renderPart(keep);
   const kind={king:'king',priest:'priest or Levite',house:'a house or company'}[it.k];
   const facts=[it.g!=null?`generation ${it.g} from Adam`:'',kind||''].filter(Boolean).join(' · ');
-  let h=`<div class="c-head"><div><div class="c-name">${esc(it.n)}</div>`+
-    (it.s?`<div class="c-sub">${esc(it.s)}</div>`:'')+`</div>`+
-    `<button id="card-x" aria-label="Close">&#x2715;</button></div>`;
+  let h=cardHead(it);
   if(facts)h+=`<div class="c-facts">${esc(facts)}</div>`;
   if(it.d)h+=`<div class="c-date">${esc(it.d)}</div>`;
   if(it.note)h+=`<p class="c-note">${esc(it.note)}</p>`;
@@ -295,12 +359,8 @@ function renderCard(keep=false){const i=state.sel,it=items[i];if(i==null)return;
   if(it.p!=null&&from!=null){const line=ancestors(from);
     h+=`<div class="c-row"><button id="trace" class="chip v">${state.trace?'Hide the line':from===i?'Line to Adam':'Her line to Adam'} (${line.length})</button>`+
       (state.trace?`<div class="line">${line.map(j=>chip(j)).join('<span class="sep">›</span>')}</div>`:'')+`</div>`}
-  if(it.r){h+=`<div class="c-row"><span class="c-lab">Verses</span>`;let last=-1;
-    for(const r of merged(it.r)){if(r[0]!==last){last=r[0];h+=`<span class="c-book">${esc(data.books[r[0]])}</span>`}
-      h+=`<button class="chip v" data-ref="${r.join(',')}">${refLabel(r)}</button>`}
-    h+=`</div><div id="vv" hidden></div>`}
-  card.innerHTML=h;card.hidden=false;document.body.classList.add('carded');
-  if(!keep)card.scrollTop=0}
+  if(it.r)h+=`<div class="c-row"><span class="c-lab">Verses</span>${verseChips(it.r)}</div><div id="vv" hidden></div>`;
+  showCard(h,keep)}
 function row(label,list){const shown=list.slice(0,24);
   return `<div class="c-row"><span class="c-lab">${esc(label)}</span>`+shown.map(j=>chip(j)).join('')+
     (list.length>24?`<span class="c-book">and ${list.length-24} more</span>`:'')+`</div>`}
@@ -347,11 +407,14 @@ function readHash(){const h=new URLSearchParams(location.hash.slice(1));
   // the names the verse itself speaks; failing those, the families whose
   // passage it falls in
   const named=test=>{const out=[];items.forEach((it,i)=>{
-    if(it.x==null&&(it.r||[]).some(r=>r[0]===b&&test(r)&&inRange(r,C,V)))out.push(i)});return out};
+    if(it.x==null&&!it.nos&&(it.r||[]).some(r=>r[0]===b&&test(r)&&inRange(r,C,V)))out.push(i)});return out};
   let hit=named(single);if(!hit.length)hit=named(r=>!single(r));
   if(!hit.length)return;
+  // a named part on a hidden layer (Kohath, on the camp) shows its layer
+  for(const i of hit){const l=items[i].ly;if(l&&!layerOn(l))showLayer(l,true)}
   state.at=hit;outline('at',hit);
-  $('banner-text').textContent=`${hit.length===1?'1 name':hit.length+' names'} in ${book} ${C}:${V}`;
+  const[one,many]=data.noun||['name','names'];
+  $('banner-text').textContent=`${hit.length===1?'1 '+one:hit.length+' '+many} in ${book} ${C}:${V}`;
   $('banner').hidden=false;
   if(hit.length===1)select(hit[0]);
   frameBoxes(hit.map(i=>items[i].b),1.2)}

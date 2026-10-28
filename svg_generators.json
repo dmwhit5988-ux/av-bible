@@ -168,6 +168,10 @@
         {
           "file": "generate_tabernacle.py",
           "edit": "CHAPTERS spec + draw/hl functions"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the court, tent, pillars and furniture in cubits: the one Tabernacle model the plan and its highlights read"
         }
       ],
       "kind": "diagram"
@@ -181,8 +185,16 @@
       "generator": "generate_exodus26_svg.py",
       "spec": [
         {
+          "file": "generate_tabernacle.py",
+          "edit": "CH26 (CHAPTERS): what each verse highlights, plus draw_plan, INSETS and the hl_* functions"
+        },
+        {
           "file": "generate_exodus26_svg.py",
-          "edit": "per-verse spec in this file"
+          "edit": "the renderer: lays out CHAPTERS[26] on the canvas"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the court, tent, pillars and furniture in cubits: the one Tabernacle model the plan and its highlights read"
         }
       ],
       "kind": "diagram"
@@ -250,7 +262,11 @@
       "spec": [
         {
           "file": "generate_numbers1_2_svg.py",
-          "edit": "TRIBES (counts, princes, camp side), CAMPS, CENSUS_PAIRS, CAPTIONS, NOTES, the plan layout constants - all in this one file"
+          "edit": "TRIBES (counts, princes, camp side), CAMPS, CENSUS_PAIRS, the plan layout constants - all in this one file"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the court at the heart of the camp: altar, basin, tent and veil in cubits"
         }
       ],
       "kind": "diagram"
@@ -266,7 +282,11 @@
       "spec": [
         {
           "file": "generate_numbers3_4_svg.py",
-          "edit": "CLANS (families, princes, duties, burdens, counts and the verse each is revealed on), SONS, HOLY (the six covered things), LEDGER, FOCUS, CAPTIONS - all in this one file"
+          "edit": "CLANS (families, princes, duties, burdens, counts and the verse each is revealed on), SONS, HOLY (the six covered things), LEDGER - all in this one file"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the court inside the Levite ring: altar, basin, tent and veil in cubits"
         }
       ],
       "kind": "chart"

@@ -341,10 +341,13 @@ class SvgCanvas:
     # -- grouping (translate + clip window) --------------------------------
 
     @contextmanager
-    def group(self, tx=0, ty=0, clip=None, pulse=None):
+    def group(self, tx=0, ty=0, clip=None, pulse=None, data=None):
         """A <g>. `clip` clips to a (w, h) window; `pulse` = (lo, hi, dur)
-        oscillates the group opacity forever (the tabernacle breathing glow)."""
-        attrs = ""
+        oscillates the group opacity forever (the tabernacle breathing glow);
+        `data` = {name: value} writes data-<name> attributes (a reference
+        sheet's layers, which its viewer page shows and hides)."""
+        attrs = "".join(f' data-{k}="{escape(str(v))}"'
+                        for k, v in (data or {}).items())
         if clip is not None:
             self._clip_id += 1
             cid = f"clip{self._clip_id}"

@@ -43,6 +43,7 @@ import os
 
 import svg_figures as F
 from svg_surface import SvgCanvas
+from sanctuary import COURT, GATE, TENT, VEIL_X, Plan, plan_box, plan_point
 from passages import verse_numbers
 from generate_tabernacle import (W, H, BG, PANEL, SAND, SAND_DIM, SILVER, TEXT,
                                  TEXT_DIM, GOLD, HL, BRONZE, BROWN, GRAY,
@@ -506,14 +507,26 @@ def draw_clan(c, i, clan, ch, v):
 # The right-hand panel: the Levite ring, and the redemption ledger
 # ---------------------------------------------------------------------------
 
+RING_CY = 195          # the court's centre, level with the N and S chips
+
+
 def draw_ring(c, ch, v):
     c.text((PANEL_X, 62), "LEVITE RING", 13, TEXT, "lm", bold=True)
     cx = PANEL_X + PANEL_W / 2
 
-    # the tabernacle in the middle, its gate to the east — here, the top
-    c.rect(cx - 19, 160, 38, 70, fill=BG, stroke=WHITE_LINEN, width=1.3)
-    c.line((cx - 8, 160), (cx + 8, 160), GOLD, 2.4)
-    c.rect(cx - 5, 196, 10, 26, fill=dim(BROWN, 200), stroke=GOLD, width=1.1)
+    # the tabernacle in the middle, its gate to the east — here, the top —
+    # drawn to scale from the one model (sanctuary.py), a pixel a cubit,
+    # centred between the four clan chips
+    s = 1.0
+    plan = Plan(cx - (COURT[3] - COURT[1]) * s / 2,
+                RING_CY - (COURT[2] - COURT[0]) * s / 2, s, east="up")
+    c.rect(*plan.box(*COURT), fill=BG, stroke=WHITE_LINEN, width=1.3)
+    c.line(plan.pt(COURT[2], GATE[0]), plan.pt(COURT[2], GATE[1]), GOLD, 2.4)
+    c.rect(*plan.box(*plan_box("altar")), fill=None, stroke=SAND, width=1)
+    c.circle(*plan.pt(*plan_point("basin")), 2.3, fill=None, stroke=SILVER,
+             width=0.9)
+    c.rect(*plan.box(*TENT), fill=dim(BROWN, 200), stroke=GOLD, width=1.1)
+    c.line(plan.pt(VEIL_X, TENT[1]), plan.pt(VEIL_X, TENT[3]), GOLD, 1)
 
     chips = [
         (cx - 110, 92, 220, 30, "EAST", "Moses & Aaron", 38),

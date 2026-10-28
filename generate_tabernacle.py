@@ -6,9 +6,10 @@ A library, not a script; it has two jobs:
   the colours (BG, PANEL, SAND, TEXT, HL ...), font() and the F_* sizes,
   and out_path(), which files a visual under web/visuals/<Book>/<chapter>/.
 
-* The tabernacle's own drawing: a to-scale top-down plan of the courtyard
-  (dimensions taken from the text: courtyard 100x50 cubits, tent 30x10,
-  bronze altar 5x5x3, gate 20 cubits) plus detail "inset" panels — the ark
+* The tabernacle's own drawing: a to-scale top-down plan of the courtyard,
+  whose court, tent, pillars and furniture come from sanctuary.py, the one
+  model every Tabernacle drawing shares (courtyard 100x50 cubits, tent
+  30x10, bronze altar 5x5x3, gate 20 cubits), plus detail "inset" panels — the ark
   and mercy seat, the table of showbread, the golden lampstand, the
   curtains, the board frames, the veil, and the bronze altar — and the
   per-verse CHAPTERS specs saying what each verse highlights.
@@ -24,8 +25,11 @@ import os
 
 from PIL import ImageFont
 
+import sanctuary as SN
 import svg_figures as F
 from config import VISUALS_DIR
+from sanctuary import (COURT, DOOR_X, FLANKS, GATE, MOST_HOLY, PILLARS, TENT,
+                       VEIL_X, plan_box, plan_point)
 
 
 def out_path(book: str, chapter, filename: str) -> str:
@@ -282,45 +286,45 @@ def draw_plan(d, dim=False):
     # The plan stays a plan: line, dimension and label are untouched. What
     # the fills add is that the tent reads as a building standing in a court,
     # and a glance finds the furniture inside it.
-    d.rectangle([cub(0, 0), cub(100, 50)], fill=tone(SAND, 0.06))
-    d.rectangle([cub(10, 20), cub(40, 30)], fill=tone(SAND, 0.16))
-    d.rectangle([cub(10, 20), cub(20, 30)], fill=tone(GOLD, 0.13))
+    cx0, cy0, cx1, cy1 = COURT
+    tx0, ty0, tx1, ty1 = TENT
+    d.rectangle([cub(cx0, cy0), cub(cx1, cy1)], fill=tone(SAND, 0.06))
+    d.rectangle([cub(tx0, ty0), cub(tx1, ty1)], fill=tone(SAND, 0.16))
+    d.rectangle([cub(MOST_HOLY[0], MOST_HOLY[1]),
+                 cub(MOST_HOLY[2], MOST_HOLY[3])], fill=tone(GOLD, 0.13))
 
-    d.line([cub(0, 0), cub(100, 0)], fill=linen, width=3)      # north
-    d.line([cub(0, 50), cub(100, 50)], fill=linen, width=3)    # south
-    d.line([cub(0, 0), cub(0, 50)], fill=linen, width=3)       # west
-    d.line([cub(100, 0), cub(100, 15)], fill=linen, width=3)   # east NE
-    d.line([cub(100, 35), cub(100, 50)], fill=linen, width=3)  # east SE
-    seg = 20 / len(GATE_COLORS)
+    d.line([cub(cx0, cy0), cub(cx1, cy0)], fill=linen, width=3)   # north
+    d.line([cub(cx0, cy1), cub(cx1, cy1)], fill=linen, width=3)   # south
+    d.line([cub(cx0, cy0), cub(cx0, cy1)], fill=linen, width=3)   # west
+    for y0, y1 in FLANKS:                                          # east
+        d.line([cub(cx1, y0), cub(cx1, y1)], fill=linen, width=3)
+    seg = (GATE[1] - GATE[0]) / len(GATE_COLORS)
     for i, col in enumerate(GATE_COLORS):
         c = tuple(v // 2 for v in col) if dim else col
-        d.line([cub(100, 15 + i * seg), cub(100, 15 + (i + 1) * seg)],
-               fill=c, width=5)
+        d.line([cub(cx1, GATE[0] + i * seg),
+                cub(cx1, GATE[0] + (i + 1) * seg)], fill=c, width=5)
 
-    def pillars(points):
-        for x, y in points:
-            px, py = cub(x, y)
-            d.ellipse([px - 2.6, py - 2.6, px + 2.6, py + 2.6], fill=line)
-    pillars([(x, 0) for x in range(0, 101, 5)])
-    pillars([(x, 50) for x in range(0, 101, 5)])
-    pillars([(0, y) for y in range(5, 50, 5)])
-    pillars([(100, y) for y in (5, 10, 15, 20, 26.67, 33.33, 35, 40, 45)])
+    for x, y in SN.pillar_points():
+        px, py = cub(x, y)
+        d.ellipse([px - 2.6, py - 2.6, px + 2.6, py + 2.6], fill=line)
 
-    d.rectangle([cub(10, 20), cub(40, 30)], outline=line, width=3)
-    d.line([cub(20, 20), cub(20, 30)], fill=line, width=2)   # veil
-    d.rectangle([cub(13.75, 24.25), cub(16.25, 25.75)],      # the ark
-                fill=tone(GOLD, 0.72), outline=text, width=2)
-    d.rectangle([cub(22, 24.5), cub(23, 25.5)],              # incense altar
-                fill=tone(GOLD, 0.55), outline=line, width=1)
-    d.rectangle([cub(29, 21.2), cub(31, 22.2)],              # the table
-                fill=tone(GOLD, 0.55), outline=line, width=1)
-    lx, ly = cub(30, 28)
+    d.rectangle([cub(tx0, ty0), cub(tx1, ty1)], outline=line, width=3)
+    d.line([cub(VEIL_X, ty0), cub(VEIL_X, ty1)], fill=line, width=2)  # veil
+    x0, y0, x1, y1 = plan_box("ark")
+    d.rectangle([cub(x0, y0), cub(x1, y1)], fill=tone(GOLD, 0.72),
+                outline=text, width=2)
+    for key in ("incense_altar", "table"):
+        x0, y0, x1, y1 = plan_box(key)
+        d.rectangle([cub(x0, y0), cub(x1, y1)], fill=tone(GOLD, 0.55),
+                    outline=line, width=1)
+    lx, ly = cub(*plan_point("lamp_stand"))
     d.ellipse([lx - 4.4, ly - 4.4, lx + 4.4, ly + 4.4],      # the lampstand
               fill=tone(GOLD, 0.62), outline=line, width=1)
-    vx, vy = cub(50, 25)
+    vx, vy = cub(*plan_point("basin"))
     d.ellipse([vx - 6, vy - 6, vx + 6, vy + 6],              # the laver
               fill=tone(SILVER, 0.42), outline=line, width=2)
-    d.rectangle([cub(62.5, 22.5), cub(67.5, 27.5)], fill=tone(BRONZE, 0.46),
+    x0, y0, x1, y1 = plan_box("altar")
+    d.rectangle([cub(x0, y0), cub(x1, y1)], fill=tone(BRONZE, 0.46),
                 outline=BRONZE if not dim else tuple(c // 2 for c in BRONZE),
                 width=3)
 
@@ -361,39 +365,36 @@ def draw_chrome(d, chapter, verse, caption):
 
 def hl_wall(od, side, alpha, frac):
     a = g(alpha)
+    cx0, cy0, cx1, cy1 = COURT
+    (n0, n1), (s0, s1) = FLANKS
     if side == "south":
-        x0, y0 = cub(0, 50); x1, _ = cub(100 * frac, 50)
+        x0, y0 = cub(cx0, cy1); x1, _ = cub(cx1 * frac, cy1)
         od.line([(x0, y0), (x1, y0)], fill=a, width=6)
     elif side == "north":
-        x0, y0 = cub(0, 0); x1, _ = cub(100 * frac, 0)
+        x0, y0 = cub(cx0, cy0); x1, _ = cub(cx1 * frac, cy0)
         od.line([(x0, y0), (x1, y0)], fill=a, width=6)
     elif side == "west":
-        x0, y0 = cub(0, 0); _, y1 = cub(0, 50 * frac)
+        x0, y0 = cub(cx0, cy0); _, y1 = cub(cx0, cy1 * frac)
         od.line([(x0, y0), (x0, y1)], fill=a, width=6)
     elif side == "east_full":
-        x0, y0 = cub(100, 0); _, y1 = cub(100, 50 * frac)
+        x0, y0 = cub(cx1, cy0); _, y1 = cub(cx1, cy1 * frac)
         od.line([(x0, y0), (x0, y1)], fill=a, width=6)
     elif side == "east_flank_s":
-        x0, y0 = cub(100, 35); _, y1 = cub(100, 35 + 15 * frac)
+        x0, y0 = cub(cx1, s0); _, y1 = cub(cx1, s0 + (s1 - s0) * frac)
         od.line([(x0, y0), (x0, y1)], fill=a, width=6)
     elif side == "east_flank_n":
-        x0, y0 = cub(100, 0); _, y1 = cub(100, 15 * frac)
+        x0, y0 = cub(cx1, n0); _, y1 = cub(cx1, n1 * frac)
         od.line([(x0, y0), (x0, y1)], fill=a, width=6)
     elif side == "gate":
-        x0, y0 = cub(100, 15); _, y1 = cub(100, 15 + 20 * frac)
+        x0, y0 = cub(cx1, GATE[0])
+        _, y1 = cub(cx1, GATE[0] + (GATE[1] - GATE[0]) * frac)
         od.line([(x0, y0), (x0, y1)], fill=a, width=8)
 
 
 def hl_pillars(od, side, alpha, frac=1.0):
-    pts = {"south": [(x, 50) for x in range(0, 101, 5)],
-           "north": [(x, 0) for x in range(0, 101, 5)],
-           "west": [(0, y) for y in range(0, 51, 5)],
-           "gate": [(100, y) for y in (15, 21.67, 28.33, 35)],
-           "all": ([(x, 50) for x in range(0, 101, 5)]
-                   + [(x, 0) for x in range(0, 101, 5)]
-                   + [(0, y) for y in range(5, 50, 5)]
-                   + [(100, y) for y in (5, 10, 15, 21.67, 28.33, 35,
-                                          40, 45)])}[side]
+    pts = {"south": PILLARS["south"], "north": PILLARS["north"],
+           "west": PILLARS["west"], "gate": PILLARS["gate"],
+           "all": SN.pillar_points()}[side]
     n = max(1, int(len(pts) * frac))
     for x, y in pts[:n]:
         px, py = cub(x, y)
@@ -401,34 +402,43 @@ def hl_pillars(od, side, alpha, frac=1.0):
                    width=3)
 
 
+def _plan_rect(od, key, alpha, width):
+    x0, y0, x1, y1 = plan_box(key)
+    od.rectangle([cub(x0, y0), cub(x1, y1)], outline=g(alpha), width=width)
+
+
 def hl_altar_plan(od, alpha, frac=1.0):
-    od.rectangle([cub(62.5, 22.5), cub(67.5, 27.5)], outline=g(alpha),
-                 width=5)
+    _plan_rect(od, "altar", alpha, 5)
 
 
 def hl_ark_plan(od, alpha, frac=1.0):
-    od.rectangle([cub(13.75, 24.25), cub(16.25, 25.75)], outline=g(alpha),
-                 width=4)
+    _plan_rect(od, "ark", alpha, 4)
 
 
 def hl_table_plan(od, alpha, frac=1.0):
-    od.rectangle([cub(29, 21.2), cub(31, 22.2)], outline=g(alpha), width=4)
+    _plan_rect(od, "table", alpha, 4)
 
 
 def hl_veil_plan(od, alpha, frac=1.0):
-    od.line([cub(20, 20), cub(20, 30)], fill=g(alpha), width=5)
+    od.line([cub(VEIL_X, TENT[1]), cub(VEIL_X, TENT[3])], fill=g(alpha),
+            width=5)
 
 
 def hl_tent_wall(od, side, alpha, frac=1.0):
     a = g(alpha)
+    x0, y0, x1, y1 = TENT
     if side == "south":
-        od.line([cub(10, 30), cub(10 + 30 * frac, 30)], fill=a, width=5)
+        od.line([cub(x0, y1), cub(x0 + (x1 - x0) * frac, y1)], fill=a,
+                width=5)
     elif side == "north":
-        od.line([cub(10, 20), cub(10 + 30 * frac, 20)], fill=a, width=5)
+        od.line([cub(x0, y0), cub(x0 + (x1 - x0) * frac, y0)], fill=a,
+                width=5)
     elif side == "west":
-        od.line([cub(10, 20), cub(10, 20 + 10 * frac)], fill=a, width=5)
+        od.line([cub(x0, y0), cub(x0, y0 + (y1 - y0) * frac)], fill=a,
+                width=5)
     elif side == "door":
-        od.line([cub(40, 20), cub(40, 20 + 10 * frac)], fill=a, width=5)
+        od.line([cub(DOOR_X, y0), cub(DOOR_X, y0 + (y1 - y0) * frac)],
+                fill=a, width=5)
 
 
 def hl_whole(od, alpha, frac=1.0):
@@ -449,7 +459,7 @@ def hl_pegs(od, alpha, frac=1.0):
 
 
 def hl_lamp(od, alpha, frac=1.0):
-    lx, ly = cub(30, 28)
+    lx, ly = cub(*plan_point("lamp_stand"))
     od.ellipse([lx - 5, ly - 5, lx + 5, ly + 5], outline=g(alpha), width=3)
     for r in (10, 16, 22):
         od.ellipse([lx - r, ly - r, lx + r, ly + r],
@@ -458,8 +468,9 @@ def hl_lamp(od, alpha, frac=1.0):
 
 
 def hl_tent(od, alpha, frac=1.0):
-    od.rectangle([cub(10, 20), cub(40, 30)], outline=g(alpha), width=4)
-    od.line([cub(20, 20), cub(20, 30)], fill=g(alpha), width=3)
+    x0, y0, x1, y1 = TENT
+    od.rectangle([cub(x0, y0), cub(x1, y1)], outline=g(alpha), width=4)
+    od.line([cub(VEIL_X, y0), cub(VEIL_X, y1)], fill=g(alpha), width=3)
 
 
 def hl_dims(od, alpha, frac=1.0):
@@ -547,7 +558,7 @@ def horn_points(hx0, hy0, hx1, hy1, out):
 
 
 def inset_altar(d, od, part, alpha, frac):
-    panel(d, "THE BRONZE ALTAR", "acacia wood overlaid with bronze")
+    panel(d, "THE BRONZE ALTAR", "acacia wood overlaid with brass")
     body = [AX, AY, AX + AW, AY + AH]
     horns = [[AX - 6, AY - 22, AX + 16, AY],
              [AX + AW - 16, AY - 22, AX + AW + 6, AY]]
@@ -610,9 +621,9 @@ def inset_altar(d, od, part, alpha, frac):
 # incense. The labels lost the words the drawings took over — which is also
 # what keeps them inside the panel now that there is an icon gutter.
 MATERIAL_ROWS = [
-    ("metals", "gold, silver, and bronze"),
+    ("metals", "gold, silver, and brass"),
     ("fabrics", "blue, purple, scarlet · linen · goats' hair"),
-    ("skins_wood", "rams' skins · fine leather · acacia"),
+    ("skins_wood", "rams' skins · sea cow hides · acacia"),
     ("oil_spice", "oil for the light · spices"),
     ("stones", "onyx and setting stones"),
 ]
@@ -1056,7 +1067,7 @@ def _branch_joints(r, s):
 
 
 def inset_lampstand(d, od, part, alpha, frac):
-    panel(d, "THE GOLDEN LAMPSTAND", "hammered from one talent of pure gold")
+    panel(d, "THE LAMP STAND", "hammered from one talent of pure gold")
 
     # A lampstand is a slender thing: the branches are drawn thin, and the
     # shaft goes down AFTER them so the six roots tuck behind it instead of
@@ -1230,7 +1241,7 @@ def inset_curtains(d, od, part, alpha, frac, kind="linen"):
 
 def inset_coverings(d, od, part, alpha, frac):
     panel(d, "THE COVERINGS OF THE TENT", "layered over the curtains")
-    layers = [("fine leather, above all", BROWN),
+    layers = [("sea cow hides, above all", BROWN),
               ("rams' skins, dyed red", RED),
               ("curtains of goats' hair", (85, 82, 76)),
               ("fine linen with cherubim (innermost)",
@@ -1571,7 +1582,7 @@ CH26 = {
          [("the mercy seat, in the Most Holy", 25, 36.5)]),
     35: ("the table on the north; the lampstand on the south",
          [(hl_table_plan, {}, False), (hl_lamp, {}, False)], None,
-         [("table north · lampstand south", 25, 36.5)]),
+         [("table north · lamp stand south", 25, 36.5)]),
     36: ("a screen for the door of the tent, embroidered",
          [(hl_tent_wall, {"side": "door"}, False)], ("screen", "colors"), []),
     37: ("five pillars of acacia, with bases of bronze",
@@ -1590,7 +1601,7 @@ CH27 = {
     9: ("south side — hangings of 100 cubits", [wall("south")], None,
         [("100 cubits of fine twined linen", 50, 44)]),
     10: ("its twenty pillars on bronze sockets", [(hl_pillars, {"side": "south"}, True)], None,
-         [("20 pillars · bronze sockets · silver hooks", 50, 44)]),
+         [("20 pillars · brass sockets · silver hooks", 50, 44)]),
     11: ("north side likewise — 100 cubits, twenty pillars",
          [wall("north"), (hl_pillars, {"side": "north"}, True)], None,
          [("100 cubits · 20 pillars", 50, 6)]),
@@ -1608,7 +1619,7 @@ CH27 = {
          [("embroidered screen · 4 pillars", 80, 40)]),
     17: ("all the pillars — silver bands, bronze sockets",
          [(hl_pillars, {"side": "all"}, True)], None,
-         [("silver hooks and bands · bronze sockets", 50, 44)]),
+         [("silver hooks and fillets · brass sockets", 50, 44)]),
     18: ("the court: 100 long, 50 wide, 5 high",
          [(hl_dims, {}, False)], None,
          [("hangings 5 cubits high, of fine twined linen", 50, 44)]),

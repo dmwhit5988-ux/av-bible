@@ -617,6 +617,11 @@ const REFERENCES = [
     blurb: "One family tree of the whole Old Testament, from Adam. Drag, pinch or scroll, and find anyone by name.",
     href: "/visuals/reference/Old_Testament_family_tree.html",
   },
+  {
+    title: "The Tabernacle",
+    blurb: "The court, the tent and its furnishings, to scale in cubits. Tap a part for its measurements and verses.",
+    href: "/visuals/reference/Tabernacle.html",
+  },
 ];
 
 function buildReferenceList() {

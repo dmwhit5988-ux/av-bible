@@ -19,7 +19,7 @@ On a verse without a picture, the stage says the verse or chapter "isn't illustr
 yet" and offers a button that opens the ✦ list of illustrated chapters. When
 consecutive verses share a picture, it keeps playing and doesn't restart. The
 Reference button opens charts that stand on their own, not tied to a verse; today
-that is the Old Testament family tree.
+that is the Old Testament family tree and the Tabernacle.
 
 ## How it's made
 
@@ -91,7 +91,7 @@ Studio's **Save + manifest** before you look.
 | `web/` | The site root, which Cloudflare serves as it is. It holds the web app (`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`) and the three content folders below. `web/.assetsignore` lists the files the upload leaves out. |
 | `web/audio/` | The narration MP3s and their manifest. |
 | `web/bibles/WEB/` | The WEB text, one JSON file per chapter. |
-| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree ([docs/reference-charts.md](docs/reference-charts.md)). |
+| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree and the Tabernacle ([docs/reference-charts.md](docs/reference-charts.md)). |
 | `sources/` | Ignored: `eng-web.usfx.xml`, the source text that `import_translation.py` turns into `web/bibles/WEB/`. |
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
@@ -162,9 +162,9 @@ most use `svg_figures.py`. The table lists each family's other dependencies:
 |---|---|---|
 | Genesis 1–4, 6–9, 10, 11:1–9 | `generate_genesis{1,2,3,4,69,10,11}_svg.py` | `generate_tribal_maps.py`: `MapFrame` for Genesis 10 and 11, and water colours for Genesis 1, 2 and 6–9. Genesis 1 and 3 reuse Genesis 2's palette. Genesis 11 reuses Genesis 10's map. |
 | Genesis 5, 11:10–32 | `generate_genealogy_svg.py` | `generate_genealogy.py` |
-| Exodus 25, 27 and Exodus 26 | `generate_exodus2527_svg.py`, `generate_exodus26_svg.py` | `generate_tabernacle.py`, which holds the Exodus 25–27 spec. The Exodus 25, 27 family also reuses Exodus 26. |
+| Exodus 25, 27 and Exodus 26 | `generate_exodus2527_svg.py`, `generate_exodus26_svg.py` | `generate_tabernacle.py`, which holds the Exodus 25–27 spec, and `sanctuary.py`, the Tabernacle model its plan draws. The Exodus 25, 27 family also reuses Exodus 26. |
 | Exodus 28 | `generate_exodus28_svg.py` | `svg_priest.py`, `svg_vocab.py` |
-| Numbers 1–2, 3–4 | `generate_numbers1_2_svg.py`, `generate_numbers3_4_svg.py` | Numbers 1–2 takes colours from `generate_tribal_maps.py` and `generate_genesis2_svg.py`. |
+| Numbers 1–2, 3–4 | `generate_numbers1_2_svg.py`, `generate_numbers3_4_svg.py` | `sanctuary.py` for the court at the heart of the camp. Numbers 1–2 takes colours from `generate_tribal_maps.py` and `generate_genesis2_svg.py`. |
 | Numbers 32, 34 | `generate_numbers32_svg.py`, `generate_numbers34_svg.py` | `generate_tribal_maps.py`, which holds the shared geometry. Numbers 34 is a camera tour on `svg_map_camera.py`. |
 | 1 Chronicles 1–9 | `generate_1chronicles_tree_svg.py` | `generate_1chronicles.py`, `chronicles_tree.py`, `ot_grafts.py`, `svg_chronicles_world.py`, `svg_family_lines.py`, which draws the lines that join each family, `layout_regions.py`, which lays the tree out in a fan with a titled panel for each son of Israel, and `svg_silhouettes.py`, which draws each branch not read yet as one faint block |
 | Matthew 1 | `generate_matthew1_svg.py` | `matthew_tree.py`, `svg_matthew_world.py`, `svg_matthew_nativity.py`, `svg_chronicles_world.py`, `svg_family_lines.py` |
@@ -181,6 +181,9 @@ The libraries most generators share:
   helpers.
 - `generate_tabernacle.py` holds the house palette, output paths and fonts, and also
   the Exodus 25–27 spec.
+- `sanctuary.py` is the one Tabernacle model, in cubits: the court, the gate, the
+  sixty pillars, the tent and the furnishings, each measurement marked as stated by
+  the text, derived from it or not given, with its verses.
 - `svg_figures.py` is the shared figure vocabulary: people, creatures and objects.
 - `svg_vocab.py` holds small drawing helpers.
 - `generate_tribal_maps.py` holds the map projection and shared map data.
@@ -274,10 +277,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary
 ```
 
-There are 92 tests in six modules:
+There are 97 tests in seven modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -290,6 +293,9 @@ There are 92 tests in six modules:
   `use_ipa` is saved.
 - `test_verse_refs`: `verse_refs.parse`, which reads the ref strings on the
   family tree's boxes into verses for the reference page.
+- `test_sanctuary`: the Tabernacle model's sixty pillars and its measures, and that
+  each part named in a verse that names several (Exodus 30:26-28, 31:7-9, 35:12,
+  39:35, 39:40, Numbers 3:31) cites that verse.
 
 ## Docs
 

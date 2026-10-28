@@ -176,4 +176,6 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 ## Reference charts
 
-`web/visuals/reference/` holds the wall charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree and the OT timeline. They all deploy with the site. The app's Reference list links the OT family tree; the other three stay unlinked. See [reference-charts.md](reference-charts.md).
+`web/visuals/reference/` holds the reference charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree, the OT timeline and the Tabernacle. They all deploy with the site. The app's Reference list links the OT family tree and the Tabernacle; the other three stay unlinked. See [reference-charts.md](reference-charts.md).
+
+**The Tabernacle** is drawn from one model, `sanctuary.py`, in cubits: the Exodus 25–27 plan (`generate_tabernacle.draw_plan` and its `hl_*` highlights), the courts at the heart of the camp in Numbers 1–2 and 3–4, and the reference page. A new Tabernacle drawing maps the model onto its canvas with `sanctuary.Plan` (east to the right, or up as in Numbers) and places nothing of its own.

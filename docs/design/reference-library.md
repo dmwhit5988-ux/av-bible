@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and page 1 as a first cut.
+Proposed on 2026-10-27. Built so far: the shelf, and pages 1 and 2 as first cuts.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -12,7 +12,7 @@ Proposed on 2026-10-27. Built so far: the shelf, and page 1 as a first cut.
 - turning a phone to landscape doesn't put the stage in fullscreen while a panel is open (`onOrientationChange`), because API fullscreen shows only `#stage-wrap`;
 - an Escape the page handles itself (`e.defaultPrevented`) doesn't also close the frame.
 
-The one entry is the OT family tree. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
+Its entries are the OT family tree and the Tabernacle. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
 **Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
@@ -162,6 +162,10 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
   - Verses come from the per-verse maps, never from name matching.
 
 **2. The Tabernacle.** L · 3 files · all four lenses.
+- **Built 2026-10-27, as a first cut** ([reference-charts.md](../reference-charts.md#the-tabernacle)): `sanctuary.py`, the one model; the Exodus 25–27 plan and the Numbers 1–4 courts redrawn onto it; and `generate_tabernacle_reference.py`'s sheet with the plan, the measurements, the camp and the Exodus drawings, and a card for each part. It differs from the plan below:
+  - The court kept is `draw_plan`'s, but the Exodus 25–27 pictures still changed: the pillars are now sixty, one every five cubits, with the gate's four at 20–35, and the drawings' words are WEB's (brass, lamp stand, sea cow hides).
+  - The elevations are the Exodus 25–27 insets, reused whole on the sheet, not new drawings.
+  - Not built yet: the Garments tab, the offerings of Leviticus 1–7 (the "Used" tab), the tours, and incense-altar and basin drawings.
 - **Shows:**
   - The court and tent in plan at cubit scale. Each furnishing opens its elevation, materials and counts.
   - Layers: dimensions, the Numbers 2 camp, and the Levite clans and loads of Numbers 3–4.
@@ -180,7 +184,7 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 - **Feeds:** Exodus 29–30 and 35–40, Leviticus 1–9 and 16, Numbers 7 (about 19 chapters). The built Exodus 25–27 and Numbers 1–4 pictures move onto one model, and the Temple builds on it. Hebrews draws its own schematic tent, not the plan, and stays as it is.
 - **Risks:**
   - The furniture's positions are conventional, and the lampstand and laver are unmeasured; the cards say so.
-  - The published Numbers 1–4 pictures change. Exodus 25–27 don't, if `draw_plan`'s court is the one kept.
+  - The published Numbers 1–4 pictures change, and (as built) the Exodus 25–27 pictures' pillars and wording too; see the Built note above.
 
 **7. Land of Israel atlas.** XL · 3 files · all four lenses.
 - **Shows:** Dan to Beersheba, with 150–250 sites. One layer at a time: the allotments with the cities of refuge, David and Solomon, the divided kingdom, Jesus' day, Numbers 34.

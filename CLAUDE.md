@@ -84,9 +84,12 @@ explains the project, and `docs/` has the detail.
   `svg_generators.json`) are the source of truth. Never hand-edit a generated SVG.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
   `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt. All of
-  them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today just
-  the OT family tree) are linked from the app. The 1–2 Chronicles chart is a frozen
-  file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
+  them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today the
+  OT family tree and the Tabernacle) are linked from the app. The 1–2 Chronicles chart
+  is a frozen file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
+- Take the Tabernacle's court, tent, pillars and furnishings from `sanctuary.py`, the
+  one model in cubits that the Exodus 25–27 plan, the Numbers 1–4 courts and the
+  Tabernacle reference page all draw from. Don't place them again in a drawing.
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
   lengths.
 - Animate with SMIL, and keep the motion.
@@ -105,7 +108,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.
