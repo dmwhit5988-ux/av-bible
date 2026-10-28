@@ -124,8 +124,11 @@ _PAGE = r"""<!doctype html>
   .flag{display:inline-block;font-size:10px;letter-spacing:.5px;text-transform:uppercase;
        padding:1px 6px;border-radius:8px;border:1px solid #4a4658;margin:0 4px 0 6px;
        color:#a89f88;white-space:nowrap}
-  .flag.stated,.flag.known{color:#fff4aa;border-color:#8a6d2c}
+  .flag.stated,.flag.known,.flag.right{color:#fff4aa;border-color:#8a6d2c}
   .flag.not-given,.flag.possible{font-style:italic}
+  .flag.evil{color:#e0a0a8;border-color:#7a3a48}
+  a.chip{display:inline-block;text-decoration:none;border:1px solid #4a4658;
+       border-radius:14px;background:#16161f}
 </style>
 <div id="bar">
   <div id="find">
@@ -421,6 +424,9 @@ function renderPart(keep){const i=state.sel,it=items[i];let h=cardHead(it);
   // a namesake's chip says which one it is
   for(const j of it.see||[])links.push(chip(j,items[j].n===it.n&&items[j].s?
     ` <span class="c-book">· ${esc(items[j].s)}</span>`:''));
+  // `ln`: another reference page (a king's box on the family tree), opened
+  // in the same frame
+  for(const[label,href]of it.ln||[])links.push(`<a class="chip v" href="${esc(href)}">${esc(label)} ↗</a>`);
   if(links.length)h+=`<div class="c-row"><span class="c-lab">See</span>${links.join('')}</div>`;
   for(const[g,rs]of it.rg||[])if(rs.length)h+=`<div class="c-row"><span class="c-lab">${esc(g)}</span>${verseChips(rs)}</div>`;
   h+=`<div id="vv" hidden></div>`;

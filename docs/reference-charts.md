@@ -4,11 +4,11 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The four generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The five generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's and the atlas's) gets more. The family tree's cards are people (below); the Tabernacle's are parts and the atlas's places (`"card": "parts"`, see [The Tabernacle](#the-tabernacle) and [The Land of Israel](#the-land-of-israel)):
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the atlas's and the kings') gets more. The family tree's cards are people (below); the Tabernacle's are parts, the atlas's places and the kings page's reigns, prophets, nations and judges (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [The Land of Israel](#the-land-of-israel) and [Kings and prophets](#kings-and-prophets)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -28,15 +28,15 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 
 ## Status
 
-- **Deployed.** All six charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree, the Tabernacle and the Land of Israel.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Deployed.** All seven charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
+- **Linked: the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 15 deploy files, the three sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 18 deploy files, the four sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -46,6 +46,7 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
 | [The Tabernacle](#the-tabernacle) | `Tabernacle.svg` / `.json` / `.html` | 2,860 × 2,906 px, about 100 KB, 34 cards | `generate_tabernacle_reference.py` |
 | [The Land of Israel](#the-land-of-israel) | `Land_of_Israel.svg` / `.json` / `.html` | 6,103 × 7,680 px, about 110 KB, 212 places and 255 cards; the sidecar is about 226 KB | `generate_israel_atlas.py` |
+| [Kings and prophets](#kings-and-prophets) | `Kings_and_prophets.svg` / `.json` / `.html` | 2,370 × 6,684 px, about 80 KB, 139 cards; the sidecar is about 96 KB | `generate_kings_reference.py` |
 
 ## The Old Testament family tree
 
@@ -214,5 +215,32 @@ An atlas of the land from Sidon to Kadesh Barnea and from the Great Sea to Basha
 ```
 .venv/Scripts/python.exe generate_israel_atlas.py      # rebuild the .svg, .json and .html
 .venv/Scripts/python.exe -m unittest test_gazetteer     # the places, their verses and the lines
+```
+
+## Kings and prophets
+
+The kings of Israel and Judah from Saul to the exile, with the prophets beside them, the foreign kings they dealt with and the judges before them. Time runs down the sheet.
+
+**Two chronologies, never mixed.** The year line is Ussher's, the house count of the family tree and the timeline: its reigns are `chronology.BIND`'s, read by `kings.py` and checked against it by `test_kings`. Three reigns BIND doesn't hold have their own years with their sources (David's, Ish-bosheth's, and Tibni's, derived from 1 Kings 16:15–23). Thiele's years (The Mysterious Numbers of the Hebrew Kings, 1983) stand beside each reign in blue, in whole years as the Thiele column of Wikipedia's "Kings of Israel and Judah" gives them, with his coregencies on the cards. Thiele dates no reign before the division but Solomon's, so Saul and David have none.
+
+**The sheet.**
+- **The year line** stretches where reigns are short, so every bar carries its name: Zimri's seven days get the room of a year. The rail on the left gives the year, every fifty years ruled across.
+- **The reigns:** the united kingdom across the middle, then Judah on the left and Israel on the right. A bar's colour is the text's verdict on the king: did right, right but, did evil, or none. A reign beside another stands in the half of its column (Jehoram beside Jehoshaphat, Tibni against Omri, Ish-bosheth in David's years at Hebron). Ussher's interregna in Israel are hatched.
+- **The prophets** beside their kingdom: a writing prophet from the first to the last king his book's opening verse names, a narrative prophet over the reigns of the kings the histories set him beside. Where that overstates him, his span is the verses' own (Samuel died before David reigned; Jeremiah began in Josiah's 13th year; Amos's Uzziah and Jeroboam reigned together). Ezekiel, Daniel, Haggai and Zechariah stand at the years their verses give. Joel, Obadiah, Nahum, Habakkuk and Malachi name no king and are listed at the foot.
+- **The nations** between the two kingdoms: each foreign king at the year the text dates him by, a filled mark for a regnal year, accession or death, a hollow one when the text gives no year and he stands in the reign. Judah's dealings are labelled on the left of the column and Israel's on the right, each crowded run spread up and down around its years. In Ussher's count an event is at its king's regnal year, or at Ussher's own year where he reckons otherwise (`kings.EVENT_USSHER`: Samaria's fall in 721, Jerusalem's in 588).
+- **The judges** in a strip at the top, in order, with the years the text gives each and the enemy before them. They are not on the year line: their years, with the oppressions, add up to more than the 480 of 1 Kings 6:1.
+- **Landmarks:** the kingdom divided, Samaria falls, Jerusalem falls, the return under Cyrus.
+
+**The cards.**
+- **A king** gives both counts' years; the text's length (and his age), the accession formula, his father and mother, the verdict, how the reign ended and where he was buried, each with its verse; where the texts disagree, both figures; his passages in Samuel or Kings and in Chronicles; the prophets and events beside him; and a link to his box on the OT family tree. Ish-bosheth, Athaliah and Tibni reigned outside the line each realm counts, so they take no number, and Saul, David and Solomon are the 1st, 2nd and 3rd.
+- **A prophet** gives the verse that dates him and its words, the kings it names, his verses and, for a writing prophet, his book.
+- **A foreign king's dealing** gives the dating words and verse, Ussher's year, and the modern date with its source, which stands for Thiele's count: his synchronisms don't all follow from a king's whole-year reign.
+- **A judge** gives the years, the enemy before, the tribe and the story.
+
+Opened from a verse, the sheet starts on what the verse names, then on the reigns and books whose passages include it: from 2 Kings 18:5, Hezekiah; from Isaiah 1:1, Isaiah; from Judges 4:4, Deborah.
+
+```
+.venv/Scripts/python.exe generate_kings_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_kings          # BIND's years, the verses, the ties
 ```
 

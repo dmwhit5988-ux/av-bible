@@ -43,7 +43,7 @@ web/visuals/manifest.json (v2)               web/audio/manifest.json
      - **Range file.** `Book_c_v1-v2.svg` supplies every WEB verse in its range that has no file of its own.
      - **Identical copy.** A verse whose SVG is byte-identical to the previous verse's points at the first file of that run, unless its family sets `"replay_identical": true`.
    - Today the manifest has 2,241 verse keys in 73 chapters of 11 books. They point at 2,116 distinct files: 125 verses share the previous verse's picture, and there are no range files yet.
-   - `web/visuals/reference/` holds the wall charts. They are not in the manifest. They all deploy, and the app's Reference list (`REFERENCES` in `web/js/app.js`) links the OT family tree, the Tabernacle and the Land of Israel, each opening full screen in a frame over the app ([reference-charts.md](reference-charts.md)).
+   - `web/visuals/reference/` holds the wall charts. They are not in the manifest. They all deploy, and the app's Reference list (`REFERENCES` in `web/js/app.js`) links the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets, each opening full screen in a frame over the app ([reference-charts.md](reference-charts.md)).
 3. **Web.**
    - `web/js/visuals.js` loads `/visuals/manifest.json` (revalidated with `cache: "no-cache"`). `findVisual()` looks up the verse key, then the chapter key.
    - The stage is an `<img>`. When the next verse shows the same file, the `<img>` is left alone, so the picture keeps playing or stays finished. Pressing Play on the verse already shown restarts it with a fresh `?r=` URL.
@@ -96,8 +96,8 @@ On the Free plan, Cloudflare's Workers static assets take at most 20,000 files i
 | The web app's own files: `index.html`, `manifest.webmanifest`, `js/`, `css/`, `icons/` | 14 |
 | `web/audio/`: the narration MP3s and `manifest.json` | 2,349 |
 | `web/bibles/WEB/`: one JSON per chapter | 1,189 |
-| `web/visuals/`: the verse SVGs, `manifest.json` and the 15 reference-chart files | 2,257 |
-| **Total** | **5,809** |
+| `web/visuals/`: the verse SVGs, `manifest.json` and the 18 reference-chart files | 2,260 |
+| **Total** | **5,812** |
 
 - **Cost.** A fully produced verse costs about 2 files: 1 SVG and 1 MP3.
   - A range file costs one file for its whole run.

@@ -627,6 +627,11 @@ const REFERENCES = [
     blurb: "An atlas of the places the Bible names, each at the site it is identified with, marked known, probable or possible.",
     href: "/visuals/reference/Land_of_Israel.html",
   },
+  {
+    title: "Kings and prophets",
+    blurb: "The kings of Judah and Israel from Saul to the exile, the prophets beside them and the nations they dealt with, on Ussher's years with Thiele's beside them.",
+    href: "/visuals/reference/Kings_and_prophets.html",
+  },
 ];
 
 function buildReferenceList() {
@@ -731,6 +736,14 @@ els.refFrame.addEventListener("load", () => {
     els.refFrame.contentWindow.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !e.defaultPrevented && !els.refView.hidden) closeReferenceView();
     });
+    // A chart can link to another (a king's box on the family tree): the
+    // bar names the one now shown. The live site serves /x.html as /x.
+    const path = els.refFrame.contentWindow.location.pathname.replace(/\.html$/, "");
+    const ref = REFERENCES.find((r) => r.href.replace(/\.html$/, "") === path);
+    if (ref) {
+      els.refViewTitle.textContent = ref.title;
+      els.refFrame.title = ref.title;
+    }
   } catch {
     // a cross-origin page: Back still closes it
   }

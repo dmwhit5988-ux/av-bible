@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2 and 7 as first cuts.
+Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 4 and 7 as first cuts.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -12,7 +12,7 @@ Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2 and 7 as first c
 - turning a phone to landscape doesn't put the stage in fullscreen while a panel is open (`onOrientationChange`), because API fullscreen shows only `#stage-wrap`;
 - an Escape the page handles itself (`e.defaultPrevented`) doesn't also close the frame.
 
-Its entries are the OT family tree, the Tabernacle and the Land of Israel. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
+Its entries are the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
 **Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
@@ -119,7 +119,7 @@ Reference pages aren't narrated, so short labels and numbers belong on the drawi
 
 ### Files and registration
 
-- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`); 15 reference files exist today, three pages' worth among them. Against 5,809 today (`count_deploy_files()`), the remaining pages leave about 14,160 under `DEPLOY_FILE_LIMIT`.
+- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`); 18 reference files exist today, four pages' worth among them. Against 5,812 today (`count_deploy_files()`), the remaining pages leave about 14,160 under `DEPLOY_FILE_LIMIT`.
 - **Naming.** The folder stays flat. `build_manifest._scan_files` reads any subfolder of `web/visuals/reference/` as a chapter folder and would key its SVGs; `test_registry` reads only numbered folders. No `Book_c_v` names, and no `.xml`.
 - **Registration.** Today an entry is a hand-committed line in `REFERENCES`.
   - Proposed instead: the generators write `reference/index.json` (title, blurb, href, order, chapters covered), and the app fetches it with `cache: "no-cache"`.
@@ -209,6 +209,12 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
   - The Dead Sea is drawn at high water, as `acts_geography` draws lakes, and the legend says so.
 
 **4. Kings and prophets.** M · 2 files · all four lenses.
+- **Built 2026-10-28, as a first cut** ([reference-charts.md](../reference-charts.md#kings-and-prophets)): `kings.py`, `prophets.py` and `generate_kings_reference.py`. The owner chose Ussher with a Thiele rail. It differs from the plan below:
+  - Thiele's years stand beside each reign, not on a chip that switches the sheet: the year line is Ussher's alone, and the two counts are never mixed.
+  - Thiele's years are whole years from one table, with his coregencies on the cards; his split years (931/930) aren't drawn.
+  - Foreign kings are events at the regnal year the text dates them by, not bars of their own reigns.
+  - The judges are a strip in order with their stated years, not on the year line.
+  - The year line is the page's own stretched axis; `timeline_axis.py` isn't lifted yet.
 - **Shows:**
   - Judah and Israel as two lanes of reign bars from Saul to the exile, with judges above.
   - Interregna are hatched and overlaps stacked. Prophets stand beside the reigns their opening verses name, and foreign kings appear in WEB spelling.
@@ -379,12 +385,11 @@ These wait on the gazetteer, `sanctuary.py` or the AD axis.
 
 ## Open questions
 
-Answered on 2026-10-27: which map comes first (the Israel atlas), whether to regenerate Numbers 1–4 onto one Tabernacle model (yes), and whether to link the OT timeline now (no). See Status.
+Answered on 2026-10-27: which map comes first (the Israel atlas), whether to regenerate Numbers 1–4 onto one Tabernacle model (yes), and whether to link the OT timeline now (no). On 2026-10-28: the kings' chronology (Ussher, with Thiele's years beside it). See Status.
 
 1. Is this the right split: short labels and numbers on the drawing, sentences in the card?
-2. For the kings, use Ussher with a Thiele rail (about 39 rows to source), or Ussher only?
-3. For traditional sites (Sinai, the Exodus route, Golgotha), show one reading labelled "traditional", or only what is known?
-4. Should Herod's temple appear as a dashed schematic credited to Josephus, or should the page stick to Scripture?
-5. May a public-domain harmony (Robertson 1922, or Stevens and Burton) guide the order of the Gospel events?
-6. May the name finder make the house respellings public?
-7. Should a generated `index.json` replace the hand-edited `REFERENCES`?
+2. For traditional sites (Sinai, the Exodus route, Golgotha), show one reading labelled "traditional", or only what is known?
+3. Should Herod's temple appear as a dashed schematic credited to Josephus, or should the page stick to Scripture?
+4. May a public-domain harmony (Robertson 1922, or Stevens and Burton) guide the order of the Gospel events?
+5. May the name finder make the house respellings public?
+6. Should a generated `index.json` replace the hand-edited `REFERENCES`?
