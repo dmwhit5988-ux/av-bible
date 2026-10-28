@@ -1,5 +1,5 @@
 import { BOOKS, DEFAULTS, chaptersIn, nextChapter, prevChapter } from "./data.js";
-import { fetchChapter, PassageError } from "./bible.js";
+import { fetchChapter, PassageError, safeBookName } from "./bible.js";
 import { VisualStage, bookGradient } from "./visuals.js";
 import { Player } from "./tts.js";
 
@@ -219,25 +219,37 @@ function saveSelection() {
 // Chapter loading
 // ---------------------------------------------------------------------
 
+// Each load takes a number, and only the newest may touch the screen: a slow
+// fetch for the chapter a roll was heading to must not land on top of one
+// asked for since (a jump from a reference chart, say). Resolves true when
+// this load is the one that now stands and it succeeded.
+let loadSeq = 0;
+
 async function loadChapter({ resetStage = true, startAtEnd = false } = {}) {
+  const mine = ++loadSeq;
   const book = els.book.value;
   const chapter = Number(els.chapter.value);
   player.stop();
+  let data;
   try {
-    passage = await fetchChapter(book, chapter);
+    data = await fetchChapter(book, chapter);
   } catch (e) {
+    if (mine !== loadSeq) return false;
     passage = null;
     showIdle(e instanceof PassageError ? e.message : "Could not load this chapter.");
     els.versePanel.innerHTML = "";
     els.verse.innerHTML = "";
-    return;
+    return false;
   }
+  if (mine !== loadSeq) return false;
+  passage = data;
   populateVerses(passage.verses);
   renderVersePanel();
   player.load(passage.verses, startAtEnd ? passage.verses.length - 1 : 0);
   player.voice = pickVoice();
   saveSelection();
   if (resetStage) showIdle();
+  return true;
 }
 
 // Roll from the last verse of the current chapter into the first verse of the
@@ -254,10 +266,10 @@ async function advanceToNextChapter(wasPlaying) {
   populateChapters(next.book);
   els.chapter.value = String(next.chapter);
   rolling = wasPlaying;
-  await loadChapter({ resetStage: false });
+  const loaded = await loadChapter({ resetStage: false });
   rolling = false;
-  if (passage && wasPlaying) player.play();
-  else if (passage) renderVerse(0);
+  if (loaded && wasPlaying) player.play();
+  else if (loaded) renderVerse(0);
   syncWakeLock(); // if the load failed (e.g. offline), let the screen sleep
 }
 
@@ -272,10 +284,10 @@ async function retreatToPrevChapter(wasPlaying) {
   populateChapters(prev.book);
   els.chapter.value = String(prev.chapter);
   rolling = wasPlaying;
-  await loadChapter({ resetStage: false, startAtEnd: true });
+  const loaded = await loadChapter({ resetStage: false, startAtEnd: true });
   rolling = false;
-  if (passage && wasPlaying) player.play();
-  else if (passage) renderVerse(player.index);
+  if (loaded && wasPlaying) player.play();
+  else if (loaded) renderVerse(player.index);
   syncWakeLock(); // if the load failed (e.g. offline), let the screen sleep
 }
 
@@ -550,8 +562,7 @@ function buildIllustratedList() {
       els.chapter.value = chip.dataset.chapter;
       illReturnFocus = els.btnPlay; // ready to press Play on the new chapter
       closeIllustrated();
-      await loadChapter({ resetStage: false });
-      if (passage) renderVerse(0);
+      if (await loadChapter({ resetStage: false })) renderVerse(0);
     });
   });
 }
@@ -641,15 +652,58 @@ function closeReferenceList({ restoreFocus = true } = {}) {
   back.focus();
 }
 
+// A chart opens at the verse the reader is on (#at=1_Chronicles.2.5), and a
+// chart that knows which of its names that verse speaks starts on them.
 function openReferenceView(ref) {
   setBehindInert(true);
   els.refViewTitle.textContent = ref.title;
   els.refFrame.title = ref.title;
   els.refOpen.href = ref.href;
-  els.refFrame.src = ref.href;
+  let at = "";
+  if (passage && passage.verses.length) {
+    const i = Math.min(Math.max(player.index, 0), passage.verses.length - 1);
+    at = `#at=${safeBookName(passage.book)}.${passage.chapter}.${passage.verses[i][0]}`;
+  }
+  // On the next task: closing sets the frame to about:blank, and Chrome
+  // drops a new address set in the same task as that.
+  setTimeout(() => { els.refFrame.src = ref.href + at; }, 0);
   els.refView.hidden = false;
   els.refBack.focus();
 }
+
+// ↗ opens the chart as it now stands, with whatever is selected in its
+// address, so the link it opens is the one to share.
+els.refOpen.addEventListener("click", () => {
+  try {
+    const here = els.refFrame.contentWindow.location;
+    if (here.origin === location.origin && here.href !== "about:blank") {
+      els.refOpen.href = here.href;
+    }
+  } catch {
+    // keep the chart's own address
+  }
+});
+
+// A chart's "Open in Theoria" asks for a passage. Only the framed chart may
+// ask, and only for a book and chapter the app has. Loading the chapter
+// stops any narration (loadChapter), and the verse is shown, not played:
+// a posted message is not a tap, so it can't unlock audio on iOS.
+addEventListener("message", async (e) => {
+  const msg = e.data;
+  if (e.origin !== location.origin || e.source !== els.refFrame.contentWindow) return;
+  if (!msg || msg.type !== "theoria:goto") return;
+  const book = BOOKS.find(([name]) => name === msg.book)?.[0];
+  const chapter = Number(msg.chapter);
+  if (!book || !Number.isInteger(chapter) || chapter < 1 || chapter > chaptersIn(book)) return;
+  closeReferenceView();
+  els.book.value = book;
+  populateChapters(book);
+  els.chapter.value = String(chapter);
+  if (!(await loadChapter({ resetStage: false }))) return;
+  const i = passage.verses.findIndex(([num]) => num === Number(msg.verse));
+  player.jumpTo(i >= 0 ? i : 0);
+  els.btnPlay.focus();
+});
 
 function closeReferenceView() {
   els.refView.hidden = true;

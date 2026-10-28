@@ -31,12 +31,15 @@ Layout notes
 Output: web/visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
 """
 
+import json
 import math
 import os
 import sys
 import textwrap
 
 import chronicles_tree as CT
+import family_tree_data
+import reference_viewer
 from chronicles_tree import walk
 from config import VISUALS_DIR
 from generate_tabernacle import font
@@ -1040,106 +1043,40 @@ def build_svg():
         f'data-title="The Old Testament family tree">\n'
         f'<title>The Old Testament family tree \u2014 one contiguous descent from Adam</title>\n'
         f'{body}\n</svg>\n')
-    return svg, W, H, len(nodes)
-
-
-# The pan/zoom/search page beside each chart. The web app's Reference list
-# opens it in a frame (web/js/app.js REFERENCES), so it has to work by touch:
-# one finger pans, two pinch, and the search box is 16px so that iOS doesn't
-# zoom the whole page when it takes focus.
-VIEWER = """<!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>%(title)s</title>
-<style>
-  html,body{margin:0;height:100%%;background:#0d0d14;color:#d8c68f;
-            font-family:Georgia,'Times New Roman',serif;overflow:hidden}
-  #stage{position:absolute;inset:0;cursor:grab;touch-action:none}
-  #stage.drag{cursor:grabbing}
-  #stage svg{position:absolute;top:0;left:0;transform-origin:0 0}
-  #bar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;
-       flex-wrap:wrap;gap:8px 10px;align-items:center;padding:10px 14px;
-       background:linear-gradient(#0d0d14ee,#0d0d1400)}
-  input,button{font:14px Georgia,serif;background:#16161f;color:#d8c68f;
-       border:1px solid #4a4658;border-radius:6px;padding:6px 10px}
-  input{font-size:16px;flex:0 1 330px;min-width:0}
-  button{cursor:pointer;min-width:36px}
-  #hits{font-size:13px;color:#8a8270;font-style:italic}
-  .found rect:first-of-type{stroke:#fff4aa!important;stroke-width:3.5!important}
-</style>
-<div id="bar">
-  <input id="q" placeholder="find a name — Zerubbabel, Jochebed, Achsah…" size="34">
-  <button id="prev">&#8593;</button><button id="next">&#8595;</button>
-  <span id="hits"></span>
-  <button id="fit">fit</button><button id="in">+</button><button id="out">&minus;</button>
-</div>
-<div id="stage"></div>
-<script>
-const stage=document.getElementById('stage');
-fetch('%(stem)s.svg').then(r=>r.text()).then(t=>{stage.innerHTML=t;init()});
-let k=1,tx=0,ty=0,kmin=0.01,svg,groups=[],at=-1;
-function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`}
-function fit(){const w=%(w)s,h=%(h)s;k=Math.min(innerWidth/w,innerHeight/h);
-  kmin=Math.min(0.01,k);tx=(innerWidth-w*k)/2;ty=(innerHeight-h*k)/2;apply()}
-function init(){svg=stage.querySelector('svg');
-  svg.removeAttribute('width');svg.removeAttribute('height');
-  svg.setAttribute('width',%(w)s);svg.setAttribute('height',%(h)s);
-  groups=[...svg.querySelectorAll('text')];fit()}
-function zoomAt(x,y,f){const nk=Math.min(8,Math.max(kmin,k*f));
-  tx=x-(x-tx)*(nk/k);ty=y-(y-ty)*(nk/k);k=nk}
-stage.addEventListener('wheel',e=>{e.preventDefault();
-  zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0015));apply()},{passive:false});
-const pts=new Map();let pinch=null;
-function span(){const[a,b]=[...pts.values()];
-  return{x:(a.x+b.x)/2,y:(a.y+b.y)/2,d:Math.hypot(a.x-b.x,a.y-b.y)||1}}
-stage.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  stage.classList.add('drag');stage.setPointerCapture(e.pointerId);
-  pinch=pts.size===2?span():null});
-stage.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
-  if(pts.size===1){tx+=e.clientX-p.x;ty+=e.clientY-p.y}
-  p.x=e.clientX;p.y=e.clientY;
-  if(pts.size===2&&pinch){const s=span();tx+=s.x-pinch.x;ty+=s.y-pinch.y;
-    zoomAt(s.x,s.y,s.d/pinch.d);pinch=s}
-  apply()});
-function lift(e){pts.delete(e.pointerId);pinch=pts.size===2?span():null;
-  if(!pts.size)stage.classList.remove('drag')}
-stage.addEventListener('pointerup',lift);stage.addEventListener('pointercancel',lift);
-document.addEventListener('gesturestart',e=>e.preventDefault());
-document.getElementById('fit').onclick=fit;
-document.getElementById('in').onclick=()=>{zoomAt(innerWidth/2,innerHeight/2,1.3);apply()};
-document.getElementById('out').onclick=()=>{zoomAt(innerWidth/2,innerHeight/2,1/1.3);apply()};
-let matches=[];
-function search(){const s=document.getElementById('q').value.trim().toLowerCase();
-  matches=s?groups.filter(t=>t.textContent.toLowerCase().includes(s)):[];
-  document.getElementById('hits').textContent=s?`${matches.length} found`:'';
-  at=-1;if(matches.length)go(0)}
-function go(i){at=(i+matches.length)%%matches.length;const t=matches[at];
-  let b=t.getBoundingClientRect();
-  if(k<1){zoomAt(b.left+b.width/2,b.top+b.height/2,1/k);apply();
-    b=t.getBoundingClientRect()}
-  tx-=b.left+b.width/2-innerWidth/2;ty-=b.top+b.height/2-innerHeight/2;apply();
-  t.style.fill='#fff4aa';setTimeout(()=>t.style.fill='',2200);
-  document.getElementById('hits').textContent=`${at+1} / ${matches.length}`}
-document.getElementById('q').addEventListener('input',search);
-document.getElementById('next').onclick=()=>matches.length&&go(at+1);
-document.getElementById('prev').onclick=()=>matches.length&&go(at-1);
-</script>
-"""
+    return svg, W, H, T, (left, top)
 
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
-    svg, W, H, n = build_svg()
+    svg, W, H, T, (left, top) = build_svg()
+    n = sum(1 for _ in walk(T.root))
     path = os.path.join(OUT_DIR, STEM + ".svg")
     with open(path, "w", encoding="utf-8") as f:
         f.write(svg)
+    dp = os.path.join(OUT_DIR, STEM + ".json")
+    previous = None             # its ids are the ones shared links carry
+    if os.path.exists(dp):
+        with open(dp, encoding="utf-8") as f:
+            previous = json.load(f)
+    data, misses = family_tree_data.sidecar(T, left, top, printed_gen,
+                                            previous)
+    with open(dp, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     vp = os.path.join(OUT_DIR, STEM + ".html")
     with open(vp, "w", encoding="utf-8") as f:
-        f.write(VIEWER % {"stem": STEM, "w": _fmt(W), "h": _fmt(H),
-                          "title": "The Old Testament family tree"})
+        f.write(reference_viewer.page(STEM, _fmt(W), _fmt(H),
+                                      "The Old Testament family tree",
+                                      data=True))
     size = os.path.getsize(path) / 1024
     print(f"{path}")
     print(f"  {n} nodes · {W:.0f} x {H:.0f} px · {size:.0f} KB")
+    refs = sum(len(it.get("r", [])) for it in data["items"])
+    print(f"{dp}")
+    print(f"  {refs} verse refs on {sum(1 for it in data['items'] if 'r' in it)}"
+          f" boxes · {os.path.getsize(dp) / 1024:.0f} KB · "
+          f"{len(misses)} camera verses that don't speak the name they light")
+    for lab, b, c, v in misses[:12]:
+        print(f"    {lab}: {b} {c}:{v}")
     print(f"{vp}")
     return 0
 

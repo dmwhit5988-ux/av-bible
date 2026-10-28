@@ -274,10 +274,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs
 ```
 
-There are 65 tests in five modules:
+There are 92 tests in six modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -288,6 +288,8 @@ There are 65 tests in five modules:
 - `test_azure_tts`: the Azure path, offline: IPA conversion (every stored `ipa`
   must convert), the SSML a verse becomes, engine routing, the usage meter and how
   `use_ipa` is saved.
+- `test_verse_refs`: `verse_refs.parse`, which reads the ref strings on the
+  family tree's boxes into verses for the reference page.
 
 ## Docs
 

@@ -4,11 +4,24 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The two generators write their viewer pages from `generate_ot_family_tree_svg.VIEWER`. It offers:
+**The viewer.** The two generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
-- a name search that steps through the hits (↑ ↓) and zooms each one to at least full size, where names are 15 px.
+- a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus. The V6 and 1–2 Chronicles pages are older copies of the same viewer, with no pinch and no zoom-to-hit, because nothing writes them.
+A chart whose generator also writes a **sidecar** (`<stem>.json`, today only the family tree's) gets more:
+- **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
+- **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
+- **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
+  - the parent, or both where the mother is on the wife line;
+  - wives and children;
+  - the men only joined under him (a dashed join, "as the text implies"), apart from his sons;
+  - the family a reference chip stands in.
+- **Line to Adam** outlines every box up the line and frames them. A wife hangs under her husband, so his line isn't hers. Hers runs from her reference chip in her father's family where she has one (Leah's through Laban), and otherwise the card offers none.
+- **A verse chip** shows the verse, read from `/bibles/WEB/`. Inside the app, "Open in Theoria" posts `{type: "theoria:goto", book, chapter, verse}`, and the app closes the chart and goes to that verse without playing it.
+- **The address** keeps the selection (`#id=<id>`), so ↗ opens and shares what is on screen. The app opens a chart at `#at=<Book>.<chapter>.<verse>`, and the page starts on the names that verse speaks.
+- **Escape** closes the results, then the card, then (in the app) the chart.
+
+Without a sidecar (the OT timeline), the search steps through the sheet's own text and zooms each hit to at least full size, where names are 15 px. The V6 and 1–2 Chronicles pages are older copies of the viewer, with no pinch and no zoom-to-hit, because nothing writes them.
 
 ## Status
 
@@ -20,11 +33,11 @@ The search box is 16 px, because iOS zooms the whole page when a smaller field t
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 8 deploy files. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 9 deploy files, the tree's sidecar among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
-| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.html` | 26,946 × 16,736 px, about 1.3 MB, 1,254 boxes | `generate_ot_family_tree_svg.py` |
+| [The Old Testament family tree](#the-old-testament-family-tree) | `Old_Testament_family_tree.svg` / `.json` / `.html` | 26,946 × 16,736 px, about 1.3 MB, 1,254 boxes; the sidecar is about 215 KB | `generate_ot_family_tree_svg.py` |
 | [V6 heir-spine variant](#the-v6-heir-spine-variant) | `Old_Testament_family_tree_V6_heir_spine.svg` / `.html` | 21,162 × 13,759 px, about 1.4 MB | no script writes it; its layout is in `tools/layout_lab.py` |
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
 | [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
@@ -78,6 +91,25 @@ A cross-reference's gold arc runs from the edge of one box to the edge of the ot
 .venv/Scripts/python.exe generate_ot_family_tree_svg.py   # rebuild the .svg and .html
 .venv/Scripts/python.exe chronicles_tree.py               # audit the tree without drawing it, with the lookups to check
 ```
+
+**The sidecar.** `generate_ot_family_tree_svg.main` also writes `Old_Testament_family_tree.json` through `family_tree_data.sidecar`, so the page can say who a tapped box is. The SVG is unchanged by it. For each box it records:
+- **an id**: when the box is new, the shortest run of names from it up towards Adam that no other box shares (`stable_ids`), such as `azariah.ahimaaz`. Brothers of one name take `~2`. After that it keeps the id it was issued: the generator reads the last sidecar back (`issued_ids`), so a namesake grafted later doesn't change a shared link, and an id once issued is never given to another box. `N.key` isn't used, because it numbers namesakes in pre-order and so changes when a graft adds one. A link to an id the sheet no longer has opens the search on its name;
+- its box on the sheet, parent, children and reference chip;
+- **a relation** that parts namesakes (`relations`), and further up the line ("son of Azariah, son of Johanan") or by order ("named second") where it has to. Examples:
+  - "son of Ahimaaz", "wife of Boaz";
+  - "among the kings of Edom", "one of the priests' courses";
+  - "father of Hoshea, king of Israel" for a usurper's father hung in the kings' house.
+  - Where the line alone would say it wrong, the tree's data gives the words (`N.rel`): Tamar hangs on Judah by the wife line because Perez and Zerah are reckoned through her, and she reads as "Judah's daughter-in-law";
+- its generation (`printed_gen`), note, cross-references, and Ussher years from `chronology.bind`;
+- **its verses**, which come from four places and never from matching names across the canon:
+  - the box's own ref, read by `verse_refs.parse`, which checks every verse against WEB's versification and fails the build on one WEB doesn't have;
+  - each verse of the 1 Chronicles 1–9 camera (`svg_chronicles_world.World.lit`);
+  - Matthew 1:1–17's (`matthew_tree.MatthewLine.lit`);
+  - Genesis 5 and 11:10–32: a person's own paragraph and his father's in `generate_genealogy`'s tables, kept only where the verse speaks the name.
+
+World and `matthew_tree` build trees of their own, so `family_tree_data.pair` walks each down from Adam beside the chart's. Where `matthew_tree` joins a second name onto a box ("Jacob · Israel"), the chart's box gets it as another name (`a` in the sidecar). Boxes `matthew_tree` adds have no box on the chart (Matthew's line past Zerubbabel, Rahab, Uriah), except Bathsheba, whose cross-reference names the chart's own box for her. The generator prints the camera verses whose text doesn't speak the name they light: 12 today, all deliberate, such as 7:9's total lighting the sons it counts, and Matthew 1:6's "her who had been Uriah's wife".
+
+A box's verses are only as wide as those four sources. David's, for instance, are 1 Chronicles 2:15 and 3:1–9 and Matthew 1. Samuel and Kings reach a box only through its own ref.
 
 ## The V6 heir-spine variant
 

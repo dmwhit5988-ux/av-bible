@@ -57,7 +57,7 @@ class N:
 
     __slots__ = ("label", "note", "kids", "kind", "ref", "icon", "link",
                  "gap", "parent", "depth", "gen", "key",
-                 "xref", "src", "chip",
+                 "xref", "src", "chip", "rel",
                  # filled by the layout pass
                  "x", "y", "w", "h", "tw", "sw", "sh", "rows", "xw", "lx")
 
@@ -84,6 +84,12 @@ class N:
         # A REFERENCE CHIP: the node this one only points at (Tree.chip),
         # or None for an ordinary box.
         self.chip = None
+        # How the box stands to its parent, in words, where the link alone
+        # would say it wrong: Tamar hangs on Judah by the wife line because
+        # Perez and Zerah are reckoned through her, but she is his
+        # daughter-in-law. The reference page shows it (family_tree_data);
+        # the sheet draws only the line.
+        self.rel = None
         self.x = self.y = self.w = self.h = 0.0
         # Distance from this node's own centre to the LEFT edge of its
         # subtree. Always sw/2 under the centred layout, and not under the
@@ -585,6 +591,7 @@ def _judah(T):
     tam = T.find("Tamar", under=ju)
     tam.kind, tam.link = "woman", "wife"
     tam.note = "his daughter-in-law, Er's widow — Genesis 38"
+    tam.rel = "Judah's daughter-in-law"
 
     # 2:7 gives Achar a father (Carmi) but gives Carmi none. Joshua 7:1 puts
     # him under Zerah's son Zabdi — the Zimri of 2:6.

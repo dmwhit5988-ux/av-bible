@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Only the shelf and its first entry are built.
+Proposed on 2026-10-27. Built so far: the shelf, and page 1 as a first cut.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -14,11 +14,19 @@ Proposed on 2026-10-27. Only the shelf and its first entry are built.
 
 The one entry is the OT family tree. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
-**Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg` and `.html`. Publish commits the pages with the rest of `web/visuals`.
+**Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
 **Each page is the face of a reusable data module.** The 1 Chronicles 1–9 and Matthew 1 pictures are cameras over the tree the wall chart draws. They redraw it from `chronicles_tree` and `ot_grafts`; they don't reuse the chart's SVG. The pages below work the same way, so building a reference also builds the base for the backlog chapters it serves.
 
 Four lenses proposed the pages: reader (what a listener needs), author (what unlocks the backlog), craft (touch and performance) and canon (reach across the Bible). Each entry names the lenses that backed it. A reviewer then checked every name and claim against the code.
+
+**The owner's answers (2026-10-27).**
+- **The OT timeline stays unlinked.** It is useful as data, but it is the genealogy laid on years, and a timeline should stand apart from the tree. Its left part, the specific lives from Adam on, is the kind of thing a timeline page should show (pages 6 and 9).
+- **The Israel atlas is the first map** (page 7), ahead of Paul's journeys, because it serves more of the upcoming work.
+- **The Tabernacle settles on one model** (`sanctuary.py`), and the Numbers 1–4 pictures are regenerated onto it.
+- **Page 1, the tree, is built first.**
+
+Pages keep their numbers as names; the tier says when.
 
 **At a glance.** Effort runs S to XL; files are what a page adds to the deploy.
 
@@ -26,11 +34,11 @@ Four lenses proposed the pages: reader (what a listener needs), author (what unl
 |---|---|---|---|---|---|
 | 1 | OT family tree: tap, trace, jump | First | M | +1 | stable ids, `verse_refs.py` |
 | 2 | The Tabernacle (camp, Levites, garments, offerings) | First | L | 3 | `sanctuary.py` |
-| 3 | Paul's journeys and the assemblies | First (Journey 1) | M, then L–XL | 3 | `journeys.py`, `gazetteer.py` |
+| 3 | Paul's journeys and the assemblies | Next | M for Journey 1, then L–XL | 3 | `journeys.py`, `gazetteer.py` |
 | 4 | Kings and prophets | First | M | 2 | `prophets.py`, `timeline_axis.py` |
 | 5 | The twelve tribes (and the Twelve) | First | S | 1 | `tribes.py` |
 | 6 | Genesis 5 and 11: overlapping lives | Next | S | 1 | `timeline_axis.py` |
-| 7 | Land of Israel atlas | Next | XL | 3 | `gazetteer.py` (Levant) |
+| 7 | Land of Israel atlas | First (the first map) | XL | 3 | `gazetteer.py` (Levant) |
 | 8 | Solomon's Temple | Next | L | 3 | `sanctuary.py` |
 | 9 | When is this? The whole-Bible timeline | Next | L | 2 | `setting.py` |
 | 10 | The wilderness journey (Numbers 33) | Next | M | 2 | `wilderness.py` |
@@ -46,35 +54,39 @@ Four lenses proposed the pages: reader (what a listener needs), author (what unl
 
 ### The viewer: `reference_viewer.py`
 
-`VIEWER` moves out of `generate_ot_family_tree_svg`, and every generator writes its page from it. That includes `generate_ot_timeline_svg`, which reads it as `G.VIEWER` today. It is inlined into each `.html`, so it costs no files.
+`reference_viewer.page()` writes every chart's page, the OT timeline's included (`data=False`). It is inlined into each `.html`, so it costs no files. [reference-charts.md](../reference-charts.md) describes what it does today:
+- pinch and pan;
+- a sidecar (`family_tree_data.sidecar`) with ranked search over names, aliases and notes;
+- the held selection outline, with its card as a bottom sheet or side panel;
+- Line to Adam and verse chips;
+- `#id` and `#at` in the address, with ↗ reading the frame's address;
+- `viewport-fit=cover` with safe-area padding.
 
-It already has a viewport tag, pinch, `pointercancel`, centred +/−, a 16 px search box and zoom-to-hit. It still needs:
+It still needs:
 
-- **A settling camera.** The tree is one 26,946 × 16,736 px `<svg>` scaled by CSS, larger than iOS's biggest layer. The CSS transform should run only while a finger moves. About 120 ms after the last move, the camera goes into the `viewBox` so the vector redraws sharp. Refit on resize and rotation.
+- **A settling camera.** The tree is one 26,946 × 16,736 px `<svg>` scaled by CSS, larger than iOS's biggest layer. The CSS transform should run only while a finger moves. About 120 ms after the last move, the camera goes into the `viewBox` so the vector redraws sharp. Refit on resize and rotation. The owner found the iPhone smooth without it, so it waits for the iPad test.
 - **Detail bands.** The generator writes `<g data-lod>` bands, and all but one get `display:none`.
   - **Maps.** Each band's labels are placed in Python with `svg_map_camera.layout` and `clash` at the band's own scale, so they never touch. Both assume one 1024 × 576 frame today (`SAFE`, the HUD), so they are generalised to take the band's extent.
   - **The tree.** Its names sit inside boxes that `arrange` and `place` already keep apart, so its far band is the `REGIONS` titles and the heads they name.
-  - **Live text.** The tree's near band holds all 1,254 boxes, far over `svg_chronicles_world.IPAD_NAMES` (268 texts) and `IPAD_BOX_RECTS` (1,050 rects and texts). So the viewer also hides the boxes outside the view, using the sidecar's boxes. Those budgets were measured on animated camera files, so a static page is measured on the iPad before they are taken as its limit.
-- **A sidecar `<stem>.json`** (id, name, aliases, kind, box, layer, short note, refs). Search and cards read it, not the loose `<text>`; today "Asa" also finds "Asahel".
-- **A held highlight.** The selection stays outlined in HL (255, 244, 170) until the next pick, replacing the 2.2 s fill. Its card is a bottom sheet on phones, a side panel on desktop.
+  - **Live text.** The tree's near band holds all 1,254 boxes, far over `svg_chronicles_world.IPAD_NAMES` (268 texts) and `IPAD_BOX_RECTS` (1,050 rects and texts). So the viewer would also hide the boxes outside the view, using the sidecar's boxes. Those budgets were measured on animated camera files, so a static page is measured on the iPad before they are taken as its limit.
 - **Layer chips and tours.** Chips toggle `<g data-layer>` groups. The reader steps a tour with Prev/Next. Routes and genealogies draw once in SMIL (`fill="freeze"`), and a scrubber seeks with `setCurrentTime()`.
 - **Timelines.** A pinch stretches only the time axis and JS re-places the bars, so text is never CSS-scaled. Lanes are packed once in Python, in years, so JS only rescales. Its labels get their own clash test in JS, because PIL's measurements stay in Python. On a portrait phone, time runs down the screen.
-- **State in the hash** via `history.replaceState`. `app.js` sets ↗'s `href` once, from `REFERENCES`, so it reads the frame's address (same origin) when ↗ is tapped; then ↗ shares the current view.
-- **Safe-area padding**, which needs `viewport-fit=cover` in the viewer's viewport tag, as `index.html` has.
 - **Inline-SVG icons** instead of emoji glyphs.
 
 ### The passage protocol
 
-- **Out.** A verse chip posts `{type: "theoria:goto", book, chapter, verse}` to `location.origin`. `app.js` then:
+Built with page 1.
+
+- **Out.** "Open in Theoria" under a verse preview posts `{type: "theoria:goto", book, chapter, verse}` to `location.origin`. `app.js` then:
   - checks `e.origin`, `e.source` (the frame's `contentWindow`), `BOOKS` and `chaptersIn`, and closes the view;
-  - follows the ✦ chip path: it sets the book, calls `populateChapters`, sets the chapter and calls `loadChapter({resetStage: false})`;
-  - checks the verse against `passage.verses`, and calls `player.jumpTo(index)` where the chip path calls `renderVerse(0)`;
+  - sets the book, calls `populateChapters`, sets the chapter and calls `loadChapter({resetStage: false})`;
+  - checks the verse against `passage.verses`, and calls `player.jumpTo(index)`;
   - focuses Play.
 
-  `loadChapter` calls `player.stop()`, so Go to stops any narration that is playing. There is no autoplay: `player.unlock()` must run inside a gesture in the app's own document, and a posted message isn't one.
-- **In.** The app opens a page at `#at=<Book>.<c>.<v>`, so the page starts where the reader is.
-- **Standalone.** A page opened outside the app hides "Go to" until the ROADMAP deep links exist.
-- **Reading.** Cards fetch the verse text through `bible.js` `fetchChapter`. They link a Picture when `/visuals/manifest.json` has one. Neither costs files.
+  `loadChapter` calls `player.stop()`, so going there stops any narration that is playing. There is no autoplay: `player.unlock()` must run inside a gesture in the app's own document, and a posted message isn't one. Each `loadChapter` takes a number (`loadSeq`), and only the newest may touch the screen, so a chapter roll still fetching when the jump arrives can't land on top of it.
+- **In.** The app opens a page at `#at=<Book>.<c>.<v>`, so the page starts on the names that verse speaks, or failing those, the families whose passage it falls in.
+- **Standalone.** A page opened outside the app shows the verse preview without "Open in Theoria" until the ROADMAP deep links exist.
+- **Reading.** The page fetches the verse text from `/bibles/WEB/` itself, so it costs no files. Linking a verse's picture from `/visuals/manifest.json` is not built yet.
 
 ### Shared data modules
 
@@ -126,6 +138,11 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 ### First
 
 **1. OT family tree: tap, trace, jump.** M · +1 file · all four lenses.
+- **Built 2026-10-27, as a first cut** ([reference-charts.md](../reference-charts.md#the-old-testament-family-tree)): `reference_viewer.py`, `family_tree_data.py`, `verse_refs.py` and the `theoria:goto` message in `web/js/app.js`. It differs from the plan below in four ways:
+  - Taps are hit-tested against the sidecar's boxes, so the SVG carries no `data-id` and is unchanged.
+  - World's and `matthew_tree`'s boxes are matched to the chart's by walking the trees down together (`family_tree_data.pair`), not by stable id.
+  - Not built yet: the Jesus chip (Matthew's line on to Jesus with Luke's beside it), the settling camera, the detail bands and the culling. The iPhone handles the sheet well without the last three.
+  - A box's verses reach no further than its own ref, 1 Chronicles 1–9, Matthew 1:1–17 and Genesis 5 and 11.
 - **Shows:**
   - Search ranks whole names first and tells namesakes apart ("Azariah, son of Ahimaaz"), then eases to the box.
   - A person's card shows names, parents, `N.gen`, the Ussher year where `chronology.bind` has one, the note and verse chips.
@@ -165,33 +182,21 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
   - The furniture's positions are conventional, and the lampstand and laver are unmeasured; the cards say so.
   - The published Numbers 1–4 pictures change. Exodus 25–27 don't, if `draw_plan`'s court is the one kept.
 
-**3. Paul's journeys and the assemblies.** M for Journey 1, then L to XL as the coasts are rebuilt · 3 files · all four lenses.
-- **Shows:**
-  - Four routes (Acts 13–14, 15:36–18:22, 18:23–21:17, 27–28), with sea legs drawn apart from land legs.
-  - Layers: the seven assemblies (WEB's word), the letters' recipients, and where a letter says it was written (1 Cor 16:8).
-  - A step bar draws each leg once with its verse.
-  - City cards list visits, letters and assembly.
-  - Opened from Acts, it starts on the current leg.
-- **Reuses:**
-  - `acts_geography`;
-  - `generate_acts1314_svg.LEGS`;
-  - `generate_acts1518_svg.LEGS`, `STAGES`, `OTHER_ROADS` and `SHUT_DOORS`;
-  - `svg_map_camera.Projection`, widened west and north.
-- **New:** `journeys.py` holds the legs. Journey 2's land legs are straight lines between cities today, so they get roads from point facts (the Via Egnatia from Neapolis to Thessalonica). New sites:
-  - Revelation 2–3 and the letters: Smyrna, Pergamum, Thyatira, Sardis, Philadelphia, Laodicea, Colossae, Patmos and Nicopolis.
-  - Journey 3: Assos, Mitylene, Chios, Samos, Trogyllium, Miletus, Cos, Rhodes, Patara, Tyre and Ptolemais.
-  - The voyage to Rome: Adramyttium, Myra, Cnidus, Salmone, Fair Havens, Lasea, Phoenix, Clauda, Malta, Syracuse, Rhegium, Puteoli, The Market of Appius, The Three Taverns and Rome.
-
-  Patara and Myra are coast points in `MAIN_COAST` today, not sites.
-- **Stages:**
-  1. Journey 1, on `acts_geography`'s point facts as they stand.
-  2. Journeys 2 and 3, once Greece and the Aegean are rebuilt from point facts.
-  3. Rome, once Crete, Sicily, Italy and Malta exist as point facts. The map stops at 20.6°E today, and Crete is only the coarse atlas trace.
-- **Feeds:** Acts 19–21 and 27–28 (ROADMAP Next), Acts 1–2 and 6–9, Revelation 2–3, Titus and Philemon.
+**7. Land of Israel atlas.** XL · 3 files · all four lenses.
+- **Shows:** Dan to Beersheba, with 150–250 sites. One layer at a time: the allotments with the cities of refuge, David and Solomon, the divided kingdom, Jesus' day, Numbers 34.
+- **Interactions:** alias search (Luz/Bethel), place cards with certainty and verses by book, "In this chapter" chips, distances.
+- **Reuses:** `generate_tribal_maps.TRIBE_RINGS`, for which shares border which. Its edges are an atlas approximation and are not drawn.
+- **New:**
+  - The Levant half of the gazetteer from point facts: the coast from Ras Naqoura to the Delta, Galilee (7 points today), the Dead Sea, Huleh and the Jordan.
+  - Tribe edges redrawn through the border towns Joshua 15–19 names, each a point fact, and drawn soft.
+  - Kingdoms as soft hulls round named sites, as on page 13.
+  - Homonym rules (the Ramahs, Aphek).
+- **Feeds:** about 99 OT and 19 NT chapters, plus pages 10, 14 and 15.
 - **Risks:**
-  - `MED`, `AEGEAN_SHORE`, `PELOPONNESE` and the islands are atlas traces, so no stage draws them.
-  - The Acts 27 course is inferred, so it is drawn dashed.
-  - Ephesus and Miletus have silted up since. The map draws the modern coast, and their cards say so.
+  - The atlas's cost is its sites, not its coast.
+  - Borders are reconstructions, drawn soft.
+  - Ai, Emmaus and Bethsaida are uncertain.
+  - The Dead Sea is drawn at high water, as `acts_geography` draws lakes, and the legend says so.
 
 **4. Kings and prophets.** M · 2 files · all four lenses.
 - **Shows:**
@@ -223,27 +228,39 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 
 ### Next
 
+**3. Paul's journeys and the assemblies.** M for Journey 1, then L to XL as the coasts are rebuilt · 3 files · all four lenses.
+- **Shows:**
+  - Four routes (Acts 13–14, 15:36–18:22, 18:23–21:17, 27–28), with sea legs drawn apart from land legs.
+  - Layers: the seven assemblies (WEB's word), the letters' recipients, and where a letter says it was written (1 Cor 16:8).
+  - A step bar draws each leg once with its verse.
+  - City cards list visits, letters and assembly.
+  - Opened from Acts, it starts on the current leg.
+- **Reuses:**
+  - `acts_geography`;
+  - `generate_acts1314_svg.LEGS`;
+  - `generate_acts1518_svg.LEGS`, `STAGES`, `OTHER_ROADS` and `SHUT_DOORS`;
+  - `svg_map_camera.Projection`, widened west and north.
+- **New:** `journeys.py` holds the legs. Journey 2's land legs are straight lines between cities today, so they get roads from point facts (the Via Egnatia from Neapolis to Thessalonica). New sites:
+  - Revelation 2–3 and the letters: Smyrna, Pergamum, Thyatira, Sardis, Philadelphia, Laodicea, Colossae, Patmos and Nicopolis.
+  - Journey 3: Assos, Mitylene, Chios, Samos, Trogyllium, Miletus, Cos, Rhodes, Patara, Tyre and Ptolemais.
+  - The voyage to Rome: Adramyttium, Myra, Cnidus, Salmone, Fair Havens, Lasea, Phoenix, Clauda, Malta, Syracuse, Rhegium, Puteoli, The Market of Appius, The Three Taverns and Rome.
+
+  Patara and Myra are coast points in `MAIN_COAST` today, not sites.
+- **Stages:**
+  1. Journey 1, on `acts_geography`'s point facts as they stand.
+  2. Journeys 2 and 3, once Greece and the Aegean are rebuilt from point facts.
+  3. Rome, once Crete, Sicily, Italy and Malta exist as point facts. The map stops at 20.6°E today, and Crete is only the coarse atlas trace.
+- **Feeds:** Acts 19–21 and 27–28 (ROADMAP Next), Acts 1–2 and 6–9, Revelation 2–3, Titus and Philemon.
+- **Risks:**
+  - `MED`, `AEGEAN_SHORE`, `PELOPONNESE` and the islands are atlas traces, so no stage draws them.
+  - The Acts 27 course is inferred, so it is drawn dashed.
+  - Ephesus and Miletus have silted up since. The map draws the modern coast, and their cards say so.
+
 **6. Genesis 5 and 11: overlapping lives.** S · 1 file · craft; author lists it as a follow-on.
 - **Shows:** lifespan bars from Adam to Abraham, using WEB's numbers. A year cursor lights every life alive at that point. A chip sets Abram's birth at Terah's 70 or 130 (`chronology.ABRAM_BIRTH`). The built Genesis 5 and 11 pictures already draw the bars (`generate_genealogy.py`). The page adds the cursor, one axis across both chapters, and the chip.
 - **Reuses:** `chronology.GEN5`, `GEN11` and `spine()`, unified with `generate_genealogy.G5_LINE`/`G11_LINE`. `spine()` reads `ABRAM_BIRTH` as a module switch, so it takes the age as a parameter.
 - **Why not first:** the built pictures already show the bars, and page 4 proves `timeline_axis` on its own. The draft ranked it first for that axis; the review moved it here.
 - **Risks:** say "lives overlapped", never "met".
-
-**7. Land of Israel atlas.** XL · 3 files · all four lenses.
-- **Shows:** Dan to Beersheba, with 150–250 sites. One layer at a time: the allotments with the cities of refuge, David and Solomon, the divided kingdom, Jesus' day, Numbers 34.
-- **Interactions:** alias search (Luz/Bethel), place cards with certainty and verses by book, "In this chapter" chips, distances.
-- **Reuses:** `generate_tribal_maps.TRIBE_RINGS`, for which shares border which. Its edges are an atlas approximation and are not drawn.
-- **New:**
-  - The Levant half of the gazetteer from point facts: the coast from Ras Naqoura to the Delta, Galilee (7 points today), the Dead Sea, Huleh and the Jordan.
-  - Tribe edges redrawn through the border towns Joshua 15–19 names, each a point fact, and drawn soft.
-  - Kingdoms as soft hulls round named sites, as on page 13.
-  - Homonym rules (the Ramahs, Aphek).
-- **Feeds:** about 99 OT and 19 NT chapters, plus pages 10, 14 and 15.
-- **Risks:**
-  - The atlas's cost is its sites, not its coast.
-  - Borders are reconstructions, drawn soft.
-  - Ai, Emmaus and Bethsaida are uncertain.
-  - The Dead Sea is drawn at high water, as `acts_geography` draws lakes, and the legend says so.
 
 **8. Solomon's Temple.** L for a Kings-first cut · 3 files · all four lenses.
 - **Shows:**
@@ -339,7 +356,7 @@ These wait on the gazetteer, `sanctuary.py` or the AD axis.
 
 ## What stays out
 
-- **The OT timeline sheet as a linked page.** At a phone's fit scale it is as hard to read as the tree, and pages 4, 6 and 9 do its job better. It stays deployed and unlinked, with the V6 and 1–2 Chronicles charts. Linking it meanwhile is one `REFERENCES` line (question 10).
+- **The OT timeline sheet as a linked page.** It is the genealogy laid on years, and the owner wants a timeline that stands apart from the tree. Pages 4, 6 and 9 do that job. It stays deployed and unlinked as data, with the V6 and 1–2 Chronicles charts.
 - **Herod's temple as a page.** Scripture gives almost nothing (John 2:20, Acts 3), and the platform can't be traced from plans. At most it appears as a dashed schematic in page 16, credited to Josephus and the Mishnah.
 - **Separate camp, Herods and Daniel pages.** They fold into pages 2, 15, 9 and 13.
 - **A Revelation structure chart.** It serves only one book, so it waits.
@@ -352,17 +369,12 @@ These wait on the gazetteer, `sanctuary.py` or the AD axis.
 
 ## Open questions
 
-1. Which map comes first?
-   - Paul's journeys: Journey 1 is ready on point facts, but Journeys 2–3 need Greece and the Aegean rebuilt, a much longer coast than the Levant's.
-   - The Israel atlas: its coast rebuild is small; its cost is 150–250 sites and soft tribal edges.
+Answered on 2026-10-27: which map comes first (the Israel atlas), whether to regenerate Numbers 1–4 onto one Tabernacle model (yes), and whether to link the OT timeline now (no). See Status.
 
-   This plan puts Paul's Journey 1 first.
-2. Is this the right split: short labels and numbers on the drawing, sentences in the card?
-3. For the kings, use Ussher with a Thiele rail (about 39 rows to source), or Ussher only?
-4. For traditional sites (Sinai, the Exodus route, Golgotha), show one reading labelled "traditional", or only what is known?
-5. Settling the Tabernacle court changes the published Numbers 1–4 pictures; Exodus 25–27 stay as they are if `draw_plan`'s court is kept. Should Numbers 1–4 be regenerated?
-6. Should Herod's temple appear as a dashed schematic credited to Josephus, or should the page stick to Scripture?
-7. May a public-domain harmony (Robertson 1922, or Stevens and Burton) guide the order of the Gospel events?
-8. May the name finder make the house respellings public?
-9. Should a generated `index.json` replace the hand-edited `REFERENCES`?
-10. Should the built OT timeline be linked now as an interim timeline, until pages 4 and 9 exist?
+1. Is this the right split: short labels and numbers on the drawing, sentences in the card?
+2. For the kings, use Ussher with a Thiele rail (about 39 rows to source), or Ussher only?
+3. For traditional sites (Sinai, the Exodus route, Golgotha), show one reading labelled "traditional", or only what is known?
+4. Should Herod's temple appear as a dashed schematic credited to Josephus, or should the page stick to Scripture?
+5. May a public-domain harmony (Robertson 1922, or Stevens and Burton) guide the order of the Gospel events?
+6. May the name finder make the house respellings public?
+7. Should a generated `index.json` replace the hand-edited `REFERENCES`?
