@@ -4,11 +4,11 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The three generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The four generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's and the Tabernacle's) gets more. The family tree's cards are people (below); the Tabernacle's are parts (`"card": "parts"`, see [The Tabernacle](#the-tabernacle)):
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's and the atlas's) gets more. The family tree's cards are people (below); the Tabernacle's are parts and the atlas's places (`"card": "parts"`, see [The Tabernacle](#the-tabernacle) and [The Land of Israel](#the-land-of-israel)):
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -18,24 +18,25 @@ A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tre
   - the family a reference chip stands in.
 - **Line to Adam** outlines every box up the line and frames them. A wife hangs under her husband, so his line isn't hers. Hers runs from her reference chip in her father's family where she has one (Leah's through Laban), and otherwise the card offers none.
 - **A verse chip** shows the verse, read from `/bibles/WEB/`. Inside the app, "Open in Theoria" posts `{type: "theoria:goto", book, chapter, verse}`, and the app closes the chart and goes to that verse without playing it.
-- **The address** keeps the selection (`#id=<id>`), so ↗ opens and shares what is on screen. The app opens a chart at `#at=<Book>.<chapter>.<verse>`, and the page starts on the names that verse speaks.
+- **The address** keeps the selection (`#id=<id>`), so ↗ opens and shares what is on screen. The app opens a chart at `#at=<Book>.<chapter>.<verse>`, and the page starts on the names that verse speaks: the parts whose own verses include it, then the parts whose ranges cover it, and, on a sheet that sets `"chapter": true` (the atlas), the parts its chapter names.
 - **Escape** closes the results, then the card, then (in the app) the chart.
 - **Layers.** A sheet can mark groups `<g data-layer="...">` and list them in the sidecar's `layers`; chips in the bar show and hide them. A part on a hidden layer takes no tap, and a part found by search or named by `#at` shows its layer.
-- **Hit areas.** The smallest box under a tap wins. A part can also be tapped on more boxes (`hb`: the court and the tent, on their walls and labels, since other parts fill their insides), on none (`nohit`: the mercy seat lies on the ark), and a duplicate card (`nos`: a part's drawing) is left out of search and `#at`.
+- **Hit areas.** The smallest box near the finger wins. A sheet of close-set small parts can ask (`"tap": "inside"`, the atlas) for a box the finger is inside to beat one it only grazes, so a neighbour's dot a few px off doesn't take the tap, unless the grazed box lies within the other (a box that holds parts is their background). A part can be tapped on `t` boxes in place of its own (an atlas place's dot and its name, not the gap a leader line spans), on more boxes (`hb`: the court and the tent, on their walls and labels, since other parts fill their insides), on `lo` boxes only where nothing else is under the finger (a river along its course, a lake, which the towns on them would otherwise lose taps to), or on none (`nohit`: the mercy seat lies on the ark). A duplicate card (`nos`: a part's drawing) is left out of search and `#at`.
+- **Text by size.** A sheet can group its text by size (`<g data-fs="19">`). The page draws a group only while its text is at least 7.5 px on screen (`READ`), and with `data-fmax` only until it grows past that many px. A part carries its group's `fs` and `fx`, and while its name is hidden it takes no tap. When a part is outlined, selected or named by `#at`, at a zoom that hides its name, the name is written over the outline at reading size. Selecting a part zooms in far enough to read its name, and for a land not so far that its name fades.
 
 Without a sidecar (the OT timeline), the search steps through the sheet's own text and zooms each hit to at least full size, where names are 15 px. The V6 and 1–2 Chronicles pages are older copies of the viewer, with no pinch and no zoom-to-hit, because nothing writes them.
 
 ## Status
 
-- **Deployed.** All five charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree and the Tabernacle.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Deployed.** All six charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
+- **Linked: the OT family tree, the Tabernacle and the Land of Israel.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 12 deploy files, the two sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 15 deploy files, the three sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -44,6 +45,7 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
 | [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
 | [The Tabernacle](#the-tabernacle) | `Tabernacle.svg` / `.json` / `.html` | 2,860 × 2,906 px, about 100 KB, 34 cards | `generate_tabernacle_reference.py` |
+| [The Land of Israel](#the-land-of-israel) | `Land_of_Israel.svg` / `.json` / `.html` | 6,103 × 7,680 px, about 110 KB, 212 places and 255 cards; the sidecar is about 226 KB | `generate_israel_atlas.py` |
 
 ## The Old Testament family tree
 
@@ -187,3 +189,30 @@ Tapping a Levite or tribe card on the camp layer opens what they camped by and c
 .venv/Scripts/python.exe generate_tabernacle_reference.py   # rebuild the .svg, .json and .html
 .venv/Scripts/python.exe -m unittest test_sanctuary          # the model's counts and verses
 ```
+
+## The Land of Israel
+
+An atlas of the land from Sidon to Kadesh Barnea and from the Great Sea to Bashan and Moab, with the places the WEB names, each at the site it is identified with. North is up, at 2,400 px a degree of latitude, about 21.6 px a km.
+
+**The data is `gazetteer.py`, all point facts.** Each point of a line is one named place (a beach, cape, river mouth, bridge, spring, dam or tell) whose coordinate is a single fact from Wikidata (CC0) or Wikipedia. The comment beside it names the place and its Wikidata item, or marks it `~` as our own interpolation. The stretch north of Ras Naqoura is `acts_geography`'s, whose comments name the places without their Wikidata ids. No line is traced from OpenStreetMap, Google or an atlas; `test_gazetteer` checks the comments, and that no point copies a point of `generate_tribal_maps` or `generate_acts1518_svg`'s atlas-traced maps.
+- **The coast** is today's: `acts_geography.MAIN_COAST` from south of Beirut to Ras Naqoura, then `COAST_SOUTH` to the mouth of the brook of Egypt.
+- **The lakes** are at high water: the Salt Sea as it stood about 1900, its southern basin full, and Huleh before it was drained in the 1950s.
+- **The rivers** run from source to mouth, and each mouth is a point of the coast, a lake or another river, so the lines meet: the Jordan and its three headstreams, the Yarmuk, the Jabbok, the Arnon, the Zered, the Kishon, Me Jarkon (the Yarkon) and the brook of Egypt.
+- **212 places** (`SITES`). Each has its WEB name and other names, the tell, ruin or village it is identified with, its Wikidata item, its certainty, why, its tribe and Levite or refuge status from Joshua 13–21, its namesakes and its verses. Five places inside Jerusalem (`JERUSALEM`) are kept for a city page and not drawn. `UNPLACED` holds 67 notes on the places left off, with the reason: no agreed site, no point fact for the one proposed, or a name the WEB doesn't use.
+- **Certainty** is `known` (the name survives, or inscriptions or excavation fix it), `probable` (most scholars agree) or `possible` (one proposal of several, and `why` names the others). On the sheet a known site is a filled dot, a probable one a thick ring, and a possible one a thin ring.
+- **Verses.** A place's verses are every verse its names find in the WEB, less its `skip`: the verses where the word is a namesake, a person, a tribe, a lake named after the town, or a common word. The names find 3,750 verses across the 217 places (2,839 different verses); each was sorted, place by place, the sort was checked twice (2026-10-28), and 855 are skipped. `refs` are the hand-checked ones a card lists when a place has many. A place's founder in a genealogy ("Ashhur the father of Tekoa") counts as the town.
+
+**The sheet.**
+- The base: the sea, the land, the lakes, the rivers, the lands' and the waters' names, and the places, labelled by a greedy placer that keeps every name clear of every other name and dot.
+- **Text by size.** At the whole sheet the lands and the Great Sea show; on a phone the narrow lands (Sharon, Philistia, the Arabah, Zin) and the other waters come in at the first zoom. Then the 30 chief places (28 cities, and Mounts Hermon and Carmel) from about twice that; then the mountains and the towns with eight or more checked verses; and the rest from about six times. The lands' and the tribes' names fade as the towns come in.
+- **The tribes** (a layer, off): each tribe's towns under one soft colour, its name at their middle, and rings for the Levite cities and the cities of refuge. No border is drawn: the text names towns and landmarks, not lines. A town in two lots (Beth Shemesh in Judah's and Dan's, Beersheba in Judah's and Simeon's) takes both colours.
+- **In Jesus' day** (a layer, off): a ring round each place the Gospels or Acts name, and the names Judea, Phoenicia and the Decapolis.
+- Huleh and the Yarmuk, which the Bible doesn't name, are drawn without a name; a tap on them opens their cards.
+
+**The cards.** A place's card gives the site it is identified with, flagged known, probable or possible; why that site; how many verses name it; its other WEB names; its tribe in Joshua; its distance and direction from Jerusalem; its namesakes, which link to one another; what the dot marks and its Wikidata item; and its verses. A water's or a land's card gives its verses, the first in each book where there are many. A tribe's card names its towns and its chapter in Joshua. Opened from a verse, the sheet starts on the places that verse names, or failing those the places its chapter names: from Ruth 2:4, Bethlehem; from Ruth 1:3, which names none, the Bethlehem and Moab of Ruth 1. A chapter that names no place (Ruth 3) opens on the whole sheet.
+
+```
+.venv/Scripts/python.exe generate_israel_atlas.py      # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_gazetteer     # the places, their verses and the lines
+```
+

@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and pages 1 and 2 as first cuts.
+Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2 and 7 as first cuts.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -12,7 +12,7 @@ Proposed on 2026-10-27. Built so far: the shelf, and pages 1 and 2 as first cuts
 - turning a phone to landscape doesn't put the stage in fullscreen while a panel is open (`onOrientationChange`), because API fullscreen shows only `#stage-wrap`;
 - an Escape the page handles itself (`e.defaultPrevented`) doesn't also close the frame.
 
-Its entries are the OT family tree and the Tabernacle. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
+Its entries are the OT family tree, the Tabernacle and the Land of Israel. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
 **Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
@@ -65,11 +65,11 @@ Pages keep their numbers as names; the tier says when.
 It still needs:
 
 - **A settling camera.** The tree is one 26,946 × 16,736 px `<svg>` scaled by CSS, larger than iOS's biggest layer. The CSS transform should run only while a finger moves. About 120 ms after the last move, the camera goes into the `viewBox` so the vector redraws sharp. Refit on resize and rotation. The owner found the iPhone smooth without it, so it waits for the iPad test.
-- **Detail bands.** The generator writes `<g data-lod>` bands, and all but one get `display:none`.
+- **Detail bands.** Built for the atlas in another form: a sheet groups its text by size (`<g data-fs>`, with `data-fmax` for names that fade), and the viewer shows a group only while its text can be read (`READ`, 7.5 px). The tree doesn't use it yet. The planned form was `<g data-lod>` bands, all but one `display:none`.
   - **Maps.** Each band's labels are placed in Python with `svg_map_camera.layout` and `clash` at the band's own scale, so they never touch. Both assume one 1024 × 576 frame today (`SAFE`, the HUD), so they are generalised to take the band's extent.
   - **The tree.** Its names sit inside boxes that `arrange` and `place` already keep apart, so its far band is the `REGIONS` titles and the heads they name.
   - **Live text.** The tree's near band holds all 1,254 boxes, far over `svg_chronicles_world.IPAD_NAMES` (268 texts) and `IPAD_BOX_RECTS` (1,050 rects and texts). So the viewer would also hide the boxes outside the view, using the sidecar's boxes. Those budgets were measured on animated camera files, so a static page is measured on the iPad before they are taken as its limit.
-- **Layer chips and tours.** Chips toggle `<g data-layer>` groups. The reader steps a tour with Prev/Next. Routes and genealogies draw once in SMIL (`fill="freeze"`), and a scrubber seeks with `setCurrentTime()`.
+- **Layer chips and tours.** Chips toggle `<g data-layer>` groups (built: the Tabernacle and the atlas use them). Still to build: the reader steps a tour with Prev/Next. Routes and genealogies draw once in SMIL (`fill="freeze"`), and a scrubber seeks with `setCurrentTime()`.
 - **Timelines.** A pinch stretches only the time axis and JS re-places the bars, so text is never CSS-scaled. Lanes are packed once in Python, in years, so JS only rescales. Its labels get their own clash test in JS, because PIL's measurements stay in Python. On a portrait phone, time runs down the screen.
 - **Inline-SVG icons** instead of emoji glyphs.
 
@@ -95,12 +95,12 @@ These are Python only, so they cost no deploy files.
 - **`verse_refs.py`** parses warrant strings and `N.ref`, and fails the build on any ref that `passages.verse_numbers()` rejects. 127 of the tree's 296 refs are a bare `c:v` that means 1 Chronicles, so a module names its default book.
 - **Stable ids**: slugs from the data, asserted unique on every build. Never `N.key`, which rebinds. `World` builds its own tree, so these ids are also how its verses map onto the chart's boxes.
 - **`gazetteer.py`**: one site table and one line store.
-  - **Each site** has its WEB spellings, a lat/lon from one Wikidata or Wikipedia point fact with its source, a certainty (known, probable, unknown) and refs.
+  - **Each site** has its WEB spellings, a lat/lon from one Wikidata or Wikipedia point fact with its source, a certainty (known, probable, possible) and refs.
   - **It takes over** `acts_geography.SITES`/`SERMON_SITES`, `generate_acts1314_svg.CITIES`, `generate_acts1518_svg.CITIES`, `generate_genesis10_svg.CITIES`, `generate_tribal_maps.CITIES32` and the geometry of `generate_tribal_maps`. It re-exports the old names, so Numbers 32 and 34, `acts_geography` and the eight generators that take its colours or `MapFrame` import unchanged.
   - **Duplicates** are dropped: the two Cyprus outlines, and `PELOPONNESE`, `AEGEAN_SHORE` and `FAR_ISLANDS`, which copy `generate_acts1518_svg`'s `PELOPONNESE`, `MED` and `ISLANDS`.
   - **Disagreements** are settled: Tarsus (24 km apart) and Lystra (4 km).
   - **Schematic points** enter as unknown. These are `SERMON_SITES`' wilderness points.
-- **Point facts only.** Today only `acts_geography`'s own coasts, lakes, rivers, sites and roads are point facts: southern Asia Minor round to Ras Naqoura, and Cyprus. The rest are atlas-simplified:
+- **Point facts only.** Today `acts_geography`'s own coasts, lakes, rivers, sites and roads are point facts (southern Asia Minor round to Ras Naqoura, and Cyprus), and so is `gazetteer.py`'s Levant (Ras Naqoura to the brook of Egypt, the lakes, the Jordan and its tributaries, 212 places). The rest are atlas-simplified:
   - `generate_tribal_maps`: `COAST` south of Ras Naqoura, the lakes, the Jordan, `COAST_WEST`, the gulfs and the tribal edges;
   - `generate_acts1518_svg`: `MED`, `PELOPONNESE` and `ISLANDS`, with `acts_geography.LIBYA_SHORE`;
   - `generate_genesis10_svg`: its seas.
@@ -119,7 +119,7 @@ Reference pages aren't narrated, so short labels and numbers belong on the drawi
 
 ### Files and registration
 
-- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`) to today's 8. Against 5,802 today (`count_deploy_files()`), that leaves about 14,160 under `DEPLOY_FILE_LIMIT`.
+- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`); 15 reference files exist today, three pages' worth among them. Against 5,809 today (`count_deploy_files()`), the remaining pages leave about 14,160 under `DEPLOY_FILE_LIMIT`.
 - **Naming.** The folder stays flat. `build_manifest._scan_files` reads any subfolder of `web/visuals/reference/` as a chapter folder and would key its SVGs; `test_registry` reads only numbered folders. No `Book_c_v` names, and no `.xml`.
 - **Registration.** Today an entry is a hand-committed line in `REFERENCES`.
   - Proposed instead: the generators write `reference/index.json` (title, blurb, href, order, chapters covered), and the app fetches it with `cache: "no-cache"`.
@@ -187,6 +187,12 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
   - The published Numbers 1–4 pictures change, and (as built) the Exodus 25–27 pictures' pillars and wording too; see the Built note above.
 
 **7. Land of Israel atlas.** XL · 3 files · all four lenses.
+- **Built 2026-10-28, as a first cut** ([reference-charts.md](../reference-charts.md#the-land-of-israel)): `gazetteer.py`, the Levant from point facts, and `generate_israel_atlas.py`'s sheet. It differs from the plan below:
+  - `gazetteer.py` holds the Levant only. The other maps' site tables and `generate_tribal_maps`' geometry are not yet moved into it.
+  - Two layers, not five: the tribes (each tribe's towns under one soft colour, with the Levite cities and the cities of refuge) and Jesus' day. David and Solomon, the divided kingdom and Numbers 34 are still to come.
+  - No tribe edges, even soft: the tribes layer colours the towns Joshua names and draws no line.
+  - A place's verses are every verse its names find, less a checked `skip` list, so `#at` works from any verse that names a place; a chapter that names places but not in the verse falls back to the chapter's.
+  - Text appears by size as you zoom (`data-fs` in the shared viewer): the planned detail bands, built differently.
 - **Shows:** Dan to Beersheba, with 150–250 sites. One layer at a time: the allotments with the cities of refuge, David and Solomon, the divided kingdom, Jesus' day, Numbers 34.
 - **Interactions:** alias search (Luz/Bethel), place cards with certainty and verses by book, "In this chapter" chips, distances.
 - **Reuses:** `generate_tribal_maps.TRIBE_RINGS`, for which shares border which. Its edges are an atlas approximation and are not drawn.

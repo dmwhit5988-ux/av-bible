@@ -29,7 +29,23 @@ less the way into the app.
     the app, which goes there;
   - the address remembers the selection (#id=<id>), and the app opens the
     page at #at=<Book>.<chapter>.<verse> so it starts on the names of the
-    verse the reader is on.
+    verse the reader is on (on a sheet of places, failing those, the
+    chapter's);
+- **Text too small to read isn't drawn.** A sheet groups its text by size
+  (<g data-fs="19">) and the page shows a group only while its text is at
+  least 7.5 px on screen (the atlas's town names appear as you zoom in), or,
+  with data-fmax, only until it passes that size (a region's big faint
+  name fades out as the towns come in). A part whose name is hidden takes
+  no tap; one that is outlined (selected, or named by #at) has its name
+  written over the outline instead; and selecting a land stops zooming
+  before its name fades.
+- **Taps.** The smallest box near the finger wins; on a sheet that asks
+  (`"tap": "inside"`, the atlas), the smallest box the finger is inside
+  beats one it only grazes, unless the grazed one lies within it. A part
+  can be tapped on `t` boxes in place of its own (a
+  place's dot and its name, not the gap a leader line spans), on more
+  (`hb`), or on `lo` boxes only where nothing else is (a river along its
+  course, a lake).
 - **Escape** closes the results, then the card; the page marks the key as
   used (preventDefault) so the app doesn't also close the frame.
 """
@@ -43,7 +59,7 @@ _PAGE = r"""<!doctype html>
 <style>
   html,body{margin:0;height:100%;background:#0d0d14;color:#d8c68f;
             font-family:Georgia,'Times New Roman',serif;overflow:hidden}
-  #stage{position:absolute;inset:0;cursor:grab;touch-action:none}
+  #stage{position:absolute;inset:0;cursor:grab;touch-action:none;overflow:hidden}
   #stage.drag{cursor:grabbing}
   #stage svg{position:absolute;top:0;left:0;transform-origin:0 0}
   #bar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;
@@ -108,8 +124,8 @@ _PAGE = r"""<!doctype html>
   .flag{display:inline-block;font-size:10px;letter-spacing:.5px;text-transform:uppercase;
        padding:1px 6px;border-radius:8px;border:1px solid #4a4658;margin:0 4px 0 6px;
        color:#a89f88;white-space:nowrap}
-  .flag.stated{color:#fff4aa;border-color:#8a6d2c}
-  .flag.not-given{font-style:italic}
+  .flag.stated,.flag.known{color:#fff4aa;border-color:#8a6d2c}
+  .flag.not-given,.flag.possible{font-style:italic}
 </style>
 <div id="bar">
   <div id="find">
@@ -140,9 +156,27 @@ Promise.all([fetch(STEM+'.svg').then(r=>r.text()),
              DATA?fetch(STEM+'.json').then(r=>r.json()):null]).then(([t,d])=>{
   stage.innerHTML=t;data=d;items=d?d.items:[];init()});
 
+// Text too small to read isn't drawn: a sheet's <g data-fs="19"> group (its
+// text's size) shows only while that text is at least READ px on screen,
+// and one with data-fmax (a region's big faint name) only until it grows
+// past that many px. A part on a hidden group takes no tap.
+const READ=7.5;let lods=[];
+const shown=(fs,fx)=>k*fs>=READ&&(!fx||k*fs<=fx);
 function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
-  for(const[name,px]of[['at',2.5],['trace',2.5],['sel',3.5]])
-    if(layers[name])layers[name].setAttribute('stroke-width',(px/k).toFixed(3))}
+  for(const l of lods){const on=shown(l.fs,l.fx);
+    if(on!==l.on){l.on=on;l.g.style.display=on?'':'none'}}
+  // an outline stays big enough to see when the sheet is zoomed far out
+  const pad=Math.max(5,7/k);
+  for(const[name,px]of[['at',2.5],['trace',2.5],['sel',3.5]]){const g=layers[name];if(!g)continue;
+    g.setAttribute('stroke-width',(px/k).toFixed(3));
+    for(const r of g.children){const b=r._b;r.setAttribute('x',b[0]-pad);r.setAttribute('y',b[1]-pad);
+      r.setAttribute('width',b[2]+2*pad);r.setAttribute('height',b[3]+2*pad)}}
+  // an outlined part whose own name is too small (or too big) to show here
+  // gets its name written over the outline, at reading size
+  if(layers.names)for(const t of layers.names.children){const it=items[t._i],b=it.b;
+    const own=!it.fs||shown(it.fs,it.fx);t.style.display=own?'none':'';if(own)continue;
+    t.setAttribute('font-size',(13/k).toFixed(2));t.setAttribute('stroke-width',(3/k).toFixed(2));
+    t.setAttribute('x',b[0]+b[2]/2);t.setAttribute('y',b[1]-pad-4/k)}}
 // the whole sheet, below the bar
 function fit(){const top=$('bar').offsetHeight;k=Math.min(innerWidth/W,(innerHeight-top)/H);
   kmin=Math.min(0.01,k);tx=(innerWidth-W*k)/2;ty=top+(innerHeight-top-H*k)/2;apply()}
@@ -150,12 +184,16 @@ function init(){svg=stage.querySelector('svg');
   svg.removeAttribute('width');svg.removeAttribute('height');
   svg.setAttribute('width',W);svg.setAttribute('height',H);
   groups=[...svg.querySelectorAll('text')];
+  lods=[...svg.querySelectorAll('[data-fs]')].map(g=>({g,fs:+g.dataset.fs,fx:+(g.dataset.fmax||0),on:null}));
   const hl=document.createElementNS(NS,'g');hl.setAttribute('pointer-events','none');
   hl.setAttribute('fill','none');svg.appendChild(hl);
   for(const[name,col,fill]of[['at','#e8e0cc','#e8e0cc14'],['trace','#d8c68f','#d8c68f10'],
                              ['sel','#fff4aa','#fff4aa1c']]){
     const g=document.createElementNS(NS,'g');g.setAttribute('stroke',col);
     g.setAttribute('fill',fill);hl.appendChild(g);layers[name]=g}
+  if(lods.length){const g=document.createElementNS(NS,'g');g.setAttribute('fill','#fff4aa');
+    g.setAttribute('stroke','#0d0d14');g.setAttribute('paint-order','stroke');
+    g.setAttribute('text-anchor','middle');hl.appendChild(g);layers.names=g}
   // the layer chips first, so fit() measures the bar as it will stand
   if(DATA)buildLayers();fit();if(DATA)readHash()}
 
@@ -194,12 +232,14 @@ function flyTo(cx,cy,nk){halt();const me=flight;
     if(t<1)anim=requestAnimationFrame(step)};
   anim=requestAnimationFrame(step);
   setTimeout(()=>{if(me!==flight)return;k=nk;tx=fx-cx*nk;ty=fy-cy*nk;apply()},ms+150)}
-function frameBoxes(list,kmax){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+function frameBoxes(list,kmax,klo=0){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(const b of list){x0=Math.min(x0,b[0]);y0=Math.min(y0,b[1]);
     x1=Math.max(x1,b[0]+b[2]);y1=Math.max(y1,b[1]+b[3])}
   const fa=freeArea();
-  const nk=Math.max(kmin,Math.min((fa.w-48)/(x1-x0),(fa.h-48)/(y1-y0),kmax));
+  const nk=Math.max(kmin,klo,Math.min((fa.w-48)/(x1-x0),(fa.h-48)/(y1-y0),kmax));
   flyTo((x0+x1)/2,(y0+y1)/2,nk)}
+// the zoom past which a part's name (a land's big faint one) is hidden
+const capOf=list=>Math.min(...list.map(i=>items[i].fx?items[i].fx/items[i].fs:Infinity));
 stage.addEventListener('wheel',e=>{e.preventDefault();halt();
   zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0015));apply()},{passive:false});
 const pts=new Map();let pinch=null,tap=null;
@@ -273,21 +313,44 @@ $('prev').onclick=()=>matches.length&&go(at-1);
 
 // -- selecting ------------------------------------------------------------
 function outline(layer,list){const g=layers[layer];g.textContent='';
-  for(const i of list||[]){const b=items[i].b,r=document.createElementNS(NS,'rect'),pad=5;
-    r.setAttribute('x',b[0]-pad);r.setAttribute('y',b[1]-pad);
-    r.setAttribute('width',b[2]+2*pad);r.setAttribute('height',b[3]+2*pad);
+  for(const i of list||[]){const r=document.createElementNS(NS,'rect');r._b=items[i].b;
     r.setAttribute('rx',8);g.appendChild(r)}
+  if(layers.names&&layer!=='trace'){
+    for(const t of [...layers.names.children])if(t._for===layer)t.remove();
+    for(const i of list||[]){const t=document.createElementNS(NS,'text');t._i=i;t._for=layer;
+      t.textContent=items[i].n;layers.names.appendChild(t)}}
   apply()}
-// The smallest box under the finger wins. A part can be tapped on more than
-// its own box (`hb`: the court and the tent on their walls and labels, since
-// other parts fill their insides), not at all (`nohit`: the mercy seat lies
-// on the ark), or not while its layer is hidden.
+// The smallest box under the finger wins. A part is tapped on its own box,
+// or on the boxes in `t` instead where its box spans more than it draws (a
+// place's dot and its name, not the gap between); on more boxes too (`hb`:
+// the court and the tent on their walls and labels, since other parts fill
+// their insides); on `lo` boxes only where nothing else is under the finger
+// (a river along its course, a lake, which the towns on them would
+// otherwise lose taps to); not at all (`nohit`: the mercy seat lies on the
+// ark); and not while its layer is hidden or its name too small to read
+// (`fs`, `fx`, as its group's).
 function onTap(x,y){if(!DATA||!svg)return;const sx=(x-tx)/k,sy=(y-ty)/k,tol=6/k;
-  let best=-1,area=Infinity;
-  items.forEach((it,i)=>{if(!it.b||it.nohit||(it.ly&&!layerOn(it.ly)))return;
-    for(const b of [it.b].concat(it.hb||[]))
-      if(sx>=b[0]-tol&&sx<=b[0]+b[2]+tol&&sy>=b[1]-tol&&sy<=b[1]+b[3]+tol&&b[2]*b[3]<area){
-        best=i;area=b[2]*b[3]}});
+  const within=(b,d)=>sx>=b[0]-d&&sx<=b[0]+b[2]+d&&sy>=b[1]-d&&sy<=b[1]+b[3]+d;
+  const live=items.map(it=>it.b&&!it.nohit&&!(it.ly&&!layerOn(it.ly))&&!(it.fs&&!shown(it.fs,it.fx)));
+  // The smallest box near the finger wins. A sheet of close-set small parts
+  // (`"tap": "inside"`, the atlas's dots) asks instead for the smallest box
+  // the finger is inside, over the smallest it only grazes (a neighbour's
+  // dot a few px off), unless the grazed one lies within it: a box that
+  // holds other parts is their background.
+  const nearest=boxes=>{let best=-1,area=Infinity;
+    for(const[i,b]of boxes)if(within(b,tol)&&b[2]*b[3]<area){best=i;area=b[2]*b[3]}
+    return best};
+  const inside=boxes=>{const best={in:[-1,Infinity,null],near:[-1,Infinity,null]};
+    for(const[i,b]of boxes){const a=b[2]*b[3],w=within(b,0)?'in':within(b,tol)?'near':null;
+      if(w&&a<best[w][1])best[w]=[i,a,b]}
+    const[ii,,ib]=best.in,[ni,,nb]=best.near;
+    if(ii<0)return ni;
+    return ni>=0&&nb[0]>=ib[0]&&nb[1]>=ib[1]&&nb[0]+nb[2]<=ib[0]+ib[2]&&nb[1]+nb[3]<=ib[1]+ib[3]?ni:ii};
+  const boxes=key=>{const out=[];items.forEach((it,i)=>{if(!live[i])return;
+    for(const b of key?it[key]||[]:(it.t||[it.b]).concat(it.hb||[]))out.push([i,b])});return out};
+  const pick=data.tap==='inside'?inside:nearest;
+  let best=pick(boxes(null));
+  if(best<0)best=pick(boxes('lo'));
   if(best>=0)select(best,{fly:k<0.6})}
 function ancestors(i){const out=[];for(let j=i;j!=null;j=items[j].p)out.unshift(j);return out}
 // Where a box's own line to Adam starts. A wife hangs under her husband, so
@@ -306,7 +369,9 @@ function select(i,{fly=false}={}){const via=items[i].x!=null;if(via)i=items[i].x
   // the card now covers, or that is off screen, comes into view.
   const b=items[i].b,fa=freeArea(),x0=b[0]*k+tx,y0=b[1]*k+ty;
   const seen=x0>=fa.x&&y0>=fa.y&&x0+b[2]*k<=fa.x+fa.w&&y0+b[3]*k<=fa.y+fa.h;
-  if(fly||via)frameBoxes([b],Math.min(Math.max(k,1.2),2));
+  // near enough to read its name, and for a land not so near that it fades
+  if(fly||via)frameBoxes([b],Math.min(Math.max(k,1.2),2,capOf([i])),
+                         items[i].fs?READ/items[i].fs:0);
   else if(!seen)flyTo(b[0]+b[2]/2,b[1]+b[3]/2,k)}
 function deselect(){state.sel=null;state.trace=false;outline('sel',[]);outline('trace',[]);
   card.hidden=true;card.innerHTML='';document.body.classList.remove('carded');
@@ -353,7 +418,9 @@ function renderPart(keep){const i=state.sel,it=items[i];let h=cardHead(it);
   const links=[];
   for(const j of it.dt||[])links.push(`<button class="chip v" data-go="${j}">The drawing of ${esc(items[j].dl||items[j].n)} ▸</button>`);
   if(it.of!=null)links.push(`<button class="chip v" data-go="${it.of}">On the plan ▸</button>`);
-  for(const j of it.see||[])links.push(chip(j));
+  // a namesake's chip says which one it is
+  for(const j of it.see||[])links.push(chip(j,items[j].n===it.n&&items[j].s?
+    ` <span class="c-book">· ${esc(items[j].s)}</span>`:''));
   if(links.length)h+=`<div class="c-row"><span class="c-lab">See</span>${links.join('')}</div>`;
   for(const[g,rs]of it.rg||[])if(rs.length)h+=`<div class="c-row"><span class="c-lab">${esc(g)}</span>${verseChips(rs)}</div>`;
   h+=`<div id="vv" hidden></div>`;
@@ -445,17 +512,21 @@ function readHash(){const h=new URLSearchParams(location.hash.slice(1));
   // the names the verse itself speaks; failing those, the families whose
   // passage it falls in
   const named=test=>{const out=[];items.forEach((it,i)=>{
-    if(it.x==null&&!it.nos&&(it.r||[]).some(r=>r[0]===b&&test(r)&&inRange(r,C,V)))out.push(i)});return out};
-  let hit=named(single);if(!hit.length)hit=named(r=>!single(r));
+    if(it.x==null&&!it.nos&&(it.r||[]).some(r=>r[0]===b&&test(r)))out.push(i)});return out};
+  let hit=named(r=>single(r)&&inRange(r,C,V)),where=`${book} ${C}:${V}`;
+  if(!hit.length)hit=named(r=>!single(r)&&inRange(r,C,V));
+  // a sheet of places (`chapter`) falls back on the ones the chapter names
+  if(!hit.length&&data.chapter){hit=named(r=>C>=r[1]&&C<=(r[3]||r[1]));where=`${book} ${C}`}
   if(!hit.length)return;
   // a named part on a hidden layer (Kohath, on the camp) shows its layer
   for(const i of hit){const l=items[i].ly;if(l&&!layerOn(l))showLayer(l,true)}
   state.at=hit;outline('at',hit);
   const[one,many]=data.noun||['name','names'];
-  $('banner-text').textContent=`${hit.length===1?'1 '+one:hit.length+' '+many} in ${book} ${C}:${V}`;
+  $('banner-text').textContent=`${hit.length===1?'1 '+one:hit.length+' '+many} in ${where}`;
   $('banner').hidden=false;
   if(hit.length===1)select(hit[0]);
-  frameBoxes(hit.map(i=>items[i].b),1.2)}
+  // the names too small to read at this frame are written over their outlines
+  frameBoxes(hit.map(i=>items[i].b),Math.min(1.2,capOf(hit)))}
 $('banner-x').onclick=()=>{state.at=null;outline('at',[]);$('banner').hidden=true};
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if(!results.hidden){results.hidden=true;q.blur();e.preventDefault()}

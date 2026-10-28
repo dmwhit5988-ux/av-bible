@@ -85,11 +85,15 @@ explains the project, and `docs/` has the detail.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
   `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt. All of
   them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today the
-  OT family tree and the Tabernacle) are linked from the app. The 1–2 Chronicles chart
+  OT family tree, the Tabernacle and the Land of Israel atlas) are linked from the app. The 1–2 Chronicles chart
   is a frozen file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
 - Take the Tabernacle's court, tent, pillars and furnishings from `sanctuary.py`, the
   one model in cubits that the Exodus 25–27 plan, the Numbers 1–4 courts and the
   Tabernacle reference page all draw from. Don't place them again in a drawing.
+- Take the Land of Israel's coast, lakes, rivers and places from `gazetteer.py`, whose
+  points are each a named place's Wikidata or Wikipedia coordinate (or marked `~`). Never trace a line
+  from a map, and never draw `generate_tribal_maps`' or `generate_acts1518_svg`'s
+  geometry on a reference page: it is an atlas trace.
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
   lengths.
 - Animate with SMIL, and keep the motion.
@@ -108,7 +112,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.

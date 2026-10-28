@@ -19,7 +19,7 @@ On a verse without a picture, the stage says the verse or chapter "isn't illustr
 yet" and offers a button that opens the ✦ list of illustrated chapters. When
 consecutive verses share a picture, it keeps playing and doesn't restart. The
 Reference button opens charts that stand on their own, not tied to a verse; today
-that is the Old Testament family tree and the Tabernacle.
+those are the Old Testament family tree, the Tabernacle and the Land of Israel atlas.
 
 ## How it's made
 
@@ -31,8 +31,9 @@ that is the Old Testament family tree and the Tabernacle.
    script draws one or more families, and the registry records which generator owns
    which chapters. The generators are the source of truth, and generated SVGs are
    never edited by hand. `build_manifest.py` indexes the SVGs into
-   `web/visuals/manifest.json`. Two other scripts, `generate_ot_family_tree_svg.py`
-   and `generate_ot_timeline_svg.py`, draw wall charts into `web/visuals/reference/`.
+   `web/visuals/manifest.json`. Four other scripts, `generate_ot_family_tree_svg.py`,
+   `generate_ot_timeline_svg.py`, `generate_tabernacle_reference.py` and
+   `generate_israel_atlas.py`, draw the reference charts into `web/visuals/reference/`.
 3. **Narration.** The Studio's Audio Renderer synthesizes one MP3 per verse into
    `web/audio/`, listed in `web/audio/manifest.json`. It uses the house voice
    `en-US-AndrewNeural` through edge-tts, with proper nouns respelled from
@@ -91,7 +92,7 @@ Studio's **Save + manifest** before you look.
 | `web/` | The site root, which Cloudflare serves as it is. It holds the web app (`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`) and the three content folders below. `web/.assetsignore` lists the files the upload leaves out. |
 | `web/audio/` | The narration MP3s and their manifest. |
 | `web/bibles/WEB/` | The WEB text, one JSON file per chapter. |
-| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree and the Tabernacle ([docs/reference-charts.md](docs/reference-charts.md)). |
+| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree, the Tabernacle and the Land of Israel ([docs/reference-charts.md](docs/reference-charts.md)). |
 | `sources/` | Ignored: `eng-web.usfx.xml`, the source text that `import_translation.py` turns into `web/bibles/WEB/`. |
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
@@ -187,6 +188,10 @@ The libraries most generators share:
 - `svg_figures.py` is the shared figure vocabulary: people, creatures and objects.
 - `svg_vocab.py` holds small drawing helpers.
 - `generate_tribal_maps.py` holds the map projection and shared map data.
+- `gazetteer.py` holds the Land of Israel as point facts: the coast, the lakes at
+  high water, the rivers, and 212 places, each at the site it is identified with,
+  with its certainty and every verse that names it. The atlas draws it, and so can
+  any verse map.
 - `svg_map_camera.py` is the camera-tour engine for maps (Numbers 34, Acts 13–14): the
   camera, names that hold their size and are placed by a clash test, the plates,
   the overview inset and the QC checks. It takes its camera arc and audio timing
@@ -277,10 +282,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer
 ```
 
-There are 97 tests in seven modules:
+There are 109 tests in eight modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -296,6 +301,10 @@ There are 97 tests in seven modules:
 - `test_sanctuary`: the Tabernacle model's sixty pillars and its measures, and that
   each part named in a verse that names several (Exodus 30:26-28, 31:7-9, 35:12,
   39:35, 39:40, Numbers 3:31) cites that verse.
+- `test_gazetteer`: the atlas's places sit on the sheet, each verse names its
+  place, the skipped verses are ones its names find, every line point names its
+  place and Wikidata item (or is marked `~`), no point copies the old atlas-traced
+  maps, and the rivers meet the water they run into.
 
 ## Docs
 

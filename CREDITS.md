@@ -152,7 +152,10 @@ The map lines Theoria draws (coasts, lakes, rivers, roads) are this project's ow
 drawings. The Acts 13–14 map (`acts_geography.py`) was drawn between anchor points,
 each the coordinate of one named place (a town, cape, river mouth or ancient site)
 taken as a single fact from **Wikidata**, whose data is CC0, or from **Wikipedia**;
-two ancient sites (Comama and Derbe) come from **vici.org**. No line geometry was
+two ancient sites (Comama and Derbe) come from **vici.org**. The Land of Israel
+atlas (`gazetteer.py`) was made the same way: its coast from Ras Naqoura to the
+brook of Egypt, its lakes and rivers, and its 212 places each take one coordinate
+from a Wikidata item (CC0) or a Wikipedia article. No line geometry was
 copied, traced or sampled from OpenStreetMap or any other map or dataset. The older
 maps (`generate_tribal_maps.py`, `generate_acts1518_svg.py`) are hand-encoded from
 standard atlas reconstructions.

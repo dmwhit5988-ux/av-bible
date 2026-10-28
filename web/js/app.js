@@ -622,6 +622,11 @@ const REFERENCES = [
     blurb: "The court, the tent and its furnishings, to scale in cubits. Tap a part for its measurements and verses.",
     href: "/visuals/reference/Tabernacle.html",
   },
+  {
+    title: "The Land of Israel",
+    blurb: "An atlas of the places the Bible names, each at the site it is identified with, marked known, probable or possible.",
+    href: "/visuals/reference/Land_of_Israel.html",
+  },
 ];
 
 function buildReferenceList() {
