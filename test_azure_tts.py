@@ -1,6 +1,6 @@
 """The Azure path, offline: IPA conversion, the SSML a verse becomes, which
-engine speaks it, the usage meter and how use_ipa is saved. Nothing here
-calls Azure or edge-tts.
+engine speaks it, the usage meter, how use_ipa is saved, and when edge-tts
+is asked again. Nothing here calls Azure or edge-tts.
 
     .venv\\Scripts\\python.exe -m unittest test_azure_tts -v
 """
@@ -438,6 +438,72 @@ class SavedForm(unittest.TestCase):
     def test_use_ipa_alone_reads_as_fixed(self):
         self.assertEqual(pronunciation.status_of({"use_ipa": True}),
                          pronunciation.STATUS_FIXED)
+
+
+class EdgeRetry(unittest.TestCase):
+    """tts_engine.synthesize against a stand-in edge-tts: an empty answer is
+    asked again, an unreachable service is not."""
+
+    def setUp(self):
+        cache = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, cache, True)
+        for patcher in (mock.patch.object(tts_engine, "AUDIO_CACHE_DIR", cache),
+                        mock.patch.object(tts_engine, "_edge_down_until", 0.0),
+                        mock.patch.object(tts_engine.time, "sleep"),
+                        mock.patch.object(tts_engine, "_synthesize_sapi",
+                                          side_effect=self.sapi)):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    @staticmethod
+    def sapi(text, rate, out_path):
+        with open(out_path, "wb") as f:
+            f.write(b"w" * 600)
+
+    def speak(self, answers):
+        """Synthesize a plain verse while edge gives ``answers`` in turn: an
+        exception to raise, or None for audio. Returns (path, edge calls)."""
+        import edge_tts
+        calls = []
+
+        class Communicate:
+            def __init__(self, **kwargs):
+                pass
+
+            async def save(self, out_path):
+                calls.append(out_path)
+                if answers[len(calls) - 1] is not None:
+                    raise answers[len(calls) - 1]
+                with open(out_path, "wb") as f:
+                    f.write(b"x" * 600)
+
+        with mock.patch.object(edge_tts, "Communicate", Communicate):
+            path = tts_engine.synthesize("And the border turned about westward.",
+                                         tts_engine.HOUSE_VOICE, 0)
+        return path, len(calls)
+
+    @staticmethod
+    def empty():
+        from edge_tts.exceptions import NoAudioReceived
+        return NoAudioReceived("No audio was received.")
+
+    def test_an_empty_answer_is_asked_again(self):
+        path, calls = self.speak([self.empty(), None])
+        self.assertTrue(path.endswith(".mp3"))
+        self.assertEqual(calls, 2)
+        self.assertEqual(tts_engine._edge_down_until, 0.0)    # not counted as down
+
+    def test_edge_is_down_once_the_retries_run_out(self):
+        tries = len(tts_engine._EDGE_EMPTY_WAITS) + 1
+        path, calls = self.speak([self.empty()] * tries)
+        self.assertTrue(path.endswith(".wav"))
+        self.assertEqual(calls, tries)
+        self.assertGreater(tts_engine._edge_down_until, 0.0)
+
+    def test_an_unreachable_edge_is_not_asked_again(self):
+        path, calls = self.speak([OSError("unreachable")])
+        self.assertTrue(path.endswith(".wav"))
+        self.assertEqual(calls, 1)
 
 
 if __name__ == "__main__":

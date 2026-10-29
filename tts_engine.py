@@ -124,14 +124,29 @@ def route(text: str, voice: str, rate: int, engine: str = ENGINE_EDGE,
     return Route(ENGINE_EDGE, spoken, path, 0)
 
 
+# edge-tts now and then ends a request without sending audio (NoAudioReceived)
+# and speaks the same text when asked again, so that is retried after these
+# waits, in seconds, before edge counts as down.
+_EDGE_EMPTY_WAITS = (1, 3)
+
+
 def _synthesize_edge(text: str, voice: str, rate: int, out_path: str) -> None:
     import edge_tts
+    from edge_tts.exceptions import NoAudioReceived
 
     async def run():
         communicate = edge_tts.Communicate(text=text, voice=voice, rate=f"{rate:+d}%")
         await communicate.save(out_path)
 
-    asyncio.run(run())
+    waits = list(_EDGE_EMPTY_WAITS)
+    while True:
+        try:
+            asyncio.run(run())
+            break
+        except NoAudioReceived:
+            if not waits:
+                raise
+            time.sleep(waits.pop(0))
     if not os.path.exists(out_path) or os.path.getsize(out_path) < 500:
         raise TTSError("edge-tts produced no audio")
 
@@ -178,8 +193,9 @@ def _drop(path: str) -> None:
         pass
 
 
-# After an edge-tts failure (usually: offline), skip further edge attempts
-# for this long so playback doesn't stall on a network timeout every verse.
+# After an edge-tts failure (usually: offline; an empty answer only once its
+# retries run out), skip further edge attempts for this long so playback
+# doesn't stall on a network timeout every verse.
 _EDGE_RETRY_SECONDS = 120
 _edge_down_until = 0.0
 
