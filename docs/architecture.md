@@ -96,8 +96,8 @@ On the Free plan, Cloudflare's Workers static assets take at most 20,000 files i
 | The web app's own files: `index.html`, `manifest.webmanifest`, `js/`, `css/`, `icons/` | 14 |
 | `web/audio/`: the narration MP3s and `manifest.json` | 2,349 |
 | `web/bibles/WEB/`: one JSON per chapter | 1,189 |
-| `web/visuals/`: the verse SVGs, `manifest.json` and the 21 reference-chart files | 2,263 |
-| **Total** | **5,815** |
+| `web/visuals/`: the verse SVGs, `manifest.json` and the 21 reference-chart files | 2,481 |
+| **Total** | **6,033** |
 
 - **Cost.** A fully produced verse costs about 2 files: 1 SVG and 1 MP3.
   - A range file costs one file for its whole run.

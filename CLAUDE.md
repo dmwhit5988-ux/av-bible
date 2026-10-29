@@ -99,6 +99,9 @@ explains the project, and `docs/` has the detail.
   way, and Paul's places, roads, sea courses and letters from `journeys.py`. Never
   draw `acts_geography`'s far-world lines (`AEGEAN_SHORE`, `LIBYA_SHORE`,
   `PELOPONNESE`, `FAR_ISLANDS`): they are atlas traces too.
+- Take what each verse of Joshua 13–19 names, and the border it walks, from
+  `allotment.py`; every place it points at is a `gazetteer.py` place (`SITES`,
+  `JERUSALEM`, or `BEYOND` for the land north of the atlas's sheet).
 - Take a reign's years from `kings.py`: Ussher's, which are `chronology.BIND`'s, and
   Thiele's beside them. Never mix the two counts in one drawing.
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
@@ -119,7 +122,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.

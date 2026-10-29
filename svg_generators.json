@@ -338,6 +338,43 @@
       "kind": "map"
     },
     {
+      "label": "The allotment of the land (Joshua 13-19)",
+      "book": "Joshua",
+      "chapters": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "generator": "generate_joshua1319_svg.py",
+      "spec": [
+        {
+          "file": "allotment.py",
+          "edit": "each verse's tribe, kind, the places, waters and lands it names in order, its border walk and count"
+        },
+        {
+          "file": "gazetteer.py",
+          "edit": "the land, lakes, rivers and every place (SITES, JERUSALEM, BEYOND), shared with the Land of Israel atlas"
+        },
+        {
+          "file": "generate_joshua1319_svg.py",
+          "edit": "the camera (frame: what each verse names), the lots' soft discs, the walks, the 'not located' plate, units (where names may go)"
+        },
+        {
+          "file": "svg_map_camera.py",
+          "edit": "the map camera shared with Numbers 34 and Acts 13-14: Flight, labels and clash test, HUD, inset, QC - editing it changes all three"
+        },
+        {
+          "file": "svg_chronicles_world.py",
+          "edit": "camera arc and audio timing shared with 1 Chronicles"
+        }
+      ],
+      "kind": "map"
+    },
+    {
       "label": "Genealogy of Jesus (Matthew 1)",
       "book": "Matthew",
       "chapters": [

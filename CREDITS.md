@@ -154,7 +154,8 @@ each the coordinate of one named place (a town, cape, river mouth or ancient sit
 taken as a single fact from **Wikidata**, whose data is CC0, or from **Wikipedia**;
 two ancient sites (Comama and Derbe) come from **vici.org**. The Land of Israel
 atlas (`gazetteer.py`) was made the same way: its coast from Ras Naqoura to the
-brook of Egypt, its lakes and rivers, and its 212 places each take one coordinate
+brook of Egypt, its lakes and rivers, and its 224 places (and the few beyond its
+sheet that Joshua 13 names) each take one coordinate
 from a Wikidata item (CC0) or a Wikipedia article. So do the coasts of the Paul's
 journeys page (`mediterranean.py`: Italy, Sicily, Malta, Greece, the Aegean, Asia
 Minor, Crete and Africa, about 2,500 points) and its places and roads

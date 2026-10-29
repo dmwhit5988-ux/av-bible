@@ -14,13 +14,13 @@ import generate_acts1518_svg
 import generate_israel_atlas as A
 import generate_tribal_maps
 
-ALL = {**GZ.SITES, **GZ.JERUSALEM}
+ALL = {**GZ.SITES, **GZ.JERUSALEM, **GZ.BEYOND}
 TRIBES = {k.split()[0] for k in A.ALLOTMENT}
 
 
 class Places(unittest.TestCase):
     def test_in_the_atlas(self):
-        for key, s in ALL.items():
+        for key, s in {**GZ.SITES, **GZ.JERUSALEM}.items():
             with self.subTest(key):
                 self.assertTrue(A.LAT_BOT < s.lat < A.LAT_TOP
                                 and A.LON_L < s.lon < A.LON_R)

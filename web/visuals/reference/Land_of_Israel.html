@@ -118,7 +118,8 @@ function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
   const pad=Math.max(5,7/k);
   for(const[name,px]of[['at',2.5],['trace',2.5],['sel',3.5]]){const g=layers[name];if(!g)continue;
     g.setAttribute('stroke-width',(px/k).toFixed(3));
-    for(const r of g.children){const b=r._b;r.setAttribute('x',b[0]-pad);r.setAttribute('y',b[1]-pad);
+    for(const r of g.children){if(r._p){r.setAttribute('stroke-width',Math.max(14,px*4/k).toFixed(2));continue}
+      const b=r._b;r.setAttribute('x',b[0]-pad);r.setAttribute('y',b[1]-pad);
       r.setAttribute('width',b[2]+2*pad);r.setAttribute('height',b[3]+2*pad)}}
   // an outlined part whose own name is too small (or too big) to show here
   // gets its name written over the outline, at reading size
@@ -261,8 +262,16 @@ $('next').onclick=()=>matches.length&&go(at+1);
 $('prev').onclick=()=>matches.length&&go(at-1);
 
 // -- selecting ------------------------------------------------------------
+// A part drawn as a line (`pth`, a journey's leg: x0,y0,x1,y1,...) glows
+// along it; any other gets a box round it.
 function outline(layer,list){const g=layers[layer];g.textContent='';
-  for(const i of list||[]){const r=document.createElementNS(NS,'rect');r._b=items[i].b;
+  for(const i of list||[]){const pth=items[i].pth;
+    if(pth){const r=document.createElementNS(NS,'path');r._p=true;
+      r.setAttribute('d','M'+pth.join(' ').replace(/(\S+ \S+) /g,'$1L'));
+      for(const[a,v]of[['fill','none'],['stroke-linecap','round'],['stroke-linejoin','round'],
+                       ['stroke-opacity','0.5']])r.setAttribute(a,v);
+      g.appendChild(r);continue}
+    const r=document.createElementNS(NS,'rect');r._b=items[i].b;
     r.setAttribute('rx',8);g.appendChild(r)}
   if(layers.names&&layer!=='trace'){
     for(const t of [...layers.names.children])if(t._for===layer)t.remove();
@@ -285,13 +294,16 @@ function onTap(x,y){if(!DATA||!svg)return;const sx=(x-tx)/k,sy=(y-ty)/k,tol=6/k;
   // (`"tap": "inside"`, the atlas's dots) asks instead for the smallest box
   // the finger is inside, over the smallest it only grazes (a neighbour's
   // dot a few px off), unless the grazed one lies within it: a box that
-  // holds other parts is their background.
-  const nearest=boxes=>{let best=-1,area=Infinity;
-    for(const[i,b]of boxes)if(within(b,tol)&&b[2]*b[3]<area){best=i;area=b[2]*b[3]}
-    return best};
+  // holds other parts is their background. Between boxes of one size (two
+  // journeys' lines side by side) the one centred nearer the finger wins.
+  const off=b=>(sx-b[0]-b[2]/2)**2+(sy-b[1]-b[3]/2)**2;
+  const better=(a,b,best)=>a<best[1]||(a===best[1]&&off(b)<off(best[2]));
+  const nearest=boxes=>{let best=[-1,Infinity,null];
+    for(const[i,b]of boxes)if(within(b,tol)&&better(b[2]*b[3],b,best))best=[i,b[2]*b[3],b];
+    return best[0]};
   const inside=boxes=>{const best={in:[-1,Infinity,null],near:[-1,Infinity,null]};
     for(const[i,b]of boxes){const a=b[2]*b[3],w=within(b,0)?'in':within(b,tol)?'near':null;
-      if(w&&a<best[w][1])best[w]=[i,a,b]}
+      if(w&&better(a,b,best[w]))best[w]=[i,a,b]}
     const[ii,,ib]=best.in,[ni,,nb]=best.near;
     if(ii<0)return ni;
     return ni>=0&&nb[0]>=ib[0]&&nb[1]>=ib[1]&&nb[0]+nb[2]<=ib[0]+ib[2]&&nb[1]+nb[3]<=ib[1]+ib[3]?ni:ii};
@@ -364,6 +376,10 @@ function renderPart(keep){const i=state.sel,it=items[i];let h=cardHead(it);
   if(it.pl)h+=`<div class="c-row"><span class="c-lab">Where</span>${esc(it.pl[0])}${flag(it.pl[1])}${it.pl[2].length?verseChips(it.pl[2],home):''}</div>`;
   for(const[label,text]of it.tx||[])h+=`<div class="c-row"><span class="c-lab">${esc(label)}</span>${esc(text)}</div>`;
   if(it.note)h+=`<p class="c-note">${esc(it.note)}</p>`;
+  // `st`: the part before and after this one in a sequence (a journey's legs)
+  if(it.st){const[a,b]=it.st;h+=`<div class="c-row"><span class="c-lab">${esc(data.step||'Step')}</span>`+
+    (a!=null?`<button class="chip v" data-go="${a}">◂ ${esc(items[a].n)}</button>`:'')+
+    (b!=null?`<button class="chip v" data-go="${b}">${esc(items[b].n)} ▸</button>`:'')+`</div>`}
   const links=[];
   for(const j of it.dt||[])links.push(`<button class="chip v" data-go="${j}">The drawing of ${esc(items[j].dl||items[j].n)} ▸</button>`);
   if(it.of!=null)links.push(`<button class="chip v" data-go="${it.of}">On the plan ▸</button>`);

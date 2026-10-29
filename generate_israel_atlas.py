@@ -752,7 +752,7 @@ def site_card(key, s, p, spot):
     if region in TRIBE_NAMES:
         region = f"tribe of {tribe}" if tribe else f"the land of {region}"
     sub = [{"town": "", "mount": "mountain", "valley": "valley", "plain": "plain",
-            "cave": "cave", "well": "well"}[s.kind], region]
+            "cave": "cave", "well": "well", "spring": "spring", "pool": "pool"}[s.kind], region]
     item = {"id": key.replace("_", "-"), "n": label_text(key, s),
             "s": " · ".join(x for x in sub if x), "a": list(s.aka),
             "dims": [["Identified with", s.modern, s.certainty, []]],

@@ -191,9 +191,12 @@ The libraries most generators share:
 - `svg_vocab.py` holds small drawing helpers.
 - `generate_tribal_maps.py` holds the map projection and shared map data.
 - `gazetteer.py` holds the Land of Israel as point facts: the coast, the lakes at
-  high water, the rivers, and 212 places, each at the site it is identified with,
+  high water, the rivers, and 224 places, each at the site it is identified with,
   with its certainty and every verse that names it. The atlas draws it, and so can
   any verse map.
+- `allotment.py` holds Joshua 13–19 verse by verse: each verse's tribe, every
+  place, land and water it names in order (each a gazetteer place or point), the
+  border it walks, and the names with no agreed site.
 - `kings.py` holds the kings of Israel and Judah (Ussher's years from
   `chronology.BIND`, Thiele's beside them, and the text's length, verdict, mother,
   end and passages, each with its verse), the foreign kings by the regnal year the
@@ -294,7 +297,7 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment
 ```
 
 There are 115 tests in nine modules:
@@ -317,6 +320,8 @@ There are 115 tests in nine modules:
   place, the skipped verses are ones its names find, every line point names its
   place and Wikidata item (or is marked `~`), no point copies the old atlas-traced
   maps, and the rivers meet the water they run into.
+- `test_allotment`: Joshua 13–19's data has every verse, each name is the verse's
+  own word, and everything it places is a gazetteer place, land or water point.
 - `test_kings`: the kings' Ussher years are `chronology.BIND`'s, each verse says
   what it is cited for, every event falls in the reign it is dated by, every
   prophet's king is a reign, and every bar can carry its name.

@@ -182,6 +182,8 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 **The Land of Israel** is drawn from `gazetteer.py`: its coast, lakes and rivers, every point a named place's coordinate (or marked `~` as interpolated), and its places, each at the site it is identified with, flagged known, probable or possible, with every verse that names it (`generate_israel_atlas.place_verses`). A verse map of the land takes its lines and places from there, not from `generate_tribal_maps`, whose lines are atlas traces.
 
+**Joshua 13–19** is `allotment.py` over `gazetteer.py`: what each verse names, in order, each a gazetteer place, land or water point, the border it walks, and the names with no agreed site. `generate_joshua1319_svg.py` flies `svg_map_camera`'s camera over it, framing what each verse names (closer where its places crowd, up to a few km across), lighting them, keeping a soft disc of the tribe's colour on every place given so far, drawing a walk as a dotted line through the landmarks that have a site, and listing the rest on a "not located" plate. Gazetteer places north of the atlas's sheet (Gebal, Aphek, the entrance of Hamath, Joshua 13:4–6) are in `gazetteer.BEYOND`.
+
 **Beyond the Levant** the coasts are `mediterranean.py`'s, made the same way, and Paul's places, roads, sea courses and letters are `journeys.py`'s. A verse map of Acts 13–28 draws from there, not from `generate_acts1518_svg`'s `MED` or `acts_geography`'s far-world lines, which are atlas traces.
 
 **The kings** are `kings.py` and `prophets.py`. A picture of a reign takes its years from there: Ussher's (`chronology.BIND`'s, the house count) and Thiele's, never one for the other.
