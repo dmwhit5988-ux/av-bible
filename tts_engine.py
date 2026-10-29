@@ -125,10 +125,16 @@ def route(text: str, voice: str, rate: int, engine: str = ENGINE_EDGE,
     return Route(ENGINE_EDGE, spoken, path, 0)
 
 
-# edge-tts now and then ends a request without sending audio (NoAudioReceived)
-# and speaks the same text when asked again, so that is retried after these
-# waits, in seconds, before edge counts as down.
+# edge-tts now and then ends a request without sending audio (NoAudioReceived),
+# or with only its first sentences (EdgeCutShort), and speaks the same text
+# when asked again, so either is retried after these waits, in seconds,
+# before edge counts as down.
 _EDGE_EMPTY_WAITS = (1, 3)
+
+
+class EdgeCutShort(TTSError):
+    """edge-tts's connection closed before the service said the audio was
+    done; edge-tts keeps what came without an error."""
 
 
 def _synthesize_edge(text: str, voice: str, rate: int, out_path: str) -> None:
@@ -137,14 +143,23 @@ def _synthesize_edge(text: str, voice: str, rate: int, out_path: str) -> None:
 
     async def run():
         communicate = edge_tts.Communicate(text=text, voice=voice, rate=f"{rate:+d}%")
-        await communicate.save(out_path)
+        size = 0
+        with open(out_path, "wb") as f:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    f.write(chunk["data"])
+                    size += len(chunk["data"])
+        # edge-tts adds an answer's bytes to this count only when the
+        # service's turn.end arrives, so audio short of it was cut off.
+        if communicate.state["cumulative_audio_bytes"] != size:
+            raise EdgeCutShort(f"edge-tts was cut off after {size} bytes")
 
     waits = list(_EDGE_EMPTY_WAITS)
     while True:
         try:
             asyncio.run(run())
             break
-        except NoAudioReceived:
+        except (NoAudioReceived, EdgeCutShort):
             if not waits:
                 raise
             time.sleep(waits.pop(0))

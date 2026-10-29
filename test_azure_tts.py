@@ -460,23 +460,27 @@ class EdgeRetry(unittest.TestCase):
         with open(out_path, "wb") as f:
             f.write(b"w" * 600)
 
+    CUT = "cut"
+
     def speak(self, answers, **kwargs):
         """Synthesize a plain verse while edge gives ``answers`` in turn: an
-        exception to raise, or None for audio. ``kwargs`` go to synthesize.
-        Returns (path, edge calls)."""
+        exception to raise, None for audio, or CUT for audio whose turn.end
+        never came. ``kwargs`` go to synthesize. Returns (path, edge calls)."""
         import edge_tts
         calls = []
 
         class Communicate:
             def __init__(self, **kwargs):
-                pass
+                self.state = {"cumulative_audio_bytes": 0}
 
-            async def save(self, out_path):
-                calls.append(out_path)
-                if answers[len(calls) - 1] is not None:
-                    raise answers[len(calls) - 1]
-                with open(out_path, "wb") as f:
-                    f.write(b"x" * 600)
+            async def stream(self):
+                calls.append(1)
+                answer = answers[len(calls) - 1]
+                if isinstance(answer, Exception):
+                    raise answer
+                yield {"type": "audio", "data": b"x" * 600}
+                if answer is None:                      # turn.end
+                    self.state["cumulative_audio_bytes"] += 600
 
         with mock.patch.object(edge_tts, "Communicate", Communicate):
             path = tts_engine.synthesize(self.TEXT, tts_engine.HOUSE_VOICE, 0,
@@ -495,6 +499,18 @@ class EdgeRetry(unittest.TestCase):
         self.assertTrue(path.endswith(".mp3"))
         self.assertEqual(calls, 2)
         self.assertEqual(tts_engine._edge_down_until, 0.0)    # not counted as down
+
+    def test_a_cut_off_answer_is_asked_again(self):
+        path, calls = self.speak([self.CUT, None])
+        self.assertTrue(path.endswith(".mp3"))
+        self.assertEqual(calls, 2)
+
+    def test_a_render_never_ships_a_cut_off_answer(self):
+        with mock.patch.object(tts_engine, "_synthesize_sapi") as sapi:
+            with self.assertRaises(tts_engine.TTSError):
+                self.speak([self.CUT] * (len(tts_engine._EDGE_EMPTY_WAITS) + 1),
+                           fallback=False)
+        sapi.assert_not_called()
 
     def test_edge_is_down_once_the_retries_run_out(self):
         tries = len(tts_engine._EDGE_EMPTY_WAITS) + 1

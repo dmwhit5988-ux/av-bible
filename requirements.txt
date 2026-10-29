@@ -1,6 +1,8 @@
 # 7.3.0 or later: since about 2026-10-13 Microsoft refuses the token older
 # versions send (HTTP 403 on connect), and every verse falls back to SAPI.
-edge-tts>=7.3.0
+# 7.3.1 is the version whose cumulative_audio_bytes tts_engine checks to tell
+# a cut-off answer.
+edge-tts>=7.3.1
 aiohttp>=3.8
 # Azure TTS (azure_tts.py) needs no package: it is plain HTTPS from the
 # standard library. It needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION set.
