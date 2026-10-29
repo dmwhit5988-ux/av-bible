@@ -104,7 +104,7 @@ def _scan(events, book, chapters, voice, force, engine):
                     azure_verses += 1
                     azure_chars += r.chars
         if not passages:
-            outcome = ("render_done", 0, 0, 0, 0, None)
+            outcome = ("render_done", 0, 0, 0, None)
             return
         current_total = count_deploy_files()
         outcome = ("confirm", book, chapters, voice, passages, manifest,
@@ -122,7 +122,7 @@ def _render(events, cancel, book, chapters, voice, passages, manifest, force,
     set. The manifest is saved after every chapter, including one that
     failed partway, so whatever was written stays registered."""
     done = 0
-    totals = {"written": 0, "skipped": 0, "degraded": 0, "failed": 0}
+    totals = {"written": 0, "skipped": 0, "failed": 0}
     error = "The render stopped unexpectedly."
 
     def on_verse(num, status, ch_ref):
@@ -144,7 +144,8 @@ def _render(events, cancel, book, chapters, voice, passages, manifest, force,
                     rate=tts_engine.HOUSE_RATE, passage=passage,
                     on_verse=(lambda num, status, ch=ch:
                               on_verse(num, status, ch)),
-                    should_stop=cancel.is_set, force=force, engine=engine)
+                    should_stop=cancel.is_set, force=force, engine=engine,
+                    on_wait=lambda msg: events.put(("progress", done, msg)))
             finally:
                 # Per chapter, so an interrupted render resumes.
                 showcase_audio._save_manifest(manifest)
@@ -153,7 +154,7 @@ def _render(events, cancel, book, chapters, voice, passages, manifest, force,
         error = f"{type(e).__name__}: {e}"
     finally:
         events.put(("render_done", totals["written"], totals["skipped"],
-                    totals["degraded"], totals["failed"], error))
+                    totals["failed"], error))
 
 
 class App:
@@ -469,9 +470,8 @@ class App:
             self.progress.configure(value=done)
             self.status_var.set(msg)
         elif kind == "render_done":
-            _, written, skipped, degraded, failed, error = event
+            _, written, skipped, failed, error = event
             counts = (f"{written} written, {skipped} already current"
-                      + (f", {degraded} degraded/skipped" if degraded else "")
                       + (f", {failed} refused by Azure" if failed else ""))
             if error:
                 self._fail(f"Render failed ({counts} before it stopped): "

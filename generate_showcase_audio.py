@@ -21,9 +21,9 @@ Resumable: skips verses whose mp3 already exists and is current
 (is_current), so a re-render picks up exactly the verses a pronunciation
 change has made stale -- a name's respelling or IPA, or a verse's own words
 -- and nothing else. Only ships real neural
-audio — if edge-tts is unreachable and tts_engine falls back to the lower
-quality offline SAPI voice, that verse is skipped rather than shipping
-degraded audio (rerun later once online). The engine (tts_engine.ENGINES)
+audio: a render never takes tts_engine's offline SAPI fallback. A verse
+edge-tts won't speak is asked again after EDGE_WAITS, and then the render
+stops, keeping what it wrote (rerun later). The engine (tts_engine.ENGINES)
 decides which verses Azure speaks; a verse Azure refuses is skipped as
 "failed", and a refusal that would repeat for every verse (bad key, quota
 used up, offline) stops the render.
@@ -156,10 +156,50 @@ def _save_manifest(manifest: dict) -> dict:
                         pass
 
 
+# A render never ships the offline voice, so a verse edge-tts won't speak is
+# asked again after these waits, in seconds; then the render stops.
+EDGE_WAITS = (10, 30, 60)
+
+
+def _wait(seconds: float, should_stop) -> None:
+    """Sleep ``seconds``, or until ``should_stop()`` says to stop."""
+    end = time.monotonic() + seconds
+    while time.monotonic() < end:
+        if should_stop and should_stop():
+            return
+        time.sleep(0.2)
+
+
+def _speak(text: str, voice: str, rate: int, engine: str, ref: str,
+           should_stop, on_wait) -> str | None:
+    """tts_engine.synthesize for a render: neural audio or nothing. A verse
+    edge-tts won't speak is asked again after EDGE_WAITS, saying so through
+    ``on_wait(message)``, and then a TTSError ends the render, keeping what
+    it wrote. None if the render was cancelled while edge-tts was failing."""
+    waits = list(EDGE_WAITS)
+    while True:
+        try:
+            return tts_engine.synthesize(text, voice, rate, engine=engine,
+                                         label=ref, ref=ref, fallback=False)
+        except tts_engine.TTSError as e:
+            if should_stop and should_stop():
+                return None
+            if not waits:
+                raise tts_engine.TTSError(
+                    f"{ref}: {e}. Render again later; "
+                    "the verses written so far are kept.") from e
+            print(f"    {ref} — {e}; asking again in {waits[0]} s")
+            if on_wait:
+                on_wait(f"{ref} — edge-tts didn't answer; "
+                        f"asking again in {waits[0]} s")
+            _wait(waits.pop(0), should_stop)
+
+
 def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE,
                       rate: int = RATE, passage=None, on_verse=None,
                       should_stop=None, force: bool = False,
-                      engine: str = tts_engine.ENGINE_EDGE) -> tuple:
+                      engine: str = tts_engine.ENGINE_EDGE,
+                      on_wait=None) -> tuple:
     """Render one chapter's verses into web/audio/ and update `manifest`.
 
     Reused by both this CLI script and the Audio Renderer studio (audio_studio.py)
@@ -167,14 +207,16 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
 
     `passage`, if given, skips the load (the studio loads each chapter during
     its file-count scan and reuses it here). `on_verse(num, status)` is called
-    after each verse with status in {"written", "skipped", "degraded",
-    "failed"} — lets a caller drive a progress bar. `should_stop()`, checked
-    before each verse, lets a caller cancel between verses. Returns
-    (written, skipped, degraded); a "failed" verse counts as degraded.
+    after each verse with status in {"written", "skipped", "failed"} — lets a
+    caller drive a progress bar. `should_stop()`, checked before each verse
+    and while waiting on edge-tts, lets a caller cancel; `on_wait(message)`
+    says when a verse is waiting on edge-tts. Returns
+    (written, skipped, failed).
 
     `engine` is a tts_engine engine. A verse Azure refuses (usually an IPA
     symbol it doesn't know) is "failed" and skipped; an azure_tts.AzureError
-    that is ``fatal`` is raised, ending the render.
+    that is ``fatal`` is raised, ending the render. A verse edge-tts still
+    won't speak after EDGE_WAITS raises a tts_engine.TTSError, ending it too.
 
     A verse whose MP3 already exists is skipped while it is current
     (is_current) and re-rendered once a pronunciation change has made it
@@ -190,7 +232,7 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
             print(f"  skip {book} {chapter}: {e}")
             return 0, 0, 0
     safe_book = book.replace(" ", "_")
-    written = skipped = degraded = 0
+    written = skipped = failed = 0
     for num, text in passage.verses:
         if should_stop and should_stop():
             break
@@ -206,25 +248,18 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
                 on_verse(num, "skipped")
             continue
         try:
-            src_path = tts_engine.synthesize(
-                text, voice, rate, engine=engine, label=ref, ref=ref)
+            src_path = _speak(text, voice, rate, engine, ref, should_stop,
+                              on_wait)
         except azure_tts.AzureError as e:
             if e.fatal:
                 raise
-            degraded += 1
+            failed += 1
             print(f"    {book} {chapter}:{num} — Azure refused it, skipped: {e}")
             if on_verse:
                 on_verse(num, "failed")
             continue
-        if not src_path.lower().endswith(".mp3"):
-            # tts_engine fell back to the offline SAPI voice (edge-tts
-            # unreachable) — don't ship degraded audio.
-            degraded += 1
-            print(f"    {book} {chapter}:{num} — edge-tts unavailable, "
-                  f"skipped (rerun later)")
-            if on_verse:
-                on_verse(num, "degraded")
-            continue
+        if src_path is None:              # cancelled while edge-tts was failing
+            break
         os.makedirs(AUDIO_DIR, exist_ok=True)
         shutil.copyfile(src_path, out_path)
         manifest[key] = filename
@@ -232,8 +267,8 @@ def generate_chapter(book: str, chapter: int, manifest: dict, voice: str = VOICE
         if on_verse:
             on_verse(num, "written")
     print(f"  {book} {chapter}: {written} written, {skipped} already present"
-          + (f", {degraded} degraded/skipped" if degraded else ""))
-    return written, skipped, degraded
+          + (f", {failed} refused by Azure" if failed else ""))
+    return written, skipped, failed
 
 
 def main() -> int:

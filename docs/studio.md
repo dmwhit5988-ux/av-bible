@@ -159,7 +159,7 @@ See [pronunciation.md](pronunciation.md).
   - "Voice override" is the one voice picker in the Studio. It applies to one render and is not saved.
   - "Engine" picks who speaks: Edge (free, respellings only), Azure for the verses with IPA names and Edge for the rest, or Azure for every verse ([pronunciation.md](pronunciation.md#ipa-through-azure)). The choice is remembered (`render_engine`). The Azure options are greyed out until `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` are set.
   - Before rendering, a confirm dialog shows the new-file count against the deploy budget. With an Azure engine it also shows the verses Azure will speak, their characters, how long the free tier's pace makes that take, and the last 31 days' use against 500,000. It warns when the render would go past that.
-  - A verse is skipped when edge-tts is unreachable, so the offline voice never ships. A verse Azure refuses is skipped as "refused by Azure". A bad key, a used-up month or no network stops the render.
+  - The offline voice is never used. A verse edge-tts won't speak is asked again after 10, 30 and 60 seconds (`generate_showcase_audio.EDGE_WAITS`), and the status line shows the wait. If edge-tts still fails, the render stops and keeps what it wrote. A verse Azure refuses is skipped as "refused by Azure". A bad key, a used-up month or no network stops the render.
 - **Reads:** `web/bibles/WEB/`, `pronunciations.json` (via `respell()` and `ssml()`), `web/audio/manifest.json`, `azure_usage.jsonl`.
 - **Writes:**
   - `web/audio/<Book>_<ch>_<v>.mp3`;

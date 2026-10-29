@@ -15,7 +15,8 @@ used when a caller asks for it, by engine:
     ENGINE_AZURE  Azure for everything (e.g. while edge-tts is down)
 
 Fallback engine: Windows built-in SAPI voices via PowerShell (offline, lower
-quality) used automatically if edge-tts fails. Azure never falls back: a verse
+quality) used automatically if edge-tts fails, except in a render
+(fallback=False), which raises instead. Azure never falls back: a verse
 that needed IPA mustn't quietly ship without it.
 
 Generated audio is cached on disk keyed by voice, rate, and text hash, so a
@@ -201,7 +202,8 @@ _edge_down_until = 0.0
 
 
 def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True,
-               engine: str = ENGINE_EDGE, label: str = "", ref: str = "") -> str:
+               engine: str = ENGINE_EDGE, label: str = "", ref: str = "",
+               fallback: bool = True) -> str:
     """Return path to an audio file speaking `text`. Cached across runs.
 
     Cached neural mp3s are served forever. Cached SAPI wavs (made while
@@ -220,6 +222,10 @@ def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True,
     `engine` picks the service (see the module docstring). Whatever Azure
     speaks is Azure's or nothing: its failures raise azure_tts.AzureError.
     `label` names the request in the Azure usage log.
+
+    `fallback=False` is for a render, which never ships the offline voice:
+    edge-tts is asked whatever its last failure was, and if it fails the
+    error is raised as a TTSError, with no SAPI audio made or returned.
     """
     global _edge_down_until
     r = route(text, voice, rate, engine, apply_respell, ref)
@@ -231,6 +237,14 @@ def synthesize(text: str, voice: str, rate: int, apply_respell: bool = True,
         return r.path
     text, mp3_path = r.payload, r.path
     wav_path = _cache_file(voice, rate, text, "wav")
+    if not fallback:
+        try:
+            _synthesize_edge(text, voice, rate, mp3_path)
+        except Exception as e:
+            _drop(mp3_path)
+            raise TTSError(f"edge-tts failed ({type(e).__name__}): {e}") from e
+        _drop(wav_path)
+        return mp3_path
     wav_cached = _cached(wav_path)
 
     if time.time() >= _edge_down_until:

@@ -460,9 +460,10 @@ class EdgeRetry(unittest.TestCase):
         with open(out_path, "wb") as f:
             f.write(b"w" * 600)
 
-    def speak(self, answers):
+    def speak(self, answers, **kwargs):
         """Synthesize a plain verse while edge gives ``answers`` in turn: an
-        exception to raise, or None for audio. Returns (path, edge calls)."""
+        exception to raise, or None for audio. ``kwargs`` go to synthesize.
+        Returns (path, edge calls)."""
         import edge_tts
         calls = []
 
@@ -478,9 +479,11 @@ class EdgeRetry(unittest.TestCase):
                     f.write(b"x" * 600)
 
         with mock.patch.object(edge_tts, "Communicate", Communicate):
-            path = tts_engine.synthesize("And the border turned about westward.",
-                                         tts_engine.HOUSE_VOICE, 0)
+            path = tts_engine.synthesize(self.TEXT, tts_engine.HOUSE_VOICE, 0,
+                                         **kwargs)
         return path, len(calls)
+
+    TEXT = "And the border turned about westward."
 
     @staticmethod
     def empty():
@@ -504,6 +507,84 @@ class EdgeRetry(unittest.TestCase):
         path, calls = self.speak([OSError("unreachable")])
         self.assertTrue(path.endswith(".wav"))
         self.assertEqual(calls, 1)
+
+    def test_a_render_never_takes_the_offline_voice(self):
+        self.sapi(None, 0, tts_engine.route(self.TEXT, tts_engine.HOUSE_VOICE,
+                                            0).path[:-4] + ".wav")
+        tts_engine._edge_down_until = float("inf")
+        with mock.patch.object(tts_engine, "_synthesize_sapi") as sapi:
+            with self.assertRaises(tts_engine.TTSError):
+                self.speak([OSError("unreachable")], fallback=False)
+            path, calls = self.speak([None], fallback=False)
+        sapi.assert_not_called()
+        self.assertTrue(path.endswith(".mp3"))
+        self.assertFalse(os.path.exists(path[:-4] + ".wav"))   # replaced
+
+
+class RenderWaitsOnEdge(unittest.TestCase):
+    """generate_chapter asks edge-tts again after EDGE_WAITS, then stops the
+    render, keeping what it wrote; tts_engine.synthesize is a stand-in."""
+
+    def setUp(self):
+        import generate_showcase_audio as showcase_audio
+        self.audio = showcase_audio
+        self.dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.dir, True)
+        self.mp3 = os.path.join(self.dir, "spoken.mp3")
+        with open(self.mp3, "wb") as f:
+            f.write(b"x" * 600)
+        self.waits = []
+        for patcher in (mock.patch.object(showcase_audio, "AUDIO_DIR", self.dir),
+                        mock.patch.object(showcase_audio, "_wait",
+                                          side_effect=lambda s, stop: self.waits.append(s))):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def render(self, answers, should_stop=None):
+        """Render a two-verse chapter while synthesize gives ``answers`` in
+        turn (True for audio, False for a TTSError). Returns (manifest,
+        result or the exception raised, synthesize calls, on_wait messages)."""
+        passage = mock.Mock(verses=[(1, "The lot came out."), (2, "And it went up.")])
+        manifest, messages = {}, []
+        answers = iter(answers)
+
+        def synthesize(*args, **kwargs):
+            self.assertIs(kwargs["fallback"], False)
+            if next(answers):
+                return self.mp3
+            raise tts_engine.TTSError("edge-tts failed (NoAudioReceived)")
+        with mock.patch.object(tts_engine, "synthesize", side_effect=synthesize) as s:
+            try:
+                result = self.audio.generate_chapter(
+                    "Joshua", 18, manifest, passage=passage,
+                    should_stop=should_stop, on_wait=messages.append)
+            except tts_engine.TTSError as e:
+                result = e
+            return manifest, result, s.call_count, messages
+
+    def test_a_verse_edge_answers_late_is_written(self):
+        manifest, result, calls, messages = self.render([False, True, True])
+        self.assertEqual(result, (2, 0, 0))
+        self.assertEqual(calls, 3)
+        self.assertEqual(self.waits, [self.audio.EDGE_WAITS[0]])
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Joshua 18:1", messages[0])
+
+    def test_the_render_stops_once_the_waits_run_out(self):
+        tries = len(self.audio.EDGE_WAITS) + 1
+        manifest, result, calls, _ = self.render([True] + [False] * tries)
+        self.assertIsInstance(result, tts_engine.TTSError)
+        self.assertIn("Joshua 18:2", str(result))
+        self.assertEqual(calls, 1 + tries)
+        self.assertEqual(self.waits, list(self.audio.EDGE_WAITS))
+        self.assertEqual(list(manifest), ["Joshua_18_1.WEB"])     # kept
+
+    def test_a_cancel_while_waiting_ends_quietly(self):
+        stop = []
+        self.audio._wait.side_effect = lambda s, should_stop: stop.append(s)
+        manifest, result, calls, _ = self.render([False, False],
+                                                 should_stop=lambda: bool(stop))
+        self.assertEqual((manifest, result, calls), ({}, (0, 0, 0), 2))
 
 
 if __name__ == "__main__":
