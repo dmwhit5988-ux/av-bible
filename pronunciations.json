@@ -1305,8 +1305,8 @@
       "ipa": "/ˈɛn/",
       "ref": "Genesis 14:7",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Kadesh": {
@@ -1463,8 +1463,8 @@
       "ipa": "/bˈɪr/",
       "ref": "Genesis 16:14",
       "override": false,
-      "status": "unfixed",
-      "score": 0.333,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Bered": {
@@ -2019,8 +2019,8 @@
       "ipa": "/lˈəz/",
       "ref": "Genesis 28:19",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Rachel": {
@@ -2860,8 +2860,8 @@
       "ipa": "/kˈeɪnənaɪt/",
       "ref": "Genesis 38:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Shua": {
@@ -2969,8 +2969,8 @@
       "ipa": "/ɡˈoʊʃɪn/",
       "ref": "Genesis 45:10",
       "override": false,
-      "status": "unfixed",
-      "score": 0.4,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Carmi": {
@@ -3781,8 +3781,7 @@
       "ipa": "/ˈdʒɒʃ.u.ə/",
       "ref": "Exodus 17:9",
       "override": false,
-      "use_ipa": true,
-      "status": "fixed"
+      "status": "ok"
     },
     "Hur": {
       "say": "HUR",
@@ -4467,8 +4466,8 @@
       "ipa": "/ˈeɪnæk/",
       "ref": "Numbers 13:22",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "wikipedia"
     },
     "Sheshai": {
@@ -4476,8 +4475,8 @@
       "ipa": "/ˈʃiːˌʃaɪ/",
       "ref": "Numbers 13:22",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "wikipedia"
     },
     "Talmai": {
@@ -4634,7 +4633,6 @@
       "ref": "Numbers 21:19",
       "override": false,
       "status": "ok",
-      "score": 0.9,
       "ipa_src": "isbe"
     },
     "Nahaliel": {
@@ -4651,8 +4649,8 @@
       "ipa": "/ˈpɪz.gə/",
       "ref": "Numbers 21:20",
       "override": false,
-      "status": "ok",
-      "score": 0.917,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Sihon": {
@@ -4669,8 +4667,8 @@
       "ipa": "/ˈdʒeɪ.hæz/",
       "ref": "Numbers 21:23",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Heshbon": {
@@ -4764,8 +4762,8 @@
       "ipa": "/ˈbeɪləm/",
       "ref": "Numbers 22:5",
       "override": false,
-      "status": "unfixed",
-      "score": 0.4,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "wikipedia"
     },
     "Pethor": {
@@ -4800,8 +4798,8 @@
       "ipa": "/ˈpiː.ɔːr/",
       "ref": "Numbers 23:28",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Agag": {
@@ -4827,8 +4825,8 @@
       "ipa": "/kˈeɪn/",
       "ref": "Numbers 24:22",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Shittim": {
@@ -5295,8 +5293,8 @@
       "ipa": "/ˈtər.zə/",
       "ref": "Numbers 26:33",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Zelophehad": {
@@ -5874,8 +5872,8 @@
       "ipa": "/bˈɛnə/",
       "ref": "Numbers 33:31",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Jaakan": {
@@ -5972,8 +5970,8 @@
       "ipa": "/ˈdʒiː.ʃi.məθ/",
       "ref": "Numbers 33:49",
       "override": false,
-      "status": "unsure",
-      "score": 0.571,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Salt": {
@@ -6199,8 +6197,8 @@
       "ipa": "/ˈɑːr.ə.bə/",
       "ref": "Deuteronomy 1:1",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Dizahab": {
@@ -6243,8 +6241,8 @@
       "ipa": "/ˈæn.ə.kɪm/",
       "ref": "Deuteronomy 1:28",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Elath": {
@@ -6270,8 +6268,8 @@
       "ipa": "/ˈæv.ɪm/",
       "ref": "Deuteronomy 2:23",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Caphtor": {
@@ -6345,8 +6343,8 @@
       "ipa": "/ˈgɛʃjʊ.raɪts/",
       "ref": "Deuteronomy 3:14",
       "override": false,
-      "status": "unfixed",
-      "score": 0.778,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Maacathites": {
@@ -6354,8 +6352,8 @@
       "ipa": "/mə.ˈæk.ə.θaɪts/",
       "ref": "Deuteronomy 3:14",
       "override": false,
-      "status": "ok",
-      "score": 0.889,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Bezer": {
@@ -6403,8 +6401,8 @@
       "ipa": "/bi.ˈiː.rɒθ/",
       "ref": "Deuteronomy 10:6",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Moserah": {
@@ -6439,8 +6437,8 @@
       "ipa": "/ˈgɪl.gæl/",
       "ref": "Deuteronomy 11:30",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.833,
       "ipa_src": "isbe"
     },
     "Edomite": {
@@ -6501,8 +6499,8 @@
       "ipa": "/ɑvˈeɪn/",
       "ref": "Joshua 7:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Shebarim": {
@@ -6545,8 +6543,8 @@
       "ipa": "/ˈkiː.fi.rəh/",
       "ref": "Joshua 9:17",
       "override": false,
-      "status": "unsure",
-      "score": 0.571,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Jearim": {
@@ -6587,8 +6585,8 @@
       "ipa": "/ˈɛɡ.lən/",
       "ref": "Joshua 10:3",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Hoham": {
@@ -6613,8 +6611,8 @@
       "ipa": "/ˈdʒɑːr.mʌθ/",
       "ref": "Joshua 10:3",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Piram": {
@@ -6639,8 +6637,8 @@
       "ipa": "/mə.ˈkiː.də/",
       "ref": "Joshua 10:10",
       "override": false,
-      "status": "ok",
-      "score": 0.845,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Aijalon": {
@@ -6682,8 +6680,8 @@
       "ipa": "/ˈæk.ʃæf/",
       "ref": "Joshua 11:1",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Hazor": {
@@ -6691,8 +6689,8 @@
       "ipa": "/ˈheɪ.zɔːr/",
       "ref": "Joshua 11:1",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Jabin": {
@@ -6744,8 +6742,8 @@
       "ipa": "/ˈmɪs.rə.fəθ/",
       "ref": "Joshua 11:8",
       "override": false,
-      "status": "unsure",
-      "score": 0.722,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Halak": {
@@ -6796,8 +6794,8 @@
       "ipa": "/ˈeɪ.fɛk/",
       "ref": "Joshua 12:18",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Lassharon": {
@@ -6839,8 +6837,8 @@
       "ipa": "/kɑrmˈɛl/",
       "ref": "Joshua 12:22",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Jokneam": {
@@ -6848,8 +6846,8 @@
       "ipa": "/ˈdʒɒk.ni.æm/",
       "ref": "Joshua 12:22",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Kedesh": {
@@ -6865,8 +6863,8 @@
       "ipa": "/ˈæʃ.dɒd.aɪts/",
       "ref": "Joshua 13:3",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ashkelonites": {
@@ -6874,8 +6872,8 @@
       "ipa": "/ˈæʃ.ki.lɒn.aɪts/",
       "ref": "Joshua 13:3",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ekron": {
@@ -6883,8 +6881,8 @@
       "ipa": "/ˈɛk.rɒn/",
       "ref": "Joshua 13:3",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ekronites": {
@@ -6892,8 +6890,8 @@
       "ipa": "/ˈɛk.rɒn.aɪt/",
       "ref": "Joshua 13:3",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Gazites": {
@@ -6901,8 +6899,8 @@
       "ipa": "/ˈgæz.aɪts/",
       "ref": "Joshua 13:3",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Gittites": {
@@ -6918,9 +6916,9 @@
       "say": "me-ara",
       "ipa": "/mi.ˈeɪ.rə/",
       "ref": "Joshua 13:4",
-      "override": true,
+      "override": false,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Gebalites": {
@@ -6928,8 +6926,8 @@
       "ipa": "/ˈgiː.bæl.aɪts/",
       "ref": "Joshua 13:5",
       "override": false,
-      "status": "unfixed",
-      "score": 0.625,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Geshur": {
@@ -6945,8 +6943,8 @@
       "ipa": "/ˈmeɪ.ə.səθ/",
       "ref": "Joshua 13:13",
       "override": false,
-      "status": "unsure",
-      "score": 0.333,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Mephaath": {
@@ -6962,8 +6960,8 @@
       "ipa": "/ʃəhˈɑr/",
       "ref": "Joshua 13:19",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Zereth": {
@@ -6971,16 +6969,16 @@
       "ipa": "/ˈzɪər.ɛθ/",
       "ref": "Joshua 13:19",
       "override": false,
-      "status": "ok",
-      "score": 0.8
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Evi": {
       "say": "eevih",
       "ipa": "/ˈiː.vaɪ/",
       "ref": "Joshua 13:21",
       "override": false,
-      "status": "suggested",
-      "score": 0.333,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Betonim": {
@@ -6997,8 +6995,8 @@
       "ipa": "/ˈmɪz.pi/",
       "ref": "Joshua 13:26",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Ramath": {
@@ -7042,8 +7040,8 @@
       "ipa": "/bˈoʊhən/",
       "ref": "Joshua 15:6",
       "override": false,
-      "status": "ok",
-      "score": 0.9,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Adummim": {
@@ -7051,8 +7049,8 @@
       "ipa": "/ə.ˈdʌm.ɪm/",
       "ref": "Joshua 15:7",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Rogel": {
@@ -7086,8 +7084,8 @@
       "ipa": "/ˈkiː.sə.lən/",
       "ref": "Joshua 15:10",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.714,
       "ipa_src": "generated"
     },
     "Jabneel": {
@@ -7095,8 +7093,8 @@
       "ipa": "/ˈdʒæb.ni.ɛl/",
       "ref": "Joshua 15:11",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Shikkeron": {
@@ -7104,8 +7102,8 @@
       "ipa": "/ˈʃɪk.ər.ɒn/",
       "ref": "Joshua 15:11",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Sepher": {
@@ -7113,8 +7111,8 @@
       "ipa": "/ˈsiː.fər/",
       "ref": "Joshua 15:15",
       "override": false,
-      "status": "unsure",
-      "score": 0.55,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Achsah": {
@@ -7136,8 +7134,8 @@
       "ipa": "/ˈdʒeɪ.gər/",
       "ref": "Joshua 15:21",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Adadah": {
@@ -7145,8 +7143,8 @@
       "ipa": "/ə.ˈdeɪ.də/",
       "ref": "Joshua 15:22",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.917,
       "ipa_src": "isbe"
     },
     "Dimonah": {
@@ -7154,8 +7152,8 @@
       "ipa": "/di.ˈmoʊ.nə/",
       "ref": "Joshua 15:22",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.833,
       "ipa_src": "isbe"
     },
     "Ithnan": {
@@ -7163,8 +7161,8 @@
       "ipa": "/ˈɪθ.næn/",
       "ref": "Joshua 15:23",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Bealoth": {
@@ -7172,8 +7170,8 @@
       "ipa": "/ˈbiː.ə.lɒθ/",
       "ref": "Joshua 15:24",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Telem": {
@@ -7181,8 +7179,8 @@
       "ipa": "/ˈtiː.ləm/",
       "ref": "Joshua 15:24",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Ziph": {
@@ -7197,8 +7195,8 @@
       "ipa": "/hə.ˈdæt.ə/",
       "ref": "Joshua 15:25",
       "override": false,
-      "status": "unfixed",
-      "score": 0.67,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Kerioth": {
@@ -7206,8 +7204,8 @@
       "ipa": "/ˈkiː.ri.ɒθ/",
       "ref": "Joshua 15:25",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Moladah": {
@@ -7215,8 +7213,8 @@
       "ipa": "/ˈmoʊ.lə.də/",
       "ref": "Joshua 15:26",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Shema": {
       "say": "SHEE-muh",
@@ -7239,8 +7237,8 @@
       "ipa": "/ˈhɛʃ.mɒn/",
       "ref": "Joshua 15:27",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Pelet": {
@@ -7256,8 +7254,8 @@
       "ipa": "/bɪz.joʊ.ˈθaɪ.ə/",
       "ref": "Joshua 15:28",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.826,
       "ipa_src": "isbe"
     },
     "Hazar Shual": {
@@ -7289,8 +7287,8 @@
       "ipa": "/ˈaɪ.ɪm/",
       "ref": "Joshua 15:29",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Chesil": {
@@ -7298,8 +7296,8 @@
       "ipa": "/ˈkiː.sɪl/",
       "ref": "Joshua 15:30",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.4,
       "ipa_src": "generated"
     },
     "Madmannah": {
@@ -7315,8 +7313,8 @@
       "ipa": "/sæn.ˈsæn.ə/",
       "ref": "Joshua 15:31",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ziklag": {
@@ -7341,8 +7339,8 @@
       "ipa": "/ˈæʃ.nə/",
       "ref": "Joshua 15:33",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Eshtaol": {
@@ -7350,8 +7348,8 @@
       "ipa": "/ˈɛʃ.tə.ɒl/",
       "ref": "Joshua 15:33",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Zorah": {
@@ -7359,8 +7357,8 @@
       "ipa": "/zˈɔrə/",
       "ref": "Joshua 15:33",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Enam": {
@@ -7368,8 +7366,8 @@
       "ipa": "/ˈiː.næm/",
       "ref": "Joshua 15:34",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Gannim": {
@@ -7377,8 +7375,8 @@
       "ipa": "/ˈɡæn.nɪm/",
       "ref": "Joshua 15:34",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Zanoah": {
@@ -7403,8 +7401,8 @@
       "ipa": "/æd.i.ˈθeɪ.ɪm/",
       "ref": "Joshua 15:36",
       "override": false,
-      "status": "unfixed",
-      "score": 0.714,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Gederah": {
@@ -7420,8 +7418,8 @@
       "ipa": "/gɛd.i.roʊ.ˈθeɪ.ɪm/",
       "ref": "Joshua 15:36",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Shaaraim": {
@@ -7437,8 +7435,8 @@
       "ipa": "/hə.ˈdeɪ.ʃə/",
       "ref": "Joshua 15:37",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Migdal": {
@@ -7446,8 +7444,8 @@
       "ipa": "/mˈɪɡdəl/",
       "ref": "Joshua 15:37",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "cmudict"
     },
     "Joktheel": {
@@ -7455,8 +7453,8 @@
       "ipa": "/ˈdʒɒk.θi.ɛl/",
       "ref": "Joshua 15:38",
       "override": false,
-      "status": "unfixed",
-      "score": 0.714,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Bozkath": {
@@ -7464,8 +7462,8 @@
       "ipa": "/ˈbɒz.kæθ/",
       "ref": "Joshua 15:39",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Chitlish": {
@@ -7473,8 +7471,8 @@
       "ipa": "/ˈkɪt.lɪʃ/",
       "ref": "Joshua 15:40",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "generated"
     },
     "Lahmam": {
@@ -7482,8 +7480,8 @@
       "ipa": "/ˈleɪ.mæm/",
       "ref": "Joshua 15:40",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Ashan": {
@@ -7508,8 +7506,8 @@
       "ipa": "/ˈniː.zɪb/",
       "ref": "Joshua 15:43",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Achzib": {
@@ -7517,8 +7515,8 @@
       "ipa": "/ˈæk.zɪb/",
       "ref": "Joshua 15:44",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Keilah": {
@@ -7549,8 +7547,8 @@
       "ipa": "/ˈsæn.nəh/",
       "ref": "Joshua 15:49",
       "override": false,
-      "status": "unsure",
-      "score": 0.4,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Anim": {
@@ -7558,8 +7556,8 @@
       "ipa": "/ˈeɪ.nɪm/",
       "ref": "Joshua 15:50",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Eshtemoh": {
@@ -7567,8 +7565,8 @@
       "ipa": "/ˈɛʃ.ti.moʊ/",
       "ref": "Joshua 15:50",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Giloh": {
@@ -7576,8 +7574,8 @@
       "ipa": "/ˈgaɪ.loʊ/",
       "ref": "Joshua 15:51",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Holon": {
@@ -7585,8 +7583,8 @@
       "ipa": "/ˈhoʊ.lɒn/",
       "ref": "Joshua 15:51",
       "override": false,
-      "status": "ok",
-      "score": 0.9,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Eshan": {
@@ -7594,8 +7592,8 @@
       "ipa": "/ˈiː.ʃæn/",
       "ref": "Joshua 15:52",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Aphekah": {
@@ -7603,8 +7601,8 @@
       "ipa": "/ə.ˈfiː.kə/",
       "ref": "Joshua 15:53",
       "override": false,
-      "status": "ok",
-      "score": 0.917,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Zior": {
@@ -7612,8 +7610,8 @@
       "ipa": "/ˈzaɪ.ɔːr/",
       "ref": "Joshua 15:54",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Jutah": {
@@ -7621,8 +7619,8 @@
       "ipa": "/ˈdʒuː.tə/",
       "ref": "Joshua 15:55",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Maon": {
@@ -7646,8 +7644,8 @@
       "ipa": "/ˈdʒɒk.di.æm/",
       "ref": "Joshua 15:56",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Gedor": {
@@ -7663,8 +7661,8 @@
       "ipa": "/ˈeɪ.nəθ/",
       "ref": "Joshua 15:59",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Eltekon": {
@@ -7672,8 +7670,8 @@
       "ipa": "/ˈɛl.ti.kɒn/",
       "ref": "Joshua 15:59",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Middin": {
@@ -7690,17 +7688,23 @@
       "ipa": "/si.ˈkeɪ.kə/",
       "ref": "Joshua 15:61",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.833,
       "ipa_src": "isbe"
+    },
+    "City": {
+      "say": "City",
+      "ref": "Joshua 15:62",
+      "override": false,
+      "status": "ok"
     },
     "Archites": {
       "say": "arkites",
       "ipa": "/ˈɑːr.kaɪts/",
       "ref": "Joshua 16:2",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Japhletites": {
@@ -7708,8 +7712,8 @@
       "ipa": "/dʒəˈfliː.ti.təs/",
       "ref": "Joshua 16:3",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Janoah": {
@@ -7726,8 +7730,8 @@
       "ipa": "/ˈmi.kmə.θəθ/",
       "ref": "Joshua 16:6",
       "override": false,
-      "status": "unsure",
-      "score": 0.688,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Shiloh": {
@@ -7744,8 +7748,8 @@
       "ipa": "/ˈteɪ.ə.nəθ/",
       "ref": "Joshua 16:6",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Naarah": {
@@ -7761,8 +7765,8 @@
       "ipa": "/ˈkeɪ.nə/",
       "ref": "Joshua 16:8",
       "override": false,
-      "status": "ok",
-      "score": 0.9,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Abiezer": {
@@ -7778,8 +7782,8 @@
       "ipa": "/ˈɛn.dər/",
       "ref": "Joshua 17:11",
       "override": false,
-      "status": "ok",
-      "score": 0.9,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Ibleam": {
@@ -7787,8 +7791,8 @@
       "ipa": "/ˈɪb.li.æm/",
       "ref": "Joshua 17:11",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Shean": {
@@ -7804,8 +7808,8 @@
       "ipa": "/gi.ˈlaɪ.lɒθ/",
       "ref": "Joshua 18:17",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.786,
       "ipa_src": "isbe"
     },
     "Emek": {
@@ -7813,8 +7817,8 @@
       "ipa": "/ˈiː.mək/",
       "ref": "Joshua 18:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Keziz": {
@@ -7822,8 +7826,8 @@
       "ipa": "/ˈkiː.zɪz/",
       "ref": "Joshua 18:21",
       "override": false,
-      "status": "unfixed",
-      "score": 0.6,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ophrah": {
@@ -7831,16 +7835,16 @@
       "ipa": "/ˈɒf.rə/",
       "ref": "Joshua 18:23",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Parah": {
       "say": "pay-rah",
       "ipa": "/ˈpeɪ.rə/",
       "ref": "Joshua 18:23",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.875,
       "ipa_src": "isbe"
     },
     "Ammoni": {
@@ -7848,8 +7852,8 @@
       "ipa": "/ˈæm.mə.nə/",
       "ref": "Joshua 18:24",
       "override": false,
-      "status": "unsure",
-      "score": 0.4,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Geba": {
@@ -7865,8 +7869,8 @@
       "ipa": "/ˈɒf.naɪ/",
       "ref": "Joshua 18:24",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Mozah": {
@@ -7874,8 +7878,8 @@
       "ipa": "/ˈmoʊ.zə/",
       "ref": "Joshua 18:26",
       "override": false,
-      "status": "ok",
-      "score": 0.9,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Irpeel": {
@@ -7883,8 +7887,8 @@
       "ipa": "/ˈɪr.piːl/",
       "ref": "Joshua 18:27",
       "override": false,
-      "status": "unsure",
-      "score": 0.633,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Taralah": {
@@ -7892,8 +7896,8 @@
       "ipa": "/ˈtɑːr.ə.lə/",
       "ref": "Joshua 18:27",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Eleph": {
@@ -7901,8 +7905,8 @@
       "ipa": "/ˈiː.lɛf/",
       "ref": "Joshua 18:28",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Gibeath": {
@@ -7910,8 +7914,8 @@
       "ipa": "/ˈɡi.biːθ/",
       "ref": "Joshua 18:28",
       "override": false,
-      "status": "unsure",
-      "score": 0.417,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Balah": {
@@ -7919,8 +7923,8 @@
       "ipa": "/ˈbæleɪ/",
       "ref": "Joshua 19:3",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Bethul": {
@@ -7937,16 +7941,16 @@
       "ipa": "/ˈmɑːr.kə.bɒθ/",
       "ref": "Joshua 19:5",
       "override": false,
-      "status": "ok",
-      "score": 0.938
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Susah": {
       "say": "Susah",
       "ipa": "/ˈsjuː.səh/",
       "ref": "Joshua 19:5",
       "override": false,
-      "status": "unsure",
-      "score": 0.583,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Lebaoth": {
@@ -7954,8 +7958,8 @@
       "ipa": "/li.ˈbeɪ.ɒθ/",
       "ref": "Joshua 19:6",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Sharuhen": {
@@ -7963,8 +7967,8 @@
       "ipa": "/ʃə.ˈruː.hɛn/",
       "ref": "Joshua 19:6",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Sarid": {
@@ -7972,8 +7976,8 @@
       "ipa": "/ˈseɪ.rɪd/",
       "ref": "Joshua 19:10",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Dabbesheth": {
@@ -7981,8 +7985,8 @@
       "ipa": "/ˈdæb.i.ʃɛθ/",
       "ref": "Joshua 19:11",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Maralah": {
@@ -7990,8 +7994,8 @@
       "ipa": "/ˈmɑːr.ə.lə/",
       "ref": "Joshua 19:11",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.833,
       "ipa_src": "isbe"
     },
     "Chisloth": {
@@ -7999,8 +8003,8 @@
       "ipa": "/ˈkɪs.ləθ/",
       "ref": "Joshua 19:12",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.833,
       "ipa_src": "generated"
     },
     "Daberath": {
@@ -8024,8 +8028,8 @@
       "ipa": "/ˈiː.θkə.zɪn/",
       "ref": "Joshua 19:13",
       "override": false,
-      "status": "unsure",
-      "score": 0.714,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Neah": {
@@ -8033,8 +8037,8 @@
       "ipa": "/ˈniː.ə/",
       "ref": "Joshua 19:13",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Hannathon": {
@@ -8042,8 +8046,8 @@
       "ipa": "/ˈhæn.ə.θɒn/",
       "ref": "Joshua 19:14",
       "override": false,
-      "status": "unfixed",
-      "score": 0.786,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Iphtah": {
@@ -8051,8 +8055,8 @@
       "ipa": "/ˈɪf.tə/",
       "ref": "Joshua 19:14",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Idalah": {
@@ -8060,8 +8064,8 @@
       "ipa": "/ˈɪd.ə.lə/",
       "ref": "Joshua 19:15",
       "override": false,
-      "status": "suggested",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Nahalal": {
@@ -8069,8 +8073,8 @@
       "ipa": "/ˈneɪ.hæl.æl/",
       "ref": "Joshua 19:15",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.714,
       "ipa_src": "isbe"
     },
     "Chesulloth": {
@@ -8078,8 +8082,8 @@
       "ipa": "/ˈkiː.səl.ləθ/",
       "ref": "Joshua 19:18",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.429,
       "ipa_src": "generated"
     },
     "Shunem": {
@@ -8096,8 +8100,8 @@
       "ipa": "/ə.ˈneɪ.hə.ræθ/",
       "ref": "Joshua 19:19",
       "override": false,
-      "status": "ok",
-      "score": 0.812,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Shion": {
@@ -8105,8 +8109,8 @@
       "ipa": "/ˈʃaɪ.ɒn/",
       "ref": "Joshua 19:19",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Ebez": {
@@ -8114,8 +8118,8 @@
       "ipa": "/ˈiː.bɛz/",
       "ref": "Joshua 19:20",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Kishion": {
@@ -8123,8 +8127,8 @@
       "ipa": "/ˈkɪʃ.i.ɒn/",
       "ref": "Joshua 19:20",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Engannim": {
@@ -8132,8 +8136,8 @@
       "ipa": "/ˈɛn.ɡən.nɪm/",
       "ref": "Joshua 19:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Haddah": {
@@ -8141,8 +8145,8 @@
       "ipa": "/ˈhæd.dəh/",
       "ref": "Joshua 19:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Pazzez": {
@@ -8150,8 +8154,8 @@
       "ipa": "/ˈpæz.zəz/",
       "ref": "Joshua 19:21",
       "override": false,
-      "status": "unsure",
-      "score": 0.7,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Shahazumah": {
@@ -8159,8 +8163,8 @@
       "ipa": "/ʃə.hə.ˈzuː.mə/",
       "ref": "Joshua 19:22",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.875,
       "ipa_src": "isbe"
     },
     "Beten": {
@@ -8168,8 +8172,8 @@
       "ipa": "/ˈbiː.tɛn/",
       "ref": "Joshua 19:25",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Hali": {
@@ -8177,8 +8181,8 @@
       "ipa": "/ˈheɪ.laɪ/",
       "ref": "Joshua 19:25",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Helkath": {
@@ -8186,8 +8190,8 @@
       "ipa": "/ˈhɛl.kæθ/",
       "ref": "Joshua 19:25",
       "override": false,
-      "status": "ok",
-      "score": 0.833,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Amad": {
@@ -8195,8 +8199,8 @@
       "ipa": "/ˈeɪ.mæd/",
       "ref": "Joshua 19:26",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Mishal": {
@@ -8204,8 +8208,8 @@
       "ipa": "/ˈmaɪ.ʃæl/",
       "ref": "Joshua 19:26",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Shihorlibnath": {
@@ -8213,8 +8217,8 @@
       "ipa": "/ʃiˈhɒr.lɪb.nəθ/",
       "ref": "Joshua 19:26",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Cabul": {
@@ -8222,8 +8226,8 @@
       "ipa": "/ˈseɪ.bəl/",
       "ref": "Joshua 19:27",
       "override": false,
-      "status": "unsure",
-      "score": 0.2,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Neiel": {
@@ -8231,8 +8235,8 @@
       "ipa": "/ˈnaɪ.əl/",
       "ref": "Joshua 19:27",
       "override": false,
-      "status": "unsure",
-      "score": 0.75,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Ebron": {
@@ -8249,16 +8253,16 @@
       "ipa": "/ˈhæm.ən/",
       "ref": "Joshua 19:28",
       "override": false,
-      "status": "ok",
-      "score": 0.9
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Adami-nekeb": {
       "say": "ad-ah-mih",
       "ipa": "/ˈæd.ə.maɪ/",
       "ref": "Joshua 19:33",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.8,
       "ipa_src": "isbe"
     },
     "Heleph": {
@@ -8284,8 +8288,8 @@
       "ipa": "/zə.ə.ˈnæn.ɪm/",
       "ref": "Joshua 19:33",
       "override": false,
-      "status": "unfixed",
-      "score": 0.625,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Aznoth": {
@@ -8293,8 +8297,8 @@
       "ipa": "/ˈæz.nəθ/",
       "ref": "Joshua 19:34",
       "override": false,
-      "status": "unsure",
-      "score": 0.6,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Hukkok": {
@@ -8302,8 +8306,8 @@
       "ipa": "/ˈhʌk.ɒk/",
       "ref": "Joshua 19:34",
       "override": false,
-      "status": "unfixed",
-      "score": 0.7,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Hammath": {
@@ -8318,8 +8322,8 @@
       "ipa": "/ˈræk.æθ/",
       "ref": "Joshua 19:35",
       "override": false,
-      "status": "unfixed",
-      "score": 0.7,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Zer": {
@@ -8327,8 +8331,8 @@
       "ipa": "/ˈzɛr/",
       "ref": "Joshua 19:35",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Ziddim": {
@@ -8336,8 +8340,8 @@
       "ipa": "/ˈzɪd.ɪm/",
       "ref": "Joshua 19:35",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Anath": {
@@ -8345,8 +8349,8 @@
       "ipa": "/ˈeɪ.næθ/",
       "ref": "Joshua 19:38",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.75,
       "ipa_src": "isbe"
     },
     "Horem": {
@@ -8354,8 +8358,8 @@
       "ipa": "/ˈhoʊ.rɛm/",
       "ref": "Joshua 19:38",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.9,
       "ipa_src": "isbe"
     },
     "Irshemesh": {
@@ -8363,8 +8367,8 @@
       "ipa": "/ˈɪr.ʃə.məʃ/",
       "ref": "Joshua 19:41",
       "override": false,
-      "status": "ok",
-      "score": 0.857,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Ithlah": {
@@ -8372,8 +8376,8 @@
       "ipa": "/ˈɪθ.lə/",
       "ref": "Joshua 19:42",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Gibbethon": {
@@ -8381,8 +8385,8 @@
       "ipa": "/ˈgɪb.i.θɒn/",
       "ref": "Joshua 19:44",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 1.0,
       "ipa_src": "isbe"
     },
     "Berak": {
@@ -8390,8 +8394,8 @@
       "ipa": "/ˈbiː.rək/",
       "ref": "Joshua 19:45",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Jarkon": {
@@ -8399,8 +8403,8 @@
       "ipa": "/ˈdʒær.kən/",
       "ref": "Joshua 19:46",
       "override": false,
-      "status": "unsure",
-      "score": 0.667,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Rakkon": {
@@ -8408,8 +8412,8 @@
       "ipa": "/ˈræk.ɒn/",
       "ref": "Joshua 19:46",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Leshem": {
@@ -8417,8 +8421,8 @@
       "ipa": "/ˈliː.ʃɛm/",
       "ref": "Joshua 19:47",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.9,
       "ipa_src": "isbe"
     },
     "Timnathserah": {
@@ -8426,8 +8430,8 @@
       "ipa": "/tɪmˈneɪ.θsə.rəh/",
       "ref": "Joshua 19:50",
       "override": false,
-      "status": "unsure",
-      "score": 0.5,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "generated"
     },
     "Galilee": {
@@ -15890,8 +15894,8 @@
       "ipa": "/ˈrɛf.eɪ.ɪm/",
       "ref": "1 Chronicles 11:15",
       "override": true,
-      "status": "fixed",
-      "score": 0.833
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Ariel": {
       "say": "AIR-ee-el",
@@ -15914,8 +15918,8 @@
       "ipa": "/ˈkæb.zi.ɛl/",
       "ref": "1 Chronicles 11:22",
       "override": false,
-      "status": "suggested",
-      "score": 0.786
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Elhanan": {
       "say": "el-HAY-nan",
@@ -16506,24 +16510,24 @@
       "ipa": "/ˈheɪ.mæθ/",
       "ref": "1 Chronicles 13:5",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Shihor": {
       "say": "SHY-hawr",
       "ipa": "/ˈʃaɪ.hɔːr/",
       "ref": "1 Chronicles 13:5",
-      "override": true,
-      "status": "fixed",
-      "score": 0.8
+      "override": false,
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Baalah": {
       "say": "BAY-uh-la",
       "ipa": "/ˈbeɪ.ə.lə/",
       "ref": "1 Chronicles 13:6",
       "override": true,
-      "status": "fixed",
-      "score": 0.9
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Chidon": {
       "say": "KEYE-don",
@@ -16570,8 +16574,8 @@
       "ipa": "/taɪər/",
       "ref": "1 Chronicles 14:1",
       "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Elishua": {
       "say": "el-ih-SHOO-uh",
@@ -16770,8 +16774,8 @@
       "ipa": "/ˈhoʊ.sə/",
       "ref": "1 Chronicles 16:38",
       "override": true,
-      "status": "fixed",
-      "score": 0.875
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Moabites": {
       "say": "MOH-uh-bites",
@@ -16922,8 +16926,8 @@
       "ipa": "/ˈmɛd.ə.bə/",
       "ref": "1 Chronicles 19:7",
       "override": true,
-      "status": "fixed",
-      "score": 0.845
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Shophach": {
       "say": "SHOH-fak",
@@ -17194,8 +17198,8 @@
       "ipa": "/ˈʃeɪ.mɪr/",
       "ref": "1 Chronicles 24:24",
       "override": true,
-      "status": "fixed",
-      "score": 0.8
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Beno": {
       "say": "BEE-noh",
@@ -17754,16 +17758,15 @@
       "ipa": "/ˈlɛb.ə.nən/",
       "ref": "2 Chronicles 2:8",
       "override": false,
-      "status": "ok",
-      "score": 0.857
+      "status": "ok"
     },
     "Joppa": {
       "say": "JOP-uh",
       "ipa": "/ˈdʒɒp.ə/",
       "ref": "2 Chronicles 2:16",
       "override": false,
-      "status": "ok",
-      "score": 0.9
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Moriah": {
       "say": "muh-RY-uh",
@@ -17818,8 +17821,8 @@
       "ipa": "/ˈbeɪ.ə.læθ/",
       "ref": "2 Chronicles 8:6",
       "override": true,
-      "status": "fixed",
-      "score": 0.833
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Amorites": {
       "say": "AM-uh-rites",
@@ -17906,8 +17909,8 @@
       "ipa": "/əˈziː.kə/",
       "ref": "2 Chronicles 11:9",
       "override": false,
-      "status": "ok",
-      "score": 0.917
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Lachish": {
       "say": "LAY-kish",
@@ -17987,8 +17990,8 @@
       "ipa": "/ˈneɪ.ə.mə/",
       "ref": "2 Chronicles 12:13",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Micaiah": {
       "say": "my-KAY-uh",
@@ -18003,16 +18006,16 @@
       "ipa": "/ˌzɛm.əˈreɪ.ɪm/",
       "ref": "2 Chronicles 13:4",
       "override": false,
-      "status": "ok",
-      "score": 0.812
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Ephron": {
       "say": "eefrawn",
       "ipa": "/ˈiː.frɒn/",
       "ref": "2 Chronicles 13:19",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Jeshanah": {
       "say": "JESH-uh-nuh",
@@ -18084,8 +18087,8 @@
       "ipa": "/ˈreɪ.mə/",
       "ref": "2 Chronicles 16:1",
       "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Abel": {
       "say": "AY-buhl",
@@ -18108,16 +18111,16 @@
       "ipa": "/ˈmeɪ.ɪm/",
       "ref": "2 Chronicles 16:4",
       "override": false,
-      "status": "suggested",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Mizpah": {
       "say": "MIHZ-pa",
       "ipa": "/ˈmɪz.pə/",
       "ref": "2 Chronicles 16:6",
       "override": true,
-      "status": "fixed",
-      "score": 0.8
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Rama": {
       "say": "RAY-muh",
@@ -18220,8 +18223,8 @@
       "ipa": "/ˈɡɛd.i/",
       "ref": "2 Chronicles 20:2",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Hazazon": {
       "say": "HAZ-uh-zon",
@@ -18484,8 +18487,8 @@
       "ipa": "/ɡəˈdiː.rɒθ/",
       "ref": "2 Chronicles 28:18",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Gimzo": {
       "say": "GIM-zoh",
