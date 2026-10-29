@@ -632,6 +632,11 @@ const REFERENCES = [
     blurb: "The kings of Judah and Israel from Saul to the exile, the prophets beside them and the nations they dealt with, on Ussher's years with Thiele's beside them.",
     href: "/visuals/reference/Kings_and_prophets.html",
   },
+  {
+    title: "Paul's journeys",
+    blurb: "The four journeys of Acts, leg by leg, by land and by sea, with the seven assemblies of Revelation and the places Paul's letters were sent.",
+    href: "/visuals/reference/Pauls_journeys.html",
+  },
 ];
 
 function buildReferenceList() {

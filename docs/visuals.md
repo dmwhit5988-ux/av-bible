@@ -176,10 +176,12 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 ## Reference charts
 
-`web/visuals/reference/` holds the reference charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree, the OT timeline, the Tabernacle, the Land of Israel atlas and Kings and prophets. They all deploy with the site. The app's Reference list links the OT family tree, the Tabernacle, the atlas and the kings; the other three stay unlinked. See [reference-charts.md](reference-charts.md).
+`web/visuals/reference/` holds the reference charts: the OT family tree, its V6 heir-spine variant, the 1–2 Chronicles tree, the OT timeline, the Tabernacle, the Land of Israel atlas, Kings and prophets and Paul's journeys. They all deploy with the site. The app's Reference list links the OT family tree, the Tabernacle, the atlas, the kings and Paul's journeys; the other three stay unlinked. See [reference-charts.md](reference-charts.md).
 
 **The Tabernacle** is drawn from one model, `sanctuary.py`, in cubits: the Exodus 25–27 plan (`generate_tabernacle.draw_plan` and its `hl_*` highlights), the courts at the heart of the camp in Numbers 1–2 and 3–4, and the reference page. A new Tabernacle drawing maps the model onto its canvas with `sanctuary.Plan` (east to the right, or up as in Numbers) and places nothing of its own.
 
 **The Land of Israel** is drawn from `gazetteer.py`: its coast, lakes and rivers, every point a named place's coordinate (or marked `~` as interpolated), and its places, each at the site it is identified with, flagged known, probable or possible, with every verse that names it (`generate_israel_atlas.place_verses`). A verse map of the land takes its lines and places from there, not from `generate_tribal_maps`, whose lines are atlas traces.
+
+**Beyond the Levant** the coasts are `mediterranean.py`'s, made the same way, and Paul's places, roads, sea courses and letters are `journeys.py`'s. A verse map of Acts 13–28 draws from there, not from `generate_acts1518_svg`'s `MED` or `acts_geography`'s far-world lines, which are atlas traces.
 
 **The kings** are `kings.py` and `prophets.py`. A picture of a reign takes its years from there: Ussher's (`chronology.BIND`'s, the house count) and Thiele's, never one for the other.

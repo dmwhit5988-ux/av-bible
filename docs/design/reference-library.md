@@ -12,7 +12,7 @@ Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 4 and 7 as firs
 - turning a phone to landscape doesn't put the stage in fullscreen while a panel is open (`onOrientationChange`), because API fullscreen shows only `#stage-wrap`;
 - an Escape the page handles itself (`e.defaultPrevented`) doesn't also close the frame.
 
-Its entries are the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
+Its entries are the OT family tree, the Tabernacle, the Land of Israel, Kings and prophets and Paul's journeys. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
 **Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
@@ -119,7 +119,7 @@ Reference pages aren't narrated, so short labels and numbers belong on the drawi
 
 ### Files and registration
 
-- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`); 18 reference files exist today, four pages' worth among them. Against 5,812 today (`count_deploy_files()`), the remaining pages leave about 14,160 under `DEPLOY_FILE_LIMIT`.
+- **Cost.** A page costs 1–3 files: the `.html`, plus an `.svg` and a `.json`, which small pages inline. The 17 pages add about 36 files (35, plus `index.json`); 21 reference files exist today, five pages' worth among them. Against 5,815 today (`count_deploy_files()`), the remaining pages leave about 14,160 under `DEPLOY_FILE_LIMIT`.
 - **Naming.** The folder stays flat. `build_manifest._scan_files` reads any subfolder of `web/visuals/reference/` as a chapter folder and would key its SVGs; `test_registry` reads only numbered folders. No `Book_c_v` names, and no `.xml`.
 - **Registration.** Today an entry is a hand-committed line in `REFERENCES`.
   - Proposed instead: the generators write `reference/index.json` (title, blurb, href, order, chapters covered), and the app fetches it with `cache: "no-cache"`.
@@ -245,6 +245,11 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 ### Next
 
 **3. Paul's journeys and the assemblies.** M for Journey 1, then L to XL as the coasts are rebuilt · 3 files · all four lenses.
+- **Built 2026-10-28, all four journeys at once** ([reference-charts.md](../reference-charts.md#pauls-journeys)): `mediterranean.py`, `journeys.py` and `generate_journeys_reference.py`. The owner chose all four, coasts first, and the assemblies and letters as layers. It differs from the plan below:
+  - The coasts were gathered first, so there are no stages: `mediterranean.py` holds Italy, Sicily, Malta, Greece, the Aegean, Asia Minor's west and north, Crete and Africa as point facts, and the sheet runs from Rome to Damascus.
+  - There is no step bar: each leg has a card, with buttons to the leg before and after (`st`), and a selected leg glows along its line (`pth`).
+  - The legs reuse no generator's `LEGS`: `journeys.JOURNEYS` holds them, with acts_geography's roads of Acts 13–14 and new ones from point facts (the Via Egnatia, the Via Appia, Antioch through the Cilician Gates).
+  - Sea courses are our own `~` points, placed only where Acts or the sea leaves one way past a cape or island, and every voyage is tested to keep to the sea.
 - **Shows:**
   - Four routes (Acts 13–14, 15:36–18:22, 18:23–21:17, 27–28), with sea legs drawn apart from land legs.
   - Layers: the seven assemblies (WEB's word), the letters' recipients, and where a letter says it was written (1 Cor 16:8).

@@ -20,7 +20,7 @@ yet" and offers a button that opens the ✦ list of illustrated chapters. When
 consecutive verses share a picture, it keeps playing and doesn't restart. The
 Reference button opens charts that stand on their own, not tied to a verse; today
 those are the Old Testament family tree, the Tabernacle, the Land of Israel atlas,
-and Kings and prophets.
+Kings and prophets, and Paul's journeys.
 
 ## How it's made
 
@@ -94,7 +94,7 @@ Studio's **Save + manifest** before you look.
 | `web/` | The site root, which Cloudflare serves as it is. It holds the web app (`index.html`, `js/`, `css/`, `icons/`, `manifest.webmanifest`) and the three content folders below. `web/.assetsignore` lists the files the upload leaves out. |
 | `web/audio/` | The narration MP3s and their manifest. |
 | `web/bibles/WEB/` | The WEB text, one JSON file per chapter. |
-| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets ([docs/reference-charts.md](docs/reference-charts.md)). |
+| `web/visuals/` | Per-verse SVGs in `web/visuals/<Book>/<chapter>/`, `manifest.json`, and `reference/`, which holds the wall charts. All of them are deployed, and the app's Reference list links the OT family tree, the Tabernacle, the Land of Israel, Kings and prophets and Paul's journeys ([docs/reference-charts.md](docs/reference-charts.md)). |
 | `sources/` | Ignored: `eng-web.usfx.xml`, the source text that `import_translation.py` turns into `web/bibles/WEB/`. |
 | `docs/` | Design docs. See [Docs](#docs). |
 | `data/` | `ipa_checks.json`, the Verifier's verdict store. |
@@ -198,6 +198,12 @@ The libraries most generators share:
   `chronology.BIND`, Thiele's beside them, and the text's length, verdict, mother,
   end and passages, each with its verse), the foreign kings by the regnal year the
   text dates them, and the judges; `prophets.py` ties each prophet to his kings.
+- `mediterranean.py` holds the coasts beyond the Levant as point facts: Italy,
+  Sicily and Malta, Greece and the Aegean islands, Asia Minor's Aegean and Black Sea
+  shores, Crete, and Africa from the Syrtis to the brook of Egypt.
+- `journeys.py` holds Paul's journeys: 64 places with their certainty and verses, the
+  four journeys stop by stop with their verses, the roads and sea courses between,
+  the lands, the letters and Revelation's seven assemblies.
 - `svg_map_camera.py` is the camera-tour engine for maps (Numbers 34, Acts 13–14): the
   camera, names that hold their size and are placed by a clash test, the plates,
   the overview inset and the QC checks. It takes its camera arc and audio timing
@@ -288,7 +294,7 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys
 ```
 
 There are 115 tests in nine modules:
@@ -314,6 +320,10 @@ There are 115 tests in nine modules:
 - `test_kings`: the kings' Ussher years are `chronology.BIND`'s, each verse says
   what it is cited for, every event falls in the reign it is dated by, every
   prophet's king is a reign, and every bar can carry its name.
+- `test_journeys`: Paul's places sit on the sheet and each verse names its place;
+  the stops, roads, letters and assemblies hang together; every coast, road and
+  course point names its Wikidata item (or is marked `~`) and copies no traced map;
+  the coasts meet; and no voyage crosses more than 6 km of land.
 
 ## Docs
 

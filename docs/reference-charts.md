@@ -4,11 +4,11 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The five generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The six generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the atlas's and the kings') gets more. The family tree's cards are people (below); the Tabernacle's are parts, the atlas's places and the kings page's reigns, prophets, nations and judges (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [The Land of Israel](#the-land-of-israel) and [Kings and prophets](#kings-and-prophets)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the atlas's, the kings' and Paul's journeys') gets more. The family tree's cards are people (below); the Tabernacle's are parts, the atlas's places, the kings page's reigns, prophets, nations and judges, and the journeys page's places, legs, lands and letters (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [The Land of Israel](#the-land-of-israel), [Kings and prophets](#kings-and-prophets) and [Paul's journeys](#pauls-journeys)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -22,6 +22,7 @@ A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tre
 - **Escape** closes the results, then the card, then (in the app) the chart.
 - **Layers.** A sheet can mark groups `<g data-layer="...">` and list them in the sidecar's `layers`; chips in the bar show and hide them. A part on a hidden layer takes no tap, and a part found by search or named by `#at` shows its layer.
 - **Hit areas.** The smallest box near the finger wins. A sheet of close-set small parts can ask (`"tap": "inside"`, the atlas) for a box the finger is inside to beat one it only grazes, so a neighbour's dot a few px off doesn't take the tap, unless the grazed box lies within the other (a box that holds parts is their background). A part can be tapped on `t` boxes in place of its own (an atlas place's dot and its name, not the gap a leader line spans), on more boxes (`hb`: the court and the tent, on their walls and labels, since other parts fill their insides), on `lo` boxes only where nothing else is under the finger (a river along its course, a lake, which the towns on them would otherwise lose taps to), or on none (`nohit`: the mercy seat lies on the ark). A duplicate card (`nos`: a part's drawing) is left out of search and `#at`.
+- **Lines and steps.** A part drawn as a line (`pth`, a journey's leg, as x0,y0,x1,y1,…) glows along it when outlined, instead of getting a box. A part in a sequence (`st`: the parts before and after, a journey's legs) has buttons to both on its card, under the sidecar's `step` label.
 - **Text by size.** A sheet can group its text by size (`<g data-fs="19">`). The page draws a group only while its text is at least 7.5 px on screen (`READ`), and with `data-fmax` only until it grows past that many px. A part carries its group's `fs` and `fx`, and while its name is hidden it takes no tap. When a part is outlined, selected or named by `#at`, at a zoom that hides its name, the name is written over the outline at reading size. Selecting a part zooms in far enough to read its name, and for a land not so far that its name fades.
 
 Without a sidecar (the OT timeline), the search steps through the sheet's own text and zooms each hit to at least full size, where names are 15 px. The V6 and 1–2 Chronicles pages are older copies of the viewer, with no pinch and no zoom-to-hit, because nothing writes them.
@@ -29,14 +30,14 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 ## Status
 
 - **Deployed.** All seven charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree, the Tabernacle, the Land of Israel and Kings and prophets.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Linked: the OT family tree, the Tabernacle, the Land of Israel, Kings and prophets and Paul's journeys.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 18 deploy files, the four sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 21 deploy files, the five sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -47,6 +48,7 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [The Tabernacle](#the-tabernacle) | `Tabernacle.svg` / `.json` / `.html` | 2,860 × 2,906 px, about 100 KB, 34 cards | `generate_tabernacle_reference.py` |
 | [The Land of Israel](#the-land-of-israel) | `Land_of_Israel.svg` / `.json` / `.html` | 6,103 × 7,680 px, about 110 KB, 212 places and 255 cards; the sidecar is about 226 KB | `generate_israel_atlas.py` |
 | [Kings and prophets](#kings-and-prophets) | `Kings_and_prophets.svg` / `.json` / `.html` | 2,370 × 6,684 px, about 80 KB, 139 cards; the sidecar is about 96 KB | `generate_kings_reference.py` |
+| [Paul's journeys](#pauls-journeys) | `Pauls_journeys.svg` / `.json` / `.html` | 7,336 × 3,978 px, about 320 KB, 64 places, 74 legs and 178 cards; the sidecar is about 145 KB | `generate_journeys_reference.py` |
 
 ## The Old Testament family tree
 
@@ -242,5 +244,31 @@ Opened from a verse, the sheet starts on what the verse names, then on the reign
 ```
 .venv/Scripts/python.exe generate_kings_reference.py   # rebuild the .svg, .json and .html
 .venv/Scripts/python.exe -m unittest test_kings          # BIND's years, the verses, the ties
+```
+
+## Paul's journeys
+
+The four journeys of Acts on one sheet, from Rome to Damascus: the first (Acts 13:4–14:26), the second (15:36–18:22), the third (18:23–21:17) and the voyage to Rome (27:1–28:16).
+
+**Point facts, no traces.** The coasts beyond the Levant are `mediterranean.py`'s: about 2,500 points, each a named place's own Wikidata coordinate (or marked `~`), gathered and checked against Wikidata by script on 2026-10-28. Southern Asia Minor, Syria and Cyprus are `acts_geography`'s, and the Levant `gazetteer`'s. The places, roads and sea courses are `journeys.py`'s: a place's point is its Wikidata item's (Lystra's is Zoldera's, since the item sits 13 km off), and a road's points are named stations on or by it. A course is our own `~` points: by sea, placed only where Acts says the ship passed (under the lee of Cyprus, opposite Chios) or where the sea leaves one way past a cape or island; by land, where the text doesn't give the way, only to keep the dotted line on land and through the one way a pass or isthmus leaves (Tempe, Thermopylae, the Isthmus). A course names no station the text doesn't, and its leg's card says the line is ours. `test_journeys` checks that no voyage, as drawn, crosses more than 6 km of land. The coasts are today's: Ephesus and Miletus stood on harbours that have since silted up, so their legs end inland.
+
+**The sheet.**
+- **The journeys**, a layer each and all on, in their own colours: a solid line by land, dashes by sea, dots where the text doesn't state the way or the stop (Paul went up and greeted the assembly, 18:22; the upper country, 19:1; the drift to Malta, 27:18–28:10). An arrow on each leg points on. Where journeys share a stretch their lines run side by side, meeting again at the stops; a tap takes the line nearest the finger. A stop the text names only as a land (Mysia, 16:7–8; Macedonia, 20:1) has no dot; the line runs to its name.
+- **The places**, a dot each, filled where the site is known, a thick ring where it is probable, a thin ring where only possible, sized as chief cities, the journeys' stops and the rest; the roads under them, faint, including the common road from Antioch of Pisidia to Ephesus, which isn't drawn as Paul's (Colossians 2:1).
+- **The lands** Acts and the letters name, and three waters: the sea off Cilicia and Pamphylia, the Adriatic Sea (in Paul's day the open sea between Crete and Sicily) and the Syrtis.
+- **The seven assemblies** (a layer, off): Revelation's seven, numbered in the order of its letters, joined in that order, and Patmos.
+- **The letters** (a layer, off): under each place, the letters addressed to it, and a square where 1 Corinthians says it was written (Ephesus, 16:8). Galatians and Titus stand under Galatia and Crete.
+
+**The cards.**
+- **A place** gives the site, its certainty and why, its other names, where it is, its letters, its stops on each journey and every New Testament verse that names it (two places of one name, the Antiochs, take only their checked verses), with chips to the legs that reach it.
+- **A leg** gives the journey, its number, by land or sea, what Acts says (and Paul's own words, where a letter tells of it), the road it follows and how sure that is, or that the line is ours, its length as drawn, and buttons to the leg before and after. Its id is its journey and its two places (`journey2-troas-samothrace`), so a shared link survives a stop added before it.
+- **A journey** (its line in the key) gives its legs, its length as drawn and its passage.
+- **A letter** gives whom it is addressed to and where it was written, where the letter says.
+
+Opened from a verse, the sheet starts on the places and legs the verse names (Acts 16:11: Troas, Samothrace, Neapolis and the two legs between), then on the legs, assemblies and letters whose passage it falls in (Romans 5:3: Romans; Revelation 2:10: Smyrna), then on what its chapter names.
+
+```
+.venv/Scripts/python.exe generate_journeys_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_journeys          # the places, the legs, the coasts
 ```
 

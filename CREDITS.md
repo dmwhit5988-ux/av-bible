@@ -155,8 +155,11 @@ taken as a single fact from **Wikidata**, whose data is CC0, or from **Wikipedia
 two ancient sites (Comama and Derbe) come from **vici.org**. The Land of Israel
 atlas (`gazetteer.py`) was made the same way: its coast from Ras Naqoura to the
 brook of Egypt, its lakes and rivers, and its 212 places each take one coordinate
-from a Wikidata item (CC0) or a Wikipedia article. No line geometry was
-copied, traced or sampled from OpenStreetMap or any other map or dataset. The older
+from a Wikidata item (CC0) or a Wikipedia article. So do the coasts of the Paul's
+journeys page (`mediterranean.py`: Italy, Sicily, Malta, Greece, the Aegean, Asia
+Minor, Crete and Africa, about 2,500 points) and its places and roads
+(`journeys.py`). No line geometry was copied, traced or sampled from OpenStreetMap
+or any other map or dataset. The older
 maps (`generate_tribal_maps.py`, `generate_acts1518_svg.py`) are hand-encoded from
 standard atlas reconstructions.
 
