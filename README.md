@@ -216,7 +216,8 @@ The libraries most generators share:
   from `svg_chronicles_world.py`.
 - `svg_scene_card.py` hangs a side-view scene (a town, its people) in a camera
   tour's world, so the camera can dive into it from the town's dot. Its cast
-  carry their state from one verse's file to the next.
+  carry their state from one verse's file to the next. Acts 13–14 hangs three;
+  Joshua 13–19 hangs the Tent of Meeting at Shiloh (`joshua18_shiloh.py`).
 - `generate_ot_family_tree_svg.py` draws the Old Testament family-tree wall chart.
   It also provides the tree layout that 1 Chronicles and Matthew 1 use.
 - `generate_ot_timeline_svg.py` draws the OT timeline chart, using `chronology.py`.

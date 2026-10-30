@@ -42,6 +42,8 @@ new figure belongs here rather than in a generator.
 
 import math
 
+import sanctuary as SN
+
 # ---------------------------------------------------------------------------
 # Geometry
 # ---------------------------------------------------------------------------
@@ -2104,7 +2106,11 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "basket": 0.48,
         "trumpet": 0.44,
         "ladder": 1.81,
-        "chariot": 1.18}
+        "chariot": 1.18,
+        # the camp at Shiloh (Joshua 18): the Tabernacle's own pieces are
+        # sized by sanctuary.py in cubits (CUBIT), so they take no unit here
+        "standard": 2.00,      # a pole twice a man, its pennant over the crowd
+        "lot": 0.40}           # a pebble a hand closes on
 
 
 def man(pose="stand", mantle=True, staff=False, arms="down"):
@@ -3406,3 +3412,103 @@ def ladder():
 
 def chariot():
     return _scale(_chariot(), UNIT["chariot"])
+
+
+
+# ---------------------------------------------------------------------------
+# The Tabernacle seen from the east, and the camp's standards and lots
+# ---------------------------------------------------------------------------
+#
+# Joshua 18:1 sets up the Tent of Meeting at Shiloh, and a scene that stands
+# it up needs its east face, not the plan. Every size here is sanctuary.py's,
+# in cubits, at the horned altar's cubit: its body is 136 units across for
+# five cubits (Exodus 27:1), so a man is about three and a half cubits. Each
+# piece is a figure of its own so a scene can raise them in turn, and since a
+# figure takes one ink, a screen's four colours are four figures.
+
+CUBIT = 27.4                   # units a cubit: the horned altar's
+
+
+def court_post():
+    """One of the court's pillars, as high as its hangings (27:18), on a
+    socket of brass with its capital overlaid with silver (27:10; 38:17).
+    The text gives no thickness."""
+    top = SN.HANGING_HEIGHT * CUBIT
+    return [("fill", [(-5, 0), (5, 0), (5, top - 6), (-5, top - 6)], "wood"),
+            ("fill", [(-8.5, 0), (8.5, 0), (8.5, 9), (-8.5, 9)], "metal"),
+            ("fill", [(-7.5, top - 8), (7.5, top - 8), (7.5, top),
+                      (-7.5, top)], "metal")]
+
+
+def hanging(cubits, high=SN.HANGING_HEIGHT):
+    """A width of linen (or of a screen) hung from its left end, `cubits`
+    long and `high` cubits deep: flip it to hang it from the right."""
+    w, h = cubits * CUBIT, high * CUBIT
+    return [("fill", [(0, 0), (w, 0), (w, h), (0, h)], "cloth"),
+            ("line", [(0, h - 4), (w, h - 4)], "rule")]
+
+
+def tent_screen_height():
+    """How far the door's screen hangs, in cubits: to the doubled curtain
+    over the front (26:9), which takes the top two of the tent's ten."""
+    return SN.TENT_HEIGHT - 2
+
+
+def tent_east():
+    """The tent's east end with its door open to the screen: the coverings
+    over the boards, laid flat over the top (the text gives no roof) and
+    down both sides, and the sixth curtain of goats' hair doubled over the
+    front (26:9). The screen and its pillars are figures of their own.
+    The origin is the middle of the door."""
+    half = (SN.TENT[3] - SN.TENT[1]) / 2 * CUBIT
+    top = SN.TENT_HEIGHT * CUBIT
+    fold = tent_screen_height() * CUBIT
+    P = [("fill", [(-half - 7, 0), (half + 7, 0), (half + 7, top + 7),
+                   (-half - 7, top + 7)], "hair"),
+         ("fill", [(-half, 0), (half, 0), (half, fold), (-half, fold)],
+          "void"),                                         # the doorway
+         ("fill", [(-half - 7, fold), (half + 7, fold), (half + 7, top + 7),
+                   (-half - 7, top + 7)], "hair")]
+    P.append(("line", [(-half - 7, (fold + top) / 2),
+                       (half + 7, (fold + top) / 2)], "rule"))   # the fold
+    return P
+
+
+def door_pillars():
+    """The five pillars of the door, overlaid with gold on sockets of brass
+    (26:37), where sanctuary.DOOR_PILLARS stands them."""
+    fold = tent_screen_height() * CUBIT
+    mid = (SN.TENT[1] + SN.TENT[3]) / 2
+    P = []
+    for _x, y in SN.DOOR_PILLARS:
+        px = (mid - y) * CUBIT
+        P.append(("fill", [(px - 4.5, 0), (px + 4.5, 0), (px + 4.5, fold),
+                           (px - 4.5, fold)], "metal"))
+        P.append(("fill", [(px - 7, 0), (px + 7, 0), (px + 7, 8),
+                           (px - 7, 8)], "metal"))
+    return P
+
+
+def _standard(blank=False):
+    """A pole with a pennant: "every man by his own standard" (Num 2:2).
+    `blank` for a tribe still without its lot: the pennant is empty."""
+    P = [("fill", [(-1.2, 0), (1.2, 0), (1.2, 100), (-1.2, 100)], "wood"),
+         ("dot", (0, 101.4, 2.2), "wood"),
+         ("fill", [(1.2, 98), (37, 90.5), (1.2, 81)],
+          "void" if blank else "fruit")]
+    return P
+
+
+def standard(blank=False):
+    return _scale(_standard(blank=blank), UNIT["standard"])
+
+
+def _lot():
+    """A lot: one smooth pebble, of the few drawn from a jar."""
+    return [("fill", smooth([(-10, 4), (-6, 0.6), (3, 0), (9.5, 2.5),
+                             (10, 7), (5, 10.5), (-4, 11), (-9.5, 8.5)],
+                            n=3), "stone")]
+
+
+def lot():
+    return _scale(_lot(), UNIT["lot"])

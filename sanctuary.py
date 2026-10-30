@@ -11,6 +11,9 @@ altar, the basin and the tent stand.
 north hanging, both in cubits; the court is (0, 0)-(100, 50) and its gate is
 in the east (Exodus 27:13). `Plan` maps it onto a drawing at any scale, with
 east to the right (the Exodus plan) or up (the camp in Numbers).
+`Elevation` maps it onto the east face seen from the gate (the Tent of
+Meeting at Shiloh, Joshua 18-19), with the tent's height and the door's
+pillars from ELEVATION.
 
 **What the text gives, and what it doesn't.** Each measurement is marked:
 
@@ -75,6 +78,21 @@ class Plan:
         return min(ax, bx), min(ay, by), abs(bx - ax), abs(by - ay)
 
 
+class Elevation:
+    """Plan cubits -> drawing pixels for the east face, as one sees it from
+    outside the gate: north on the right, heights up. (ox, gy) is where the
+    court's middle (y 25) meets the ground; `s` is pixels per cubit."""
+
+    def __init__(self, ox, gy, s):
+        self.ox, self.gy, self.s = ox, gy, s
+
+    def x(self, y):
+        return self.ox + ((COURT[1] + COURT[3]) / 2 - y) * self.s
+
+    def y(self, height):
+        return self.gy - height * self.s
+
+
 # ---------------------------------------------------------------------------
 # The court, the gate and the pillars                      (Exodus 27:9-19)
 # ---------------------------------------------------------------------------
@@ -115,6 +133,24 @@ VEIL_X = 20                        # the veil, 10 cubits inside the west wall
 DOOR_X = 40                        # the door screen, the tent's east end
 MOST_HOLY = (10, 20, VEIL_X, 30)
 HOLY_PLACE = (VEIL_X, 20, DOOR_X, 30)
+
+# Standing it up: the plan has no heights but the hangings', so a drawing of
+# the Tabernacle seen from the side takes these. Each is marked in ELEVATION.
+TENT_HEIGHT = 10                   # a board's length (26:16)
+# the screen for the door hangs on five pillars (26:37): the text gives the
+# count, not the spacing, so here they stand evenly across the door, one at
+# each corner
+DOOR_PILLARS = tuple((DOOR_X, TENT[1] + k * (TENT[3] - TENT[1]) / 4)
+                     for k in range(5))
+ELEVATION = {
+    "tent height": (f"{TENT_HEIGHT} cubits, the length of a board", DERIVED,
+                    "Exod 26:16"),
+    "door pillars": ("five", STATED, "Exod 26:37"),
+    "door pillar spacing": ("not given; here evenly, one at each corner",
+                            NOT_GIVEN, ""),
+    "the tent's top": ("not given; here flat, the coverings laid over it",
+                       NOT_GIVEN, ""),
+}
 
 
 # ---------------------------------------------------------------------------

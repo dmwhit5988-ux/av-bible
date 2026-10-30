@@ -39,6 +39,22 @@ class Model(unittest.TestCase):
         self.assertEqual(SN.GATE[1] - SN.GATE[0], 20)         # 27:16
         self.assertEqual(SN.VEIL_X - x0, 10)                  # a cube
 
+    def test_elevation(self):
+        # five pillars across the door, one at each corner (26:37)
+        self.assertEqual(len(SN.DOOR_PILLARS), 5)
+        ys = [y for _x, y in SN.DOOR_PILLARS]
+        self.assertEqual((ys[0], ys[-1]), (SN.TENT[1], SN.TENT[3]))
+        self.assertTrue(all(x == SN.DOOR_X for x, _y in SN.DOOR_PILLARS))
+        self.assertEqual(SN.TENT_HEIGHT, 10)                  # 26:16
+        for value, flag, ref in SN.ELEVATION.values():
+            self.assertIn(flag, (SN.STATED, SN.DERIVED, SN.NOT_GIVEN))
+            self.assertEqual(bool(ref), flag != SN.NOT_GIVEN)
+        # from the gate, north is on the right and the court's middle is ox
+        ev = SN.Elevation(0, 100, 2)
+        self.assertEqual(ev.x(25), 0)
+        self.assertGreater(ev.x(0), ev.x(50))
+        self.assertEqual(ev.y(SN.HANGING_HEIGHT), 90)
+
     def test_every_ref_reads(self):
         for p in SN.PARTS:
             self.assertTrue(_verses(p), p.key)

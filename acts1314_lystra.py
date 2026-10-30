@@ -20,7 +20,7 @@ card's zoom 1 he is 110 px on screen.
 """
 
 import svg_figures as F
-from svg_scene_card import Actor, Card, figure_svg, MAN_H
+from svg_scene_card import Actor, Card, figure_svg, MAN_H, person, static
 from svg_map_camera import fade, rgb, traced_el
 from svg_surface import _fmt
 from generate_tabernacle import BG, SAND, SAND_DIM, TEXT, TEXT_DIM, HL
@@ -54,34 +54,12 @@ def scaled_h(name):
     return MAN * F.UNIT[name]
 
 
-_PERSONS = {}
-
-
-def person(kind="man", **fixed):
-    """One maker per kind of person, so every man in the crowd shares the
-    same drawings (svg_scene_card draws each pose once per file)."""
-    k = (kind, tuple(sorted(fixed.items())))
-    if k not in _PERSONS:
-        maker = {"man": F.man, "woman": F.woman, "child": F.child}[kind]
-
-        def make(**pose):
-            return maker(**dict(fixed, **pose))
-        _PERSONS[k] = make
-    return _PERSONS[k]
-
-
 def priest_make(**pose):
     return F.man(**pose) + shifted(F.garland(), 0, 86)
 
 
 def ox_make(**_pose):
     return F.ox() + shifted(F.garland(swag=True), 47, 47)
-
-
-def static(fn, *a, **kw):
-    def make(**_pose):
-        return fn(*a, **kw)
-    return make
 
 
 def build(town_xy):

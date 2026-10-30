@@ -361,7 +361,19 @@
         },
         {
           "file": "generate_joshua1319_svg.py",
-          "edit": "the camera (frame: what each verse names), the lots' soft discs, the walks, the 'not located' plate, units (where names may go)"
+          "edit": "the camera (frame: what each verse names, map_at), the lots' soft discs, the walks, the lots lit at 18:5, 18:7 and 18:11 (LIFT), 18:9's survey, the 'not located' plate, units (where names may go)"
+        },
+        {
+          "file": "joshua18_shiloh.py",
+          "edit": "the Tent of Meeting at Shiloh, a scene card (18:1-11, 19:51): scenery, the twelve companies and their standards, Joshua, Eleazar, the lots, each verse's events, SHOTS and LEGS"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the Tabernacle in cubits, shared with Exodus 25-27, Numbers 1-4 and the Tabernacle reference page: the card's east face takes its court, tent, height and door pillars from here"
+        },
+        {
+          "file": "svg_scene_card.py",
+          "edit": "Card/Actor and card hosting, shared with Acts 13-14: editing it changes both"
         },
         {
           "file": "svg_map_camera.py",
@@ -506,7 +518,7 @@
         },
         {
           "file": "svg_scene_card.py",
-          "edit": "Card/Actor: scene cards hung in a map camera's world, actor state carried from verse to verse"
+          "edit": "Card/Actor: scene cards hung in a map camera's world, actor state carried from verse to verse, and the hosting a tour shares (card_op, cards_seen, card_extent) - Joshua 13-19's Shiloh card uses it too"
         },
         {
           "file": "svg_map_camera.py",

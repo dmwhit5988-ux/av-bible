@@ -30,13 +30,20 @@ Event kinds, each (kind, actor, t, dur, value):
     label text       its name appears (constant screen size)
     strike           a rule traces through its name (the name stays)
 Times are seconds from the start of the verse.
+
+A tour hosts its cards with the helpers at the end: a card fades in over the
+map as the camera closes on its town (`card_op`, CARD_IN), covers the frame
+from CARD_COVER on (the map under it is switched off, svg_map_camera.discrete),
+and `cards_seen`, `card_ends` and `card_extent` tell the tour which cards a
+flight sees, when their events end, and whether a card's edge ever shows.
 """
 
 from xml.sax.saxutils import escape
 
 import svg_figures as F
 from svg_surface import SvgCanvas, _fmt
-from svg_map_camera import EASE, fade, rgb, to_screen, ink as ink_box
+from svg_map_camera import (EASE, fade, rgb, to_screen, ink as ink_box,
+                            visible_world)
 from generate_tabernacle import W, H
 
 MAN_H = 97.0        # a man's height in figure units
@@ -54,6 +61,30 @@ def outline_svg(parts, h_px, flip=1, unit_h=MAN_H):
     return " ".join(f"{_fmt(x)},{_fmt(y)}" for x, y in pts)
 
 
+_PERSONS = {}
+
+
+def person(kind="man", **fixed):
+    """One maker per kind of person, so every man in a crowd shares the
+    same drawings (a card draws each pose once per file)."""
+    k = (kind, tuple(sorted(fixed.items())))
+    if k not in _PERSONS:
+        maker = {"man": F.man, "woman": F.woman, "child": F.child,
+                 "priest": F.priest}[kind]
+
+        def make(**pose):
+            return maker(**dict(fixed, **pose))
+        _PERSONS[k] = make
+    return _PERSONS[k]
+
+
+def static(fn, *a, **kw):
+    """A maker for a thing with one look, whatever the pose."""
+    def make(**_pose):
+        return fn(*a, **kw)
+    return make
+
+
 class Actor:
     """A figure on the card. `make(**pose)` returns its parts; `h` is how
     tall it is drawn (card px) for a figure `unit_h` units tall."""
@@ -61,7 +92,7 @@ class Actor:
     def __init__(self, key, make, x, y, h=110.0, unit_h=MAN_H, flip=1,
                  ink=None, pose=None, shown=False, label=None,
                  label_y=None, label_fill=None, label_italic=False,
-                 label_dx=0):
+                 label_dx=0, names_at=None):
         self.key, self.make = key, make
         self.h, self.unit_h = h, unit_h
         self.start = dict(x=x, y=y, flip=flip, ink=ink, pose=dict(pose or {}),
@@ -73,6 +104,9 @@ class Actor:
         # a sideways nudge in screen px, so two names side by side stay
         # apart at any zoom
         self.label_dx = label_dx
+        # the zooms its name shows over, where it differs from the card's
+        # (two people's names that would touch on a wide shot)
+        self.names_at = names_at
 
     def parts(self, pose):
         return self.make(**pose)
@@ -94,6 +128,12 @@ class Card:
         self.fx = {}              # ref -> svg drawn over the cast that verse
         self.fx_after = {}        # ref -> svg drawn in every later verse
         self.refs = []            # verses in reading order
+        # the zooms over which the cast's names come in (a card whose names
+        # stand clear of its people may show them wider)
+        self.names_at = NAMES_AT
+        # a name carried from the last verse that this verse's rest leaves
+        # cut by the frame: it goes at once, or (cut_late) as it leaves
+        self.cut_late = False
 
     def add(self, actor):
         self.actors[actor.key] = actor
@@ -166,6 +206,7 @@ class Card:
         ks = [f"{self.S / c[0]:.5g}" for c in fl.cams]
         self._k = (ks[0], fl._anim("transform", ks, "scale"))
         self._rest, self._open = fl.cam1, fl.cam0
+        self._fl = fl
         self._font_px = font_px
         names = []
         marks = {}
@@ -186,7 +227,7 @@ class Card:
                                    pulse_ink)
             out.append(el)
             if name:
-                names.append(name)
+                names.append((actor.names_at or self.names_at, name))
         if self._sym_defs:
             out.insert(cast_at, "<defs>" + "".join(self._sym_defs)
                        + "</defs>")
@@ -195,17 +236,27 @@ class Card:
                 break
             out += self.fx_after.get(r, [])
         out += self.fx.get(ref, [])
-        if names:
-            ops = [f"{name_op(c[0] / self.S):.2f}" for c in fl.cams]
+        groups = {}
+        for at, name in names:
+            groups.setdefault(at, []).append(name)
+        for at, group in groups.items():
+            ops = [f"{name_op(c[0] / self.S, at):.2f}" for c in fl.cams]
             out.append(f'<g font-size="{font_px}" text-anchor="middle" '
                        f'opacity="{ops[0]}">{fl._anim("opacity", ops)}'
-                       + "".join(names) + "</g>")
+                       + "".join(group) + "</g>")
         out.append("</g>")
         sa, sanim = self._inverse(fl, "stroke-width", 1.5)
         out.append(f'<rect {box} rx="24" fill="none" '
                    f'stroke="rgb(74,70,56)" {sa}>{sanim}</rect>')
         out.append("</g>")
         return "".join(out)
+
+    def _last_seen(self, x, y, box, cut):
+        """When a name at card (x, y) is last whole in the frame this verse."""
+        cams = self._fl.cams
+        n = max(1, len(cams) - 1)
+        seen = [i for i, cam in enumerate(cams) if not cut(cam, x, y, box)]
+        return seen[-1] * self._fl.dur / n if seen else 0.0
 
     def _drawing(self, a, pose, ink, flip):
         """A <use> of the figure drawn once per verse file: a crowd of the
@@ -369,7 +420,9 @@ class Card:
                     continue              # it would only arrive cut
                 if not end["shown"] and not s0["shown"]:
                     continue
-                gone = fade(0.0, 0.4, out=True)
+                t_off = self._last_seen(s0["x"], s0["y"] + start_y, box, cut)
+                gone = fade(max(0.0, t_off - 0.4) if self.cut_late else 0.0,
+                            0.4, out=True)
             elif t is None and cut(self._open, s0["x"], s0["y"] + start_y,
                                    box):
                 gone = (f'<set attributeName="opacity" to="0" begin="0s"/>'
@@ -422,10 +475,10 @@ class Card:
 NAMES_AT = (0.50, 0.60)   # zooms over which the cast's names come in
 
 
-def name_op(z):
+def name_op(z, names_at=NAMES_AT):
     """A name is a screen size; on a card still too small to read as a
     scene it would cover the people it names, so it waits."""
-    lo, hi = NAMES_AT
+    lo, hi = names_at
     return max(0.0, min(1.0, (z - lo) / (hi - lo)))
 
 
@@ -454,3 +507,72 @@ def apply_event(s, kind, val):
         s["scale"] = s.get("scale", 1.0) * val
     elif kind == "name_dy":
         s["name_dy"] = s.get("name_dy", 0.0) + val
+
+
+# ---------------------------------------------------------------------------
+# Hosting cards in a camera tour
+# ---------------------------------------------------------------------------
+
+CARD_IN = (0.06, 0.16)   # zooms over which a card fades in over the map
+CARD_COVER = 0.4         # at this zoom a card fills the frame
+
+
+def card_op(z):
+    return max(0.0, min(1.0, (z - CARD_IN[0]) / (CARD_IN[1] - CARD_IN[0])))
+
+
+def card_rect(card):
+    """A card's world rect (x0, y0, x1, y1)."""
+    w, h = card.size
+    x0, y0 = card.origin
+    ax, ay = card.anchor
+    tx, ty = card.town_xy
+    return (tx + (x0 - ax) / card.S, ty + (y0 - ay) / card.S,
+            tx + (x0 + w - ax) / card.S, ty + (y0 + h - ay) / card.S)
+
+
+def cards_seen(fl, cards, S):
+    """The cards a flight sees once they have begun to show (S: the camera
+    scale at the cards' zoom 1)."""
+    out = []
+    for card in cards:
+        r = card_rect(card)
+        for c in fl.cams:
+            if c[0] / S < CARD_IN[0]:
+                continue
+            v = visible_world(c)
+            if v[0] < r[2] and r[0] < v[2] and v[1] < r[3] and r[1] < v[3]:
+                out.append(card)
+                break
+    return out
+
+
+def card_ends(ref, cards):
+    return [t + d for card in cards
+            for _k, _a, t, d, _v in card.events.get(ref, [])]
+
+
+def card_extent(fl, cards, S):
+    """Inside a card, is its edge ever in frame?"""
+    for c in fl.cams:
+        z = c[0] / S
+        if z < CARD_COVER:
+            continue
+        card = next((k for k in cards
+                     if pt_in(c[1:], card_rect(k))), None)
+        if card is None:
+            return "card edge visible"
+        w, h = card.size
+        x0, y0 = card.origin
+        ax, ay = card.anchor
+        tx, ty = card.town_xy
+        cx = ax + (c[1] - tx) * card.S
+        cy = ay + (c[2] - ty) * card.S
+        hw, hh = W / 2 / z, H / 2 / z
+        if cx - hw < x0 or cy - hh < y0 or cx + hw > x0 + w or                 cy + hh > y0 + h:
+            return "card edge visible"
+    return None
+
+
+def pt_in(p, r):
+    return r[0] <= p[0] <= r[2] and r[1] <= p[1] <= r[3]

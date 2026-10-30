@@ -1372,6 +1372,44 @@ def emit_label_layers(fl, lab, dot_px=(10.0, 7.0)):
     return svg
 
 
+def discrete(fl, attr, vals):
+    """A non-numeric attribute switched at the camera's keyframes."""
+    if fl.static or len(set(vals)) == 1:
+        return ""
+    n = len(vals) - 1
+    kt = ";".join(f"{i / n:.4f}" for i in range(n + 1))
+    return (f'<animate attributeName="{attr}" values="{";".join(vals)}" '
+            f'keyTimes="{kt}" calcMode="discrete" dur="{fl.dur:.2f}s" '
+            f'begin="0s" fill="freeze"/>')
+
+
+def held_labels(fl, prev, proj=None):
+    """The previous verse's names, still, until a scene card covers them;
+    with `proj`, their dots too."""
+    by_size, lead, halo, core = {}, [], [], []
+    for pu in prev["units"].values():
+        u = pu["unit"]
+        label_elements(u, u.place, "", None, by_size, lead, prev["cam1"])
+    if proj is not None:
+        for la, lo, col in prev["dots"].values():
+            dot_elements(proj, la, lo, col, "", None, halo, core)
+    lab = dict(by_size=by_size, lead_els=lead, halo=halo, core=core,
+               old_by_size={}, old_lead=[], old_halo=[], old_core=[])
+    return emit_label_layers(fl, lab)
+
+
+def screen_ring(xy, begin, r0, r1, dur, col, width=2.0):
+    """An expanding ring in screen px that fades as it grows."""
+    x, y = xy
+    return (f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r0}" fill="none" '
+            f'stroke="{rgb(col)}" stroke-width="{width}" opacity="0">'
+            f'<set attributeName="opacity" to="1" begin="{begin:.2f}s"/>'
+            f'<animate attributeName="r" values="{r0};{r1}" '
+            f'begin="{begin:.2f}s" dur="{dur:.2f}s" fill="freeze"/>'
+            f'<animate attributeName="stroke-opacity" values="1;0" '
+            f'begin="{begin:.2f}s" dur="{dur:.2f}s" fill="freeze"/></circle>')
+
+
 def prev_state(cam1, placed, cur_ident, cur_dots, **extra):
     """What the next verse needs to know about this one."""
     return dict(cam1=cam1,

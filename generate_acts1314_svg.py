@@ -56,11 +56,13 @@ from svg_map_camera import (
     cam_duration, _same, to_screen, ink, title_rect, compass_rect, title_svg,
     compass_scale_svg, inset_view_rect, plate_rect_svg, poly_el, ptsstr, rgb,
     fade, op_anim, traced_el, seg_len, emit_class, curve_d, layout,
-    visible_world,
     rest_dots, identities, unchanged, emit_labels, emit_label_layers,
-    label_elements, prev_state, midflight_qc, extent_check, S_OTHER, S_AREA,
-    S_CUR,
+    prev_state, midflight_qc, extent_check, S_OTHER, S_AREA,
+    S_CUR, discrete, held_labels, screen_ring as _screen_ring,
 )
+from svg_scene_card import (CARD_COVER, card_op, card_ends,
+                            cards_seen as _cards_seen,
+                            card_extent as _card_extent)
 from generate_tabernacle import (W, H, BG, SAND, SAND_DIM, TEXT, TEXT_DIM, HL,
                                  out_path)
 from generate_tribal_maps import SEA, LAND, RIVER, WATER_TXT
@@ -895,8 +897,6 @@ SYN = SY.build(P(*city_pt("pantioch")))
 JER = JE.build(P(*city_pt("jerusalem")))
 LYS = LY.build(P(*city_pt("lystra")))
 CARDS = [(SYN, SY), (JER, JE), (LYS, LY)]
-CARD_IN = (0.06, 0.16)   # zooms over which a card fades in over the map
-CARD_COVER = 0.4         # at this zoom a card fills the frame
 S_CARD = LY.S_CARD       # one camera scale for every card's zoom 1
 
 
@@ -917,10 +917,6 @@ stage((13, 50), (13, 50), cam=_PA_IC,
 _LY_DE = frame(["lystra", "derbe"])
 stage((14, 20), (14, 20), cam=_LY_DE,
       legs=[("hold", None, 3.0), ("to", _LY_DE, 2.4)], trace_at=(5.4, 1.6))
-
-
-def card_op(z):
-    return max(0.0, min(1.0, (z - CARD_IN[0]) / (CARD_IN[1] - CARD_IN[0])))
 
 
 NEED_AFTER = 1.4      # seconds a verse holds still after its flight, at least
@@ -1122,15 +1118,15 @@ def pulse_once(begin, dur=0.8, hi=1.0):
 
 
 def screen_ring(xy, begin, r0, r1, dur, col=HL, width=2.0):
-    """An expanding ring in screen px that fades as it grows."""
-    x, y = xy
-    return (f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r0}" fill="none" '
-            f'stroke="{rgb(col)}" stroke-width="{width}" opacity="0">'
-            f'<set attributeName="opacity" to="1" begin="{begin:.2f}s"/>'
-            f'<animate attributeName="r" values="{r0};{r1}" '
-            f'begin="{begin:.2f}s" dur="{dur:.2f}s" fill="freeze"/>'
-            f'<animate attributeName="stroke-opacity" values="1;0" '
-            f'begin="{begin:.2f}s" dur="{dur:.2f}s" fill="freeze"/></circle>')
+    return _screen_ring(xy, begin, r0, r1, dur, col, width)
+
+
+def cards_seen(fl):
+    return _cards_seen(fl, [card for card, _m in CARDS], S_CARD)
+
+
+def card_extent(fl, cards):
+    return _card_extent(fl, cards, S_CARD)
 
 
 def at_rest(cam1, lat, lon):
@@ -1649,28 +1645,6 @@ def assemble(ref, fl, cls, bt, sea_rect, lab, held, show_card, show_map, zs):
     return "".join(svg)
 
 
-def discrete(fl, attr, vals):
-    """A non-numeric attribute switched at the camera's keyframes."""
-    if fl.static or len(set(vals)) == 1:
-        return ""
-    n = len(vals) - 1
-    kt = ";".join(f"{i / n:.4f}" for i in range(n + 1))
-    return (f'<animate attributeName="{attr}" values="{";".join(vals)}" '
-            f'keyTimes="{kt}" calcMode="discrete" dur="{fl.dur:.2f}s" '
-            f'begin="0s" fill="freeze"/>')
-
-
-def held_labels(fl, prev):
-    """The previous verse's names, still, until the card covers them."""
-    by_size, lead, halo, core = {}, [], [], []
-    for pu in prev["units"].values():
-        u = pu["unit"]
-        label_elements(u, u.place, "", None, by_size, lead, prev["cam1"])
-    lab = dict(by_size=by_size, lead_els=lead, halo=halo, core=core,
-               old_by_size={}, old_lead=[], old_halo=[], old_core=[])
-    return emit_label_layers(fl, lab)
-
-
 def write(ref, text):
     """Write a verse's SVG. A file another program has open for a moment
     (a virus scan, a preview) fails on Windows with EINVAL: try again."""
@@ -1685,63 +1659,6 @@ def write(ref, text):
             if attempt == 4:
                 raise
             time.sleep(0.3)
-
-
-def card_rect(card):
-    """A card's world rect (x0, y0, x1, y1)."""
-    w, h = card.size
-    x0, y0 = card.origin
-    ax, ay = card.anchor
-    tx, ty = card.town_xy
-    return (tx + (x0 - ax) / card.S, ty + (y0 - ay) / card.S,
-            tx + (x0 + w - ax) / card.S, ty + (y0 + h - ay) / card.S)
-
-
-def cards_seen(fl):
-    """The cards a flight sees once they have begun to show."""
-    out = []
-    for card, _m in CARDS:
-        r = card_rect(card)
-        for c in fl.cams:
-            if c[0] / S_CARD < CARD_IN[0]:
-                continue
-            v = visible_world(c)
-            if v[0] < r[2] and r[0] < v[2] and v[1] < r[3] and r[1] < v[3]:
-                out.append(card)
-                break
-    return out
-
-
-def card_ends(ref, cards):
-    return [t + d for card in cards
-            for _k, _a, t, d, _v in card.events.get(ref, [])]
-
-
-def card_extent(fl, cards):
-    """Inside a card, is its edge ever in frame?"""
-    for c in fl.cams:
-        z = c[0] / S_CARD
-        if z < CARD_COVER:
-            continue
-        card = next((k for k in cards
-                     if pt_in(c[1:], card_rect(k))), None)
-        if card is None:
-            return "card edge visible"
-        w, h = card.size
-        x0, y0 = card.origin
-        ax, ay = card.anchor
-        tx, ty = card.town_xy
-        cx = ax + (c[1] - tx) * card.S
-        cy = ay + (c[2] - ty) * card.S
-        hw, hh = W / 2 / z, H / 2 / z
-        if cx - hw < x0 or cy - hh < y0 or cx + hw > x0 + w or \
-                cy + hh > y0 + h:
-            return "card edge visible"
-    return None
-
-
-def pt_in(p, r):
-    return r[0] <= p[0] <= r[2] and r[1] <= p[1] <= r[3]
 
 
 def anchor_on_screen(u, cam):
