@@ -153,7 +153,7 @@ The file can also hold `verses`, the words single verses say differently ([One v
 .venv/Scripts/python.exe pronunciation_check.py
 ```
 
-**Requirements.** It needs the optional packages in `requirements.txt` (`torch transformers soundfile scipy`). On first use it downloads the phoneme model `facebook/wav2vec2-lv-60-espeak-cv-ft` (about 1.2 GB).
+**Requirements.** It needs the optional packages in `requirements.txt` (`torch transformers scipy`), and soundfile, which `requirements.txt` installs anyway. On first use it downloads the phoneme model `facebook/wav2vec2-lv-60-espeak-cv-ft` (about 1.2 GB).
 
 **For each name it:**
 1. builds the exact text the pipeline would speak: the lowercased `say` when `override` is true, otherwise the name;

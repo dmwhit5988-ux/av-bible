@@ -197,6 +197,9 @@ The libraries most generators share:
 - `allotment.py` holds Joshua 13–19 verse by verse: each verse's tribe, every
   place, land and water it names in order (each a gazetteer place or point), the
   border it walks, and the names with no agreed site.
+- `narration_clock.py` tells when a verse's MP3 says each part of its text, from
+  the pauses in the audio matched to the verse's punctuation, so a map can light
+  each name as it's said (Joshua 13–19).
 - `kings.py` holds the kings of Israel and Judah (Ussher's years from
   `chronology.BIND`, Thiele's beside them, and the text's length, verdict, mother,
   end and passages, each with its verse), the foreign kings by the regnal year the
@@ -225,12 +228,13 @@ The libraries most generators share:
   `sysconfig.get_platform()` instead, which reports `win-amd64`. x64 wheels install
   normally.
 - `requirements.txt`: edge-tts (narration) and aiohttp (edge-tts's networking, and
-  Video Studio's browser control), Pillow (used by the generators), and pywebview
-  with the Microsoft Edge WebView2 Runtime, which shows every visual in the Studio.
-  WebView2 is built into Windows 11.
+  Video Studio's browser control), Pillow (used by the generators), soundfile (which
+  reads the MP3s for `narration_clock.py`, and brings numpy), and pywebview with the
+  Microsoft Edge WebView2 Runtime, which shows every visual in the Studio. WebView2
+  is built into Windows 11.
 - Optional, for the tools that use `ipa_asr.py` (the Verifier and `isbe_sweep.py`):
-  `pip install torch transformers soundfile scipy`. That is about 1.5 GB installed,
-  and the model downloads about 1.2 GB on first run. Nothing else imports them.
+  `pip install torch transformers scipy`. That is about 1.5 GB installed, and the
+  model downloads about 1.2 GB on first run. Nothing else imports them.
 - Video Studio needs ffmpeg (`winget install BtbN.FFmpeg.GPL`, or `ffmpeg.exe` and
   `ffprobe.exe` in `tools/ffmpeg/bin/`) and Google Chrome or Microsoft Edge, which
   draws the frames.
@@ -297,10 +301,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock
 ```
 
-There are 115 tests in nine modules:
+There are 157 tests in twelve modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -322,6 +326,10 @@ There are 115 tests in nine modules:
   maps, and the rivers meet the water they run into.
 - `test_allotment`: Joshua 13–19's data has every verse, each name is the verse's
   own word, and everything it places is a gazetteer place, land or water point.
+- `test_narration_clock`: the narration clock on made-up audio (tones and
+  silences): each clause starts after its pause, a breath is passed over, a list
+  said slowly (Joshua 15:32's measured pauses) keeps its pairing, a parenthesis is
+  a mark, silence gives no clock, and times run forward.
 - `test_kings`: the kings' Ussher years are `chronology.BIND`'s, each verse says
   what it is cited for, every event falls in the reign it is dated by, every
   prophet's king is a reign, and every bar can carry its name.

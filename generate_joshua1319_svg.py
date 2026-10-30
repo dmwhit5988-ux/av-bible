@@ -14,6 +14,11 @@ order, and the border it walks, are allotment.py's.
 - **Each verse lights what it names:** its places (a highlighted dot and
   name), its waters and lands (an italic name). The camera frames them, or,
   for a verse that names nothing it can place, holds on the lot so far.
+- **As the narrator says it:** each name, its disc, each leg of a walk and
+  each name on the "not located" plate comes in as the MP3 says it, timed
+  by narration_clock (the pauses in the audio matched to the verse's
+  punctuation). On the map, a name said during the flight comes in as the
+  camera lands; the plate, off the map, takes its names as they're said.
 - **A tribe's land is its towns, drawn soft:** each place a verse gives a
   tribe keeps a pale disc of the tribe's colour, so the lots fill in as the
   chapters go. No border is drawn that the text doesn't walk.
@@ -39,12 +44,14 @@ after the narration.
 """
 
 import os
+import re
 from xml.sax.saxutils import escape
 
 import acts_geography as G
 import mediterranean as M
 import allotment as AL
 import gazetteer as GZ
+import narration_clock
 from config import WEB_AUDIO_DIR
 from generate_israel_atlas import TEXT_WEB
 from generate_tabernacle import (BG, H, HL, SAND, SAND_DIM, TEXT, TEXT_DIM, W,
@@ -56,7 +63,7 @@ from svg_map_camera import (
     Ctx, Flight, Projection, SAFE, dot_state, S_AREA, S_CUR, S_OTHER,
     Unit as MapUnit, _same, cam_duration, compass_rect, compass_scale_svg,
     emit_class as emit_px, emit_label_layers, emit_labels, extent_check, fade,
-    identities, ink, inset_view_rect, layout, midflight_qc, poly_el, prev_state,
+    identities, ink, inset_view_rect, layout, midflight_qc, op_anim, poly_el, prev_state,
     rest_dots, rgb, title_rect, title_svg, to_screen, unchanged,
 )
 from svg_surface import FONT_FAMILY, _fmt
@@ -67,8 +74,12 @@ REFS = [(c, v) for c in CHAPTERS for v in verse_numbers(BOOK, c)]
 ALL = {**GZ.SITES, **GZ.JERUSALEM, **GZ.BEYOND}
 
 
+def _mp3(c, v):
+    return os.path.join(WEB_AUDIO_DIR, f"{BOOK}_{c}_{v}.mp3")
+
+
 def _narration(c, v):
-    sec = _mp3_seconds(os.path.join(WEB_AUDIO_DIR, f"{BOOK}_{c}_{v}.mp3"))
+    sec = _mp3_seconds(_mp3(c, v))
     return round(sec, 1) if sec else None
 
 
@@ -79,6 +90,27 @@ def _estimate(c, v):
 
 
 NARR = {cv: _narration(*cv) or _estimate(*cv) for cv in REFS}
+
+SAY_LEAD = 0.1                # a name starts to light this long before it's said
+CLOCKS = {}                   # cv -> its narration_clock.Clock (None: no MP3)
+
+
+def said(cv):
+    """When the narration says each of the verse's names, in allotment's
+    order: seconds into the MP3 (narration_clock), or None for every name
+    when the verse has no MP3."""
+    text = TEXT_WEB[(BOOK, *cv)]
+    clk = CLOCKS[cv] = narration_clock.clock(text, _mp3(*cv))
+    out, pos = [], 0
+    for n in AL.VERSES[cv].names:
+        word = re.compile(r"(?<!\w)" + re.escape(n.web) + r"(?!\w)")
+        m = word.search(text, pos)
+        if m:
+            pos = m.end()
+        else:
+            m = word.search(text)
+        out.append(round(clk(m.start()), 2) if clk and m else None)
+    return out
 
 # ---------------------------------------------------------------------------
 # The world: 100 world units a degree of latitude, as Numbers 34
@@ -184,39 +216,48 @@ def leg(a, b):
     return best or [a, b]
 
 
-def walk_runs(cv, prev_end):
+def walk_runs(cv, prev_end, times=None):
     """The verse's border walk as runs of the landmarks it names that have a
     point, in order ("|" breaks a run): carried on from the last verse's end
     when the text carries it on, or from the place it turns at. A water
-    walked for a stretch gives the stretch's ends."""
+    walked for a stretch gives the stretch's ends. Each landmark is
+    (point, when the narration names it), from `times` (said()'s); a
+    stretch's far end takes the time of the landmark that next names its
+    point (13:27's Jordan runs 'to the sea of Chinnereth')."""
     v = AL.VERSES[cv]
     by_web = {}
-    for n in v.names:
-        by_web.setdefault(n.web, n)
+    for i, n in enumerate(v.names):
+        by_web.setdefault(n.web, (n, times[i] if times else None))
     first = prev_end if v.cont else ((ALL[v.start].lat, ALL[v.start].lon) if v.start else None)
-    runs, cur = [], ([first] if first else [])
+    runs, cur = [], ([(first, None)] if first else [])
+    open_end = False              # cur's last point is a stretch's far end, its time not yet named
     for w in v.walk:
         if w == "|":
             runs.append(cur)
-            cur = []
+            cur, open_end = [], False
             continue
-        n = by_web[w]
+        n, t = by_web[w]
         if n.kind not in (AL.SITE, AL.WATER):
             continue
         for p in ((n.along[0], n.at, n.along[1]) if n.along else (point(n),)):
-            if not cur or cur[-1] != p:
-                cur.append(p)
+            if not cur or cur[-1][0] != p:
+                cur.append((p, t))
+                open_end = False
+            elif open_end and t is not None:
+                cur[-1] = (p, max(t, cur[-1][1] or t))
+                open_end = False
+        open_end = bool(n.along)
     runs.append(cur)
     return runs
 
 
-def walk_pieces(cv, prev_end):
-    """The verse's border walk as pieces, each a list of legs from landmark
-    to landmark."""
+def walk_legs(cv, prev_end, times=None):
+    """The verse's border walk as legs from landmark to landmark, each with
+    when the narration names the landmark it reaches."""
     if not AL.VERSES[cv].walk:
         return []
-    return [[leg(a, b) for a, b in zip(r, r[1:])]
-            for r in walk_runs(cv, prev_end) if len(r) > 1]
+    return [(leg(a, b), tb) for r in walk_runs(cv, prev_end, times)
+            for (a, _ta), (b, tb) in zip(r, r[1:])]
 
 
 # names the plate leaves off: peoples, the tribes' lands, and what isn't a place
@@ -241,7 +282,7 @@ def walk_end(cv, prev_end):
     from it without placing any."""
     if not AL.VERSES[cv].walk:
         return prev_end
-    return next((r[-1] for r in reversed(walk_runs(cv, prev_end)) if r), None)
+    return next((r[-1][0] for r in reversed(walk_runs(cv, prev_end)) if r), None)
 
 
 # ---------------------------------------------------------------------------
@@ -301,21 +342,32 @@ FIXED = [
 ]
 
 
-def units(cv, state):
+def units(cv, state, times=None):
+    """The verse's names to lay out. Each of its own carries `said`: when the
+    narration first says it (from `times`, said()'s), or None."""
     v = AL.VERSES[cv]
     col = tribe_col(v.tribe, cv[0])
     U, seen = [], set()
-    for n in v.names:
+    by_key = {}
+
+    def heard(u, t):
+        if t is not None and (u.said is None or t < u.said):
+            u.said = t
+    for i, n in enumerate(v.names):
         p = point(n)
-        if p is None or n.web in seen:
+        t = times[i] if times else None
+        if p is None:
+            continue
+        if n.web in seen:
             continue
         seen.add(n.web)
         if n.kind == AL.SITE:
-            if n.key in {u.key for u in U}:
+            if n.key in by_key:
+                heard(by_key[n.key], t)
                 continue
             text, sub = site_text(n)
-            U.append(Unit(n.key, text, [S_CUR, 18.0], HL, bold=True, cands=dot_cands(*p),
-                          sub=sub, dot=HL, prio=1, new=True, must=True, home=p, min_px=16))
+            u = Unit(n.key, text, [S_CUR, 18.0], HL, bold=True, cands=dot_cands(*p),
+                     sub=sub, dot=HL, prio=1, new=True, must=True, home=p, min_px=16)
         elif n.kind == AL.WATER:
             # two waters at one point (the Salt Sea where the Jordan meets it)
             # share a name; a water at a place the verse names is that place's
@@ -323,21 +375,26 @@ def units(cv, state):
             same = next((u for u in U if u.key.startswith("w:") and u.home == p), None)
             if same:
                 same.text += " · " + word
+                heard(same, t)
                 continue
             if any(abs(point(m)[0] - p[0]) + abs(point(m)[1] - p[1]) < 0.01
                    for m in v.names if m.kind == AL.SITE):
                 continue
-            U.append(Unit(f"w:{n.web}@{p[0]:.4f},{p[1]:.4f}", word,
-                          [S_AREA, S_OTHER],
-                          WATER_TXT, italic=True, cands=dot_cands(*p), dot=HL, prio=2, must=True,
-                          new=True, home=p))
+            u = Unit(f"w:{n.web}@{p[0]:.4f},{p[1]:.4f}", word,
+                     [S_AREA, S_OTHER],
+                     WATER_TXT, italic=True, cands=dot_cands(*p), dot=HL, prio=2, must=True,
+                     new=True, home=p)
         else:
             r = GZ.REGIONS[n.key]
             # the verse's own word where it says it otherwise (the hill country of Ephraim)
             word = n.web if n.web.lower() != r.name.lower() else r.name
             word = word[:1].upper() + word[1:]
-            U.append(Unit("r:" + n.key, word, [S_AREA, S_OTHER], TEXT, italic=True,
-                          cands=[(p[0], p[1], "c")], prio=3, new=True, gmax=1.25))
+            u = Unit("r:" + n.key, word, [S_AREA, S_OTHER], TEXT, italic=True,
+                     cands=[(p[0], p[1], "c")], prio=3, new=True, gmax=1.25)
+        u.said = None
+        heard(u, t)
+        U.append(u)
+        by_key[u.key] = u
     cur = {u.key for u in U}
     # the lot so far: its places named in earlier verses, dim
     if col:
@@ -427,21 +484,25 @@ def inset_opacity(cam):
     return max(0.0, min(1.0, (INSET_OFF - hfrac) / INSET_RAMP))
 
 
-def plate_lines(cv):
-    """'not located' and the verse's unplaced names, wrapped to the plate."""
-    names = unplaced(cv)
-    if not names:
-        return []
-    lines, cur = [], ""
-    for nm in names:
-        t = (cur + " · " + nm) if cur else nm
-        if ink(t, FS_PLATE, False, False, "ra")[2] - ink(t, FS_PLATE, False, False, "ra")[0] > PLATE_W and cur:
-            lines.append(cur)
-            cur = nm
+def plate_rows(cv):
+    """The verse's unplaced names, wrapped to the plate's rows."""
+    rows, cur = [], []
+    for nm in unplaced(cv):
+        t = " · ".join(cur + [nm])
+        x0, _y0, x1, _y1 = ink(t, FS_PLATE, False, False, "ra")
+        if x1 - x0 > PLATE_W and cur:
+            rows.append(cur)
+            cur = [nm]
         else:
-            cur = t
-    lines.append(cur)
-    return lines[:7]
+            cur.append(nm)
+    if cur:
+        rows.append(cur)
+    return rows[:7]
+
+
+def plate_lines(cv):
+    """The plate's rows as the lines it writes."""
+    return [" · ".join(r) for r in plate_rows(cv)]
 
 
 def plate_rect(cv):
@@ -463,22 +524,39 @@ def hud_rects(cv, cam):
     return hud
 
 
-def plate_body(cv):
+PLATE_IN = 0.3                # the plate comes in no sooner, as the last verse's leaves
+NAME_FADE = 0.5
+
+
+def plate_body(cv, shown=None):
+    """The plate, its names written whole; or, with `shown` (name -> when
+    it comes in), each name coming in at its time, its row already laid
+    out, so nothing shifts. A name is hidden only by its animation (a set,
+    then a fade), so a browser that doesn't animate a tspan shows it."""
     r = plate_rect(cv)
     out = [f'<rect x="{_fmt(r[0])}" y="{_fmt(r[1])}" width="{_fmt(r[2] - r[0])}" '
            f'height="{_fmt(r[3] - r[1])}" rx="8" fill="{rgb(BG)}" fill-opacity="0.82"/>',
            f'<text x="{W - 18}" y="{r[1] + 10}" font-size="{FS_PLATE}" font-style="italic" '
            f'fill="{rgb(TEXT_DIM)}" text-anchor="end" dominant-baseline="text-before-edge">'
            f'not located</text>']
-    for i, t in enumerate(plate_lines(cv)):
+    for i, row in enumerate(plate_rows(cv)):
+        spans = []
+        for j, nm in enumerate(row):
+            s = escape((" · " if j else "") + nm)
+            spans.append(s if shown is None else
+                         f'<tspan><set attributeName="fill-opacity" to="0" begin="0s"/>'
+                         f'{op_anim(0, 1, shown[nm], NAME_FADE)}{s}</tspan>')
         out.append(f'<text x="{W - 18}" y="{r[1] + 10 + 22 * (i + 1)}" font-size="{FS_PLATE}" '
                    f'fill="{rgb(TEXT)}" text-anchor="end" '
-                   f'dominant-baseline="text-before-edge">{escape(t)}</text>')
+                   f'dominant-baseline="text-before-edge">{"".join(spans)}</text>')
     return "".join(out)
 
 
-def plate_svg(cv, prev_cv):
-    """The 'not located' plate, fading over from the last verse's."""
+def plate_svg(cv, prev_cv, heard=None, late=None):
+    """The 'not located' plate, fading over from the last verse's. With
+    `heard` (name -> when the narration says it), it comes in just before
+    its first name is said and each name as it's said (by `late` at the
+    latest)."""
     now = plate_lines(cv)
     was = plate_lines(prev_cv) if prev_cv else []
     if now == was:
@@ -487,7 +565,16 @@ def plate_svg(cv, prev_cv):
     if was:
         out += f'<g>{fade(0.0, 0.35, out=True)}{plate_body(prev_cv)}</g>'
     if now:
-        out += f'<g opacity="0">{fade(0.3, 0.5)}{plate_body(cv)}</g>'
+        t_in, shown = PLATE_IN, None
+        if heard:
+            names = [nm for row in plate_rows(cv) for nm in row]
+            shown, t = {}, PLATE_IN
+            for nm in names:
+                said_at = heard.get(nm)
+                t = max(t, PLATE_IN, said_at - SAY_LEAD if said_at is not None else t)
+                shown[nm] = round(min(t, late), 2) if late is not None else round(t, 2)
+            t_in = max(PLATE_IN, min(shown.values()) - 0.3)
+        out += f'<g opacity="0">{fade(t_in, 0.5)}{plate_body(cv, shown)}</g>'
     return out
 
 
@@ -515,7 +602,7 @@ def inset_svg(fl, state, coming=()):
     for key, col, t in coming:
         x, y = ip(ALL[key].lat, ALL[key].lon)
         out.append(f'<circle cx="{_fmt(x)}" cy="{_fmt(y)}" r="1.6" fill="{rgb(col)}" '
-                   f'opacity="0">{fade(t, 0.8)}</circle>')
+                   f'opacity="0">{fade(t, DISC_FADE)}</circle>')
     out.append(inset_view_rect(fl, PROJ, ip, HL))
     out.append("</g>")
     out.append(f'<rect x="{x0}" y="{y0}" width="{x1 - x0}" height="{y1 - y0}" rx="6" '
@@ -529,6 +616,7 @@ def inset_svg(fl, state, coming=()):
 
 DISC_PX = 26                  # a place's soft disc in its tribe's colour, on screen
 DISC_OP = 0.30
+DISC_FADE = 0.8
 CLS_PX = {"w1": 1.0, "w2": 2.0, "riv": 1.6, "walk_old": 2.0, "walk_tribe": 2.6,
           "walk_cur": 3.6, "dots": 5.0, "discs": DISC_PX}
 DOTTED = (0.1, 7.0)
@@ -565,6 +653,16 @@ def base_world():
 # ---------------------------------------------------------------------------
 
 NEED_AFTER = 1.6              # seconds left after landing, for the names and the walk
+LEG_GAP = 0.35                # legs named together come in this far apart
+LEG_FADE = 0.6
+
+
+def heard_at(t_said, t_land, late, floor=0.05):
+    """When something the narration says at `t_said` comes in: as it's said,
+    but not before the camera lands, nor so late it ends after the
+    narration. Unsaid (None) is on landing."""
+    t = t_land + floor if t_said is None else max(t_land + floor, t_said - SAY_LEAD)
+    return round(min(t, max(t_land + floor, late)), 2)
 
 
 def walk_el(lg, was, now, t_land):
@@ -592,8 +690,10 @@ def build_all():
         verse = AL.VERSES[cv]
         col = tribe_col(verse.tribe, c)
         narr = NARR[cv]
-        pieces = walk_pieces(cv, state["walk_end"])
-        legs = [lg for pc in pieces for lg in pc]
+        times = said(cv)
+        late = narr - AUDIO_SLACK - NAME_FADE      # the last a name may start to come in
+        legs_t = walk_legs(cv, state["walk_end"], times)
+        legs = [lg for lg, _t in legs_t]
         named = [point(n) for n in verse.names if n.kind in (AL.SITE, AL.WATER, AL.REGION)]
         own = [p for lg in legs for p in lg
                if not (verse.cont and p == state["walk_end"])]
@@ -617,7 +717,7 @@ def build_all():
         t_land = fl.dur
         SCALE_OF[cv] = scale_km(fl)
 
-        # the places this verse gives its tribe
+        # the places this verse gives its tribe, each as it's said
         new_keys = []
         if col and verse.kind in ("towns", "border"):
             for n in verse.names:
@@ -626,6 +726,12 @@ def build_all():
                         and (verse.tribe in GZ.SITES[n.key].tribe
                              or (verse.kind == "towns" and not GZ.SITES[n.key].tribe))):
                     new_keys.append(n.key)
+        key_said = {}
+        for n, t in zip(verse.names, times):
+            if n.kind == AL.SITE and t is not None:
+                key_said.setdefault(n.key, t)
+        t_new = {k: heard_at(key_said.get(k), t_land, narr - AUDIO_SLACK - DISC_FADE, 0.1)
+                 for k in new_keys}
 
         # ------ the world ------------------------------------------------
         cls = {k: [] for k in CLS_PX}
@@ -634,8 +740,8 @@ def build_all():
         for lk in LAKES:
             fills.append(poly_el(PS(lk), fill=SEA, closed=True))
         cls["discs"] = [disc(k, cl) for k, cl in state["allotted"].items()]
-        for i, k in enumerate(new_keys):
-            cls["discs"].append(f'<g opacity="0">{fade(t_land + 0.1 * i, 0.8)}{disc(k, col)}</g>')
+        for k in new_keys:
+            cls["discs"].append(f'<g opacity="0">{fade(t_new[k], DISC_FADE)}{disc(k, col)}</g>')
         for lk in LAKES:
             cls["w1"].append(poly_el(PS(lk), stroke=SAND_DIM, closed=True))
             qc.append((PS(lk + lk[:1]), "lake"))
@@ -650,18 +756,23 @@ def build_all():
             for name, el in walk_el(lg, was, w[2], t_land).items():
                 cls[name].append(el)
             qc.append((PS(lg), "border"))
-        # this verse's walk, leg by leg
-        t = t_land + 0.1
-        walk_dur = max(0.0, narr - AUDIO_SLACK - t - 0.3)
+        # this verse's walk, each leg as the landmark it reaches is said (or,
+        # with no narration clock, evenly through the verse)
+        walk_dur = max(0.0, narr - AUDIO_SLACK - t_land - 0.4)
         step = min(0.9, walk_dur / len(legs)) if legs else 0
-        ends = [t_land]
-        for lg in legs:
+        ends, t_prev = [t_land] + [t + DISC_FADE for t in t_new.values()], None
+        for i, (lg, ts) in enumerate(legs_t):
+            t = (heard_at(ts, t_land, late, 0.1) if ts is not None
+                 else round(t_land + 0.1 + i * step, 2))
+            if t_prev is not None:
+                # one after another, and none past the narration's end
+                t = round(min(max(t, t_prev + LEG_GAP), max(t, late)), 2)
+            t_prev = t
             cls["walk_cur"].append(
-                f'<g opacity="0">{fade(t, max(0.3, step))}'
+                f'<g opacity="0">{fade(t, LEG_FADE)}'
                 + poly_el(PS(lg), stroke=HL) + "</g>")
-            t += step
+            ends.append(t + LEG_FADE)
             qc.append((PS(lg), "border"))
-        ends.append(t)
         # the other tribes' places, as small dots
         cur_named = {n.key for n in verse.names if n.kind == AL.SITE}
         for k, cl in state["allotted"].items():
@@ -673,7 +784,7 @@ def build_all():
         hud = hud_rects(cv, cam1)
         # the lot's earlier places are named only where their dot rests clear
         # of the frame's edge and the plates
-        U = [u for u in units(cv, state) if u.prio < 4 or
+        U = [u for u in units(cv, state, times) if u.prio < 4 or
              dot_state(to_screen(cam1, P(*u.cands[0][:2])), hud) == "in"]
         lines = [([to_screen(cam1, p) for p in pts_], 3.0 if kind == "border" else 2.0, kind, None)
                  for pts_, kind in qc]
@@ -690,7 +801,7 @@ def build_all():
             if unchanged(u, cur_ident, prev_units):
                 continue
             if u.new:
-                u.t_in = round(t_land + 0.05, 2)
+                u.t_in = heard_at(getattr(u, "said", None), t_land, late)
         lab = emit_labels(PROJ, U, placed, cur_ident, prev, prev is not None, cam0, cam1, fl,
                           t_land, hud, lambda cam, cv=cv: hud_rects(cv, cam), lines_w,
                           problems)
@@ -706,9 +817,13 @@ def build_all():
         svg += emit_label_layers(fl, lab)
         svg.append("</g></g>")
         svg.append(title_svg(title(cv), TEXT))
-        svg.append(plate_svg(cv, prev_cv))
+        heard = {}
+        for n, t in zip(verse.names, times):
+            if n.kind == AL.UNPLACED and t is not None:
+                heard.setdefault(n.web, t)
+        svg.append(plate_svg(cv, prev_cv, heard if CLOCKS[cv] else None, late))
         svg.append(compass_scale_svg(fl, PROJ, SCALE_OF[cv]))
-        svg.append(inset_svg(fl, state, [(k, col, t_land + 0.1 * i) for i, k in enumerate(new_keys)]))
+        svg.append(inset_svg(fl, state, [(k, col, t_new[k]) for k in new_keys]))
         svg.append("</svg>")
         text = "".join(svg)
         with open(out_path(BOOK, c, f"{BOOK}_{c}_{v}.svg"), "w", encoding="utf-8") as f:
@@ -718,8 +833,10 @@ def build_all():
         mid = midflight_qc(fl, placed, lab["exiting"])
         end = max(ends + [getattr(u, "t_show", 0) + 0.5 for u in placed
                           if getattr(u, "t_show", 0) > 0] + [fl.dur])
+        clk = CLOCKS[cv]
         report.append(dict(
             cv=cv, pxdeg=round(cam1[0] * K), end=round(end, 2), narr=narr,
+            clock=(clk.matched, clk.marks) if clk else None,
             kb=round(len(text.encode()) / 1024, 1),
             dropped=[u.key for u in U if u.key in dropped and u.prio <= 3],
             problems=problems, mid=mid, ext=extent_check(fl, PROJ, (LAT_BOT - MARGIN, LAT_TOP + MARGIN),
@@ -759,6 +876,9 @@ def main():
     missing = sum(1 for cv in REFS if _narration(*cv) is None)
     if missing:
         print(f"  {missing} verses have no MP3: paced on an estimate from their words")
+    clocks = [r["clock"] for r in report if r["clock"]]
+    whole = sum(1 for m, b in clocks if m == b)
+    print(f"Narration clock: {len(clocks)} verses timed, a pause at every mark in {whole}")
     kb = [r["kb"] for r in report]
     print(f"Joshua 13-19: {len(report)} SVG files, {sum(kb):.0f} KB (largest {max(kb)} KB)")
 

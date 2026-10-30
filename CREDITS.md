@@ -137,7 +137,8 @@ own licences.
 | pywebview | 6.2.1 | BSD 3-Clause | the Studio's embedded WebView2 views |
 | torch | 2.13.0 | Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT | the Verifier and `isbe_sweep.py` (optional) |
 | transformers | 5.14.1 | Apache 2.0 | the Verifier and `isbe_sweep.py` (optional) |
-| soundfile | 0.14.0 | BSD 3-Clause | the Verifier and `isbe_sweep.py` (optional) |
+| soundfile | 0.14.0 | BSD 3-Clause | `narration_clock.py` (reading the MP3s' pauses); the Verifier and `isbe_sweep.py` |
+| numpy | 2.5.1 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | `narration_clock.py`; soundfile and the Verifier |
 | scipy | 1.18.0 | BSD | the Verifier and `isbe_sweep.py` (optional) |
 
 **Deploy tooling.** `package.json` pins wrangler 4.107.0, which `package-lock.json`
