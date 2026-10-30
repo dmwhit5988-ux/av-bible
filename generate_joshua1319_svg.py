@@ -36,7 +36,7 @@ order, and the border it walks, are allotment.py's.
   view boxed whenever the camera is in close.
 - **At Shiloh** (18:1-11, 19:51) the camera dives from Shiloh's dot into a
   scene card of the Tent of Meeting and the congregation
-  (joshua18_shiloh.py), flying the card's legs (SH.LEGS) and surfacing to
+  (joshua18_shiloh.py), flying the card's legs (its LEGS) and surfacing to
   the map for 18:5-7 and 18:9. While the card fills the frame the map is
   switched off and holds the last verse's names, and the compass fades.
 
@@ -333,10 +333,10 @@ def frame(pts, cv=None):
 
 
 # ---------------------------------------------------------------------------
-# The Tent of Meeting at Shiloh: a scene card the camera dives into
-# (joshua18_shiloh.py) for 18:1-4, 18:8, 18:10-11 and 19:51. Those verses
-# fly the card's legs (SH.LEGS); a leg to "map" goes to the verse's camera on
-# the map, which MAP_AT sets where the default framing wouldn't do.
+# Scene cards the camera dives into: the Tent of Meeting at Shiloh
+# (joshua18_shiloh.py) for 18:1-4, 18:8, 18:10-11 and 19:51. A card's verses
+# fly its legs (its module's LEGS); a leg to "map" goes to the verse's camera
+# on the map, which map_at sets where the default framing wouldn't do.
 # ---------------------------------------------------------------------------
 
 def word_time(cv, word):
@@ -352,7 +352,13 @@ def word_time(cv, word):
 SHILOH = ALL["shiloh"]
 # the card times its beats by the narration's words, as the map does
 SHI = SH.build(P(SHILOH.lat, SHILOH.lon), LOT_COL, word_time)
-S_CARD = SH.S_CARD
+CARDS = [(SHI, SH)]           # (card, its module: SHOTS and LEGS)
+S_CARD = SH.S_CARD            # one camera scale at every card's zoom 1
+
+
+def card_of(cv):
+    """The card a verse flies into, and its module, or (None, None)."""
+    return next(((card, mod) for card, mod in CARDS if cv in mod.LEGS), (None, None))
 CAP_S = CARD_IN[0] * S_CARD   # the scale bar stops following the camera here, as the card shows
 
 
@@ -398,7 +404,7 @@ def map_at(cv, state):
 
 
 def map_shot(name, cv, state):
-    """A named map camera a card's legs fly to on the way (SH.LEGS)."""
+    """A named map camera a card's legs fly to on the way (LEGS)."""
     if name == "survey":
         return frame([(ALL[k].lat, ALL[k].lon) for k in coming_lots()
                       if k not in state["allotted"]] + [(SHILOH.lat, SHILOH.lon)], cv)
@@ -408,14 +414,15 @@ def map_shot(name, cv, state):
 def card_legs(cv, cam_map, state):
     """A card verse's legs, shortened together if they'd run past the
     narration (they are tuned to today's MP3s)."""
-    total = sum(d for _k, _t, d in SH.LEGS[cv])
+    card, mod = card_of(cv)
+    total = sum(d for _k, _t, d in mod.LEGS[cv])
     fit = min(1.0, (NARR[cv] - AUDIO_SLACK) / total)
     legs = []
-    for kind, target, dur in SH.LEGS[cv]:
+    for kind, target, dur in mod.LEGS[cv]:
         if target is None:
             cam = None
-        elif target in SH.SHOTS:
-            cam = SHI.cam(*SH.SHOTS[target])
+        elif target in mod.SHOTS:
+            cam = card.cam(*mod.SHOTS[target])
         elif target == "map":
             cam = cam_map
         else:
@@ -844,7 +851,8 @@ def build_all():
         else:
             cam_map = cam_prev
         cam0 = last_cam
-        if cv in SH.LEGS:
+        card, mod = card_of(cv)
+        if card:
             fl = Flight(cam0, card_legs(cv, cam_map, state))
         else:
             D = cam_duration(cam0, cam_map)
@@ -854,9 +862,9 @@ def build_all():
             assert _same(fl.cam1, cam_map), cv
         cam1 = fl.cam1
         t_land = fl.dur
-        SCALE_OF[cv] = scale_km(fl, CAP_S if cv in SH.LEGS else None)
+        SCALE_OF[cv] = scale_km(fl, CAP_S if card else None)
         zs = [cm[0] / S_CARD for cm in fl.cams]
-        show_card = cards_seen(fl, [SHI], S_CARD) if cv in SH.LEGS else []
+        show_card = cards_seen(fl, [card], S_CARD) if card else []
         in_card = bool(show_card) and zs[-1] >= 0.2        # it rests inside the card
         show_map = min(zs) < CARD_COVER                     # the map is seen at all
         # the last moment the card shows: a name said before it isn't drawn on the map
@@ -1032,8 +1040,9 @@ def build_all():
                 svg.append("</g>")
         if show_card:
             ops = [f"{card_op(z):.2f}" for z in zs]
-            svg.append(f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
-                       + SHI.svg(cv, fl, 18, TEXT, HL) + "</g>")
+            for shown in show_card:
+                svg.append(f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
+                           + shown.svg(cv, fl, 18, TEXT, HL) + "</g>")
         svg.append("</g></g>")
         if show_map:
             svg += overlay
