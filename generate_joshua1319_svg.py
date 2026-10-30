@@ -1205,11 +1205,12 @@ def emit_class(fl, name, els):
 
 
 def disc(key, col):
-    """A round blob the size of DISC_PX on screen (a zero-length path with a
-    round cap, its width held by the camera's inverse scale)."""
+    """A round blob the size of DISC_PX on screen (a round cap on a path all
+    but zero long, its width held by the camera's inverse scale). Truly zero
+    long, WebKit paints the cap twice, which turns 0.30 into 0.51."""
     s = ALL[key]
     x, y = P(s.lat, s.lon)
-    return (f'<path d="M{_fmt(x)} {_fmt(y)}h0" stroke="{rgb(col)}" '
+    return (f'<path d="M{_fmt(x)} {_fmt(y)}h.001" stroke="{rgb(col)}" '
             f'stroke-opacity="{DISC_OP}"/>')
 
 
