@@ -1035,6 +1035,7 @@ INSET_BOX = (30.30, 34.45, 33.80, 36.85)       # lat0, lat1, lon0, lon1
 INSET_OFF, INSET_RAMP = 0.80, 0.07
 PLATE_W = 300
 FS_PLATE = 16
+PLATE_ASCENT = 14.7           # Georgia's at FS_PLATE, from a row's top to its baseline
 
 
 def title(cv):
@@ -1100,13 +1101,14 @@ def plate_body(cv, shown=None):
     """The plate, its names written whole; or, with `shown` (name -> when
     it comes in), each name coming in at its time, its row already laid
     out, so nothing shifts. A name is hidden only by its animation (a set,
-    then a fade), so a browser that doesn't animate a tspan shows it."""
+    then a fade), so a browser that doesn't animate a tspan shows it. The
+    baselines are written out: WebKit doesn't carry a text's
+    dominant-baseline into its tspans, which sat a row on the one above."""
     r = plate_rect(cv)
     out = [f'<rect x="{_fmt(r[0])}" y="{_fmt(r[1])}" width="{_fmt(r[2] - r[0])}" '
            f'height="{_fmt(r[3] - r[1])}" rx="8" fill="{rgb(BG)}" fill-opacity="0.82"/>',
-           f'<text x="{W - 18}" y="{r[1] + 10}" font-size="{FS_PLATE}" font-style="italic" '
-           f'fill="{rgb(TEXT_DIM)}" text-anchor="end" dominant-baseline="text-before-edge">'
-           f'not located</text>']
+           f'<text x="{W - 18}" y="{_fmt(r[1] + 10 + PLATE_ASCENT)}" font-size="{FS_PLATE}" '
+           f'font-style="italic" fill="{rgb(TEXT_DIM)}" text-anchor="end">not located</text>']
     for i, row in enumerate(plate_rows(cv)):
         spans = []
         for j, nm in enumerate(row):
@@ -1114,9 +1116,8 @@ def plate_body(cv, shown=None):
             spans.append(s if shown is None else
                          f'<tspan><set attributeName="fill-opacity" to="0" begin="0s"/>'
                          f'{op_anim(0, 1, shown[nm], NAME_FADE)}{s}</tspan>')
-        out.append(f'<text x="{W - 18}" y="{r[1] + 10 + 22 * (i + 1)}" font-size="{FS_PLATE}" '
-                   f'fill="{rgb(TEXT)}" text-anchor="end" '
-                   f'dominant-baseline="text-before-edge">{"".join(spans)}</text>')
+        out.append(f'<text x="{W - 18}" y="{_fmt(r[1] + 10 + 22 * (i + 1) + PLATE_ASCENT)}" '
+                   f'font-size="{FS_PLATE}" fill="{rgb(TEXT)}" text-anchor="end">{"".join(spans)}</text>')
     return "".join(out)
 
 
