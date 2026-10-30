@@ -70,6 +70,32 @@ class Points(unittest.TestCase):
                     with self.subTest(verse=cv, name=n.web):
                         self.assertIn((round(n.at[0], 4), round(n.at[1], 4)), points)
 
+    def test_a_stretch_runs_along_its_water(self):
+        """A water walked for a stretch gives two ends, each a point of the
+        line its point is on."""
+        lines = [GZ.COAST, *GZ.LAKES.values(), *GZ.RIVERS.values()]
+
+        def keys(ln):
+            return {(round(a, 4), round(b, 4)) for a, b in ln}
+        for cv, v in AL.VERSES.items():
+            for n in v.names:
+                if n.along:
+                    with self.subTest(verse=cv, name=n.web):
+                        self.assertEqual(n.kind, AL.WATER)
+                        self.assertEqual(len(n.along), 2)
+                        want = {(round(p[0], 4), round(p[1], 4)) for p in (n.at, *n.along)}
+                        self.assertTrue(any(want <= keys(ln) for ln in lines))
+
+    def test_a_walk_turns_at_a_place(self):
+        """A walk that picks up where the text turns starts at a gazetteer
+        place, and doesn't also carry on from the verse before."""
+        for cv, v in AL.VERSES.items():
+            if v.start:
+                with self.subTest(verse=cv):
+                    self.assertIn(v.start, PLACES)
+                    self.assertTrue(v.walk)
+                    self.assertFalse(v.cont)
+
     def test_a_tribe_s_town_is_given_it(self):
         """A town a verse's list gives a tribe is that tribe's in the
         gazetteer."""

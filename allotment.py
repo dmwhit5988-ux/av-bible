@@ -21,7 +21,12 @@ here places anything of its own.
   means that place.
 - **walk** is the border's names in order (a subset of `names`); `cont`
   says it carries on from the verse before. "|" breaks a walk the text
-  gives in two pieces (13:26).
+  gives in two pieces (13:26). `start` is a place an earlier verse's walk
+  placed, where the text turns and this walk picks up (16:8 goes west from
+  Michmethath, which has no point, so from Taanath Shiloh beside it).
+- **along** is for a water the border runs along for a stretch (the shore
+  of the great sea, the Salt Sea, the Jordan): the stretch's two ends, each
+  an existing point of the water's line, with `at` between them.
 - **count** is a count the verse itself gives, in its words.
 """
 
@@ -36,6 +41,7 @@ class N(NamedTuple):
     key: str = ""                # gazetteer key (SITES/JERUSALEM/BEYOND, WATERS, REGIONS)
     at: tuple = ()               # a WATER's point: an existing point of its line
     note: str = ""
+    along: tuple = ()            # a WATER walked for a stretch: its two ends, points of its line
 
 
 class Verse(NamedTuple):
@@ -45,6 +51,7 @@ class Verse(NamedTuple):
     walk: tuple = ()
     cont: bool = False
     count: str = ""
+    start: str = ""              # the place (a gazetteer key) the walk turns at and picks up from
 
 
 VERSES = {
@@ -179,7 +186,7 @@ VERSES = {
         N("Succoth", SITE, "succoth"),
         N("Zaphon", UNPLACED, "", (), note="In UNPLACED: Tell el-Qos, Tell es-Sa'idiyeh and Tell el-Mazar proposed; no consensus, no point."),
         N("Heshbon", SITE, "heshbon"),
-        N("Jordan", WATER, "jordan", (32.1153, 35.5431)),
+        N("Jordan", WATER, "jordan", (32.1153, 35.5431), note="'the Jordan and its border': Gad's west border, the river from where Reuben's ends (the King Abdullah Bridge, 13:23) up to the sea of Chinnereth. Named at the Jabbok's mouth.", along=((31.8011, 35.5481), (32.7116, 35.5732))),
         N("sea of Chinnereth", WATER, "galilee", (32.7116, 35.5732), note="'the uttermost part of the sea of Chinnereth': its south end, where the Jordan leaves the lake."),
     ), walk=("Jordan", "sea of Chinnereth")),
     (13, 28): Verse("Gad", "summary", ()),
@@ -255,7 +262,7 @@ VERSES = {
         N("sea", WATER, "great_sea", (31.1457, 33.8065), note="'the border ended at the sea': the great sea at the mouth of Wadi el-Arish (COAST, last point)"),
     ), walk=("Azmon", "brook of Egypt", "sea"), cont=True),
     (15, 5): Verse("Judah", "border", (
-        N("Salt Sea", WATER, "salt_sea", (31.4617, 35.3997), note="The east border is the whole west shore, from the southern end up to the Jordan's mouth. Taken at Nahal Arugot on the En Gedi shore, about midway (SALT_SEA)."),
+        N("Salt Sea", WATER, "salt_sea", (31.4617, 35.3997), note="The east border is the whole west shore, from the southern end up to the Jordan's mouth. Named at Nahal Arugot on the En Gedi shore, about midway (SALT_SEA).", along=((30.9975, 35.4352), (31.7614, 35.5583))),
         N("Jordan", WATER, "jordan", (31.7614, 35.5583), note="'the end of the Jordan': its mouth in the Salt Sea (JORDAN_LOWER, last point). The verse names it twice, and both times it is the mouth."),
         N("bay of the sea", WATER, "salt_sea", (31.7614, 35.5583), note="'the bay of the sea at the end of the Jordan': the Salt Sea's north shore at the Jordan's mouth (SALT_SEA, first point), where the north border starts"),
     ), walk=("Salt Sea", "Jordan", "bay of the sea")),
@@ -280,7 +287,7 @@ VERSES = {
         N("top of the mountain", UNPLACED, "", (), note="Not named: the ridge west of the Hinnom valley at the north end of the valley of Rephaim. It has no point of its own, so the head of the valley of Rephaim stands for it."),
         N("valley of Hinnom", SITE, "valley_of_hinnom"),
         N("valley of Rephaim", SITE, "valley_of_rephaim"),
-    ), walk=("valley of the son of Hinnom", "Jebusite", "top of the mountain", "valley of Rephaim"), cont=True),
+    ), walk=("valley of the son of Hinnom", "top of the mountain", "valley of Rephaim"), cont=True),
     (15, 9): Verse("Judah", "border", (
         N("top of the mountain", UNPLACED, "", (), note="The unnamed mountain of verse 8"),
         N("Nephtoah", SITE, "nephtoah"),
@@ -304,7 +311,7 @@ VERSES = {
         N("sea", WATER, "great_sea", (31.9419, 34.7073), note="'the goings out of the border were at the sea': the great sea at the mouth of Nahal Sorek, where reconstructions bring Judah's north border down to the coast (COAST)."),
     ), walk=("Ekron", "Shikkeron", "Mount Baalah", "Jabneel", "sea"), cont=True),
     (15, 12): Verse("Judah", "border", (
-        N("great sea", WATER, "great_sea", (31.5252, 34.4311), note="'the shore of the great sea': the west border is the whole shore from the Sorek's mouth to the brook of Egypt. Taken at the Port of Gaza, about midway (COAST)."),
+        N("great sea", WATER, "great_sea", (31.5252, 34.4311), note="'the shore of the great sea': the west border is the whole shore from the Sorek's mouth (15:11) to the brook of Egypt's (15:4). Named at the Port of Gaza, about midway (COAST).", along=((31.9419, 34.7073), (31.1457, 33.8065))),
     ), walk=("great sea",)),
     (15, 13): Verse("Judah", "story", (
         N("Kiriath Arba", SITE, "hebron"),
@@ -592,7 +599,7 @@ VERSES = {
         N("Tappuah", SITE, "tappuah"),
         N("brook of Kanah", UNPLACED, "", (), note="Wadi Qana (Nahal Kana), which runs into the Yarkon, is the agreed identification."),
         N("sea", WATER, "great_sea", (32.1039, 34.7758), note="the Kanah runs into the Yarkon, so the border reaches the sea at the Yarkon mouth (COAST)"),
-    ), walk=("Tappuah", "brook of Kanah", "sea")),
+    ), walk=("Tappuah", "brook of Kanah", "sea"), start="taanath_shiloh"),
     (16, 9): Verse("Ephraim", "summary", ()),
     (16, 10): Verse("Ephraim", "story", (
         N("Gezer", SITE, "gezer"),
@@ -711,7 +718,7 @@ VERSES = {
         N("valley of Hinnom", SITE, "valley_of_hinnom"),
         N("the Jebusite", SITE, "jerusalem"),
         N("En Rogel", SITE, "en_rogel"),
-    ), walk=("the mountain that lies before the valley of the son of Hinnom", "valley of Hinnom", "the Jebusite", "En Rogel"), cont=True),
+    ), walk=("the mountain that lies before the valley of the son of Hinnom", "valley of Rephaim", "valley of Hinnom", "En Rogel"), cont=True),
     (18, 17): Verse("Benjamin", "border", (
         N("En Shemesh", UNPLACED, ""),
         N("Geliloth", UNPLACED, "", (), note="Unknown. It is often taken as the same as the Gilgal 'that faces the ascent of Adummim' in 15:7, which is not Joshua's Gilgal by Jericho"),
@@ -727,7 +734,7 @@ VERSES = {
         N("Jordan", WATER, "jordan", (31.7614, 35.5583)),
     ), walk=("Beth Hoglah", "Salt Sea", "Jordan"), cont=True),
     (18, 20): Verse("Benjamin", "border", (
-        N("Jordan", WATER, "jordan", (31.8371, 35.5465), note="the eastern border, which is the river from the Salt Sea's mouth up to opposite Jericho."),
+        N("Jordan", WATER, "jordan", (31.8742, 35.5408), note="the eastern border, which is the river from the Salt Sea's mouth up to opposite Jericho: the Allenby Bridge, where the north border starts (18:12)."),
     ), walk=("Jordan",), cont=True),
     (18, 21): Verse("Benjamin", "towns", (
         N("Jericho", SITE, "jericho"),

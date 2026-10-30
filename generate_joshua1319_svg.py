@@ -18,16 +18,20 @@ order, and the border it walks, are allotment.py's.
   tribe keeps a pale disc of the tribe's colour, so the lots fill in as the
   chapters go. No border is drawn that the text doesn't walk.
 - **A border walk** (the text going landmark by landmark) is a dotted line
-  through the landmarks it names that have a point, drawn stretch by
-  stretch as the verse names them; unplaced landmarks are passed over. It
-  stays, fainter, for the rest of the tribe's verses.
+  through the landmarks it names that have a point, drawn leg by leg as the
+  verse names them; unplaced landmarks are passed over. Between two points
+  of one shore or river it follows that line (`leg`), so a border along
+  the sea or the Jordan is drawn on it. It stays, fainter, for the rest of
+  the tribe's verses (and through verses that give no tribe), and fainter
+  still after that. A walk changes its look only once the camera lands, so
+  nothing dims during a flight.
 - **Not located:** the verse's names with no point are listed on a plate at
   top right, so a town list with no known sites still shows its names.
 - An overview inset (bottom left) shows the whole land with the camera's
   view boxed whenever the camera is in close.
 
-Joshua has no narration yet, so a verse's length is estimated from its
-words; once its MP3s exist, the camera times itself to them (re-run this).
+The camera times itself to each verse's MP3, so re-run this whenever one
+is re-rendered. A verse with no MP3 is paced on an estimate from its words.
 
     .venv\\Scripts\\python.exe generate_joshua1319_svg.py
 It prints any name it had to drop or force, and anything that would land
@@ -69,8 +73,8 @@ def _narration(c, v):
 
 
 def _estimate(c, v):
-    """Joshua isn't narrated yet: the verse at the house voice's pace, about
-    3.5 words a second."""
+    """A verse with no MP3: the verse at the house voice's pace, about 3.5
+    words a second."""
     return round(max(2.0, 1.2 + len(TEXT_WEB[(BOOK, c, v)].split()) / 3.5), 1)
 
 
@@ -147,26 +151,72 @@ def site_text(n):
     return n.web, s.label or s.name
 
 
-def walk_pieces(cv, prev_end):
-    """The verse's border walk as pieces of placed points, in order, carried
-    on from the last verse's end when the text carries it on."""
+# the gazetteer's own lines a border can run along: the coast, the lakes'
+# shores (rings) and the rivers, each with its points' places in it
+SHORES = [(ln, ring, {(round(a, 4), round(b, 4)): i for i, (a, b) in reversed(list(enumerate(ln)))})
+          for ln, ring in [(GZ.COAST, False), *[(lk, True) for lk in GZ.LAKES.values()],
+                           *[(rv, False) for rv in GZ.RIVERS.values()]]]
+
+
+def _length(pts):
+    return sum(((a[0] - b[0]) ** 2 + ((a[1] - b[1]) * EFF) ** 2) ** 0.5
+               for a, b in zip(pts, pts[1:]))
+
+
+def leg(a, b):
+    """The walk from one landmark to the next: along the coast, a lake's
+    shore (the shorter way round) or a river where both are points of it,
+    else straight."""
+    ka, kb = (round(a[0], 4), round(a[1], 4)), (round(b[0], 4), round(b[1], 4))
+    best = None
+    for ln, ring, at in SHORES:
+        if ka not in at or kb not in at:
+            continue
+        i, j, n = at[ka], at[kb], len(ln)
+        if ring:
+            ways = [[ln[(i + k) % n] for k in range((j - i) % n + 1)],
+                    [ln[(i - k) % n] for k in range((i - j) % n + 1)]]
+        else:
+            ways = [ln[i:j + 1] if i <= j else ln[j:i + 1][::-1]]
+        for w in ways:
+            if best is None or _length(w) < _length(best):
+                best = w
+    return best or [a, b]
+
+
+def walk_runs(cv, prev_end):
+    """The verse's border walk as runs of the landmarks it names that have a
+    point, in order ("|" breaks a run): carried on from the last verse's end
+    when the text carries it on, or from the place it turns at. A water
+    walked for a stretch gives the stretch's ends."""
     v = AL.VERSES[cv]
-    if not v.walk:
-        return []
     by_web = {}
     for n in v.names:
         by_web.setdefault(n.web, n)
-    pieces, cur = [], ([prev_end] if v.cont and prev_end else [])
+    first = prev_end if v.cont else ((ALL[v.start].lat, ALL[v.start].lon) if v.start else None)
+    runs, cur = [], ([first] if first else [])
     for w in v.walk:
         if w == "|":
-            pieces.append(cur)
+            runs.append(cur)
             cur = []
             continue
-        p = point(by_web[w]) if by_web[w].kind in (AL.SITE, AL.WATER) else None
-        if p and (not cur or cur[-1] != p):
-            cur.append(p)
-    pieces.append(cur)
-    return [pc for pc in pieces if len(pc) > 1]
+        n = by_web[w]
+        if n.kind not in (AL.SITE, AL.WATER):
+            continue
+        for p in ((n.along[0], n.at, n.along[1]) if n.along else (point(n),)):
+            if not cur or cur[-1] != p:
+                cur.append(p)
+    runs.append(cur)
+    return runs
+
+
+def walk_pieces(cv, prev_end):
+    """The verse's border walk as pieces, each a list of legs from landmark
+    to landmark."""
+    if not AL.VERSES[cv].walk:
+        return []
+    return [[leg(a, b) for a, b in zip(r, r[1:])]
+            for r in walk_runs(cv, prev_end) if len(r) > 1]
 
 
 # names the plate leaves off: peoples, the tribes' lands, and what isn't a place
@@ -189,18 +239,9 @@ def walk_end(cv, prev_end):
     """Where the border stands after the verse: its walk's last landmark with
     a point; the last verse's, when this one walks nowhere or carries on
     from it without placing any."""
-    v = AL.VERSES[cv]
-    if not v.walk:
+    if not AL.VERSES[cv].walk:
         return prev_end
-    by_web = {}
-    for n in v.names:
-        by_web.setdefault(n.web, n)
-    end = prev_end if v.cont else None
-    for w in v.walk:
-        n = by_web.get(w)
-        if n is not None and n.kind in (AL.SITE, AL.WATER):
-            end = point(n)
-    return end
+    return next((r[-1] for r in reversed(walk_runs(cv, prev_end)) if r), None)
 
 
 # ---------------------------------------------------------------------------
@@ -492,6 +533,8 @@ CLS_PX = {"w1": 1.0, "w2": 2.0, "riv": 1.6, "walk_old": 2.0, "walk_tribe": 2.6,
           "walk_cur": 3.6, "dots": 5.0, "discs": DISC_PX}
 DOTTED = (0.1, 7.0)
 LET_GO = 0.8
+WALK_STROKE = {"walk_old": SAND_DIM, "walk_tribe": SAND, "walk_cur": HL}
+WALK_ORDER = ("walk_old", "walk_tribe", "walk_cur")     # bottom to top
 
 
 def emit_class(fl, name, els):
@@ -524,9 +567,25 @@ def base_world():
 NEED_AFTER = 1.6              # seconds left after landing, for the names and the walk
 
 
+def walk_el(lg, was, now, t_land):
+    """An earlier walk's leg in this verse's class, `now`. Where that differs
+    from the class it ended the last verse in, `was`, it keeps the old look
+    through the flight and takes the new once the camera lands: the upper
+    copy fades over the lower."""
+    def el(name):
+        return poly_el(PS(lg), stroke=WALK_STROKE[name])
+    if was == now:
+        return {now: el(now)}
+    if WALK_ORDER.index(was) > WALK_ORDER.index(now):
+        return {now: el(now), was: f'<g>{fade(t_land, LET_GO, out=True)}{el(was)}</g>'}
+    return {was: el(was), now: f'<g opacity="0">{fade(t_land, LET_GO)}{el(now)}</g>'}
+
+
 def build_all():
+    # state["walks"]: [colour, leg, the class it ended the last verse in]
     state = {"allotted": {}, "by_col": {}, "walks": [], "walk_end": None}
     prev, prev_cv, prev_col, report = None, None, None, []
+    last_col = None               # the last tribe's: a verse with no tribe keeps its walks up
     cam_prev = WIDE
     for cv in REFS:
         c, v = cv
@@ -534,8 +593,9 @@ def build_all():
         col = tribe_col(verse.tribe, c)
         narr = NARR[cv]
         pieces = walk_pieces(cv, state["walk_end"])
+        legs = [lg for pc in pieces for lg in pc]
         named = [point(n) for n in verse.names if n.kind in (AL.SITE, AL.WATER, AL.REGION)]
-        own = [p for pc in pieces for p in pc
+        own = [p for lg in legs for p in lg
                if not (verse.cont and p == state["walk_end"])]
         pts = named + own
         if cv[0] == 13 and 4 <= v <= 6:
@@ -584,24 +644,23 @@ def build_all():
         for rv in RIVERS:
             cls["riv"].append(poly_el(PS(rv), stroke=RIVER))
             qc.append((PS(rv), "river"))
-        for wcol, piece in state["walks"]:
-            name = "walk_tribe" if wcol == col else "walk_old"
-            stroke = SAND if wcol == col else SAND_DIM
-            cls[name].append(poly_el(PS(piece), stroke=stroke))
-            qc.append((PS(piece), "border"))
-        # this verse's walk, stretch by stretch
+        for w in state["walks"]:
+            wcol, lg, was = w
+            w[2] = "walk_tribe" if wcol == (col or last_col) else "walk_old"
+            for name, el in walk_el(lg, was, w[2], t_land).items():
+                cls[name].append(el)
+            qc.append((PS(lg), "border"))
+        # this verse's walk, leg by leg
         t = t_land + 0.1
         walk_dur = max(0.0, narr - AUDIO_SLACK - t - 0.3)
-        nseg = sum(len(pc) - 1 for pc in pieces)
-        step = min(0.9, walk_dur / nseg) if nseg else 0
+        step = min(0.9, walk_dur / len(legs)) if legs else 0
         ends = [t_land]
-        for pc in pieces:
-            for a, b in zip(pc, pc[1:]):
-                cls["walk_cur"].append(
-                    f'<g opacity="0">{fade(t, max(0.3, step))}'
-                    + poly_el(PS([a, b]), stroke=HL) + "</g>")
-                t += step
-            qc.append((PS(pc), "border"))
+        for lg in legs:
+            cls["walk_cur"].append(
+                f'<g opacity="0">{fade(t, max(0.3, step))}'
+                + poly_el(PS(lg), stroke=HL) + "</g>")
+            t += step
+            qc.append((PS(lg), "border"))
         ends.append(t)
         # the other tribes' places, as small dots
         cur_named = {n.key for n in verse.names if n.kind == AL.SITE}
@@ -671,8 +730,8 @@ def build_all():
             state["allotted"][k] = col
             state["by_col"].setdefault(col, []).append(k)
         if col:
-            for pc in pieces:
-                state["walks"].append((col, pc))
+            state["walks"] += [[col, lg, "walk_cur"] for lg in legs]
+            last_col = col
         state["walk_end"] = walk_end(cv, state["walk_end"])
         prev = prev_state(cam1, placed, cur_ident, lab["cur_dots"])
         prev_cv = cv
