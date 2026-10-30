@@ -361,7 +361,19 @@
         },
         {
           "file": "generate_joshua1319_svg.py",
-          "edit": "the camera (frame: what each verse names, map_at), the lots' soft discs, the walks, the lots lit at 18:5, 18:7 and 18:11 (LIFT), 18:9's survey, the 'not located' plate, units (where names may go)"
+          "edit": "the camera (frame: what each verse names, map_at), the lots' soft discs, the walks, the lots lit at 18:5, 18:7, 18:11 and 19:49 (LIFT), the closings and the key (CLOSINGS, key_layout), 18:9's survey, the 'not located' plate, units (where names may go)"
+        },
+        {
+          "file": "joshua17_tree.py",
+          "edit": "Zelophehad's daughters, a scene card (17:2-5): Manasseh's branch lifted from the 1 Chronicles reading world (the named boxes; every other box folded into blocks), each verse's looks and traces, the stage and its cast, the '10', SHOTS and LEGS"
+        },
+        {
+          "file": "svg_family_lines.py",
+          "edit": "the lines that join a family, shared with 1 Chronicles and Matthew 1: the 17:2-5 tree card draws its lines and traces (trace_els begin) with it - editing it changes all three"
+        },
+        {
+          "file": "svg_silhouettes.py",
+          "edit": "the block grammar shared with 1 Chronicles: the tree card's blocks"
         },
         {
           "file": "joshua18_shiloh.py",

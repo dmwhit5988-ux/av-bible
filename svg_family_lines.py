@@ -761,10 +761,11 @@ def static_els(segs, look_of, alpha, bead_fill=None):
 _EASE = "0.42 0 0.58 1"
 
 
-def _traced(pts, col, width, total, d0, dur, split=None):
+def _traced(pts, col, width, total, d0, dur, split=None, begin="0s"):
     """A polyline revealed as the part of a longer path that starts d0
     along it: dash and gap of the whole path's length `total`, offset run
-    from total + d0 down to d0 on the house ease.
+    from total + d0 down to d0 on the house ease, from `begin` (hidden
+    until then).
 
     split = (R, f): the first R of the path is revealed by time fraction f
     (easing in) and the rest over the remainder (easing out), for a long
@@ -779,20 +780,21 @@ def _traced(pts, col, width, total, d0, dur, split=None):
     if split is None:
         anim = (f'<animate attributeName="stroke-dashoffset" '
                 f'values="{_fmt(total + d0)};{_fmt(d0)}" dur="{dur}" '
-                f'begin="0s" fill="freeze" calcMode="spline" '
+                f'begin="{begin}" fill="freeze" calcMode="spline" '
                 f'keyTimes="0;1" keySplines="{_EASE}"/>')
     else:
         r, f = split
         anim = (f'<animate attributeName="stroke-dashoffset" '
                 f'values="{_fmt(total + d0)};{_fmt(total + d0 - r)};'
-                f'{_fmt(d0)}" dur="{dur}" begin="0s" fill="freeze" '
+                f'{_fmt(d0)}" dur="{dur}" begin="{begin}" fill="freeze" '
                 f'calcMode="spline" keyTimes="0;{f:.3f};1" '
                 f'keySplines="0.42 0 1 1;0 0 0.58 1"/>')
     return f"<polyline {' '.join(a)}>{anim}</polyline>"
 
 
-def trace_els(geom, n, alpha, width, fine_width, dur):
-    """n's path from its parent, drawing itself once over `dur`.
+def trace_els(geom, n, alpha, width, fine_width, dur, begin="0s"):
+    """n's path from its parent, drawing itself once over `dur`, from
+    `begin` (a scene card lights a name mid-verse, as it is said).
 
     The path is cut where its colour changes — the stem and bus a wife
     shares with her husband's sons are sand, her own drop is rose — and
@@ -819,7 +821,7 @@ def trace_els(geom, n, alpha, width, fine_width, dur):
     out, d0 = [], 0.0
     for colour, pts in runs:
         out.append(_traced(pts, dim(colour, alpha), width, total, d0, dur,
-                           split))
+                           split, begin))
         d0 += sum(math.hypot(b[0] - a[0], b[1] - a[1])
                   for a, b in zip(pts, pts[1:]))
     along = 0.0
@@ -828,11 +830,11 @@ def trace_els(geom, n, alpha, width, fine_width, dur):
         if st:
             out.append(_traced([st[:2], st[2:]], dim(FEMALE, alpha),
                                fine_width, total, along + STRAND_DY, dur,
-                               split))
+                               split, begin))
         elif s.style == "bar":
             ox, oy = (0.0, STRAND_DX) if s.horizontal else (STRAND_DX, 0.0)
             out.append(_traced([(a[0] + ox, a[1] + oy),
                                 (b[0] + ox, b[1] + oy)], dim(FEMALE, alpha),
-                               fine_width, total, along, dur, split))
+                               fine_width, total, along, dur, split, begin))
         along += math.hypot(b[0] - a[0], b[1] - a[1])
     return out

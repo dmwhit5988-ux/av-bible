@@ -34,6 +34,14 @@ order, and the border it walks, are allotment.py's.
   top right, so a town list with no known sites still shows its names.
 - An overview inset (bottom left) shows the whole land with the camera's
   view boxed whenever the camera is in close.
+- **The closings:** at "This is the inheritance of..." the camera rises to
+  the whole land, the lot lights as the tribe is named, and its name joins
+  a key in the sea and desert margins with a line to the lot (CLOSINGS).
+  The key comes in by zoom on the whole land, so it grows to every lot by
+  19:48. Levi stands in it with no line; Manasseh twice.
+- **Zelophehad's daughters** (17:2-5): the camera dives into Manasseh's
+  branch of the family tree (joshua17_tree.py), with a stage under it for
+  17:4, and rises back to the map in 17:5.
 - **At Shiloh** (18:1-11, 19:51) the camera dives from Shiloh's dot into a
   scene card of the Tent of Meeting and the congregation
   (joshua18_shiloh.py), flying the card's legs (its LEGS) and surfacing to
@@ -50,14 +58,17 @@ after the narration.
 
 import os
 import re
+from typing import NamedTuple, Optional
 from xml.sax.saxutils import escape
 
 import acts_geography as G
 import mediterranean as M
 import allotment as AL
 import gazetteer as GZ
+import joshua17_tree as ZT
 import joshua18_shiloh as SH
 import narration_clock
+import svg_figures as F
 from config import WEB_AUDIO_DIR
 from generate_israel_atlas import TEXT_WEB
 from generate_tabernacle import (BG, H, HL, SAND, SAND_DIM, TEXT, TEXT_DIM, W,
@@ -72,7 +83,8 @@ from svg_map_camera import (
     identities, ink, inset_view_rect, layout, midflight_qc, op_anim, poly_el, prev_state,
     rest_dots, rgb, screen_ring, title_rect, title_svg, to_screen, unchanged,
 )
-from svg_scene_card import CARD_COVER, CARD_IN, card_ends, card_extent, card_op, cards_seen
+from svg_scene_card import (CARD_COVER, CARD_IN, card_ends, card_extent, card_op, cards_seen,
+                            figure_svg)
 from svg_surface import FONT_FAMILY, _fmt
 
 BOOK = "Joshua"
@@ -151,8 +163,12 @@ RIVERS = list(GZ.RIVERS.values())
 
 
 # generate_tribal_maps' colours, but Reuben's and Gad's moved off Judah's
-# brown and Ephraim's green, which face them across the river
-LOT_COL = dict(TRIBE_COL, REUBEN=(190, 100, 128), GAD=(80, 178, 196))
+# brown and Ephraim's green, which face them across the river, and Benjamin's
+# and Asher's off Manasseh's teal (they were one blue-teal family on the whole
+# land): each new one is at least 11 CIEDE2000 from every other lot, the
+# water and the gold, and about 20 from the lots beside it
+LOT_COL = dict(TRIBE_COL, REUBEN=(190, 100, 128), GAD=(80, 178, 196),
+               BENJAMIN=(168, 149, 187), ASHER=(198, 159, 139))
 
 
 def lot_key(tribe, c):
@@ -333,8 +349,9 @@ def frame(pts, cv=None):
 
 
 # ---------------------------------------------------------------------------
-# Scene cards the camera dives into: the Tent of Meeting at Shiloh
-# (joshua18_shiloh.py) for 18:1-4, 18:8, 18:10-11 and 19:51. A card's verses
+# Scene cards the camera dives into: Manasseh's branch of the family tree
+# (joshua17_tree.py) for Zelophehad's daughters, 17:2-5, and the Tent of
+# Meeting at Shiloh (joshua18_shiloh.py) for 18:1-4, 18:8, 18:10-11 and 19:51. A card's verses
 # fly its legs (its module's LEGS); a leg to "map" goes to the verse's camera
 # on the map, which map_at sets where the default framing wouldn't do.
 # ---------------------------------------------------------------------------
@@ -352,7 +369,11 @@ def word_time(cv, word):
 SHILOH = ALL["shiloh"]
 # the card times its beats by the narration's words, as the map does
 SHI = SH.build(P(SHILOH.lat, SHILOH.lon), LOT_COL, word_time)
-CARDS = [(SHI, SH)]           # (card, its module: SHOTS and LEGS)
+# Zelophehad's daughters (17:2-5): Manasseh's branch of the family tree, hung
+# at the hill country of west Manasseh (the region's point: it has no dot)
+SAMARIA = GZ.REGIONS["samaria"]
+ZEL = ZT.build(P(SAMARIA.lat, SAMARIA.lon), word_time)
+CARDS = [(SHI, SH), (ZEL, ZT)]   # (card, its module: SHOTS and LEGS)
 S_CARD = SH.S_CARD            # one camera scale at every card's zoom 1
 
 
@@ -398,8 +419,10 @@ def map_at(cv, state):
     if cv == (18, 11):
         return frame([p for p in lot_points(state, ("JUDAH",)) if p[0] > 31.55]
                      + [p for p in lot_points(state, ("EPHRAIM",)) if p[0] < 32.25], cv)
-    if cv == (19, 51):
+    if cv in ((14, 3), (19, 51)):
         return WIDE
+    if cv in CLOSINGS and CLOSINGS[cv].rise is None:
+        return WIDE                         # a closing that opens on the formula
     return None
 
 
@@ -431,14 +454,426 @@ def card_legs(cv, cam_map, state):
     return legs
 
 
-# A lot the narration names lights as it's said (18:5, 18:7, 18:11): its discs come
+# A lot the narration names lights as it's said (18:5, 18:7, 18:11, and every
+# lot at 19:49's "by its borders"; the closings light theirs too): its discs come
 # up and its walked borders take its colour; the next verse lets it go on
 # landing. Each is (the word, the lots).
 LIFT = {(18, 5): [("Judah", ("JUDAH",)), ("Joseph", ("EPHRAIM", "MANASSEH_W"))],
         (18, 7): [("Gad", ("GAD",)), ("Reuben", ("REUBEN",)), ("Manasseh", ("MANASSEH_E",))],
-        (18, 11): [("Judah", ("JUDAH",)), ("Joseph", ("EPHRAIM", "MANASSEH_W"))]}
+        (18, 11): [("Judah", ("JUDAH",)), ("Joseph", ("EPHRAIM", "MANASSEH_W"))],
+        (14, 3): [("two", ("REUBEN", "GAD", "MANASSEH_E"))],
+        (19, 49): [("borders", tuple(k for k in LOT_COL if k != "MANASSEH_E") + ("MANASSEH_E",))]}
 # a place a verse names by another word: 18:6's "here" is Shiloh (18:8)
 SAID_AS = {(18, 6): ("shiloh", "here")}
+
+
+# ---------------------------------------------------------------------------
+# The closings: "This is the inheritance of ..."
+#
+# At each tribe's closing words the camera rises to the whole land (WIDE).
+# As the tribe is named its lot lights in the one look a named lot has
+# (LIFT's: its discs again over themselves, its walked borders in its
+# colour), and its name joins a key in the sea and desert margins, with a
+# thin line to the lot. The key grows by one name at each closing and comes
+# in by zoom whenever the camera is on the whole land, so by 19:48 it holds
+# every lot. Levi has no land: LEVI stands at the foot of the east column
+# with no line, and at 13:14's "made by fire" the horned altar (Exodus 27)
+# beside it, in that verse only. Manasseh is written twice, once for each
+# half. A verse that says the formula mid-verse (13:23, 16:8, ...) shows its
+# own names first, holds them at least DWELL, then rises (the lot lights as
+# the tribe is named, during the rise; the key's name waits for the
+# landing); one that opens on it, or names nothing of its own (Levi's), flies
+# straight to the land.
+# ---------------------------------------------------------------------------
+
+class Closing(NamedTuple):
+    lot: Optional[str]            # the lot it lights (LOT_COL's key), None for Levi
+    rise: Optional[str]           # the word the rise starts at; None: the verse opens on it
+    name: str                     # the tribe's word, its first time after `rise`
+    entry: Optional[str]          # the key entry it writes, None if written already
+
+
+CLOSINGS = {
+    (13, 14): Closing(None, None, "Levi", "LEVI"),
+    (13, 23): Closing("REUBEN", "This", "Reuben", "REUBEN"),
+    (13, 28): Closing("GAD", None, "Gad", "GAD"),
+    (13, 31): Closing("MANASSEH_E", "were", "Manasseh", "MANASSEH_E"),
+    (13, 33): Closing(None, None, "Levi", None),
+    (15, 20): Closing("JUDAH", None, "Judah", "JUDAH"),
+    (16, 8): Closing("EPHRAIM", "This", "Ephraim", "EPHRAIM"),
+    (17, 10): Closing("MANASSEH_W", None, "Manasseh", "MANASSEH_W"),
+    (18, 20): Closing("BENJAMIN", "This", "Benjamin", "BENJAMIN"),
+    (18, 28): Closing("BENJAMIN", "This", "Benjamin", None),
+    (19, 8): Closing("SIMEON", "This", "Simeon", "SIMEON"),
+    (19, 16): Closing("ZEBULUN", None, "Zebulun", "ZEBULUN"),
+    (19, 23): Closing("ISSACHAR", None, "Issachar", "ISSACHAR"),
+    (19, 31): Closing("ASHER", None, "Asher", "ASHER"),
+    (19, 39): Closing("NAPHTALI", None, "Naphtali", "NAPHTALI"),
+    (19, 48): Closing("DAN", None, "Dan", "DAN"),
+}
+RISE = 2.6                    # seconds, the rise to the whole land
+DWELL = 1.5                   # a verse's own names stand fully in at least this long, then fade with the rise
+KEY_PX, KEY_ROW = 15, 28      # the key's names, and its rows' least spacing
+KEY_X = (360, 690)            # where the west names end and the east names start, at WIDE
+KEY_WEST = ("ASHER", "ZEBULUN", "MANASSEH_W", "EPHRAIM", "DAN", "JUDAH", "SIMEON")
+KEY_EAST = ("NAPHTALI", "MANASSEH_E", "ISSACHAR", "GAD", "BENJAMIN", "REUBEN")
+ALTAR_PX = 30                 # Levi's altar, its height on screen
+
+
+def word_after(cv, word, after=None):
+    """When the narration says `word`, its first time after `after` (a word
+    said earlier in the verse), or None."""
+    text = TEXT_WEB[(BOOK, *cv)]
+    word_time(cv, word)                       # reads the verse's clock
+    clk = CLOCKS[cv]
+    start = 0
+    if after:
+        m = re.search(r"(?<!\w)" + re.escape(after) + r"(?!\w)", text)
+        start = m.start() if m else 0
+    m = re.compile(r"(?<!\w)" + re.escape(word) + r"(?!\w)").search(text, start)
+    return round(clk(m.start()), 2) if clk and m else None
+
+
+def gives(cv, allotted):
+    """The places a verse gives its tribe, in the order it names them."""
+    verse = AL.VERSES[cv]
+    out = []
+    if verse.tribe and verse.tribe != "Levi" and verse.kind in ("towns", "border"):
+        for n in verse.names:
+            if (n.kind == AL.SITE and n.key not in allotted and n.key in GZ.SITES
+                    and n.key not in out
+                    and (verse.tribe in GZ.SITES[n.key].tribe
+                         or (verse.kind == "towns" and not GZ.SITES[n.key].tribe))):
+                out.append(n.key)
+    return out
+
+
+_FINAL = {}
+
+
+def final_lots():
+    """Every lot's places once all are given: what the key's lines point at."""
+    if not _FINAL:
+        allotted = set()
+        for cv in REFS:
+            for k in gives(cv, allotted):
+                allotted.add(k)
+                _FINAL.setdefault(lot_key(AL.VERSES[cv].tribe, cv[0]), []).append(k)
+    return _FINAL
+
+
+def lot_centre(key):
+    """Where a lot's line ends, at WIDE: the middle of its places, leaving
+    out any far from the rest (Dan's Leshem in the far north)."""
+    pts = [to_screen(WIDE, P(ALL[k].lat, ALL[k].lon)) for k in final_lots()[key]]
+    mx = sorted(p[0] for p in pts)[len(pts) // 2]
+    my = sorted(p[1] for p in pts)[len(pts) // 2]
+    near = [p for p in pts if abs(p[0] - mx) + abs(p[1] - my) < 90] or pts
+    return (sum(p[0] for p in near) / len(near), sum(p[1] for p in near) / len(near))
+
+
+def key_tint(key):
+    c = LOT_COL[key] if key != "LEVI" else TEXT_DIM
+    return tuple(int(v + (245 - v) * 0.35) for v in c)
+
+
+def key_text(key):
+    return key.split("_")[0]
+
+
+_KEY = {}
+
+
+# a lot whose own places lie in other lots' land (west Manasseh's are its
+# towns in Issachar and Asher, 17:11) points at its hill country instead
+KEY_AT = {"MANASSEH_W": "samaria"}
+DOT_AIR = 7                   # px a key line keeps from any other place's dot
+
+
+def key_ends(key):
+    """Where a lot's line may end, best first: on one of its own places,
+    nearest the lot's middle first, so its end dot is a town of the lot."""
+    if key in KEY_AT:
+        r = GZ.REGIONS[KEY_AT[key]]
+        return [to_screen(WIDE, P(r.lat, r.lon))]
+    c = lot_centre(key)
+    pts = [to_screen(WIDE, P(ALL[k].lat, ALL[k].lon)) for k in final_lots()[key]]
+    return sorted(pts, key=lambda p: (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2)
+
+
+def all_dots():
+    """Every place's dot at WIDE once all the lots are given."""
+    return [to_screen(WIDE, P(ALL[k].lat, ALL[k].lon))
+            for ks in final_lots().values() for k in ks]
+
+
+def line_air(pts, marks):
+    """How near a key line (its points, text end first) comes to any dot
+    but its own end."""
+    end = pts[-1]
+    return min((seg_dist(m, a, b) for m in marks
+                if abs(m[0] - end[0]) + abs(m[1] - end[1]) > 1.5
+                for a, b in zip(pts, pts[1:])), default=99)
+
+
+def key_layout():
+    """Each key entry at WIDE: its text's anchor (screen), which side, its
+    line (text end to a town of its lot) and its ink box. A column's rows
+    follow its lots' latitudes, KEY_ROW apart, so no two lines cross; a row
+    moves, and a line ends on another of its lot's towns, as little as it
+    must to keep the line off every other dot (DOT_AIR) and the places the
+    whole-land verses mark (MARK_AIR); where no straight line can, it runs
+    level from the name and turns once, near its town (a knee)."""
+    if _KEY:
+        return _KEY
+    written = {c.entry: cv for cv, c in CLOSINGS.items() if c.entry}
+    dots = all_dots()
+    for side, keys, x in (("west", KEY_WEST, KEY_X[0]), ("east", KEY_EAST, KEY_X[1])):
+        rows = sorted((key_ends(k)[0][1], k) for k in keys)
+        ys, y_prev = [], -1e9
+        for y, _k in rows:
+            y_prev = max(y, y_prev + KEY_ROW)
+            ys.append(y_prev)
+        over = ys[-1] - (H - 70) if side == "west" else ys[-1] - (H - 110)
+        if over > 0:
+            ys = [y - over for y in ys]
+        x0 = x + (6 if side == "west" else -6)
+        ends = {}
+        for i, (_y, k) in enumerate(rows):
+            marks = wide_marks(written[k])
+            best = None
+            for rank, end in enumerate(key_ends(k)):
+                for dy in range(-90, 91, 2):
+                    y = ys[i] + dy
+                    if (not 60 <= y <= H - 70
+                            or any(abs(y - o) < KEY_ROW - 6 for j, o in enumerate(ys) if j != i)):
+                        continue
+                    for knee in (None, 20, 30, 45, 60):
+                        if knee is None:
+                            pts = [(x0, y), end]
+                        else:
+                            kx = end[0] + (knee if side == "east" else -knee)
+                            if (kx - x0) * (end[0] - x0) <= 0 or abs(y - end[1]) < 6:
+                                continue
+                            pts = [(x0, y), (kx, y), end]
+                        if any(_cross(s1, s2) for other in ends.values()
+                               for s1 in zip(pts, pts[1:]) for s2 in zip(other, other[1:])):
+                            continue
+                        air = min(line_air(pts, dots) / DOT_AIR, line_air(pts, marks) / MARK_AIR)
+                        cost = rank * 6 + abs(dy) / 2 + (0 if knee is None else 20)
+                        score = (air < 1, cost if air >= 1 else -air)
+                        if best is None or score < best[0]:
+                            best = (score, y, pts)
+            _s, ys[i], ends[k] = best
+        for (_y, k), y in zip(rows, ys):
+            _KEY[k] = dict(side=side, at=(x, y), line=ends[k])
+    last = max(e["at"][1] for e in _KEY.values() if e["side"] == "east")
+    _KEY["LEVI"] = dict(side="east", at=(KEY_X[1], last + KEY_ROW + 8), line=None)
+    for k, e in _KEY.items():
+        x, y = e["at"]
+        b = ink(key_text(k), KEY_PX, True, False, "lm" if e["side"] == "east" else "rm")
+        e["box"] = (x + b[0], y + b[1], x + b[2], y + b[3])
+    return _KEY
+
+
+MARK_AIR = 10                 # px a key line keeps from a place's dot
+
+
+def wide_marks(since=None):
+    """The dots the verses that rest on the whole land mark, at WIDE (from
+    verse `since` on, when a key entry is written): what a key line must not
+    pass over."""
+    out = []
+    for cv in REFS[REFS.index(since) if since else 0:]:
+        if cv in ((14, 3), (19, 49)) or (cv in CLOSINGS and CLOSINGS[cv].rise is None):
+            out += [to_screen(WIDE, P(*point(n))) for n in AL.VERSES[cv].names
+                    if n.kind in (AL.SITE, AL.WATER)]
+    return out
+
+
+def seg_dist(p, a, b):
+    """The distance from point p to the segment a-b."""
+    ax, ay = a
+    dx, dy = b[0] - ax, b[1] - ay
+    t = max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / max(1e-9, dx * dx + dy * dy)))
+    return ((p[0] - ax - t * dx) ** 2 + (p[1] - ay - t * dy) ** 2) ** 0.5
+
+
+def key_rects(present, altar=False):
+    """The key's names, and Levi's altar where it stands, as plates the map's
+    names keep off (at WIDE)."""
+    out = []
+    for k in present:
+        e = key_layout()[k]
+        x0, y0, x1, y1 = e["box"]
+        if k == "LEVI" and altar:
+            x1 += 12 + ALTAR_PX * 1.8
+            y0, y1 = min(y0, e["at"][1] - ALTAR_PX / 2), max(y1, e["at"][1] + ALTAR_PX / 2)
+        out.append(("key:" + k, (x0 - 10, y0 - 8, x1 + 10, y1 + 8)))
+    return out
+
+
+def key_lines(present):
+    """The key's lines for the map's clash test, wide enough that a name
+    keeps a clear gap from them."""
+    return [(list(e["line"]), 8.0, "leader", None)
+            for e in (key_layout()[k] for k in present) if e["line"]]
+
+
+def key_op(cam):
+    """The key shows only on the whole land, where it was laid out: it comes
+    in over the last of a rise and goes over the first of a dive, by zoom
+    and by how far the camera is from WIDE (not on 18:9's survey shot)."""
+    s, wx, wy = cam
+    off = ((wx - WIDE[1]) ** 2 + (wy - WIDE[2]) ** 2) ** 0.5 * WIDE[0]
+    return max(0.0, min(1.0, (1.6 - s / WIDE[0]) / 0.45, (50 - off) / 30))
+
+
+def world_at(xy):
+    """A WIDE screen point in world units."""
+    s, wx, wy = WIDE
+    return ((xy[0] - W / 2) / s + wx, (xy[1] - H / 2) / s + wy)
+
+
+def key_svg(fl, present, new=None, t_new=None, altar=None):
+    """The key in world units, held at screen size: the names closed so far,
+    `new` coming in at t_new, and Levi's altar ((t, fades in) or None)."""
+    ops = [key_op(cm) for cm in fl.cams]
+    keys = list(present) + ([new] if new else [])
+    if not keys or max(ops) <= 0:
+        return ""
+    seen = [i for i, o in enumerate(ops) if o > 0]
+    ks = [f"{1 / cm[0]:.5g}" for cm in fl.cams]
+    k0, kanim = ks[0], seen_anim(fl, "transform", ks, seen, "scale")
+    sw = [f"{1.2 / cm[0]:.4g}" for cm in fl.cams]
+    dw = [f"{5.0 / cm[0]:.4g}" for cm in fl.cams]
+    swa, dwa = seen_anim(fl, "stroke-width", sw, seen), seen_anim(fl, "stroke-width", dw, seen)
+    sw, dw = f'stroke-width="{sw[0]}"', f'stroke-width="{dw[0]}"'
+    tags = [f"{o:.2f}" for o in ops]
+    out = [f'<g opacity="{tags[0]}">{seen_anim(fl, "opacity", tags, range(len(tags)))}']
+    for k in keys:
+        e = key_layout()[k]
+        tint = rgb(key_tint(k))
+        el = ""
+        if e["line"]:
+            wpts = [world_at(p) for p in e["line"]]
+            bx, by = wpts[-1]
+            el += (f'<g {sw} stroke="{tint}" stroke-opacity="0.8" fill="none" '
+                   f'stroke-linejoin="round">{swa}'
+                   f'<polyline points="{" ".join(f"{_fmt(x)},{_fmt(y)}" for x, y in wpts)}"/></g>')
+            if k not in KEY_AT:           # the end dot sits on a town of the lot
+                el += (f'<g {dw} stroke="{tint}" stroke-linecap="round">{dwa}'
+                       f'<path d="M{_fmt(bx)} {_fmt(by)}h0"/></g>')
+        wx, wy = world_at(e["at"])
+        anchor = "end" if e["side"] == "west" else "start"
+        el += (f'<g transform="translate({_fmt(wx)} {_fmt(wy)})"><g transform="scale({k0})">{kanim}'
+               f'<text x="0" y="0" font-size="{KEY_PX}" font-weight="bold" letter-spacing="1.2" '
+               f'text-anchor="{anchor}" dominant-baseline="central" fill="{tint}" '
+               f'stroke="{rgb(BG)}" stroke-width="4" stroke-opacity="0.85" '
+               f'paint-order="stroke">{key_text(k)}</text>')
+        if k == "LEVI" and altar:
+            t, comes = altar
+            w = e["box"][2] - e["box"][0]
+            parts = F.altar("horned", fire=True)
+            x0, x1, _y0, y1 = F.bbox((parts, 0))
+            fig = figure_svg(parts, ALTAR_PX, TEXT_DIM, LAND, unit_h=y1)
+            half = (x1 - x0) / 2 * ALTAR_PX / y1
+            body = f'<g transform="translate({_fmt(w + 12 + half)} {ALTAR_PX / 2 - 2})">{fig}</g>'
+            el += (f'<g opacity="0">{fade(t, 0.6)}{body}</g>' if comes else body)
+        el += "</g></g>"
+        out.append(f'<g opacity="0">{fade(t_new, 0.5)}{el}</g>' if k == new else el)
+    out.append("</g>")
+    return "".join(out)
+
+
+def seen_anim(fl, attr, vals, seen, typ=None):
+    """An animation of the flight's keyframe values kept only where the
+    thing is seen (and where its value changes), so a key that shows for
+    the last second of a long flight doesn't carry every keyframe."""
+    if fl.static or len(set(vals)) == 1:
+        return ""
+    n = len(vals) - 1
+    seen = set(seen)
+    keep = [i for i in range(n + 1)
+            if i in (0, n) or i in seen or i - 1 in seen or i + 1 in seen
+            or (vals[i] != vals[i - 1] and vals[i] != vals[i + 1] and
+                (i - 1 in seen or i + 1 in seen))]
+    if len(keep) == n + 1:
+        return fl._anim(attr, vals, typ)
+    kind = "animateTransform" if typ else "animate"
+    t = f' type="{typ}"' if typ else ""
+    return (f'<{kind} attributeName="{attr}"{t} values="{";".join(vals[i] for i in keep)}" '
+            f'keyTimes="{";".join(f"{i / n:.4f}" for i in keep)}" dur="{fl.dur:.2f}s" '
+            f'begin="0s" fill="freeze"/>')
+
+
+def key_qc():
+    """The finished key at WIDE: no name touches another name, a lot's disc
+    or a place's dot, and no two lines cross."""
+    from svg_map_camera import rr_hit, seg_hits_rect
+    probs = []
+    lay = key_layout()
+    discs = [to_screen(WIDE, P(ALL[k].lat, ALL[k].lon))
+             for ks in final_lots().values() for k in ks]
+    written = {c.entry: cv for cv, c in CLOSINGS.items() if c.entry}
+    dots = all_dots()
+    for k, e in lay.items():
+        if not e["line"]:
+            continue
+        if line_air(e["line"], wide_marks(written[k])) < MARK_AIR:
+            probs.append(f"line of {k} passes over a place the whole land marks")
+        if line_air(e["line"], dots) < DOT_AIR:
+            probs.append(f"line of {k} passes {line_air(e['line'], dots):.1f} px from a place's dot")
+        if k not in KEY_AT and min(abs(e["line"][-1][0] - d[0]) + abs(e["line"][-1][1] - d[1])
+                                   for d in key_ends(k)) > 1.5:
+            probs.append(f"line of {k} doesn't end on a town of its lot")
+    for k, e in lay.items():
+        for k2, e2 in lay.items():
+            if k < k2 and rr_hit(e["box"], e2["box"]):
+                probs.append(f"key {k} touches {k2}")
+        if any(circle_hits_rect(d, DISC_PX / 2, e["box"]) for d in discs):
+            probs.append(f"key {key_text(k)} touches a lot's disc")
+        if e["line"]:
+            segs = list(zip(e["line"], e["line"][1:]))
+            for k2, e2 in lay.items():
+                if k2 != k and any(seg_hits_rect(a, b, e2["box"]) for a, b in segs):
+                    probs.append(f"line of {k} crosses the name {key_text(k2)}")
+                if k < k2 and e2["line"] and any(_cross(s1, s2) for s1 in segs
+                                                 for s2 in zip(e2["line"], e2["line"][1:])):
+                    probs.append(f"lines of {k} and {k2} cross")
+    return probs
+
+
+def _cross(a, b):
+    def orient(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    (p1, p2), (p3, p4) = a, b
+    return (orient(p1, p2, p3) * orient(p1, p2, p4) < 0
+            and orient(p3, p4, p1) * orient(p3, p4, p2) < 0)
+
+
+def coming_frame(cv):
+    """A lot's first verse that names nothing it can place frames what the
+    lot's next verses name: the camera dives from the whole land to it."""
+    i = REFS.index(cv)
+    key = lot_key(AL.VERSES[cv].tribe, cv[0])
+    pts = []
+    for nxt in REFS[i + 1:]:
+        if lot_key(AL.VERSES[nxt].tribe, nxt[0]) != key:
+            break
+        pts += [point(n) for n in AL.VERSES[nxt].names
+                if n.kind in (AL.SITE, AL.WATER, AL.REGION)]
+    if not pts:
+        return None
+    mla = sorted(p[0] for p in pts)[len(pts) // 2]
+    mlo = sorted(p[1] for p in pts)[len(pts) // 2]
+    pts = [p for p in pts if abs(p[0] - mla) + abs(p[1] - mlo) < 0.7] or pts
+    cam = frame(pts, cv)
+    if cam[0] * K > PX_CAP:
+        # the dive names nothing yet: no closer than a town close-up
+        lat, lon = PROJ.latlon(cam[1], cam[2])
+        cam = shot(lat, lon, PX_CAP)
+    return cam
 
 
 # ---------------------------------------------------------------------------
@@ -526,9 +961,10 @@ def units(cv, state, times=None):
         u.said = word_time(cv, word)
         U.append(u)
     cur = {u.key for u in U}
-    # the lot so far: its places named in earlier verses, dim
+    # the lot so far: its places named in earlier verses, dim (by lot, not
+    # colour: Manasseh's two halves share one)
     if col:
-        for key in state["by_col"].get(col, []):
+        for key in state["lots"].get(lot_key(v.tribe, cv[0]), []):
             if key in cur:
                 continue
             s = ALL[key]
@@ -753,7 +1189,7 @@ DISC_PX = 26                  # a place's soft disc in its tribe's colour, on sc
 DISC_OP = 0.30
 DISC_FADE = 0.8
 CLS_PX = {"w1": 1.0, "w2": 2.0, "riv": 1.6, "walk_old": 2.0, "walk_tribe": 2.6,
-          "walk_lift": 2.6, "walk_cur": 3.6, "dots": 5.0, "survey": 6.5, "discs": DISC_PX}
+          "walk_lift": 3.6, "walk_cur": 3.6, "dots": 5.0, "survey": 6.5, "discs": DISC_PX}
 DOTTED = (0.1, 7.0)
 LET_GO = 0.8
 WALK_STROKE = {"walk_old": SAND_DIM, "walk_tribe": SAND, "walk_cur": HL}
@@ -817,10 +1253,11 @@ def walk_el(lg, was, now, t_land):
 
 def build_all():
     # state["walks"]: [colour, leg, the class it ended the last verse in, its lot]
-    state = {"allotted": {}, "by_col": {}, "lots": {}, "walks": [], "walk_end": None,
-             "lifted": []}
+    # state["lots"]: lot key (LOT_COL's) -> the places given it so far
+    state = {"allotted": {}, "lots": {}, "walks": [], "walk_end": None,
+             "lifted": [], "key": []}
     prev, prev_cv, prev_col, report = None, None, None, []
-    last_col = None               # the last tribe's: a verse with no tribe keeps its walks up
+    last_lot = None               # the last tribe's: a verse with no tribe keeps its walks up
     last_lab = None               # the last verse that laid out names (a card verse doesn't)
     cam_prev = WIDE               # the last rest camera on the map
     last_cam = WIDE               # the last rest camera, on the map or in the card
@@ -844,16 +1281,39 @@ def build_all():
             cam_map = NORTH
         elif pts:
             cam_map = frame(pts, cv)
-        elif col and state["by_col"].get(col):
-            cam_map = frame([(ALL[k].lat, ALL[k].lon) for k in state["by_col"][col]], cv)
+        elif lot and state["lots"].get(lot):
+            cam_map = frame([(ALL[k].lat, ALL[k].lon) for k in state["lots"][lot]], cv)
         elif cv == REFS[0] or (col and col != prev_col):
-            cam_map = WIDE
+            cam_map = (cv != REFS[0] and coming_frame(cv)) or WIDE
         else:
             cam_map = cam_prev
         cam0 = last_cam
         card, mod = card_of(cv)
+        clo = CLOSINGS.get(cv)
+        # a closing said mid-verse: the verse's own frame first, then the rise
+        two = clo is not None and clo.rise is not None and not _same(cam_map, WIDE)
+        squeezed = False
         if card:
             fl = Flight(cam0, card_legs(cv, cam_map, state))
+        elif two:
+            D1 = cam_duration(cam0, cam_map)
+            if D1:
+                D1 = round(max(0.9, min(D1, 2.6)), 2)
+            # its own names stand DWELL fully in, counted from when each comes
+            # in: as said, or on landing (the lot so far, a name said in flight)
+            dwell = [D1] + [max(D1 + 0.05, t - SAY_LEAD) + NAME_FADE + DWELL
+                            for t in times if t is not None]
+            if D1:
+                dwell.append(D1 + 0.05 + NAME_FADE + DWELL)
+            t_word = word_time(cv, clo.rise)
+            t_rise = max(([round(t_word - SAY_LEAD, 2)] if t_word is not None else []) + dwell)
+            latest = narr - AUDIO_SLACK - 1.2 - RISE     # the name and the key after landing
+            if t_rise > latest:
+                squeezed = t_rise > latest + 0.1          # short of DWELL by more than a tenth
+                t_rise = round(max(D1 + 0.6, latest), 2)
+            fl = Flight(cam0, [("to", cam_map, D1), ("hold", None, round(t_rise - D1, 2)),
+                               ("to", WIDE, RISE)])
+            fl_own = Flight(cam0, [("to", cam_map, D1)])
         else:
             D = cam_duration(cam0, cam_map)
             if D:
@@ -862,7 +1322,13 @@ def build_all():
             assert _same(fl.cam1, cam_map), cv
         cam1 = fl.cam1
         t_land = fl.dur
-        SCALE_OF[cv] = scale_km(fl, CAP_S if card else None)
+        # the verse's own things (its names, discs and walk) come in as its own
+        # frame lands; in a closing said mid-verse, before the rise
+        t_own = fl_own.dur if two else t_land
+        cam_own = cam_map if two else cam1
+        if two:
+            late = min(late, t_rise - NAME_FADE - 0.2)
+        SCALE_OF[cv] = scale_km(fl_own if two else fl, CAP_S if card else None)
         zs = [cm[0] / S_CARD for cm in fl.cams]
         show_card = cards_seen(fl, [card], S_CARD) if card else []
         in_card = bool(show_card) and zs[-1] >= 0.2        # it rests inside the card
@@ -872,19 +1338,12 @@ def build_all():
                           if z >= CARD_IN[0]), default=None) if show_card else None
 
         # the places this verse gives its tribe, each as it's said
-        new_keys = []
-        if col and verse.kind in ("towns", "border"):
-            for n in verse.names:
-                if (n.kind == AL.SITE and n.key not in state["allotted"]
-                        and n.key in GZ.SITES and n.key not in new_keys
-                        and (verse.tribe in GZ.SITES[n.key].tribe
-                             or (verse.kind == "towns" and not GZ.SITES[n.key].tribe))):
-                    new_keys.append(n.key)
+        new_keys = gives(cv, state["allotted"]) if col else []
         key_said = {}
         for n, t in zip(verse.names, times):
             if n.kind == AL.SITE and t is not None:
                 key_said.setdefault(n.key, t)
-        t_new = {k: heard_at(key_said.get(k), t_land, narr - AUDIO_SLACK - DISC_FADE, 0.1)
+        t_new = {k: heard_at(key_said.get(k), t_own, min(late, narr - AUDIO_SLACK - DISC_FADE), 0.1)
                  for k in new_keys}
 
         # ------ the world ------------------------------------------------
@@ -906,21 +1365,27 @@ def build_all():
             cls["riv"].append(poly_el(PS(rv), stroke=RIVER))
             qc.append((PS(rv), "river"))
         for w in state["walks"]:
-            wcol, lg, was = w[:3]
-            w[2] = "walk_tribe" if wcol == (col or last_col) else "walk_old"
-            for name, el in walk_el(lg, was, w[2], t_land).items():
+            lg, was = w[1], w[2]
+            w[2] = "walk_tribe" if w[3] == (lot or last_lot) else "walk_old"
+            for name, el in walk_el(lg, was, w[2], t_own).items():
                 cls[name].append(el)
             qc.append((PS(lg), "border"))
         # the lots the last verse lit let go as this one lands (or, diving
         # into the card, at once); this verse's light as they're named
-        t_go = 0.3 if show_card and fl.cams[0][0] < fl.cams[-1][0] else t_land
+        t_go = 0.3 if show_card and fl.cams[0][0] < fl.cams[-1][0] else t_own
+        # (a lot this verse lights again holds instead: no dim and relight)
+        relit = {k for _w, ks in LIFT.get(cv, []) for k in ks}
         for key in state["lifted"]:
             for name, el in lift_els(key, state):
-                cls[name].append(f'<g>{fade(t_go, LET_GO, out=True)}{el}</g>')
+                cls[name].append(el if key in relit else
+                                 f'<g>{fade(t_go, LET_GO, out=True)}{el}</g>')
         lifted = []
         for word, keys in LIFT.get(cv, []):
-            t = heard_at(word_time(cv, word), t_land, late)
+            t = heard_at(word_time(cv, word), t_own, late)
             for key in keys:
+                if key in state["lifted"]:
+                    lifted.append(key)
+                    continue
                 for name, el in lift_els(key, state):
                     cls[name].append(f'<g opacity="0">{fade(t, LET_GO)}{el}</g>')
                 lifted.append(key)
@@ -942,12 +1407,12 @@ def build_all():
                 cls["survey"].append(el)
         # this verse's walk, each leg as the landmark it reaches is said (or,
         # with no narration clock, evenly through the verse)
-        walk_dur = max(0.0, narr - AUDIO_SLACK - t_land - 0.4)
+        walk_dur = max(0.0, min(late + NAME_FADE, narr - AUDIO_SLACK) - t_own - 0.4)
         step = min(0.9, walk_dur / len(legs)) if legs else 0
         ends, t_prev = [t_land] + [t + DISC_FADE for t in t_new.values()], None
         for i, (lg, ts) in enumerate(legs_t):
-            t = (heard_at(ts, t_land, late, 0.1) if ts is not None
-                 else round(t_land + 0.1 + i * step, 2))
+            t = (heard_at(ts, t_own, late, 0.1) if ts is not None
+                 else round(t_own + 0.1 + i * step, 2))
             if t_prev is not None:
                 # one after another, and none past the narration's end
                 t = round(min(max(t, t_prev + LEG_GAP), max(t, late)), 2)
@@ -957,15 +1422,54 @@ def build_all():
                 + poly_el(PS(lg), stroke=HL) + "</g>")
             ends.append(t + LEG_FADE)
             qc.append((PS(lg), "border"))
+        # the closing: as the tribe is named (on landing, if it's said during
+        # the rise) its lot lights, with this verse's discs and legs, and its
+        # name joins the key
+        key_new, t_key, altar = None, None, None
+        if clo:
+            t_name = word_after(cv, clo.name, clo.rise)
+            t_key = heard_at(t_name, t_land, narr - AUDIO_SLACK - 0.6)
+            if clo.lot:
+                # discs and borders show at any zoom: the lot lights as it's
+                # named, during the rise if need be
+                t_light = heard_at(t_name, t_rise if two else t_land, narr - AUDIO_SLACK - LET_GO)
+                own_els = (lift_els(clo.lot, state)
+                           + [("discs", disc(k, col)) for k in new_keys]
+                           + [("walk_lift", poly_el(PS(lg), stroke=LOT_COL[clo.lot])) for lg in legs])
+                for name, el in own_els:
+                    cls[name].append(f'<g opacity="0">{fade(t_light, LET_GO)}{el}</g>')
+                if clo.lot not in lifted:
+                    lifted.append(clo.lot)
+                ends.append(t_light + LET_GO)
+            if clo.entry:
+                key_new = clo.entry
+                ends.append(t_key + 0.5)
+        if cv == (13, 14):                    # "made by fire": the altar, this verse only
+            altar = (heard_at(word_time(cv, "fire"), t_land, narr - AUDIO_SLACK - 0.6), True)
+            ends.append(altar[0] + 0.6)
+        elif cv == (13, 15):
+            altar = (0.0, False)              # it leaves with the dive
         # the other tribes' places, as small dots
         cur_named = {n.key for n in verse.names if n.kind == AL.SITE}
         for k, cl in state["allotted"].items():
             if k not in cur_named:
                 x, y = P(ALL[k].lat, ALL[k].lon)
                 cls["dots"].append(f'<path d="M{_fmt(x)} {_fmt(y)}h0" stroke="{rgb(cl)}"/>')
+        if two:
+            # a closing's own places keep a dot as their names go with the rise
+            # (the next verse opens with them)
+            given = dict(state["allotted"], **{k: col for k in new_keys})
+            for k in cur_named & set(given):
+                x, y = P(ALL[k].lat, ALL[k].lon)
+                cls["dots"].append(f'<g opacity="0">{fade(t_rise + 0.2, 0.4)}'
+                                   f'<path d="M{_fmt(x)} {_fmt(y)}h0" stroke="{rgb(given[k])}"/></g>')
 
         # ------ labels ---------------------------------------------------
-        hud = hud_rects(cv, cam1)
+        hud = hud_rects(cv, cam_own)
+        at_wide = _same(cam1, WIDE)
+        key_here = state["key"] + ([key_new] if key_new else [])
+        if at_wide and not two:
+            hud = hud + key_rects(key_here, bool(altar))     # the map's names keep off the key
         if prev_cv != last_lab:
             prev = None               # names last placed before the card
         lab, held, placed, dropped, problems, U = None, None, [], [], [], []
@@ -978,36 +1482,72 @@ def build_all():
             # clear of the frame's edge and the plates; a name said while the
             # card is in frame isn't drawn on the map
             U = [u for u in units(cv, state, times)
-                 if (u.prio < 4 or dot_state(to_screen(cam1, P(*u.cands[0][:2])), hud) == "in")
+                 if (u.prio < 4 or dot_state(to_screen(cam_own, P(*u.cands[0][:2])), hud) == "in")
                  and not (card_until is not None and u.prio < 4
                           and getattr(u, "said", None) is not None and u.said < card_until)]
-            lines = [([to_screen(cam1, p) for p in pts_], 3.0 if kind == "border" else 2.0,
+            lines = [([to_screen(cam_own, p) for p in pts_], 3.0 if kind == "border" else 2.0,
                       kind, None) for pts_, kind in qc]
+            if at_wide and not two:
+                lines += key_lines(key_here)
             lines_w = [(pts_, 3.0 if kind == "border" else 2.0) for pts_, kind in qc]
-            dots = rest_dots(PROJ, U, cam1, hud)
-            land = [to_screen(cam1, P(a, b)) for a, b in LAND_RING]
-            # a name never sits on a disc this verse lights (LIFT)
-            lit = [(k, to_screen(cam1, P(ALL[k].lat, ALL[k].lon)))
-                   for _w, keys in LIFT.get(cv, []) for key in keys
-                   for k in state["lots"].get(key, [])]
+            dots = rest_dots(PROJ, U, cam_own, hud)
+            land = [to_screen(cam_own, P(a, b)) for a, b in LAND_RING]
+            # a name never sits on a disc this verse lights (LIFT, a closing)
+            lit_keys = [key for _w, keys in LIFT.get(cv, []) for key in keys]
+            if clo and clo.lot and at_wide and not two:
+                lit_keys.append(clo.lot)
+            lit = [(k, to_screen(cam_own, P(ALL[k].lat, ALL[k].lon)))
+                   for key in lit_keys for k in state["lots"].get(key, [])]
 
-            def off_lit(u, cand, rs, lead, centre, lit=lit):
-                return ["lit-disc"] if any(k != u.key and circle_hits_rect(xy, DISC_PX / 2 + 2, r)
-                                           for k, xy in lit for r in rs) else []
-            ctx = Ctx(PROJ, cam1, lines, dots, hud, (), {}, land, extra=off_lit if lit else None)
+            wide_discs = ([to_screen(WIDE, P(ALL[k].lat, ALL[k].lon)) for k in state["allotted"]]
+                          if at_wide and not two else [])
+
+            def off_lit(u, cand, rs, lead, centre, lit=lit, wide_discs=wide_discs):
+                hit = any(k != u.key and circle_hits_rect(xy, DISC_PX / 2 + 2, r)
+                          for k, xy in lit for r in rs)
+                hit = hit or (u.prio == 6 and any(circle_hits_rect(xy, DISC_PX / 2 + 2, r)
+                                                  for xy in wide_discs for r in rs))
+                return ["lit-disc"] if hit else []
+            ctx = Ctx(PROJ, cam_own, lines, dots, hud, (), {}, land,
+                      extra=off_lit if lit or wide_discs else None)
             placed, dropped, problems = layout(U, ctx, prev)
-            unforce(placed, problems, cam1, dots, hud)
+            unforce(placed, problems, cam_own, dots, hud)
             prev_units = prev["units"] if prev else {}
-            cur_ident = identities(placed, cam1)
+            cur_ident = identities(placed, cam_own)
             for u in U:
                 u.t_in = None
                 if unchanged(u, cur_ident, prev_units):
                     continue
                 if u.new:
-                    u.t_in = heard_at(getattr(u, "said", None), t_land, late)
-            lab = emit_labels(PROJ, U, placed, cur_ident, prev, prev is not None, cam0, cam1,
-                              fl, t_land, hud, lambda cam, cv=cv: hud_rects(cv, cam), lines_w,
-                              problems)
+                    u.t_in = heard_at(getattr(u, "said", None), t_own, late)
+            lab = emit_labels(PROJ, U, placed, cur_ident, prev, prev is not None, cam0, cam_own,
+                              fl_own if two else fl, t_own, hud,
+                              lambda cam, cv=cv: hud_rects(cv, cam), lines_w, problems)
+            if two:
+                # the verse's own names go as it rises; the land's come in as it
+                # lands, clear of the key, and are what the next verse inherits
+                lab_own, placed_own = lab, placed
+                hud_w = hud_rects(cv, WIDE) + key_rects(key_here)
+                U_w = [u for u in units(cv, state, times) if u.prio == 6]
+                lines_wide = [([to_screen(WIDE, p) for p in pts_], 2.0, kind, None)
+                              for pts_, kind in qc if kind != "border"] + key_lines(key_here)
+                discs_w = [to_screen(WIDE, P(ALL[k].lat, ALL[k].lon))
+                           for k in list(state["allotted"]) + new_keys]
+
+                def off_discs(u, cand, rs, lead, centre, discs_w=discs_w):
+                    return (["lot-disc"] if any(circle_hits_rect(xy, DISC_PX / 2 + 2, r)
+                                                for xy in discs_w for r in rs) else [])
+                ctx_w = Ctx(PROJ, WIDE, lines_wide, [], hud_w, (), {},
+                            [to_screen(WIDE, P(a, b)) for a, b in LAND_RING], extra=off_discs)
+                placed, dropped_w, problems_w = layout(U_w, ctx_w, None)
+                unforce(placed, problems_w, WIDE, [], hud_w)
+                problems += problems_w
+                cur_ident = identities(placed, WIDE)
+                for u in U_w:
+                    u.t_in = round(t_land - 0.4, 2)
+                lab = emit_labels(PROJ, U_w, placed, cur_ident, None, False, cam_own, WIDE,
+                                  fl, t_land, hud_w, lambda cam, cv=cv: hud_rects(cv, cam),
+                                  [], problems)
         # 18:6 "here": a ring goes out once from Shiloh's dot as it's said
         if cv in SAID_AS:
             key, word = SAID_AS[cv]
@@ -1029,13 +1569,17 @@ def build_all():
                 vis = ["hidden" if z >= CARD_COVER else "visible" for z in zs]
                 svg.append(f'<g visibility="{vis[0]}">' + discrete(fl, "visibility", vis))
             svg += fills
-            for name in ("discs", "w1", "w2", "riv", "walk_old", "walk_tribe", "walk_lift",
-                         "dots", "survey", "walk_cur"):
+            for name in ("discs", "w1", "w2", "riv", "walk_old", "walk_tribe", "dots", "survey",
+                         "walk_cur", "walk_lift"):
                 svg.append(emit_class(fl, name, cls[name]))
+            if two:
+                svg.append(f'<g>{fade(t_rise, 0.5, out=True)}'
+                           + "".join(emit_label_layers(fl_own, lab_own)) + "</g>")
             if lab is not None:
                 svg += emit_label_layers(fl, lab)
             elif held:
                 svg += held_labels(fl, held, PROJ)
+            svg.append(key_svg(fl, state["key"], key_new, t_key, altar))
             if show_card:
                 svg.append("</g>")
         if show_card:
@@ -1055,7 +1599,7 @@ def build_all():
         if show_card:
             svg.append(card_hud(fl, zs, cv))
         else:
-            svg.append(compass_scale_svg(fl, PROJ, SCALE_OF[cv]))
+            svg.append(map_hud(fl, cv))
         svg.append(inset_svg(fl, state, [(k, col, t_new[k]) for k in new_keys],
                              bool(show_card)))
         svg.append("</svg>")
@@ -1064,7 +1608,10 @@ def build_all():
             f.write(text)
 
         # ------ QC -------------------------------------------------------
-        mid = midflight_qc(fl, placed, lab["exiting"]) if lab is not None else []
+        if two:
+            mid = midflight_qc(fl_own, placed_own, lab_own["exiting"])
+        else:
+            mid = midflight_qc(fl, placed, lab["exiting"]) if lab is not None else []
         end = max(ends + card_ends(cv, show_card)
                   + [getattr(u, "t_show", 0) + 0.5 for u in placed
                      if getattr(u, "t_show", 0) > 0] + [fl.dur])
@@ -1076,18 +1623,20 @@ def build_all():
             dropped=[u.key for u in U if u.key in dropped and u.prio <= 3],
             problems=problems, mid=mid, ext=extent_check(fl, PROJ, (LAT_BOT - MARGIN, LAT_TOP + MARGIN),
                                                          (LON_L - MARGIN, LON_R + MARGIN)),
-            card=card_extent(fl, show_card, S_CARD) if show_card else None))
+            card=card_extent(fl, show_card, S_CARD) if show_card else None,
+            squeezed=squeezed))
 
         # ------ what the next verse inherits ----------------------------
         for k in new_keys:
             state["allotted"][k] = col
-            state["by_col"].setdefault(col, []).append(k)
             state["lots"].setdefault(lot, []).append(k)
         if col:
             state["walks"] += [[col, lg, "walk_cur", lot] for lg in legs]
-            last_col = col
+            last_lot = lot
         state["walk_end"] = walk_end(cv, state["walk_end"])
         state["lifted"] = lifted
+        if key_new:
+            state["key"].append(key_new)
         if lab is not None:
             prev = prev_state(cam1, placed, cur_ident, lab["cur_dots"])
             last_lab = cv
@@ -1106,6 +1655,18 @@ def lift_els(key, state):
     out += [("walk_lift", poly_el(PS(w[1]), stroke=col))
             for w in state["walks"] if w[3] == key]
     return out
+
+
+def map_hud(fl, cv):
+    """The compass and scale over a map verse; the bar fades while it would
+    run longer than at any rest (a rise from a close frame to the land)."""
+    bar = [SCALE_OF[cv] / 111.0 * K * cm[0] for cm in fl.cams]
+    ops = [max(0.0, min(1.0, (1.5 * SCALE_MAX_PX - b) / (0.5 * SCALE_MAX_PX))) for b in bar]
+    if min(ops) >= 1.0:
+        return compass_scale_svg(fl, PROJ, SCALE_OF[cv])
+    tags = [f"{o:.2f}" for o in ops]
+    return (f'<g opacity="{tags[0]}">{fl._anim("opacity", tags)}'
+            + compass_scale_svg(fl, PROJ, SCALE_OF[cv]) + "</g>")
 
 
 def card_hud(fl, zs, cv):
@@ -1141,8 +1702,15 @@ def main():
             notes.append("WORLD EDGE visible")
         if r["card"]:
             notes.append(r["card"])
+        if r.get("squeezed"):
+            notes.append("closing: its own names stand less than DWELL before the rise")
         for n in notes:
             print(f"  {r['cv'][0]}:{r['cv'][1]}: {n}")
+    for prob in key_qc():
+        print(f"  key: {prob}")
+    for card, mod in CARDS:
+        for prob in (mod.qc(card) if hasattr(mod, "qc") else []):
+            print(f"  card {card.key}: {prob}")
     missing = sum(1 for cv in REFS if _narration(*cv) is None)
     if missing:
         print(f"  {missing} verses have no MP3: paced on an estimate from their words")

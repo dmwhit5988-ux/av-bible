@@ -10960,14 +10960,14 @@
       {
         "file": "Joshua/17/Joshua_17_3.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_17_4": [
       {
-        "file": "Joshua/17/Joshua_17_3.svg",
+        "file": "Joshua/17/Joshua_17_4.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_17_5": [
