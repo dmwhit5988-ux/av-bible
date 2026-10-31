@@ -328,7 +328,7 @@
         },
         {
           "file": "svg_map_camera.py",
-          "edit": "the map camera shared with Acts 13-14: Flight, labels and clash test, HUD, inset, QC - editing it changes both"
+          "edit": "the map camera shared with Acts 13-14 and Joshua 13-19: Flight, labels and clash test, HUD, inset, pins, QC - editing it changes all three"
         },
         {
           "file": "svg_chronicles_world.py",
@@ -364,6 +364,10 @@
           "edit": "the camera (frame: what each verse names, map_at), the lots' soft discs, the walks, the lots lit at 18:5, 18:7, 18:11 and 19:49 (LIFT), the closings and the key (CLOSINGS, key_layout), 18:9's survey, the 'not located' plate, units (where names may go)"
         },
         {
+          "file": "joshua14_caleb.py",
+          "edit": "the opening of the allotment and Caleb (14:1-15): the Gilgal and Hebron scene cards (scenery, cast, each verse's events), SHOTS and LEGS, the map's cameras and walks (CAMERAS, WALK_UP, WALK_YEARS), the cast pinned on the map verse by verse (VERSES), and what stands at each rest (standing)"
+        },
+        {
           "file": "joshua17_tree.py",
           "edit": "Zelophehad's daughters, a scene card (17:2-5): Manasseh's branch lifted from the 1 Chronicles reading world (the named boxes; every other box folded into blocks), each verse's looks and traces, the stage and its cast, the '10', SHOTS and LEGS"
         },
@@ -385,11 +389,11 @@
         },
         {
           "file": "svg_scene_card.py",
-          "edit": "Card/Actor and card hosting, shared with Acts 13-14: editing it changes both"
+          "edit": "Card/Actor, card hosting and the geometry a card's QC asks (gap, within, shot_rect, ink_points), shared with Acts 13-14: editing it changes both"
         },
         {
           "file": "svg_map_camera.py",
-          "edit": "the map camera shared with Numbers 34 and Acts 13-14: Flight, labels and clash test, HUD, inset, QC - editing it changes all three"
+          "edit": "the map camera shared with Numbers 34 and Acts 13-14: Flight, labels and clash test, HUD, inset, pins, QC - editing it changes all three"
         },
         {
           "file": "svg_chronicles_world.py",
@@ -530,11 +534,11 @@
         },
         {
           "file": "svg_scene_card.py",
-          "edit": "Card/Actor: scene cards hung in a map camera's world, actor state carried from verse to verse, and the hosting a tour shares (card_op, cards_seen, card_extent) - Joshua 13-19's Shiloh card uses it too"
+          "edit": "Card/Actor: scene cards hung in a map camera's world, actor state carried from verse to verse, and the hosting a tour shares (card_op, cards_seen, card_extent) - Joshua 13-19's cards use it too"
         },
         {
           "file": "svg_map_camera.py",
-          "edit": "the map camera shared with Numbers 34: Flight, labels and clash test, HUD, inset, QC - editing it changes both"
+          "edit": "the map camera shared with Numbers 34 and Joshua 13-19: Flight, labels and clash test, HUD, inset, pins, QC - editing it changes all three"
         }
       ],
       "kind": "map"

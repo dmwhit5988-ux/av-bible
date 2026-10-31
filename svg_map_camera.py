@@ -24,6 +24,8 @@ What lives here:
 * Emission helpers (polylines, traced lines, fades, labels, dots), the HUD's
   title plate and compass/scale bar, the overview inset's view box, and the
   QC checks (`hud_dip`, `midflight_qc`, `touches_lines`, `extent_check`).
+* Pins: screen-sized things at a world point, one size through a flight
+  (`pin`, `rider`, with `inv_scale`, `lift_in` and `band_dots`).
 
 Everything is screen space at the rest camera except where a function says it
 takes world or lat/lon coordinates. A camera is (s, wx, wy): world point
@@ -37,7 +39,7 @@ from PIL import ImageFont
 
 from svg_surface import _fmt
 from svg_chronicles_world import CAM_FPS, EASE, _smooth, _vw
-from generate_tabernacle import W, H, BG, TEXT_DIM
+from generate_tabernacle import W, H, BG, TEXT, TEXT_DIM
 
 
 # ---------------------------------------------------------------------------
@@ -849,6 +851,72 @@ def emit_class(fl, px, els, extra="", dash=None):
 
 
 # ---------------------------------------------------------------------------
+# Pins: screen-sized things in the world, a person, a band of people. Acts
+# 13-14 and Joshua 14 stand their people on the map with these.
+# ---------------------------------------------------------------------------
+
+def inv_scale(fl):
+    """A scale(1/s) that rides the camera: screen px inside a world group."""
+    ks = [f"{1 / c[0]:.5g}" for c in fl.cams]
+    return f'scale({ks[0]})', fl._anim("transform", ks, "scale")
+
+
+def pin(fl, xy, inner):
+    """`inner` (screen px, origin at the anchor) pinned at the world point
+    xy, one screen size through the flight."""
+    x, y = xy
+    sc, anim = inv_scale(fl)
+    return (f'<g transform="translate({_fmt(x)} {_fmt(y)})">'
+            f'<g transform="{sc}">{anim}{inner}</g></g>')
+
+
+def rider(fl, pts_w, begin, dur, inner, t_show=None, t_hide=None, hide_d=0.5,
+          show_d=None):
+    """`inner` (screen px) riding a world polyline from begin to begin+dur
+    on the trace's own easing, so it stays at the head of the gold line.
+    Hidden until t_show (default: begin), coming in over show_d (default: at
+    once), and gone from t_hide over hide_d."""
+    d = "M" + " L".join(f"{_fmt(x)} {_fmt(y)}" for x, y in pts_w)
+    sc, anim = inv_scale(fl)
+    t_show = begin if t_show is None else t_show
+    out = (f'<g opacity="0">{fade(t_show, show_d)}' if show_d else
+           f'<g opacity="0"><set attributeName="opacity" to="1" '
+           f'begin="{t_show:.2f}s"/>')
+    if t_hide is not None:
+        out += fade(t_hide, hide_d, out=True)
+    return (out + f'<g><animateMotion path="{d}" begin="{begin:.2f}s" '
+            f'dur="{dur:.2f}s" fill="freeze" calcMode="spline" '
+            f'keyPoints="0;1" keyTimes="0;1" keySplines="{EASE}"/>'
+            f'<g transform="{sc}">{anim}{inner}</g></g></g>')
+
+
+def lift_in(inner, t, dur=0.6, lift=6):
+    """Fade in while rising `lift` px onto its place."""
+    return (f'<g opacity="0">{fade(t, dur)}'
+            f'<g transform="translate(0 {lift})">'
+            f'<animateTransform attributeName="transform" type="translate" '
+            f'values="0 {lift};0 0" begin="{t:.2f}s" dur="{dur:.2f}s" '
+            f'fill="freeze" calcMode="spline" keyTimes="0;1" '
+            f'keySplines="{EASE}"/>{inner}</g></g>')
+
+
+def band_dots(n, col=TEXT, cols=None, step=7, r=2.6):
+    """A people of n: a little cluster of dots on a dark halo, `cols` to a
+    row (default: 4, or all of them when they are 4 or fewer), `step` px
+    apart."""
+    cols = cols or (4 if n > 4 else n)
+    pts = []
+    for i in range(n):
+        row, c = divmod(i, cols)
+        pts.append(((c - (cols - 1) / 2) * step, -row * step - 4))
+    return ("".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.4" '
+                    f'fill="{rgb(BG)}" fill-opacity="0.85"/>'
+                    for x, y in pts)
+            + "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" '
+                      f'fill="{rgb(col)}"/>' for x, y in pts))
+
+
+# ---------------------------------------------------------------------------
 # Label layout at the rest camera
 # ---------------------------------------------------------------------------
 
@@ -1094,7 +1162,17 @@ def leader_problems(u, lead, rs, centre, ctx, taken, leaders):
 # Emission of labels and dots (screen-constant inside the camera group)
 # ---------------------------------------------------------------------------
 
-def text_el(x, y, part, op_anim_="", op0=None):
+def em_tick(fl, x):
+    """A no-op on a label's x through the flight. WebKit, playing SMIL inside
+    an <img>, resolves an em dx or dy once, at the first frame's font size, and
+    the name then sits off its dot and hops at the seams; an animation on the
+    text's own x has it resolved again on every tick."""
+    return (f'<animate attributeName="x" values="{_fmt(x)};{_fmt(x)}" '
+            f'dur="{fl.dur:.2f}s" begin="0s" fill="freeze"/>')
+
+
+def text_el(x, y, part, op_anim_="", op0=None, fl=None):
+    """A name's <text>. `fl`: the flight whose font-size it sits under."""
     text, size, fill, bold, italic, dx, dy, anc = part
     a = [f'x="{_fmt(x)}"', f'y="{_fmt(y)}"']
     if dx:
@@ -1110,14 +1188,15 @@ def text_el(x, y, part, op_anim_="", op0=None):
         a.append('font-style="italic"')
     if op0 is not None:
         a.append(f'opacity="{op0}"')
-    return f"<text {' '.join(a)}>{escape(text)}{op_anim_}</text>"
+    tick = em_tick(fl, x) if fl is not None and not fl.static and (dx or dy) else ""
+    return f"<text {' '.join(a)}>{escape(text)}{op_anim_}{tick}</text>"
 
 
 def label_elements(u, cand, op_anim_, op0, by_size, lead_els, cam_rest,
-                   dip=""):
+                   dip="", fl=None):
     x, y = u.proj.P(cand[0], cand[1])
     for part in u.parts(cand):
-        el = text_el(x, y, part, op_anim_, op0)
+        el = text_el(x, y, part, op_anim_, op0, fl)
         if dip:
             el = f"<g>{dip}{el}</g>"
         by_size.setdefault((round(part[1], 2), u.gmax), []).append(el)
@@ -1271,7 +1350,7 @@ def emit_labels(proj, units, placed, cur_ident, prev, same_sec, cam0, cam1,
             dips.append((u.key, [(round(a, 2), round(b, 2))
                                  for a, b in spans]))
         label_elements(u, u.place, anim, op0, by_size, lead_els, cam1,
-                       dip)
+                       dip, fl)
 
     # dots: a place's dot shows with its name (or as the verse's own), and
     # never cut by the frame or under a plate at rest
@@ -1333,7 +1412,7 @@ def emit_labels(proj, units, placed, cur_ident, prev, same_sec, cam0, cam1,
             t_out = 0.0          # a leader is drawn for one scale only
         d_out = 0.3 if nu is not None else 0.45
         label_elements(uo, uo.place, fade(t_out, d_out, out=True), None,
-                       old_by_size, old_lead, prev["cam1"])
+                       old_by_size, old_lead, prev["cam1"], fl=fl)
         exiting.append((uo, t_out + d_out))
     for key, pd in (prev["dots"] if prev else {}).items():
         if same_sec and cur_dots.get(key) and cur_dots[key][:3] == pd:
@@ -1383,13 +1462,15 @@ def discrete(fl, attr, vals):
             f'begin="0s" fill="freeze"/>')
 
 
-def held_labels(fl, prev, proj=None):
+def held_labels(fl, prev, proj=None, goes=None):
     """The previous verse's names, still, until a scene card covers them;
-    with `proj`, their dots too."""
+    with `proj`, their dots too. `goes`: {a name's key: the fade that takes it
+    off sooner}, for one something would cross."""
     by_size, lead, halo, core = {}, [], [], []
-    for pu in prev["units"].values():
+    for key, pu in prev["units"].items():
         u = pu["unit"]
-        label_elements(u, u.place, "", None, by_size, lead, prev["cam1"])
+        label_elements(u, u.place, (goes or {}).get(key, ""), None, by_size, lead,
+                       prev["cam1"], fl=fl)
     if proj is not None:
         for la, lo, col in prev["dots"].values():
             dot_elements(proj, la, lo, col, "", None, halo, core)

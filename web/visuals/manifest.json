@@ -10267,21 +10267,21 @@
       {
         "file": "Joshua/14/Joshua_14_1.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_10": [
       {
-        "file": "Joshua/14/Joshua_14_9.svg",
+        "file": "Joshua/14/Joshua_14_10.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_11": [
       {
-        "file": "Joshua/14/Joshua_14_9.svg",
+        "file": "Joshua/14/Joshua_14_11.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_12": [
@@ -10302,21 +10302,21 @@
       {
         "file": "Joshua/14/Joshua_14_14.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_15": [
       {
-        "file": "Joshua/14/Joshua_14_14.svg",
+        "file": "Joshua/14/Joshua_14_15.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_2": [
       {
-        "file": "Joshua/14/Joshua_14_1.svg",
+        "file": "Joshua/14/Joshua_14_2.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_3": [
@@ -10337,7 +10337,7 @@
       {
         "file": "Joshua/14/Joshua_14_5.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_14_6": [
@@ -10365,7 +10365,7 @@
       {
         "file": "Joshua/14/Joshua_14_9.svg",
         "kind": "map",
-        "animated": false
+        "animated": true
       }
     ],
     "Joshua_15_1": [

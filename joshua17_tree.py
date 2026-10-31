@@ -71,12 +71,12 @@ import math
 
 import svg_chronicles_world as SCW
 import svg_family_lines as FL
-import svg_figures as F
 import svg_silhouettes as SIL
 from chronicles_tree import walk
 from generate_tabernacle import H, HL, SAND, TEXT, W
 from svg_map_camera import fade, ink, rgb
-from svg_scene_card import Actor, Card, person, static
+from svg_scene_card import (Actor, Card, gap, ink_points, person, shot_rect, static,
+                            within)
 from svg_surface import _fmt
 
 S_CARD = 200                    # camera scale at the card's zoom 1, as in Acts
@@ -751,24 +751,6 @@ TEN_AIR = 24                                # card px round the "10"
 TOUCH = 0.6                                 # a line's end on what it joins
 
 
-def _gap(a, b):
-    """The distance between two rects (0 where they meet)."""
-    return math.hypot(max(a[0] - b[2], b[0] - a[2], 0),
-                      max(a[1] - b[3], b[1] - a[3], 0))
-
-
-def _within(a, b):
-    """Rect a lies inside rect b."""
-    return b[0] < a[0] and a[2] < b[2] and b[1] < a[1] and a[3] < b[3]
-
-
-def _shot_rect(shot, r):
-    """A screen rect at a shot, in card px."""
-    x, y, z = shot
-    return (x + (r[0] - W / 2) / z, y + (r[1] - H / 2) / z,
-            x + (r[2] - W / 2) / z, y + (r[3] - H / 2) / z)
-
-
 def _box(ln):
     return (min(ln[0], ln[2]), min(ln[1], ln[3]),
             max(ln[0], ln[2]), max(ln[1], ln[3]))
@@ -787,30 +769,9 @@ def drawn():
 
 
 def _ink(actor, x, pose, flip):
-    """A figure's ink, card px: every outline of its parts (staff, arms,
-    headgear and all), sampled each px. -> (points, bbox)."""
-    s = actor.h / actor.unit_h
-    y = actor.start["y"]
-    pts = []
-    for kind, data, _m in actor.parts(dict(pose)):
-        if kind == "dot":
-            (cx, cy), = F.place([data[:2]], x, y, s, flip)
-            r = data[2] * s
-            pts += [(cx + r * math.cos(i * math.pi / 8),
-                     cy + r * math.sin(i * math.pi / 8)) for i in range(16)]
-            continue
-        q = F.place(data, x, y, s, flip)
-        if kind == "fill":
-            q = q + q[:1]
-        for (ax, ay), (bx, by) in zip(q, q[1:]):
-            n = max(1, int(math.hypot(bx - ax, by - ay)))
-            pts += [(ax + (bx - ax) * i / n, ay + (by - ay) * i / n)
-                    for i in range(n)]
-        pts.append(q[-1])
-    if not pts:
-        return [], None
-    return pts, (min(p[0] for p in pts), min(p[1] for p in pts),
-                 max(p[0] for p in pts), max(p[1] for p in pts))
+    """An actor's ink, card px, where it stands."""
+    return ink_points(actor.parts(dict(pose)), x, actor.start["y"],
+                      actor.h / actor.unit_h, flip)
 
 
 def looks(card):
@@ -868,7 +829,7 @@ def qc(card):
     b = branch()
     rects = b.card_rects()
     pieces, strands = drawn()
-    gap = air()
+    tree_air = air()
     ten = ink("10", TEN_PX, True, False, "mm")
     tx, ty = ten_xy()
     ten_r = (tx + ten[0], ty + ten[1], tx + ten[2], ty + ten[3])
@@ -876,14 +837,14 @@ def qc(card):
         z = shot[2]
         if z * NAME_PX < MIN_NAME_PX:
             out.append(f"{name}: tree names {z * NAME_PX:.1f} px")
-        tr = _shot_rect(shot, title_rect(TITLE))
+        tr = shot_rect(shot, title_rect(TITLE))
         for r in rects:
-            if _gap(r, tr) <= 0:
+            if gap(r, tr) <= 0:
                 out.append(f"{name}: a tree box under the title at {r}")
         for ln in strands:
-            if _gap(_box(ln), tr) < 2 / z:
+            if gap(_box(ln), tr) < 2 / z:
                 out.append(f"{name}: a line under the title at {ln}")
-        if name == "ten" and _gap(ten_r, tr) < 2 / z:
+        if name == "ten" and gap(ten_r, tr) < 2 / z:
             out.append(f"{name}: the 10 under the title")
     # the cast's names, at every zoom they show at up to the closest rest
     figs = {key: [_ink(card.actors[key], x, pose, flip)
@@ -902,12 +863,12 @@ def qc(card):
         while z <= zmax + 1e-9:
             r = rect_at(n, z)
             for m in names:
-                if m is not n and _gap(r, rect_at(m, z)) < NAME_GAP / z:
+                if m is not n and gap(r, rect_at(m, z)) < NAME_GAP / z:
                     hit.setdefault((n[1], m[1]), z)
             for key, ls in figs.items():
                 for pts, bb in ls:
                     # + 1: the outline's half width
-                    if bb is None or _gap(r, bb) >= FIGURE_GAP / z + 1:
+                    if bb is None or gap(r, bb) >= FIGURE_GAP / z + 1:
                         continue
                     d = min(math.hypot(max(r[0] - px, px - r[2], 0),
                                        max(r[1] - py, py - r[3], 0))
@@ -915,7 +876,7 @@ def qc(card):
                     if d < FIGURE_GAP / z + 1:
                         hit.setdefault((n[1], key), z)
             for t in rects:
-                if _gap(r, t) < gap:
+                if gap(r, t) < tree_air:
                     hit.setdefault((n[1], t), z)
             z = round(z + 0.01, 2)
     for (text, what), z in hit.items():
@@ -923,12 +884,12 @@ def qc(card):
     # whole in frame at the rests that show them
     for name in CAST_SHOTS:
         shot = SHOTS[name]
-        fr = _shot_rect(shot, (2, 2, W - 2, H - 2))
+        fr = shot_rect(shot, (2, 2, W - 2, H - 2))
         for n in names:
-            if not _within(rect_at(n, shot[2]), fr):
+            if not within(rect_at(n, shot[2]), fr):
                 out.append(f"{name}: {n[1]} out of frame")
         for key in ["eleazar", "joshua"] + [f"prince{i}" for i in range(3)]:
-            if not all(_within(bb, fr) for _p, bb in figs[key]):
+            if not all(within(bb, fr) for _p, bb in figs[key]):
                 out.append(f"{name}: {key} out of frame")
     right = tree_right()
     half = 22                                   # a figure's half width
@@ -942,21 +903,21 @@ def qc(card):
                 out.append(f"a line runs into {r}: {ln}")
         for p in (ln[:2], ln[2:]):
             pt = (p[0], p[1], p[0], p[1])
-            if not (any(_gap(pt, r) <= TOUCH for r in rects) or
-                    any(m is not ln and _gap(pt, _box(m)) <= TOUCH
+            if not (any(gap(pt, r) <= TOUCH for r in rects) or
+                    any(m is not ln and gap(pt, _box(m)) <= TOUCH
                         for m in pieces)):
                 out.append(f"a line runs to nothing at {p}")
     # the "10"
     for r in rects:
-        if _gap(ten_r, r) < TEN_AIR:
+        if gap(ten_r, r) < TEN_AIR:
             out.append(f"the 10 within {TEN_AIR} px of {r}")
     for ln in strands:
-        if _gap(ten_r, _box(ln)) < TEN_AIR:
+        if gap(ten_r, _box(ln)) < TEN_AIR:
             out.append(f"the 10 within {TEN_AIR} px of a line {ln}")
     for n in names:
-        if _gap(ten_r, rect_at(n, SHOTS["ten"][2])) < TEN_AIR:
+        if gap(ten_r, rect_at(n, SHOTS["ten"][2])) < TEN_AIR:
             out.append(f"the 10 within {TEN_AIR} px of {n[1]}")
-    if not _within(ten_r, _shot_rect(SHOTS["ten"], (40, 40, W - 40, H - 40))):
+    if not within(ten_r, shot_rect(SHOTS["ten"], (40, 40, W - 40, H - 40))):
         out.append("the 10 out of its shot")
     move, hold, _rise = ten_legs()
     whole = move + hold - (ten_in() + TEN_FADE)

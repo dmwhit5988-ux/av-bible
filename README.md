@@ -210,14 +210,16 @@ The libraries most generators share:
 - `journeys.py` holds Paul's journeys: 64 places with their certainty and verses, the
   four journeys stop by stop with their verses, the roads and sea courses between,
   the lands, the letters and Revelation's seven assemblies.
-- `svg_map_camera.py` is the camera-tour engine for maps (Numbers 34, Acts 13–14): the
-  camera, names that hold their size and are placed by a clash test, the plates,
-  the overview inset and the QC checks. It takes its camera arc and audio timing
-  from `svg_chronicles_world.py`.
+- `svg_map_camera.py` is the camera-tour engine for maps (Numbers 34, Acts 13–14,
+  Joshua 13–19): the camera, names that hold their size and are placed by a clash
+  test, the plates, the overview inset, the figures pinned on a map and the QC
+  checks. It takes its camera arc and audio timing from `svg_chronicles_world.py`.
 - `svg_scene_card.py` hangs a side-view scene (a town, its people) in a camera
   tour's world, so the camera can dive into it from the town's dot. Its cast
   carry their state from one verse's file to the next. Acts 13–14 hangs three;
-  Joshua 13–19 hangs the Tent of Meeting at Shiloh (`joshua18_shiloh.py`).
+  Joshua 13–19 hangs Gilgal and Hebron (`joshua14_caleb.py`), Manasseh's branch of
+  the family tree (`joshua17_tree.py`) and the Tent of Meeting at Shiloh
+  (`joshua18_shiloh.py`).
 - `generate_ot_family_tree_svg.py` draws the Old Testament family-tree wall chart.
   It also provides the tree layout that 1 Chronicles and Matthew 1 use.
 - `generate_ot_timeline_svg.py` draws the OT timeline chart, using `chronology.py`.
@@ -302,10 +304,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb
 ```
 
-There are 157 tests in twelve modules:
+There are 164 tests in thirteen modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -331,6 +333,9 @@ There are 157 tests in twelve modules:
   silences): each clause starts after its pause, a breath is passed over, a list
   said slowly (Joshua 15:32's measured pauses) keeps its pairing, a parenthesis is
   a mark, silence gives no clock, and times run forward.
+- `test_joshua14_caleb`: Joshua 14's module with no build and no clock: every word
+  a beat is cued to is in its verse, every camera leg goes to a shot or a map
+  camera, and each card's QC is clear and catches a number or name put wrong.
 - `test_kings`: the kings' Ussher years are `chronology.BIND`'s, each verse says
   what it is cited for, every event falls in the reign it is dated by, every
   prophet's king is a reign, and every bar can carry its name.

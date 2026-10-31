@@ -58,7 +58,8 @@ from svg_map_camera import (
     fade, op_anim, traced_el, seg_len, emit_class, curve_d, layout,
     rest_dots, identities, unchanged, emit_labels, emit_label_layers,
     prev_state, midflight_qc, extent_check, S_OTHER, S_AREA,
-    S_CUR, discrete, held_labels, screen_ring as _screen_ring,
+    S_CUR, discrete, held_labels, screen_ring as _screen_ring, band_dots,
+    lift_in, pin, rider,
 )
 from svg_scene_card import (CARD_COVER, card_op, card_ends,
                             cards_seen as _cards_seen,
@@ -945,9 +946,9 @@ def plan(ref, cam0):
 # the valley to him. At 13:26 the camera rises to the whole eastern sea and
 # the word runs from Jerusalem to Antioch: "to you".
 #
-# People are pinned figures that keep one screen size (pin_svg); the story's
-# roads are a rose dashed line, each traced in gold on its own verse with a
-# band of twelve dots riding its head (rider_svg).
+# People are pinned figures that keep one screen size (svg_map_camera.pin);
+# the story's roads are a rose dashed line, each traced in gold on its own
+# verse with a band of twelve dots riding its head (svg_map_camera.rider).
 # ---------------------------------------------------------------------------
 
 # Saul's pin stands a little north of Gibeah itself (Tell el-Ful), so that
@@ -974,62 +975,6 @@ def fig_svg(parts, h_px, ink, page=LAND, flip=1, unit_h=MAN_H):
     c = SvgCanvas(10, 10)
     F.draw(c, parts, 0, 0, h_px / unit_h, ink, page, flip=flip)
     return "".join(c._els)
-
-
-def lift_in(inner, t, dur=0.6, lift=6):
-    """Fade in while rising `lift` px onto its place."""
-    return (f'<g opacity="0">{fade(t, dur)}'
-            f'<g transform="translate(0 {lift})">'
-            f'<animateTransform attributeName="transform" type="translate" '
-            f'values="0 {lift};0 0" begin="{t:.2f}s" dur="{dur:.2f}s" '
-            f'fill="freeze" calcMode="spline" keyTimes="0;1" '
-            f'keySplines="{EASE}"/>{inner}</g></g>')
-
-
-def inv_scale(fl):
-    """A scale(1/s) that rides the camera: screen px inside a world group."""
-    ks = [f"{1 / c[0]:.5g}" for c in fl.cams]
-    return f'scale({ks[0]})', fl._anim("transform", ks, "scale")
-
-
-def pin_svg(fl, lat, lon, inner):
-    """`inner` (screen px, origin at the anchor) pinned at (lat, lon), one
-    screen size through the flight."""
-    x, y = P(lat, lon)
-    sc, anim = inv_scale(fl)
-    return (f'<g transform="translate({_fmt(x)} {_fmt(y)})">'
-            f'<g transform="{sc}">{anim}{inner}</g></g>')
-
-
-def rider_svg(fl, pts_w, begin, dur, inner, t_show=None, t_hide=None):
-    """`inner` (screen px) riding a world polyline from begin to begin+dur
-    on the trace's own easing, so it stays at the head of the gold line.
-    Hidden until t_show (default: begin)."""
-    d = "M" + " L".join(f"{_fmt(x)} {_fmt(y)}" for x, y in pts_w)
-    sc, anim = inv_scale(fl)
-    t_show = begin if t_show is None else t_show
-    out = (f'<g opacity="0"><set attributeName="opacity" to="1" '
-           f'begin="{t_show:.2f}s"/>')
-    if t_hide is not None:
-        out += fade(t_hide, 0.5, out=True)
-    return (out + f'<g><animateMotion path="{d}" begin="{begin:.2f}s" '
-            f'dur="{dur:.2f}s" fill="freeze" calcMode="spline" '
-            f'keyPoints="0;1" keyTimes="0;1" keySplines="{EASE}"/>'
-            f'<g transform="{sc}">{anim}{inner}</g></g></g>')
-
-
-def band_dots(n, col=TEXT):
-    """A people of n: a little cluster of dots on a dark halo."""
-    cols = 4 if n > 4 else n
-    pts = []
-    for i in range(n):
-        r, c = divmod(i, cols)
-        pts.append(((c - (cols - 1) / 2) * 7, -r * 7 - 4))
-    return ("".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.4" '
-                    f'fill="{rgb(BG)}" fill-opacity="0.85"/>'
-                    for x, y in pts)
-            + "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2.6" '
-                      f'fill="{rgb(col)}"/>' for x, y in pts))
 
 
 def story_state(name, ref):
@@ -1185,8 +1130,8 @@ def story_beats(ref, fl, cam1, t_land):
     # the people riding the heads of the roads
     def band_on(name, n, t_show=None, t_hide=None):
         t0, d = STORY_T[name]
-        b.pins.append(rider_svg(fl, PS(G.STORY[name]), t0, d, band_dots(n),
-                                t_show=t_show, t_hide=t_hide))
+        b.pins.append(rider(fl, PS(G.STORY[name]), t0, d, band_dots(n),
+                            t_show=t_show, t_hide=t_hide))
     if ref == (13, 17):
         band_on("going_down", 3, t_hide=5.4)
         band_on("exodus", 12, t_show=5.4)
@@ -1205,8 +1150,8 @@ def story_beats(ref, fl, cam1, t_land):
             if ref == (13, 19):
                 t = 3.8 + k * 0.12
                 pole = P(*_POLES[key])
-                b.pins.append(rider_svg(fl, [gil, pole], t, 0.9,
-                                        band_dots(1), t_hide=t + 0.9))
+                b.pins.append(rider(fl, [gil, pole], t, 0.9,
+                                    band_dots(1), t_hide=t + 0.9))
                 b.fills.append(tribe_path(rings, col, 0.0,
                                           op_anim(0.0, TRIBE_FOCUS, t + 0.8,
                                                   0.5)))
@@ -1256,7 +1201,7 @@ def story_beats(ref, fl, cam1, t_land):
                      f'type="rotate" values="0;80" begin="{t_fall:.2f}s" '
                      f'dur="0.6s" fill="freeze" calcMode="spline" '
                      f'keyTimes="0;1" keySplines="{EASE}"/>{tw}</g></g>')
-            b.pins.append(pin_svg(fl, la, lo, inner))
+            b.pins.append(pin(fl, P(la, lo), inner))
         b.ends.append(2.4 + 6 * 0.15 + 1.4)
 
     # the judges: a spark in each of six towns (13:20)
@@ -1288,8 +1233,8 @@ def story_beats(ref, fl, cam1, t_land):
         last = IDX[r_last]
         settle = IDX[r_settle] if r_settle else None
         if ref == r_in:
-            b.pins.append(pin_svg(fl, la, lo,
-                                  lift_in(pin_figure(key, TEXT), t_in)))
+            b.pins.append(pin(fl, P(la, lo),
+                              lift_in(pin_figure(key, TEXT), t_in)))
             ax, ay = at_rest(cam1, la, lo)
             x0, y0, x1, y1 = PIN_BOX[key]
             b.obstacles.append(("pin", (ax + x0, ay + y0, ax + x1, ay + y1)))
@@ -1301,19 +1246,19 @@ def story_beats(ref, fl, cam1, t_land):
         elif settle is None or i < settle:
             # held as a figure (with a narrated change of pose)
             if key == "john" and ref == (13, 25):
-                b.pins.append(pin_svg(fl, la, lo,
-                                      f'<g>{fade(9.6, 0.6, out=True)}'
-                                      + pin_figure(key, TEXT) + "</g>"
-                                      + f'<g opacity="0">{fade(9.6, 0.6)}'
-                                      + pin_figure(key, TEXT, kneel=True)
-                                      + "</g>"))
+                b.pins.append(pin(fl, P(la, lo),
+                                  f'<g>{fade(9.6, 0.6, out=True)}'
+                                  + pin_figure(key, TEXT) + "</g>"
+                                  + f'<g opacity="0">{fade(9.6, 0.6)}'
+                                  + pin_figure(key, TEXT, kneel=True)
+                                  + "</g>"))
                 b.ends.append(10.2)
             elif key == "manger" and i == IDX[r_last] + 1:
-                b.pins.append(pin_svg(fl, la, lo,
-                                      f'<g>{fade(0.0, 0.6, out=True)}'
-                                      + pin_figure(key, TEXT) + "</g>"))
+                b.pins.append(pin(fl, P(la, lo),
+                                  f'<g>{fade(0.0, 0.6, out=True)}'
+                                  + pin_figure(key, TEXT) + "</g>"))
             elif i <= last:
-                b.pins.append(pin_svg(fl, la, lo, pin_figure(key, TEXT)))
+                b.pins.append(pin(fl, P(la, lo), pin_figure(key, TEXT)))
             if i <= last:
                 ax, ay = at_rest(cam1, la, lo)
                 x0, y0, x1, y1 = PIN_BOX[key]
@@ -1326,10 +1271,10 @@ def story_beats(ref, fl, cam1, t_land):
             # settled: the figure goes, a dot and its name stay
             if i == settle:
                 kneel = key == "john"
-                b.pins.append(pin_svg(fl, la, lo,
-                                      f'<g>{fade(0.0, 0.6, out=True)}'
-                                      + pin_figure(key, TEXT, kneel=kneel)
-                                      + "</g>"))
+                b.pins.append(pin(fl, P(la, lo),
+                                  f'<g>{fade(0.0, 0.6, out=True)}'
+                                  + pin_figure(key, TEXT, kneel=kneel)
+                                  + "</g>"))
             if name and i <= last:
                 b.units.append(Unit("pin_" + key, name, [S_OTHER],
                                     TEXT_DIM, italic=True,
@@ -1351,15 +1296,15 @@ def story_beats(ref, fl, cam1, t_land):
         down = [q for q in G.RIVERS["jordan"] if q[0] >= 31.95]
         path = ([(32.72, 35.57)] + [q for q in down if q[0] < 32.70]
                 + [(31.90, 35.58), j_at])
-        b.pins.append(rider_svg(fl, PS(path), 7.0, 2.4, chirho_svg()))
+        b.pins.append(rider(fl, PS(path), 7.0, 2.4, chirho_svg()))
         # where it stops, beside John: his name keeps clear of it
         ax, ay = at_rest(cam1, *j_at)
         b.obstacles.append(("chirho", (ax - 26, ay - CHIRHO_PX - 4,
                                        ax + 26, ay + 2)))
         b.ends.append(9.4)
     elif ref == (13, 26):
-        b.pins.append(pin_svg(fl, *j_at, f'<g>{fade(0.0, 0.8, out=True)}'
-                              + chirho_svg() + "</g>"))
+        b.pins.append(pin(fl, P(*j_at), f'<g>{fade(0.0, 0.8, out=True)}'
+                          + chirho_svg() + "</g>"))
 
     # 13:26 Jerusalem relights, where the word starts
     if ref == (13, 26):
@@ -1457,7 +1402,7 @@ def story_beats(ref, fl, cam1, t_land):
         la, lo = PROJ.latlon(*SYN.world(SY.CHIRHO_OUT))
         inner = (f'<g opacity="{ops[0]}">{fl._anim("opacity", ops)}'
                  f'<g transform="scale(1.3)">{chirho_svg()}</g></g>')
-        b.pins.append(pin_svg(fl, la, lo, inner))
+        b.pins.append(pin(fl, P(la, lo), inner))
         if ref == (13, 47):
             # the town's name keeps clear of it at the rest. It stands on
             # the town's dot, so the box stops above the stem's foot, which

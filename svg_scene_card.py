@@ -15,7 +15,8 @@ events animated (SMIL). A figure changes pose only when the verse narrates
 it; nothing re-animates as decoration.
 
 Event kinds, each (kind, actor, t, dur, value):
-    show / hide      fade in or out
+    show / hide      fade in or out (a hide takes its name too, and a show after
+                     it in the verse brings it back)
     move  (dx, dy)   walk or slide, eased; the actor's name rides with it
     hop   h          up h px and down again
     pose  {...}      cross-fade to another pose of the same figure
@@ -38,6 +39,7 @@ and `cards_seen`, `card_ends` and `card_extent` tell the tour which cards a
 flight sees, when their events end, and whether a card's edge ever shows.
 """
 
+import math
 from xml.sax.saxutils import escape
 
 import svg_figures as F
@@ -131,9 +133,12 @@ class Card:
         # the zooms over which the cast's names come in (a card whose names
         # stand clear of its people may show them wider)
         self.names_at = NAMES_AT
-        # a name carried from the last verse that this verse's rest leaves
-        # cut by the frame: it goes at once, or (cut_late) as it leaves
+        # a name that this verse's rest leaves cut by the frame: it goes at
+        # once (one said this verse isn't drawn), or (cut_late) as it leaves
         self.cut_late = False
+        # draw each body once, whoever draws it in whatever pose: {}, stand and
+        # arms down are one man. Only a card that asks, so the others keep their bytes
+        self.share_bodies = False
 
     def add(self, actor):
         self.actors[actor.key] = actor
@@ -217,7 +222,7 @@ class Card:
                 if kind == "mark":
                     marks.setdefault(key, []).append(val)
         self._marks0 = marks
-        self._syms, self._sym_defs = {}, []
+        self._syms, self._sym_defs, self._bodies = {}, [], {}
         for key, actor in self.actors.items():
             mine = [e for e in evs if e[1] == key]
             if not st[key]["shown"] and not any(e[0] == "show"
@@ -260,19 +265,21 @@ class Card:
 
     def _drawing(self, a, pose, ink, flip):
         """A <use> of the figure drawn once per verse file: a crowd of the
-        same few people costs a few drawings, not one each."""
+        same few people costs a few drawings, not one each. A card that
+        share_bodies also keeps one drawing for what comes out the same."""
         parts = a.parts(pose)
         if not parts:
             return ""             # a name with no figure (a group's name)
         k = (id(a.make), tuple(sorted(pose.items())), a.h, a.unit_h,
              tuple(ink), flip)
         if k not in self._syms:
-            sid = f"{self.key}{len(self._syms)}"
+            body = figure_svg(parts, a.h, ink, self.page, flip, unit_h=a.unit_h)
+            sid = self._bodies.get(body) if self.share_bodies else None
+            if sid is None:
+                sid = f"{self.key}{len(self._sym_defs)}"
+                self._bodies[body] = sid
+                self._sym_defs.append(f'<g id="{sid}">{body}</g>')
             self._syms[k] = sid
-            self._sym_defs.append(
-                f'<g id="{sid}">'
-                + figure_svg(parts, a.h, ink, self.page, flip,
-                             unit_h=a.unit_h) + "</g>")
         return f'<use href="#{self._syms[k]}"/>'
 
     def _inverse(self, fl, attr, px):
@@ -417,12 +424,18 @@ class Card:
             gone = ""
             if cut(self._rest, end["x"], end["y"] + end_y, box):
                 if t is not None:
-                    continue              # it would only arrive cut
-                if not end["shown"] and not s0["shown"]:
+                    # it would only arrive cut, unless the camera has yet to
+                    # leave it (a verse that flies on): then it goes as it leaves
+                    t_off = self._last_seen(end["x"], end["y"] + end_y, box, cut)
+                    if not self.cut_late or t_off <= t:
+                        continue
+                    gone = fade(max(t, t_off - 0.4), 0.4, out=True)
+                elif not end["shown"] and not s0["shown"]:
                     continue
-                t_off = self._last_seen(s0["x"], s0["y"] + start_y, box, cut)
-                gone = fade(max(0.0, t_off - 0.4) if self.cut_late else 0.0,
-                            0.4, out=True)
+                else:
+                    t_off = self._last_seen(s0["x"], s0["y"] + start_y, box, cut)
+                    gone = fade(max(0.0, t_off - 0.4) if self.cut_late else 0.0,
+                                0.4, out=True)
             elif t is None and cut(self._open, s0["x"], s0["y"] + start_y,
                                    box):
                 gone = (f'<set attributeName="opacity" to="0" begin="0s"/>'
@@ -469,7 +482,15 @@ class Card:
               f'opacity="{op0}">' + "".join(shown_anim) + "".join(moves)
               + f'<g{rot_attr}>' + "".join(rots) + "".join(layers)
               + old_marks + "".join(pulses) + "</g></g>")
-        return el, ("".join(names) if s0["shown"] or shown_anim else "")
+        name = "".join(names) if s0["shown"] or shown_anim else ""
+        # a hide takes the name, and a show after it brings it back
+        kinds = [e[0] for e in evs]
+        if name and "hide" in kinds:
+            fades = [fade(t, d, out=kind == "hide")
+                     for kind, _k, t, d, _v in evs[kinds.index("hide"):]
+                     if kind in ("hide", "show")]
+            name = f'<g>{"".join(fades)}{name}</g>'
+        return el, name
 
 
 NAMES_AT = (0.50, 0.60)   # zooms over which the cast's names come in
@@ -576,3 +597,50 @@ def card_extent(fl, cards, S):
 
 def pt_in(p, r):
     return r[0] <= p[0] <= r[2] and r[1] <= p[1] <= r[3]
+
+
+# ---------------------------------------------------------------------------
+# Card geometry, for a card's QC
+# ---------------------------------------------------------------------------
+
+def gap(a, b):
+    """The distance between two rects (0 where they meet)."""
+    return math.hypot(max(a[0] - b[2], b[0] - a[2], 0),
+                      max(a[1] - b[3], b[1] - a[3], 0))
+
+
+def within(a, b):
+    """Rect a lies inside rect b."""
+    return b[0] < a[0] and a[2] < b[2] and b[1] < a[1] and a[3] < b[3]
+
+
+def shot_rect(shot, r):
+    """A screen rect at a shot, in card px."""
+    x, y, z = shot
+    return (x + (r[0] - W / 2) / z, y + (r[1] - H / 2) / z,
+            x + (r[2] - W / 2) / z, y + (r[3] - H / 2) / z)
+
+
+def ink_points(parts, x, y, s, flip):
+    """A figure's ink: every outline of its parts (staff, arms, headgear and
+    all) at scale s, sampled each px. -> (points, bbox)."""
+    pts = []
+    for kind, data, _m in parts:
+        if kind == "dot":
+            (cx, cy), = F.place([data[:2]], x, y, s, flip)
+            r = data[2] * s
+            pts += [(cx + r * math.cos(i * math.pi / 8),
+                     cy + r * math.sin(i * math.pi / 8)) for i in range(16)]
+            continue
+        q = F.place(data, x, y, s, flip)
+        if kind == "fill":
+            q = q + q[:1]
+        for (ax, ay), (bx, by) in zip(q, q[1:]):
+            n = max(1, int(math.hypot(bx - ax, by - ay)))
+            pts += [(ax + (bx - ax) * i / n, ay + (by - ay) * i / n)
+                    for i in range(n)]
+        pts.append(q[-1])
+    if not pts:
+        return [], None
+    return pts, (min(p[0] for p in pts), min(p[1] for p in pts),
+                 max(p[0] for p in pts), max(p[1] for p in pts))

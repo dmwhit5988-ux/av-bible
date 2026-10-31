@@ -3393,6 +3393,19 @@ def tower():
     return _scale(_tower(), UNIT["tower"])
 
 
+def wall(width_units, height_units):
+    """A length of city wall, its foot centred on the origin: masonry with a
+    battlement along the top and its courses ruled across. A city's wall runs
+    as far as the scene needs, so it comes by the unit and not by UNIT."""
+    x0, x1 = -width_units / 2, width_units / 2
+    P = [("fill", [(x0, 0), (x1, 0), (x1, height_units), (x0, height_units)],
+          "stone")]
+    _crenels(P, x0, x1, height_units, 12, 9)
+    for y in range(24, int(height_units), 26):
+        P.append(("line", [(x0 + 1, y), (x1 - 1, y)], "rule"))
+    return P
+
+
 def net():
     return _scale(_net(), UNIT["net"])
 
