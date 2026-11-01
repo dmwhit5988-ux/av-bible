@@ -304,10 +304,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines
 ```
 
-There are 164 tests in thirteen modules:
+There are 215 tests in fourteen modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -336,6 +336,11 @@ There are 164 tests in thirteen modules:
 - `test_joshua14_caleb`: Joshua 14's module with no build and no clock: every word
   a beat is cued to is in its verse, every camera leg goes to a shot or a map
   camera, and each card's QC is clear and catches a number or name put wrong.
+- `test_gospel_lines`: the family tree's Line to Jesus layer leaves the tree as it
+  was, byte for byte; both lines are the text's, by position, and share exactly the
+  18 boxes they should; its boxes, marks and labels stand clear of every box, line
+  and arc, and each crossing of a bus is a hop; and its verses speak the names and
+  quotations it cites.
 - `test_kings`: the kings' Ussher years are `chronology.BIND`'s, each verse says
   what it is cited for, every event falls in the reign it is dated by, every
   prophet's king is a reign, and every bar can carry its name.

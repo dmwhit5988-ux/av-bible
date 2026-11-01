@@ -733,6 +733,7 @@ def tree_ids():
     for key, r in K.REIGNS.items():
         names = {r.name, *r.aka}
         hits = [i for i, it in enumerate(items) if it.get("x") is None and
+                it.get("ly") is None and
                 names & {p.strip() for p in it["n"].split("·")}]
         if len(hits) > 1 and (r.father or key in TREE_FATHER):
             f = TREE_FATHER.get(key) or r.father.split()[0]

@@ -614,7 +614,7 @@ els.illOverlay.addEventListener("click", (e) => {
 const REFERENCES = [
   {
     title: "The Old Testament family tree",
-    blurb: "One family tree of the whole Old Testament, from Adam. Drag, pinch or scroll, and find anyone by name.",
+    blurb: "One family tree of the whole Old Testament, from Adam. Drag, pinch or scroll, and find anyone by name. Line to Jesus runs it on through Matthew and Luke.",
     href: "/visuals/reference/Old_Testament_family_tree.html",
   },
   {

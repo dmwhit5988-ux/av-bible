@@ -27,6 +27,10 @@ Layout notes
   Ruth) has one full box; where her other box would stand is a chip, a
   small pill with a gold dot and her name (`draw_chip`), which the gold
   line in her real box points at.
+* THE LINE TO JESUS. The tree stops where the Old Testament does. A layer the
+  viewer's chip shows runs it on through Matthew and Luke, in free space and
+  in the same vocabulary, without moving a box (`place_gospel_lines`). Who is
+  on it is gospel_lines.py's.
 
 Output: web/visuals/reference/Old_Testament_family_tree.svg (+ a viewer page).
 """
@@ -36,9 +40,11 @@ import math
 import os
 import sys
 import textwrap
+from types import SimpleNamespace
 
 import chronicles_tree as CT
 import family_tree_data
+import gospel_lines
 import reference_viewer
 from chronicles_tree import walk
 from config import VISUALS_DIR
@@ -82,6 +88,7 @@ F_SUB     = font(21, italic=True)
 F_LEG     = font(14)
 F_LEGS    = font(12, italic=True)
 
+BOLD_KINDS   = ("king", "priest", "christ")
 PAD_X, PAD_Y = 10, 7
 NAME_H       = 21
 NOTE_H       = 12
@@ -165,7 +172,7 @@ def measure(n, notes=True):
         n.h = CHIP_H
         n.tw = n.xw = []
         return n
-    fnt = F_NAME_B if n.kind in ("king", "priest") else F_NAME
+    fnt = F_NAME_B if n.kind in BOLD_KINDS else F_NAME
     # a king's name is drawn 16 px right of the pad to make room for the
     # crown — the box has to be measured for that or the name clips its
     # border (the crown stays; the box grows)
@@ -400,7 +407,7 @@ def extents(root):
 
 def accent(n):
     return {"king": ROYAL, "priest": PRIESTLY, "woman": FEMALE,
-            "house": HOUSE}.get(n.kind, SAND_DIM)
+            "house": HOUSE, "christ": HL}.get(n.kind, SAND_DIM)
 
 
 def dim(col, a):
@@ -509,7 +516,7 @@ def draw_node(c, n):
                dim(col, 0.5), 1.0, dash="3 3")
     else:
         c.rect(n.x, n.y, n.w, n.h, fill=body, stroke=col,
-               width=2.0 if n.kind in ("king", "priest") else 1.3, rx=rx)
+               width=2.0 if n.kind in BOLD_KINDS else 1.3, rx=rx)
 
     ty = n.y + PAD_Y
     if n.icon:
@@ -520,9 +527,9 @@ def draw_node(c, n):
         _crown(c, n.x + PAD_X + 1, ty + NAME_H / 2)
     name_x = n.x + PAD_X + (16 if n.kind == "king" else 0)
     name_col = {"king": HL, "priest": PRIESTLY, "woman": FEMALE,
-                "house": dim(TEXT_DIM, 0.95)}.get(n.kind, TEXT)
+                "house": dim(TEXT_DIM, 0.95), "christ": HL}.get(n.kind, TEXT)
     c.text((name_x, ty + NAME_H / 2), n.label, 15, name_col, anchor="lm",
-           bold=n.kind in ("king", "priest"), italic=n.kind == "house")
+           bold=n.kind in BOLD_KINDS, italic=n.kind == "house")
     if n.ref:
         c.text((n.x + n.w - PAD_X, ty + NAME_H / 2), n.ref, 9,
                dim(FAINT, 0.95), anchor="rm")
@@ -986,15 +993,238 @@ def draw_silent(c, x, y):
 
 
 # ===========================================================================
+# The Line to Jesus
+# ===========================================================================
+#
+# A layer the viewer's chip shows (gospel_lines.LAYER), two groups on the
+# sheet: its lines before the tree's boxes and its boxes after them. Nothing
+# on it is on the tree: its boxes are bare N objects placed around the tree's
+# own, so the sheet less those two groups is build_svg(lines=False), the tree
+# alone, byte for byte.
+#
+# Luke's strand from Nathan to Neri stands straight under the real Nathan and
+# ends in a reference chip, tied by a gold arc to the one Shealtiel. Both
+# lines leave Zerubbabel from his own shelf, down the gutter between Arnan and
+# Obadiah, and run side by side to one Joseph box. Matthew's nine names are
+# spread over the height of Luke's eighteen. Mary's doubled line runs from
+# Joseph to her and a solid line from her to Jesus, as Matthew 1:16 has it;
+# Joseph to Jesus is dashed, Luke's "as was supposed". No solid line joins
+# Joseph to Jesus. The new boxes carry no generation number, because one box
+# can't carry one number for two lines.
+
+MARK_H = 25                 # a mark: where the two lines meet or part
+LUKE_ROW = 85               # Luke's strand under Nathan, box top to box top
+COL_L_ROW, COL_M_ROW = 50, 100      # the two columns, box top to box top
+GOSPEL_LINE = (SAND, 1.7)   # one step brighter than the tree's own lines
+
+
+class _LineLog:
+    """Stands in for the canvas, to read where draw_edges draws its lines."""
+
+    def __init__(self):
+        self.lines = []
+
+    def line(self, a, b, *_args, **_kw):
+        self.lines.append((a, b))
+
+    def circle(self, *_args, **_kw):
+        pass
+
+
+def tree_lines(root):
+    """Every line segment of the tree's own edges, as ((x0, y0), (x1, y1))."""
+    log = _LineLog()
+    draw_edges(log, root)
+    return log.lines
+
+
+def _crossings(lines, x, y0, y1):
+    """Each tree bus a new vertical at x, from y0 to y1, passes through."""
+    return sorted({(x, a[1]) for a, b in lines
+                   if a[1] == b[1] and y0 < a[1] < y1
+                   and min(a[0], b[0]) < x < max(a[0], b[0])})
+
+
+def _layer_box(label, cx, y, **kw):
+    n = CT.N(label, **kw)
+    measure(n)
+    n.x, n.y = cx - n.w / 2, y
+    return n
+
+
+def _mark(text, left, cy):
+    return [left, cy - MARK_H / 2, F_NAME.getlength(text) + 24, MARK_H], text
+
+
+def place_gospel_lines(T):
+    """Where the layer stands, worked out from the tree's own boxes on a
+    laid-out tree. test_gospel_lines holds it clear of every box and line."""
+    L = gospel_lines.build(T)
+    nodes = list(walk(T.root))
+    lines = tree_lines(T.root)
+    david, solomon, nathan = L.david, L.solomon, L.nathan
+    she, zer = L.shealtiel, L.zerubbabel
+    arnan = family_tree_data._down(zer, "Hananiah", "Arnan")
+    obadiah = family_tree_data._down(zer, "Hananiah", "Obadiah")
+
+    # Luke's strand, straight under Nathan
+    nx = nathan.x + nathan.w / 2
+    up0 = nathan.y + nathan.h + DROP
+    luke = {}
+    for i, (name, v, _b) in enumerate(reversed(L.upper)):
+        luke[name, v] = _layer_box(name, nx, up0 + LUKE_ROW * i)
+    pill = CT.N(she.label)
+    pill.chip = she
+    measure(pill)
+    pill.x = nx - pill.w / 2
+    pill.y = top_of(pill, up0 + LUKE_ROW * len(L.upper))
+
+    # The two columns, under Zerubbabel's own shelf
+    shelf = min(k.y for k in zer.rows[0]) - DROP / 2
+    gutter = arnan.x + arnan.w + SIB_GAP / 2
+    fork = obadiah.y + obadiah.h + 16
+    mx = gutter + 155
+    lx = mx + 112
+    col0 = fork + 15
+    for i, (name, v, _b) in enumerate(reversed(L.lower)):
+        luke[name, v] = _layer_box(name, lx, col0 + COL_L_ROW * i)
+    tail = {}
+    for i, key in enumerate(gospel_lines.TAIL):
+        tail[key] = _layer_box(gospel_lines.tail_name(key), mx,
+                               col0 + COL_M_ROW * i)
+    join = col0 + COL_L_ROW * (len(L.lower) - 1) + luke[L.lower[0][:2]].h + 20
+    joseph = _layer_box("Joseph", (mx + lx) / 2, join,
+                        note="son of Jacob in Matthew 1:16, of Heli in "
+                             "Luke 3:23")
+    joseph_end = join + joseph.h
+    mary = _layer_box("Mary", mx, joseph_end + DROP, kind="woman", link="wife")
+    jesus = _layer_box("Jesus", (mx + lx) / 2, mary.y + mary.h + DROP,
+                       kind="christ", icon="chi_rho",
+                       note="who is called Christ")
+
+    # Cainan of Luke 3:36, beside the line he stands in
+    arpachshad, shelah = L.box("Arphaxad"), L.box("Shelah")
+    cainan = _layer_box("Cainan", 0, arpachshad.y + 32, ref="Luke 3:36")
+    cainan.x = arpachshad.x + arpachshad.w + 22
+    ccx = cainan.x + cainan.w / 2
+    arp_y = arpachshad.y + arpachshad.h / 2
+    she_y = shelah.y + shelah.h / 2
+
+    runs = [
+        [(nx, nathan.y + nathan.h), (nx, pill.y)],
+        [(gutter, shelf), (gutter, fork), (lx, fork), (lx, join)],
+        [(mx, fork), (mx, join)],
+        [(mx, mary.y + mary.h), (mx, jesus.y)],
+        [(arpachshad.x + arpachshad.w, arp_y), (ccx, arp_y), (ccx, cainan.y)],
+        [(ccx, cainan.y + cainan.h), (ccx, she_y),
+         (shelah.x + shelah.w, she_y)],
+    ]
+    hops = (_crossings(lines, nx, nathan.y + nathan.h, pill.y)
+            + _crossings(lines, gutter, shelf, fork))
+
+    new_boxes = [*luke.values(), *tail.values(), joseph, mary, jesus, cainan]
+    route = link_route(pill, she, _box_grid(nodes + new_boxes + [pill]))
+
+    adam, abraham = L.box("Adam"), L.box("Abraham")
+    god = _mark("of God", 0, adam.y - 50.5)
+    god[0][0] = adam.x + adam.w / 2 - god[0][2] / 2
+    marks = {
+        "god": god,
+        "abraham": _mark("Matthew opens", abraham.x + abraham.w + 14,
+                         abraham.y + abraham.h / 2),
+        "david": _mark("the lines part", david.x + david.w + 16, david.y + 54),
+        "shealtiel": _mark("the lines meet", she.x + 28,
+                           she.y + she.h + 12 + MARK_H / 2),
+        "zerubbabel": _mark("the lines part", lx + 44,
+                            fork - 46 + MARK_H / 2),
+        "joseph": _mark("the lines meet", joseph.x + joseph.w + 18, join + 29),
+    }
+    labels = [
+        (nx + 56, up0 + 17, "LUKE 3:27-31",
+         f"{len(L.upper) + 1} names, Nathan to Neri", "l"),
+        (solomon.x - 12, solomon.y + 17, "MATTHEW 1:6-11",
+         "14 names, Solomon to Jechoniah", "r"),
+        (mx - 56, col0 + 17, "MATTHEW 1:13-15",
+         f"{len(gospel_lines.TAIL)} names", "r"),
+        (lx + 56, col0 + 17, "LUKE 3:23-27", f"{len(L.lower)} names", "l"),
+        # the key for the chip: the masthead's legend calls a chip a woman
+        (pill.x + pill.w + 11.5, pill.y + 4, "LUKE 3:27",
+         "his full box is elsewhere", "l"),
+    ]
+    supposed = (lx + 8, mary.y + 17, "as was supposed, Luke 3:23")
+
+    def span(x0, y0, x1, y1):
+        return [x0, y0, x1 - x0, y1 - y0]
+
+    columns_l, columns_r = mx - 58, lx + 172
+    jesus_end = jesus.y + jesus.h
+    frames = {
+        "layer": span(zer.x, zer.y, lx + 185, jesus_end),
+        "david": span(solomon.x, david.y, nx + 44, solomon.y + solomon.h),
+        "shealtiel": span(she.x, she.y, zer.x + zer.w, zer.y + zer.h),
+        "zerubbabel": span(columns_l, fork - 54, columns_r, fork + 206),
+        "joseph": span(columns_l, join - 54, columns_r, jesus_end + 7),
+    }
+    return SimpleNamespace(
+        lines=L, luke=luke, tail=tail, joseph=joseph, mary=mary, jesus=jesus,
+        cainan=cainan, pill=pill, runs=runs, hops=hops, route=route,
+        marks=marks, labels=labels, supposed=supposed, frames=frames,
+        boxes=new_boxes, luke_x=lx)
+
+
+def draw_gospel_lines(c, S):
+    """The layer's lines, before the tree's boxes. A crossing is a hop: the
+    tree's bus breaks where the line passes, so it doesn't read as a join."""
+    with c.group(data={"layer": gospel_lines.LAYER}):
+        for x, y in S.hops:
+            c.line((x, y - 4), (x, y + 4), BG, 6)
+        for run in S.runs:
+            for a, b in zip(run, run[1:]):
+                c.line(a, b, *GOSPEL_LINE)
+        _drop(c, S.mary, S.joseph.y + S.joseph.h)
+        # Joseph to Jesus, in the sheet's own style for what isn't stated
+        ink = dim(SAND, 0.85)
+        c.line((S.luke_x, S.joseph.y + S.joseph.h), (S.luke_x, S.jesus.y), ink,
+               1.3, dash="4 4")
+        c.circle(S.luke_x, S.jesus.y - 6, 2.4, fill=BG, stroke=ink, width=1.1)
+        draw_links(c, [S.route])
+
+
+def draw_gospel_boxes(c, S):
+    """The layer's boxes, marks and labels, after the tree's boxes."""
+    with c.group(data={"layer": gospel_lines.LAYER}):
+        for n in S.boxes:
+            draw_node(c, n)
+        draw_chip(c, S.pill, dim(SAND, 0.9), TEXT, dim(ROYAL, 0.95))
+        draw_links(c, [S.route], dots=True)
+        for (x, y, w, h), text in S.marks.values():
+            c.rect(x, y, w, h, fill=PANEL, stroke=dim(HL, 0.8), width=1.1,
+                   rx=h / 2)
+            # lm, on the text path every box uses, and no gold dot: it isn't
+            # a reference chip
+            c.text((x + 12, y + h / 2), text, 15, HL, anchor="lm")
+        for x, y, head, sub, side in S.labels:
+            c.text((x, y), head, 15, dim(SAND, 0.95), anchor=side + "m",
+                   bold=True)
+            c.text((x, y + 17), sub, 12, TEXT_DIM, anchor=side + "m",
+                   italic=True)
+        x, y, text = S.supposed
+        c.text((x, y), text, 12, TEXT_DIM, anchor="lm", italic=True)
+
+
+# ===========================================================================
 # Build
 # ===========================================================================
 
-def build_svg():
+def build_svg(lines=True):
+    """(svg, W, H, T, (left, top), the Line to Jesus's layout). Without
+    `lines` the sheet is the tree alone."""
     T = CT.build()
     root = T.root
 
     arrange(root)
     place(root, 0, 0)
+    gospel = place_gospel_lines(T) if lines else None
 
     x0, x1, y1 = extents(root)
     left = x0 - MARGIN - MAST_W
@@ -1012,9 +1242,13 @@ def build_svg():
     draw_edges(c, root)
     routes = link_routes(T)
     draw_links(c, routes)
+    if gospel:
+        draw_gospel_lines(c, gospel)
     for n in walk(root):
         draw_node(c, n)
     draw_links(c, routes, dots=True)
+    if gospel:
+        draw_gospel_boxes(c, gospel)
 
     nodes = list(walk(root))
     stats = {
@@ -1043,12 +1277,18 @@ def build_svg():
         f'data-title="The Old Testament family tree">\n'
         f'<title>The Old Testament family tree \u2014 one contiguous descent from Adam</title>\n'
         f'{body}\n</svg>\n')
-    return svg, W, H, T, (left, top)
+    return svg, W, H, T, (left, top), gospel
+
+
+def viewer_page(W, H):
+    return reference_viewer.page(
+        STEM, _fmt(W), _fmt(H), "The Old Testament family tree", data=True,
+        placeholder="find a name — Jesus, Zerubbabel, Jochebed…")
 
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
-    svg, W, H, T, (left, top) = build_svg()
+    svg, W, H, T, (left, top), gospel = build_svg()
     n = sum(1 for _ in walk(T.root))
     path = os.path.join(OUT_DIR, STEM + ".svg")
     with open(path, "w", encoding="utf-8") as f:
@@ -1058,15 +1298,15 @@ def main():
     if os.path.exists(dp):
         with open(dp, encoding="utf-8") as f:
             previous = json.load(f)
-    data, misses = family_tree_data.sidecar(T, left, top, printed_gen,
-                                            previous)
+    data, misses = family_tree_data.sidecar(
+        T, left, top, printed_gen, previous,
+        extra=lambda items, index: gospel_lines.add_items(items, index, gospel,
+                                                          left, top))
     with open(dp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     vp = os.path.join(OUT_DIR, STEM + ".html")
     with open(vp, "w", encoding="utf-8") as f:
-        f.write(reference_viewer.page(STEM, _fmt(W), _fmt(H),
-                                      "The Old Testament family tree",
-                                      data=True))
+        f.write(viewer_page(W, H))
     size = os.path.getsize(path) / 1024
     print(f"{path}")
     print(f"  {n} nodes · {W:.0f} x {H:.0f} px · {size:.0f} KB")

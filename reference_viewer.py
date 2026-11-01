@@ -22,6 +22,13 @@ less the way into the app.
   - the card's "Line to Adam" outlines every box up the line and frames
     them; a wife's line is her own, from her reference chip in her
     father's family, or isn't offered;
+  - a sheet's other lines (`lines`, [name, item indexes], listed on a box by
+    `tl`) are offered beside it, in their own order, and stay listed and lit
+    while the reader walks along them from name to name;
+  - a card may carry labelled rows of chips (`rows`) and of text (`tx`), and
+    one that isn't a person (`pc`) is laid out as a part's;
+  - a layer with a frame (`fr`) flies there as its chip comes on, and a part
+    with an `fr` of its own flies there when selected, in place of its box;
   - a box that a tap selects is brought into view if the card covers it,
     and a tapped reference chip flies to the real box;
   - a verse chip shows the verse, read from /bibles/WEB/, and in the app
@@ -163,11 +170,13 @@ Promise.all([fetch(STEM+'.svg').then(r=>r.text()),
 // text's size) shows only while that text is at least READ px on screen,
 // and one with data-fmax (a region's big faint name) only until it grows
 // past that many px. A part on a hidden group takes no tap.
-const READ=7.5;let lods=[];
+const READ=7.5;let lods=[],drawnK=0;
 const shown=(fs,fx)=>k*fs>=READ&&(!fx||k*fs<=fx);
 function apply(){svg.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
   for(const l of lods){const on=shown(l.fs,l.fx);
     if(on!==l.on){l.on=on;l.g.style.display=on?'':'none'}}
+  // panning moves only the transform: the outlines change with the zoom alone
+  if(k===drawnK)return;drawnK=k;
   // an outline stays big enough to see when the sheet is zoomed far out
   const pad=Math.max(5,7/k);
   for(const[name,px]of[['at',2.5],['trace',2.5],['sel',3.5]]){const g=layers[name];if(!g)continue;
@@ -213,8 +222,15 @@ function showLayer(id,on){const l=(data.layers||[]).find(x=>x.id===id);if(l)l.on
 function buildLayers(){const box=$('layers');if(!data.layers)return;
   box.innerHTML=data.layers.map(l=>`<button class="lay" data-layer="${esc(l.id)}">${esc(l.label)}</button>`).join('');
   for(const l of data.layers)showLayer(l.id,l.on)}
-$('layers').addEventListener('click',e=>{const b=e.target.closest('button[data-layer]');
-  if(b)showLayer(b.dataset.layer,!layerOn(b.dataset.layer))});
+$('layers').addEventListener('click',e=>{const b=e.target.closest('button[data-layer]');if(!b)return;
+  const id=b.dataset.layer,on=!layerOn(id),l=data.layers.find(x=>x.id===id),onIt=j=>items[j].ly===id;
+  showLayer(id,on);
+  if(on){if(l.fr)frameBoxes([l.fr],1.2);return}
+  // what stood on it goes with it: its card, a line through it, its verse's names
+  if(state.sel!=null){const tr=state.trace&&linesOf(state.sel).find(x=>x[0]===state.trace);
+    if(onIt(state.sel))deselect();
+    else if(tr&&tr[1].some(onIt)){state.trace=false;outline('trace',[]);renderCard(true)}}
+  if(state.at&&state.at.some(onIt))clearAt()});
 
 // -- moving ---------------------------------------------------------------
 function zoomAt(x,y,f){const nk=Math.min(8,Math.max(kmin,k*f));
@@ -331,7 +347,7 @@ function outline(layer,list){const g=layers[layer];g.textContent='';
     for(const t of [...layers.names.children])if(t._for===layer)t.remove();
     for(const i of list||[]){const t=document.createElementNS(NS,'text');t._i=i;t._for=layer;
       t.textContent=items[i].n;layers.names.appendChild(t)}}
-  apply()}
+  drawnK=0;apply()}
 // The smallest box under the finger wins. A part is tapped on its own box,
 // or on the boxes in `t` instead where its box spans more than it draws (a
 // place's dot and its name, not the gap between); on more boxes too (`hb`:
@@ -366,7 +382,8 @@ function onTap(x,y){if(!DATA||!svg)return;const sx=(x-tx)/k,sy=(y-ty)/k,tol=6/k;
   const pick=data.tap==='inside'?inside:nearest;
   let best=pick(boxes(null));
   if(best<0)best=pick(boxes('lo'));
-  if(best>=0)select(best,{fly:k<0.6})}
+  // a part with a frame of its own always goes to it
+  if(best>=0)select(best,{fly:k<0.6||!!items[best].fr})}
 function ancestors(i){const out=[];for(let j=i;j!=null;j=items[j].p)out.unshift(j);return out}
 // Where a box's own line to Adam starts. A wife hangs under her husband, so
 // his line isn't hers: hers runs from her reference chip in her father's
@@ -375,17 +392,27 @@ function lineFrom(i){const it=items[i];
   if(it.l!=='wife'&&it.l!=='kin')return i;
   const own=items.findIndex(c=>c.x===i&&c.p!=null&&c.l!=='wife');
   return own>=0?own:null}
+// The lines a card offers: Line to Adam, up a box of the tree, and any the
+// sidecar names on the box (`tl`, into `lines`). [name, item indexes] each.
+function linesOf(i){const it=items[i],from=lineFrom(i);
+  return(it.p!=null&&from!=null&&!it.ly?[[from===i?'Line to Adam':'Her line to Adam',ancestors(from)]]:[])
+    .concat((it.tl||[]).map(n=>data.lines[n]))}
 function select(i,{fly=false}={}){const via=items[i].x!=null;if(via)i=items[i].x;
   if(items[i].ly&&!layerOn(items[i].ly))showLayer(items[i].ly,true);
-  state.sel=i;state.trace=false;outline('sel',[i]);outline('trace',[]);
-  renderCard();
+  // a named line stays listed and lit while the reader walks along it
+  const walk=state.trace&&(items[i].tl||[]).some(n=>data.lines[n][0]===state.trace);
+  state.sel=i;outline('sel',[i]);if(!walk){state.trace=false;outline('trace',[])}
+  renderCard(walk);
+  // the card's layout changes under the list, so find the name again
+  if(walk){const own=card.querySelector(`.line [data-go="${i}"]`);
+    if(own)card.scrollTop=Math.max(0,own.offsetTop-card.clientHeight/2)}
   try{history.replaceState(null,'','#id='+encodeURIComponent(items[i].id))}catch(e){}
   // A tap on a reference chip goes to the real box, wherever it is; a box
   // the card now covers, or that is off screen, comes into view.
   const b=items[i].b,fa=freeArea(),x0=b[0]*k+tx,y0=b[1]*k+ty;
   const seen=x0>=fa.x&&y0>=fa.y&&x0+b[2]*k<=fa.x+fa.w&&y0+b[3]*k<=fa.y+fa.h;
   // near enough to read its name, and for a land not so near that it fades
-  if(fly||via)frameBoxes([b],Math.min(Math.max(k,1.2),2,capOf([i])),
+  if(fly||via)frameBoxes([items[i].fr||b],Math.min(Math.max(k,1.2),2,capOf([i])),
                          items[i].fs?READ/items[i].fs:0);
   else if(!seen)flyTo(b[0]+b[2]/2,b[1]+b[3]/2,k)}
 function deselect(){state.sel=null;state.trace=false;outline('sel',[]);outline('trace',[]);
@@ -444,11 +471,12 @@ function renderPart(keep){const i=state.sel,it=items[i];let h=cardHead(it);
   // in the same frame
   for(const[label,href]of it.ln||[])links.push(`<a class="chip v" href="${esc(href)}">${esc(label)} ↗</a>`);
   if(links.length)h+=`<div class="c-row"><span class="c-lab">See</span>${links.join('')}</div>`;
+  h+=lineRows(i);
   for(const[g,rs]of it.rg||[])if(rs.length)h+=`<div class="c-row"><span class="c-lab">${esc(g)}</span>${verseChips(rs)}</div>`;
   h+=`<div id="vv" hidden></div>`;
   showCard(h,keep)}
 function renderCard(keep=false){const i=state.sel,it=items[i];if(i==null)return;
-  if(data.card==='parts')return renderPart(keep);
+  if(data.card==='parts'||it.pc)return renderPart(keep);
   const kind={king:'king',priest:'priest or Levite',house:'a house or company'}[it.k];
   const facts=[it.g!=null?`generation ${it.g} from Adam`:'',kind||''].filter(Boolean).join(' · ');
   let h=cardHead(it);
@@ -482,24 +510,35 @@ function renderCard(keep=false){const i=state.sel,it=items[i];if(i==null)return;
   if(joined.length)h+=row('Joined under, as the text implies',joined);
   for(const w of wives)if((items[w].c||[]).length)h+=row('With '+items[w].n,items[w].c);
   for(const w of kin)h+=row(`With ${items[w].n}, ${items[w].s}`,[w].concat(items[w].c||[]));
-  const from=lineFrom(i);
-  if(it.p!=null&&from!=null){const line=ancestors(from);
-    h+=`<div class="c-row"><button id="trace" class="chip v">${state.trace?'Hide the line':from===i?'Line to Adam':'Her line to Adam'} (${line.length})</button>`+
-      (state.trace?`<div class="line">${line.map(j=>chip(j)).join('<span class="sep">›</span>')}</div>`:'')+`</div>`}
+  for(const[label,list]of it.rows||[])h+=row(label,list);
+  h+=lineRows(i);
+  for(const[label,text]of it.tx||[])h+=`<div class="c-row"><span class="c-lab">${esc(label)}</span>${esc(text)}</div>`;
   if(it.r)h+=`<div class="c-row"><span class="c-lab">Verses</span>${verseChips(it.r)}</div><div id="vv" hidden></div>`;
   showCard(h,keep)}
+// a button for each line the card offers, with the lit one's names under it
+function lineRows(i){let h='';
+  for(const[name,line]of linesOf(i))
+    h+=`<div class="c-row"><button class="chip v" data-tr="${esc(name)}">${state.trace===name?'Hide the line':esc(name)} (${line.length})</button>`+
+      (state.trace===name?`<div class="line">${line.map(j=>chip(j)).join('<span class="sep">›</span>')}</div>`:'')+`</div>`;
+  return h}
 function row(label,list){const shown=list.slice(0,24);
   return `<div class="c-row"><span class="c-lab">${esc(label)}</span>`+shown.map(j=>chip(j)).join('')+
     (list.length>24?`<span class="c-book">and ${list.length-24} more</span>`:'')+`</div>`}
 card.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t)return;
   if(t.id==='card-x'){deselect();return}
   if(t.dataset.go!=null){select(Number(t.dataset.go),{fly:true});return}
-  if(t.id==='trace'){state.trace=!state.trace;
-    const line=state.trace?ancestors(lineFrom(state.sel)):[],st=card.scrollTop;
+  if(t.dataset.tr){const pick=linesOf(state.sel).find(l=>l[0]===t.dataset.tr);
+    state.trace=state.trace===pick[0]?false:pick[0];
+    const line=state.trace?pick[1]:[],st=card.scrollTop;
+    // a line that runs through a hidden layer shows it
+    for(const j of line)if(items[j].ly&&!layerOn(items[j].ly))showLayer(items[j].ly,true);
     outline('trace',line);renderCard(true);card.scrollTop=st;
-    // keep the card where it was, and bring the line it just listed into view
+    // keep the card where it was, and bring the line it just listed into view:
+    // all of it if it fits, otherwise its button, and this box's own name
     const ln=card.querySelector('.line');
-    if(ln)card.scrollTop=Math.max(st,ln.offsetTop+ln.offsetHeight-card.clientHeight);
+    if(ln){const box=ln.parentElement,ch=card.clientHeight,own=ln.querySelector(`[data-go="${state.sel}"]`);
+      card.scrollTop=box.offsetHeight<=ch?Math.max(st,box.offsetTop+box.offsetHeight-ch):
+        Math.max(box.offsetTop,own?own.offsetTop+own.offsetHeight+8-ch:0)}
     if(state.trace)frameBoxes(line.map(j=>items[j].b),1.2);return}
   if(t.dataset.ref){showVerse(t.dataset.ref.split(',').map(Number));return}
   if(t.dataset.goto){const[b,c,v]=t.dataset.goto.split('|');
@@ -509,7 +548,7 @@ async function showVerse(r){const[b,c1,v1,c2,v2]=r,book=data.books[b],vv=$('vv')
   try{const ch=await fetch(`/bibles/WEB/${book.replace(/ /g,'_')}_${c1}.json`).then(x=>x.json());
     const first=v1||ch.verses[0][0],last=c2?Infinity:(v2||(v1?v1:ch.verses[0][0]));
     const vs=ch.verses.filter(([n])=>n>=first&&n<=last);
-    const shown=vs.slice(0,4);
+    const shown=vs.slice(0,5);
     vv.innerHTML=`<div class="vv-ref">${esc(book)} ${refLabel(r)}</div>`+
       shown.map(([n,t])=>`<p><b style="color:#d8c68f;font-size:11px">${n}</b> ${esc(t)}</p>`).join('')+
       (vs.length>shown.length||c2||!v1?'<p style="color:#8a8270">…</p>':'')+
@@ -549,7 +588,8 @@ function readHash(){const h=new URLSearchParams(location.hash.slice(1));
   if(hit.length===1)select(hit[0]);
   // the names too small to read at this frame are written over their outlines
   frameBoxes(hit.map(i=>items[i].b),Math.min(1.2,capOf(hit)))}
-$('banner-x').onclick=()=>{state.at=null;outline('at',[]);$('banner').hidden=true};
+function clearAt(){state.at=null;outline('at',[]);$('banner').hidden=true}
+$('banner-x').onclick=clearAt;
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if(!results.hidden){results.hidden=true;q.blur();e.preventDefault()}
   else if(!card.hidden){deselect();e.preventDefault()}});

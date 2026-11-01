@@ -20,8 +20,8 @@ Each box gets:
   Boaz"), lengthened up the line until the namesakes differ;
 - its generation (`printed_gen`), note and cross-references, and its
   Ussher years where `chronology.bind` dates it;
-- its **verses**, from four places and never from matching names across
-  the canon:
+- its **verses**, from four places here, and Luke 3:23-38's through
+  `sidecar`'s `extra`, and never from matching names across the canon:
     - the box's own ref (`N.ref`, read by verse_refs.parse);
     - the 1 Chronicles 1-9 camera's reading, verse by verse
       (`svg_chronicles_world.World.lit`);
@@ -34,9 +34,11 @@ World and matthew_tree build trees of their own, so their boxes are matched
 to the chart's by walking both trees down from Adam together (`pair`):
 children match by label, or where matthew_tree has joined a second name
 onto a label ("Jacob · Israel" for the chart's "Israel"), by one of its
-names. Boxes matthew_tree adds that the chart doesn't have (Matthew's
-line past Zerubbabel, Rahab, Uriah) have no box to light, except
-Bathsheba, whose cross-reference names the chart's own box for her.
+names. Boxes matthew_tree adds that the chart's tree doesn't have (Rahab,
+Uriah) have no box to light, except Bathsheba, whose cross-reference names
+the chart's own box for her. Matthew's line past Zerubbabel has its boxes on
+the sheet's "Line to Jesus" layer, which gospel_lines.py appends through
+`sidecar`'s `extra`, along with Luke's verses on the tree's boxes.
 
 `audit()` reports every camera verse whose text doesn't speak the name it
 lights, for review.
@@ -136,13 +138,14 @@ def stable_ids(nodes, issued=None):
 
 
 def issued_ids(previous):
-    """{whole run key: id} from a sidecar written before, or {}."""
+    """{whole run key: id} from a sidecar written before, or {}. A box on a
+    layer isn't on the tree, so no tree box can take its id by key."""
     if not previous:
         return {}
     items = previous["items"]
     _chain, keys = _chains([it["n"] for it in items],
                            [it.get("p") for it in items])
-    return {k: it["id"] for k, it in zip(keys, items)}
+    return {k: it["id"] for k, it in zip(keys, items) if "ly" not in it}
 
 
 # House boxes whose label only joins two lists ("and also" in 1 Chr 7:12)
@@ -439,12 +442,14 @@ def _verse_rows(refs):
     return [list(r) for r in sorted(rows)]
 
 
-def sidecar(T, left, top, printed_gen, previous=None):
+def sidecar(T, left, top, printed_gen, previous=None, extra=None):
     """The page's data, as a dict ready for json.dump, and audit()'s list.
     `left`/`top` are the sheet's origin in layout space
     (generate_ot_family_tree_svg.build_svg), `printed_gen` the chart's own
     rule for the number a box shows, and `previous` the sidecar written
-    last time, whose ids the boxes keep."""
+    last time, whose ids the boxes keep. `extra(items, index)` may append
+    items of its own after the tree's, with `index` {box: item index}, and
+    returns what to add at the top level."""
     nodes = list(walk(T.root))
     index = {n: i for i, n in enumerate(nodes)}
     ids = stable_ids(nodes, issued_ids(previous))
@@ -494,10 +499,20 @@ def sidecar(T, left, top, printed_gen, previous=None):
         if rows:
             item["r"] = rows
         items.append(item)
-    used = sorted({row[0] for it in items for row in it.get("r", [])})
+    more = extra(items, index) if extra else {}
+    assert len({it["id"] for it in items}) == len(items), "item ids collide"
+
+    def verse_rows(it):
+        yield from it.get("r", [])
+        for _label, rows in it.get("rg", []):
+            yield from rows
+
+    used = sorted({row[0] for it in items for row in verse_rows(it)})
     remap = {b: i for i, b in enumerate(used)}
     for it in items:
-        for row in it.get("r", []):
+        for row in verse_rows(it):
             row[0] = remap[row[0]]
-    return {"version": 1, "books": [BOOK_NAMES[b] for b in used],
-            "items": items}, audit(checks)
+    out = {"version": 1, "books": [BOOK_NAMES[b] for b in used],
+           "items": items}
+    out.update(more)
+    return out, audit(checks)

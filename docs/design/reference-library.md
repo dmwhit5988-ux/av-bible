@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 4 and 7 as first cuts.
+Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 3, 4 and 7 as first cuts.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -141,8 +141,9 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 - **Built 2026-10-27, as a first cut** ([reference-charts.md](../reference-charts.md#the-old-testament-family-tree)): `reference_viewer.py`, `family_tree_data.py`, `verse_refs.py` and the `theoria:goto` message in `web/js/app.js`. It differs from the plan below in four ways:
   - Taps are hit-tested against the sidecar's boxes, so the SVG carries no `data-id` and is unchanged.
   - World's and `matthew_tree`'s boxes are matched to the chart's by walking the trees down together (`family_tree_data.pair`), not by stable id.
-  - Not built yet: the Jesus chip (Matthew's line on to Jesus with Luke's beside it), the settling camera, the detail bands and the culling. The iPhone handles the sheet well without the last three.
-  - A box's verses reach no further than its own ref, 1 Chronicles 1–9, Matthew 1:1–17 and Genesis 5 and 11.
+  - Not built yet: the settling camera, the detail bands and the culling. The iPhone handles the sheet well without them.
+  - A box's verses reach no further than its own ref, 1 Chronicles 1–9, Matthew 1:1–17, Luke 3:23–38 and Genesis 5 and 11.
+- **The Jesus chip, built 2026-11-01** ([reference-charts.md](../reference-charts.md#the-old-testament-family-tree), The Line to Jesus): a hidden layer on the sheet, with its data in `gospel_lines.py`.
 - **Shows:**
   - Search ranks whole names first and tells namesakes apart ("Azariah, son of Ahimaaz"), then eases to the box.
   - A person's card shows names, parents, `N.gen`, the Ussher year where `chronology.bind` has one, the note and verse chips.

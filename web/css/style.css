@@ -236,6 +236,7 @@ select {
 .ref-item {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;       /* the list scrolls; a blurb never spills out of its button */
   gap: 4px;
   width: 100%;
   text-align: left;
