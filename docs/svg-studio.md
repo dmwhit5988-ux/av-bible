@@ -223,6 +223,8 @@ JSON, not Python: hand-editable, no import side effects, diff-friendly. `{"_comm
 | `replay_identical` | Optional. `true` makes byte-identical consecutive verses replay instead of sharing one picture (D17). No family uses it today |
 | `_comment` | Optional, ignored |
 
+A family is everything its generator writes, since a re-run rewrites all of it. Genesis 2 and 3 are one family: either of the garden's generators writes both chapters (`garden_stage.write_story`), so the re-run's scan for hand-edited files and its confirm cover both.
+
 `svg_registry.py` exposes:
 
 ```python
@@ -255,7 +257,7 @@ The banner shows the generator and its spec pointers. The file loads **read-only
 - **Re-run generator.**
   - **Before it runs:** it asks to discard unsaved edits. It scans the family's chapter folders for files carrying the hand-edit marker, and asks for confirmation, listing any it would discard.
   - **While it runs:** it runs `[sys.executable, generator]` from the repo root on a worker thread, with no arguments, so the whole family is rewritten. Each output line goes to the status line.
-  - **When it finishes** with exit code 0, it reloads the file and refreshes the preview, unless the pane has unsaved edits.
+  - **When it finishes** with exit code 0, it reloads the file and refreshes the preview, unless the pane has unsaved edits. If it fails, a message box shows its last 40 lines (`RERUN_TAIL`), since the Studio has no console: that is where a generator that refuses to write says why, as the garden's QC does.
   - While it runs, the studio is busy: it won't follow the passage, and closing asks first.
 - **Hand-edit anyway (one-off).** Unlocks the pane. On Save it inserts, right after the `<svg …>` tag, `<!-- hand-edited YYYY-MM-DD; regenerating via generate_x_svg.py will discard this -->`. The marker is informational (detect and route, never block), and it is what the re-run scan looks for.
 

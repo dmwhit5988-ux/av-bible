@@ -17,35 +17,46 @@
       "kind": "chart"
     },
     {
-      "label": "The garden eastward in Eden (Genesis 2)",
+      "_comment": "One family for both chapters. Chapter 3 opens on chapter 2's last frame and shares its shots, so garden_stage.write_story draws the two as one story and writes both or neither: generate_genesis3_svg.py is the same run as this generator, and either re-run rewrites both chapters' files.",
+      "label": "The garden in Eden (Genesis 2-3)",
       "book": "Genesis",
       "chapters": [
-        2
+        2,
+        3
       ],
       "generator": "generate_genesis2_svg.py",
       "spec": [
         {
-          "file": "generate_genesis2_svg.py",
-          "edit": "HEADS (the four rivers), BEATS, CAPTIONS, garden geometry - all here"
-        }
-      ],
-      "kind": "diagram"
-    },
-    {
-      "label": "The garden undone (Genesis 3)",
-      "book": "Genesis",
-      "chapters": [
-        3
-      ],
-      "generator": "generate_genesis3_svg.py",
-      "spec": [
-        {
-          "file": "generate_genesis3_svg.py",
-          "edit": "EXCHANGE (who speaks to whom), COLUMNS (the three sentences), LEDGER, CAPTIONS - all here"
+          "file": "genesis2_garden.py",
+          "edit": "each verse of Genesis 2: its camera legs, its events on their cues, names, what is not in the text"
         },
         {
-          "file": "generate_genesis2_svg.py",
-          "edit": "GREEN/GREEN_DIM/EARTH/RED - the garden palette shared with chapter 2"
+          "file": "genesis3_garden.py",
+          "edit": "each verse of Genesis 3: its camera legs, its events on their cues, names, what is not in the text"
+        },
+        {
+          "file": "garden_stage.py",
+          "edit": "marks, SHOTS, the serpent's ROAD, the rules for water and dusk, plates, the build"
+        },
+        {
+          "file": "garden_qc.py",
+          "edit": "what must be clear before a file is written, and POSES, the pose list"
+        },
+        {
+          "file": "garden_art.py",
+          "edit": "the land, the trees, the river and the plan"
+        },
+        {
+          "file": "svg_figures.py",
+          "edit": "side_person, lying, hand, foot and the shared vocabulary: editing a figure changes every book that draws it"
+        },
+        {
+          "file": "svg_scene_card.py",
+          "edit": "Card/Actor: shared with Acts 13-14 and Joshua 13-19"
+        },
+        {
+          "file": "svg_map_camera.py",
+          "edit": "Flight: shared with Numbers 34, Acts 13-14 and Joshua 13-19"
         }
       ],
       "kind": "diagram"

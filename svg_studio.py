@@ -14,6 +14,7 @@ the window goes.
     python svg_studio.py [Book] [chapter]
 """
 
+import collections
 import datetime
 import json
 import os
@@ -41,6 +42,9 @@ EMBEDDED_FAIL_WINDOW_MS = 10_000
 # pre-regeneration scan can warn before clobbering them. Informational —
 # nothing blocks (detect and route, never block).
 HAND_EDIT_MARK = "<!-- hand-edited"
+
+# How many of a re-run generator's last lines to show if it fails.
+RERUN_TAIL = 40
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 VISUALS_DIR = config.VISUALS_DIR
@@ -527,6 +531,10 @@ class App:
                          args=(self.family.generator,), daemon=True).start()
 
     def _rerun_worker(self, generator):
+        # The Studio runs under pythonw, with no console: a generator that
+        # refuses to write (the garden's QC) says why in its last lines, and
+        # those are kept to show.
+        tail = collections.deque(maxlen=RERUN_TAIL)
         try:
             proc = subprocess.Popen(
                 [sys.executable, os.path.join(REPO_ROOT, generator)],
@@ -536,12 +544,13 @@ class App:
             for line in proc.stdout:
                 line = line.strip()
                 if line:
+                    tail.append(line)
                     self.events.put(("rerun_line", line))
             code = proc.wait()
         except OSError as e:
             self.events.put(("rerun_done", 1, str(e)))
             return
-        self.events.put(("rerun_done", code, ""))
+        self.events.put(("rerun_done", code, "\n".join(tail)))
 
     # ----- event pump (worker thread -> UI thread) ---------------------------
 
@@ -563,8 +572,13 @@ class App:
             self.busy = False
             self.rerun_btn.configure(state="normal")
             if code != 0:
-                self.status_var.set(
-                    f"Generator failed (exit {code}) {err} — see console.")
+                last = err.splitlines()[-1] if err else ""
+                self.status_var.set(f"Generator failed (exit {code}): {last}")
+                messagebox.showerror(
+                    "Generator failed",
+                    f"It stopped (exit {code}). Its last lines:\n\n{err}"
+                    if err else f"It stopped (exit {code}).",
+                    parent=self.root)
             elif self.dirty:
                 # Edits made in the pane while it ran stay; reloading would
                 # silently throw them away.

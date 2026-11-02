@@ -163,7 +163,8 @@ most use `svg_figures.py`. The table lists each family's other dependencies:
 
 | Passage | Generator | Builds on |
 |---|---|---|
-| Genesis 1–4, 6–9, 10, 11:1–9 | `generate_genesis{1,2,3,4,69,10,11}_svg.py` | `generate_tribal_maps.py`: `MapFrame` for Genesis 10 and 11, and water colours for Genesis 1, 2 and 6–9. Genesis 1 and 3 reuse Genesis 2's palette. Genesis 11 reuses Genesis 10's map. |
+| Genesis 1, 4, 6–9, 10, 11:1–9 | `generate_genesis{1,4,69,10,11}_svg.py` | `generate_tribal_maps.py`: `MapFrame` for Genesis 10 and 11, and water colours for Genesis 1 and 6–9. Genesis 1 reuses Genesis 2's palette. Genesis 11 reuses Genesis 10's map. |
+| Genesis 2–3 | `generate_genesis2_svg.py`, `generate_genesis3_svg.py` | `genesis2_garden.py` and `genesis3_garden.py`, the story; `garden_stage.py`, its stage and build; `garden_art.py`, the place; `garden_qc.py`, what must be clear before a file is written. One card with no map, on `svg_scene_card.py` and `svg_map_camera.py`. One family: either generator writes both chapters. |
 | Genesis 5, 11:10–32 | `generate_genealogy_svg.py` | `generate_genealogy.py` |
 | Exodus 25, 27 and Exodus 26 | `generate_exodus2527_svg.py`, `generate_exodus26_svg.py` | `generate_tabernacle.py`, which holds the Exodus 25–27 spec, and `sanctuary.py`, the Tabernacle model its plan draws. The Exodus 25, 27 family also reuses Exodus 26. |
 | Exodus 28 | `generate_exodus28_svg.py` | `svg_priest.py`, `svg_vocab.py` |
@@ -220,6 +221,11 @@ The libraries most generators share:
   Joshua 13–19 hangs Gilgal and Hebron (`joshua14_caleb.py`), Manasseh's branch of
   the family tree (`joshua17_tree.py`) and the Tent of Meeting at Shiloh
   (`joshua18_shiloh.py`).
+- `garden_art.py`, `garden_stage.py` and `garden_qc.py` are Genesis 2–3's one garden:
+  the place; the marks, the shots, the engine (a card with no map under it, so that
+  the two chapters play on one stretch of ground) and the build; and what must be
+  clear before `garden_stage.write_story` writes a file of either chapter.
+  `genesis2_garden.py` and `genesis3_garden.py` are the story, a function a verse.
 - `generate_ot_family_tree_svg.py` draws the Old Testament family-tree wall chart.
   It also provides the tree layout that 1 Chronicles and Matthew 1 use.
 - `generate_ot_timeline_svg.py` draws the OT timeline chart, using `chronology.py`.
@@ -304,10 +310,10 @@ build deploys `main` as it stands.
 ## Tests
 
 ```bat
-.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines
+.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden
 ```
 
-There are 215 tests in fourteen modules:
+There are 271 tests in fifteen modules:
 
 - `test_imports`: every root module imports.
 - `test_registry`: `svg_generators.json` is consistent, every published verse SVG has
@@ -336,6 +342,14 @@ There are 215 tests in fourteen modules:
 - `test_joshua14_caleb`: Joshua 14's module with no build and no clock: every word
   a beat is cued to is in its verse, every camera leg goes to a shot or a map
   camera, and each card's QC is clear and catches a number or name put wrong.
+- `test_garden`: Genesis 2–3 with no clock and no writing: every word a beat is cued
+  to is in its verse, every camera leg goes to a shot, the marks and the re-shots
+  hold, nothing begins on his name, stone is only what is spoken of, every pose is
+  on `garden_qc.POSES`, a body is never two and an arm or a head moves as a limb,
+  nobody is switched off in sight, the art keeps clear of the river, the trim drops
+  nothing a frame can see, the engraved dashes keep their pattern, a plate's own
+  ground covers the frame whenever the scene under it is switched off, and the QC is
+  clear and has teeth in every check.
 - `test_gospel_lines`: the family tree's Line to Jesus layer leaves the tree as it
   was, byte for byte; both lines are the text's, by position, and share exactly the
   18 boxes they should; its boxes, marks and labels stand clear of every box, line
@@ -348,6 +362,11 @@ There are 215 tests in fourteen modules:
   the stops, roads, letters and assemblies hang together; every coast, road and
   course point names its Wikidata item (or is marked `~`) and copies no traced map;
   the coasts meet; and no voyage crosses more than 6 km of land.
+
+`test_garden_bytes` isn't in the list. Run it by hand after any change to
+`svg_figures.py`: Genesis 1 and Numbers 1–2, which import the garden's palette,
+regenerate byte-identical into a temp folder, Genesis 1:14–1:19 aside (known drift,
+older than the garden).
 
 ## Docs
 
@@ -376,5 +395,6 @@ There are 215 tests in fourteen modules:
   - [Matthew 1](docs/design/matthew-1.md)
   - [Short books](docs/design/short-books.md)
   - [OT timeline](docs/design/ot-timeline.md)
+  - [The garden in Eden](docs/design/genesis-garden.md)
   - [Reference library](docs/design/reference-library.md)
 - [docs/archive/](docs/archive/README.md): superseded plans and records.

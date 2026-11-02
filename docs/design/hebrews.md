@@ -117,7 +117,7 @@ the frame.
   a frame, too structural to waste. Kept as a thread.
 - **The voice** — Hebrews quotes the Old Testament some thirty-five times and
   almost never says *it is written*; it says **he says**, *the Holy Spirit
-  says*. Kept as a thread, with the Genesis 3 speaker-arc device reused.
+  says*. Kept as a thread, as arcs from a speaker to a hearer (`voice_arc`).
 
 ---
 
@@ -318,7 +318,7 @@ Camera at the top of the column.
 Three movements, three sub-scenes.
 
 - **vv. 1–11** — the rest. God's own seventh day drawn as a completed work
-  (rhyme with the built Genesis 1 / Genesis 2 panels, which already own 2:1–3).
+  (rhyme with the built Genesis 1 and Genesis 2, which already own 2:1–3).
   v. 8 — *if Joshua had given them rest* — draws the conquest as an arrival
   that turns out not to be the gate; the gate stays ahead, still open. Engraved
   at v. 9: A SABBATH REST REMAINS.
@@ -686,9 +686,9 @@ for exactly this: `Form` places every garment on a body at any height, and
 callable, so Hebrews can vest a figure, half-vest it, or draw the pieces alone.
 The genealogy node vocabulary in `generate_genealogy_svg.py` gives chapter 7
 its Melchizedek chart. Noah's ship (11:7) comes from
-`generate_genesis69_svg.py`; the seventh day (4:4) from the Genesis 1–2
-panels; the speaker-arc device from `generate_genesis3_svg.py`; shared people
-and objects from `svg_figures.py`, shared marks from `svg_vocab.py`.
+`generate_genesis69_svg.py`; the seventh day (4:4) rhymes with Genesis 1–2;
+the speaker arcs are its own, `voice_arc` in `generate_hebrews_svg.py`; shared
+people and objects from `svg_figures.py`, shared marks from `svg_vocab.py`.
 
 **New work.** The projection-line construction that ties substance to shadow,
 the two-mountain frame, and the pilgrim road. Also: `svg_priest.py` currently

@@ -749,7 +749,7 @@ def feathered_wing(root, lc1, lc2, tip, tc1, tc2, heel, feathers, lobe,
     broken into `feathers` rounded pinions, plus quill lines running in from
     the cusps between them. Returns (outline, [quill lines]).
 
-    Shared: generate_genesis3_svg builds the guardians at the east gate from
+    Shared: garden_stage.cherub_svg builds the guardians at the east gate from
     this same wing, so the two chapters' cherubim read as the same creature.
     """
     lead = _bez(root, lc1, lc2, tip, LEAD_N)

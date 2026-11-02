@@ -41,6 +41,7 @@ new figure belongs here rather than in a generator.
 """
 
 import math
+import random
 
 import sanctuary as SN
 
@@ -3525,3 +3526,503 @@ def _lot():
 
 def lot():
     return _scale(_lot(), UNIT["lot"])
+
+
+# ---------------------------------------------------------------------------
+# The man and the woman in profile
+# ---------------------------------------------------------------------------
+#
+# `unclothed` is the pair face on, and a frontal figure can't give, take, look
+# at or face anyone. With no eye to draw, the turn of a head is the only thing
+# that can say she saw the tree. So this is the same height and the same
+# shoulder, side on, facing +x: a head with a nose and a blank face, near limbs
+# over far ones, and no anatomy, so that it stays innocent at zoom 4.
+#
+# Its materials are skin (the body and near leg), skin_far, skin_near (the near
+# arm, over the body), hair, fleece (fig leaves), hide (the coat) and rule. A
+# table for it names all seven.
+
+# Arm chains, shoulder to wrist: (near arm, far arm). Near is on the viewer's
+# side. A pose is a thing the text narrates.
+_NEAR_DOWN = [(0.5, 76), (2.0, 61), (3.2, 47)]
+_FAR_DOWN = [(-0.5, 76), (-1.0, 61), (0.4, 47)]
+SIDE_ARMS = {
+    "down": (_NEAR_DOWN, _FAR_DOWN),
+    "swing": ([(0.5, 76), (-4.5, 62.5), (-8.5, 50)],
+              [(-0.5, 76), (5.5, 62.5), (10.5, 51)]),
+    "swing2": ([(0.5, 76), (5.5, 62.5), (10.5, 51)],
+               [(-0.5, 76), (-4.5, 62.5), (-8.5, 50)]),
+    "take": ([(0.5, 76), (7.5, 63), (18.5, 60.5)], _FAR_DOWN),      # to a fruit at the chest, forearm level
+    "takeup": ([(0.5, 76), (11, 80), (20, 88)], _FAR_DOWN),         # to a higher bough
+    "held": ([(0.5, 76), (11, 69), (20, 71)], _FAR_DOWN),           # a thing held up and looked at
+    "give": ([(0.5, 76), (11.5, 68.5), (23, 66)], _FAR_DOWN),       # held out to another
+    "eat": ([(0.5, 76), (10.5, 66.5), (8.5, 83)], _FAR_DOWN),       # hand to the mouth
+    "reach": ([(0.5, 76), (11, 67), (21.5, 62)],                    # both, low: to touch
+              [(-0.5, 76), (9, 65), (18.5, 58)]),
+    "open": ([(0.5, 76), (10, 66.5), (20, 70)],                     # an open greeting
+             [(-0.5, 76), (8, 64), (17, 62)]),
+    "raise": ([(0.5, 76), (10, 83.5), (17.5, 95)], _FAR_DOWN),      # the arm that names
+    "point": ([(0.5, 76), (13.5, 75.5), (27, 76)], _FAR_DOWN),      # at another
+    "pointdn": ([(0.5, 76), (12, 66), (24, 57)], _FAR_DOWN),        # at the ground before him
+    "sew": ([(0.5, 76), (6.5, 62.5), (16, 62)],                     # hands together
+            [(-0.5, 76), (5.5, 61), (14, 57)]),
+    "cover": ([(0.5, 76), (6, 60.5), (7.2, 45)],                    # hands before the body
+              [(-0.5, 76), (4, 60.5), (5, 46)]),
+    "shrink": ([(0.5, 76), (7, 64), (5.5, 76)],                     # arms drawn in: afraid
+               [(-0.5, 76), (5, 63), (4.5, 74)]),
+    "dig": ([(0.5, 76), (9, 61), (17, 46)],                         # both hands in the ground
+            [(-0.5, 76), (7.5, 60), (14.5, 45)]),
+    "lifted": ([(0.5, 76), (9.5, 63.5), (19.5, 66)],                # breath drawn, the hands open before him
+               [(-0.5, 76), (7.5, 62), (17, 62)]),
+    "dig1": ([(0.5, 76), (11, 74), (20, 81)],                       # both hands on the stick, up
+             [(-0.5, 76), (9, 71), (17, 76)]),
+    "dig2": ([(0.5, 76), (11, 60), (20, 47)],                       # and driven down
+             [(-0.5, 76), (8, 60), (15, 47)]),
+    "brow": ([(0.5, 76), (11, 79), (7.5, 91)], _FAR_DOWN),          # a hand to the sweat of his face
+    "wrap": ([(0.5, 76), (9, 62), (2, 53)],                         # arms round her middle
+             [(-0.5, 76), (7, 62), (1, 55)]),
+    "join": ([(0.5, 76), (13, 67), (26, 58)],                       # hand in hand
+             [(-0.5, 76), (11, 65), (23, 56)]),
+    "openlow": ([(0.5, 76), (8.5, 62), (17.5, 56)], _FAR_DOWN),     # low, and out
+    "pointlow": ([(0.5, 76), (13.5, 72.5), (26.5, 69)], _FAR_DOWN),  # at another, under what hangs there
+}
+
+# Leg chains, hip to ankle: (near leg, far leg, drop). `drop` lowers everything
+# above the hips. A walk is `walk` and `walk2` alternating, for the length of a
+# move and no longer. In `kneel2` the thigh runs down from the hip to a knee on
+# the ground in front, the shin lies along the ground behind it, and the foot
+# lies behind that on its top, the sole up, the heel over the ankle and the
+# toes back. The far leg kneels a little behind the near one and a little
+# higher, so that two shins and two heels read.
+SIDE_LEGS = {
+    "stand": ([(1, 33), (1.8, 18), (1.6, 3)], [(-1.2, 33), (-1.2, 18), (-1.8, 3)], 0.0),
+    "walk": ([(1, 33), (6.5, 18.5), (10.5, 3.2)], [(-1, 33), (-5.5, 18), (-12, 4.6)], 0.0),
+    "walk2": ([(-1, 33), (-5.5, 18), (-12, 4.6)], [(1, 33), (6.5, 18.5), (10.5, 3.2)], 0.0),
+    "kneel": ([(0.5, 24), (10.5, 21), (11, 3)], [(-0.5, 24), (-4.5, 2.8), (-18, 3)], 9.0),
+    "kneel2": ([(1, 19), (9, 4.4), (-7.5, 3.2)], [(-1, 19), (5.5, 5.6), (-11.5, 4.4)], 15.0),
+    "sit": ([(0.5, 12), (15, 15), (17, 3)], [(-0.5, 12), (14, 13), (20, 3)], 21.0),
+}
+
+_HIP = (0.0, 33.0)
+_HEAD_SIDE = [(-6.3, 88.8), (-6.6, 92.0), (-4.8, 95.6), (-1.0, 96.9), (3.0, 96.3),
+              (5.8, 94.0), (6.5, 91.6), (7.0, 90.3), (8.5, 88.2), (7.0, 87.4),
+              (6.8, 85.8), (5.4, 83.8), (2.0, 82.9), (-2.4, 83.4), (-5.3, 85.8)]
+_BEARD_SIDE = [(-2.2, 91.0), (-.6, 88.2), (1.6, 86.2), (4.6, 85.6), (6.2, 85.4),
+               (5.8, 83.4), (3.6, 80.8), (0.0, 80.6), (-3.6, 83.4), (-4.4, 87.6)]
+_CAP_SIDE = [(-4.6, 86.8), (-6.8, 88.6), (-7.0, 92.4), (-4.9, 96.1), (-1.0, 97.5),
+             (2.8, 96.9), (4.4, 95.2), (1.6, 94.4), (-.8, 93.0), (-2.4, 90.6),
+             (-3.2, 88.0)]
+_HAIR_SIDE_BACK = [(-2.2, 94), (-6.6, 95), (-8.8, 90), (-10.2, 80), (-11.2, 66),
+                   (-11.4, 52), (-10.2, 42), (-6.6, 37), (-3.6, 44), (-3.2, 60),
+                   (-2.6, 74), (-1.2, 84)]
+_HAIR_SIDE_CAP = [(-2.6, 86.0), (-5.0, 85.0), (-6.9, 89.5), (-6.4, 94.0),
+                  (-3.6, 97.0), (0.8, 97.8), (4.6, 96.5), (6.2, 93.8), (2.4, 93.6),
+                  (-0.8, 92.0), (-2.2, 89.4)]
+_TORSO_SIDE = [(-3.2, 81.5), (-6.6, 76), (-7.4, 66), (-6.2, 55), (-5.4, 46),
+               (-6.8, 38), (-6.8, 29), (6.2, 29), (6.2, 38), (5.2, 46), (6.2, 55),
+               (7.6, 65), (7.2, 75), (3.4, 81.5)]
+# The coat of 3:21: to the knee, a ragged hem.
+_TUNIC_SIDE = [(-5.8, 79), (-8.0, 66), (-7.6, 50), (-9.6, 34), (-10.2, 24), (-6, 22.2),
+               (-2, 24), (2.6, 21.6), (6.6, 23.6), (10, 24), (9.0, 36), (6.8, 50),
+               (8.4, 64), (6.6, 79), (2, 81)]
+
+
+def side_lean(angle, drop=0.0):
+    """A function that bends everything above the hips forward by `angle`
+    degrees, and lowers it by `drop`, for a person who bows, stoops or kneels."""
+    a = math.radians(angle)
+    ca, sa = math.cos(a), math.sin(a)
+
+    def T(p):
+        dx, dy = p[0] - _HIP[0], p[1] - _HIP[1]
+        return (_HIP[0] + dx * ca + dy * sa, _HIP[1] - dx * sa + dy * ca - drop)
+    return T
+
+
+def fig_leaf_outline(cx, cy, r, rot):
+    """A fig leaf's outline, `r` long, its stem at (cx, cy), its tip the way
+    `rot` points (0 = up). Three deep round lobes and two small ones at the
+    base: the thing Genesis 3:7 sews, and it has to read as that alone."""
+    half = [(0, .02), (.34, -.02), (.54, .20), (.30, .30),
+            (.66, .52), (.40, .58), (.20, .46), (.30, .80), (0, 1.10)]
+    pts = half + [(-x, y) for x, y in half[-2:0:-1]]
+    ca, sa = math.cos(rot), math.sin(rot)
+    return [(cx + (x * ca - y * sa) * r, cy + (x * sa + y * ca) * r)
+            for x, y in pts]
+
+
+def _coat_side(T):
+    return [("fill", smooth([T(q) for q in _TUNIC_SIDE], n=3), "hide"),
+            ("line", smooth([T(q) for q in [(-7.6, 53), (0, 51.6), (7, 53)]],
+                            closed=False), "rule")]
+
+
+def _side_person(woman, arms, legs, covering, lean, up):
+    near_leg, far_leg, drop = SIDE_LEGS[legs] if isinstance(legs, str) else legs
+    T = side_lean(lean, drop)
+    k = .94 if woman else 1.0
+    P = []
+
+    def foot(ank, mat):
+        x, y = ank
+        if legs == "kneel2":    # on its top behind the shin: a heel up over the ankle, the sole
+            g = y - 3.2         # sloping down and back to the toes on the ground
+            shape = [(x + 1.8, g), (x - 4.2, g), (x - 9.2, g + .2), (x - 10.2, g + 1.2),
+                     (x - 9.6, g + 2.5), (x - 6.8, g + 3.4), (x - 4.0, g + 4.4), (x - 2.4, g + 6.8),
+                     (x - .4, g + 8.2), (x + 1.8, g + 7.2), (x + 2.6, g + 5.2)]
+        elif y > 4:     # the heel is off the ground: the rear foot of a stride
+            shape = [(x - 3.6, y), (x + 3.0, y - 1.2), (x + 6.2, y - 4.2),
+                     (x + 2.6, y - 4.8), (x - 2.6, y - 2.2)]
+        else:
+            shape = [(x - 3.8, 3.2), (x + 2.6, 3.4), (x + 7.8, 1.2), (x + 8.2, 0),
+                     (x - 4.6, 0)]
+        P.append(("fill", smooth(shape, n=3), mat))
+
+    def leg(chain, widths, mat):
+        if legs != "kneel2":
+            P.append(("fill", taper(chain, widths, round_end=False), mat))
+            return
+        # kneeling, thigh and shin apart, so that the knee is an angle with a cap in front, and
+        # never one curve from the hip to the toes
+        hip, knee, ank = chain
+        P.append(("fill", taper([hip, knee], widths[:2], round_end=False), mat))
+        P.append(("fill", taper([knee, ank], widths[1:], round_end=False), mat))
+        P.append(("dot", (knee[0] + .6, knee[1] + .3, widths[1] / 2 + .3), mat))
+
+    def arm(chain, mat):
+        pts = [T(q) for q in chain]
+        P.append(("fill", taper(pts, [7.8 * k, 6.0 * k, 4.4 * k], round_end=False), mat))
+        (ax, ay), (bx, by) = pts[-2], pts[-1]
+        L = math.hypot(bx - ax, by - ay) or 1.0
+        P.append(("dot", (bx + (bx - ax) / L * 2.2, by + (by - ay) / L * 2.2, 2.7 * k), mat))
+
+    near_arm, far_arm = SIDE_ARMS[arms] if isinstance(arms, str) else arms
+    if woman:
+        P.append(("fill", smooth([T(q) for q in _HAIR_SIDE_BACK]), "hair"))
+    arm(far_arm, "skin_far")
+    leg(far_leg, [9.4, 6.4, 5.0], "skin_far")
+    foot(far_leg[-1], "skin_far")
+    leg(near_leg, [10.4, 6.8, 5.2], "skin")
+    foot(near_leg[-1], "skin")
+    P.append(("fill", smooth([T(q) for q in _TORSO_SIDE], n=3), "skin"))
+    P.append(("fill", taper([T((0.2, 78)), T((1.2, 86))], [6.6, 5.8], round_end=False), "skin"))
+    # the head turns on the neck: `up` rotates it about its base
+    ua = math.radians(up)
+
+    def H(q):
+        x, y = q[0], q[1] - 84
+        return T((1.2 + x * math.cos(ua) - y * math.sin(ua),
+                  84 + x * math.sin(ua) + y * math.cos(ua)))
+    P.append(("fill", smooth([H(q) for q in _HEAD_SIDE], n=3), "skin"))
+    if woman:
+        P.append(("fill", smooth([H(q) for q in _HAIR_SIDE_CAP], n=3), "hair"))
+    else:
+        P.append(("fill", smooth([H(q) for q in _BEARD_SIDE], n=3), "hair"))
+        P.append(("fill", smooth([H(q) for q in _CAP_SIDE], n=3), "hair"))
+    if covering == "leaves":
+        for bx in (-7.2, -3.0, 1.4, 5.6):
+            P.append(("fill", smooth([T(q) for q in fig_leaf_outline(bx, 46.8, 13.5, math.pi)], n=2),
+                      "fleece"))
+        P.append(("line", [T((-7.6, 46.2)), T((6.6, 46.2))], "rule"))
+    elif covering == "skins":
+        P += _coat_side(T)
+    arm(near_arm, "skin_near")
+    return P
+
+
+def side_person(woman=False, arms="down", legs="stand", covering=None, lean=0.0, up=0.0):
+    """The man or the woman in profile, facing +x. His beard and cap, her long
+    hair behind and a cap over the crown. `arms`: a name in SIDE_ARMS, or a
+    (near, far) pair of chains, for a limb on its way between two poses. `legs`:
+    a name in SIDE_LEGS. `covering`: None, "leaves" (3:7) or "skins" (3:21).
+    `lean` bends from the hips and carries everything above them (degrees), and
+    `up` turns the head on the neck (degrees back: a head raised at a sound)."""
+    return _scale(_side_person(woman, arms, legs, covering, lean, up),
+                  UNIT["woman" if woman else "man"])
+
+
+# Asleep, in units along him and up from the ground he lies on: x runs from his crown
+# at about -49 to his heels at about 50. His back is on the ground, his chest stands
+# highest, his middle dips and his hips come up again. The near arm lies out from the
+# shoulder, a little in front of him, the hand open on the ground by his hip.
+_LYING_BACK = [(-30.5, 4.0), (-27.5, 1.3), (-20, .5), (-12, .8), (-5, 1.9), (2, 1.8),
+               (9, .6), (15, .9), (24, 1.6)]
+_LYING_FRONT = [(24, 9.6), (18, 10.8), (13, 11.5), (9, 11.6), (4, 11.1), (-2, 11.4),
+                (-8, 12.7), (-13, 14.3), (-18.5, 15.9), (-23.5, 15.7), (-27.5, 14.2),
+                (-30.5, 12.2), (-33, 10.6)]
+_LYING_ARM = [(-30, 8.2), (-28.6, 11.2), (-25.2, 11.6), (-21, 8.2), (-16, 4.8),
+              (-11, 2.8), (-5, 2.6), (1, 1.6), (4.4, 1.0), (7.6, 1.5), (10.6, 1.3),
+              (12.8, .3), (13.4, -.9), (12.2, -1.9), (9.6, -2.6), (6.4, -2.9),
+              (3.2, -2.7), (-2.4, -3.0), (-8, -3.1), (-13.5, -2.8), (-19, -.8),
+              (-24.8, 2.9), (-28.6, 5.6)]
+_LYING_FINGERS = [[(9.3, .1), (12.3, -.2)], [(9.2, -1.2), (12.6, -1.3)]]
+_LYING_HEAD = [(-42.0, 2.0), (-46.2, 2.8), (-48.8, 5.6), (-49.4, 9.2), (-47.8, 12.6),
+               (-45.0, 14.6), (-43.0, 15.1), (-41.9, 15.7), (-41.0, 17.1),
+               (-40.3, 17.7), (-39.7, 16.8), (-39.3, 15.7), (-38.4, 15.4),
+               (-37.5, 15.1), (-36.3, 15.4), (-35.1, 14.8), (-34.1, 12.8), (-34.5, 9.0),
+               (-36.6, 5.2), (-39.0, 2.8)]
+_LYING_HAIR = [(-45.6, 14.8), (-47.8, 12.4), (-49.2, 8.8), (-48.8, 5.0), (-46.4, 2.4),
+               (-42.8, 1.5), (-39.6, 2.0), (-39.8, 3.8), (-42.4, 4.6), (-44.4, 6.8),
+               (-45.0, 10.0), (-44.6, 13.0)]
+_LYING_BEARD = [(-39.2, 5.0), (-36.6, 5.6), (-34.5, 8.6), (-33.9, 12.4), (-34.6, 14.9),
+                (-36.3, 15.6), (-37.3, 14.6), (-37.3, 12.0), (-38.0, 9.6), (-39.6, 7.2)]
+_LYING_LEGS = (([(15, 5.9), (31, 5.0), (45.5, 4.1)], [11.2, 7.0, 4.8]),     # near
+               ([(15, 7.0), (31, 6.4), (45.5, 5.4)], [9.6, 6.4, 4.6]))      # far
+
+
+def _lying_foot(dy):
+    """A bare foot, the heel on the ground and the toes up, east of the ankle."""
+    return smooth([(44.4, 1.4 + dy), (47.6, 1.0 + dy), (49.6, 2.8 + dy), (50.8, 7.4 + dy),
+                   (51.0, 12.0 + dy), (49.4, 12.8 + dy), (48.0, 9.6 + dy), (46.6, 7.2 + dy),
+                   (44.6, 6.8 + dy)], n=3)
+
+
+def lying(breath=0.0):
+    """Asleep (2:21): the man on his back, face up, the head to the west, both legs
+    straight, near over far, feet together. A shoulder, a chest and a middle, and the
+    near arm at rest on the ground beside him, a little in front of him. The origin is
+    on the ground under the middle of him, and y below zero is the ground on the viewer's
+    side. `breath` (units) raises the chest's front alone, by a unit sine. The hair has
+    its own fine material, "hair_fine", and so do the fingers, "crease", because a close
+    camera magnifies what a side_person's lines hold at any size."""
+    front = [(x, y + (breath * math.sin((x + 30) / 28 * math.pi) if -30 < x < -2 else 0.0))
+             for x, y in _LYING_FRONT]
+    (near, near_w), (far, far_w) = _LYING_LEGS
+    P = [("fill", taper(far, far_w, round_end=False), "skin_far"),
+         ("fill", _lying_foot(1.0), "skin_far"),
+         ("fill", taper(near, near_w, round_end=False), "skin"),
+         ("fill", _lying_foot(0.0), "skin"),
+         ("fill", smooth(_LYING_BACK + front, n=3), "skin"),
+         ("fill", taper([(-30, 8), (-38, 9)], [6.6, 5.8], round_end=False), "skin"),
+         ("fill", smooth(_LYING_HEAD, n=3), "skin"),
+         ("fill", smooth(_LYING_BEARD, n=3), "hair_fine"),
+         ("fill", smooth(_LYING_HAIR, n=3), "hair_fine"),
+         ("fill", smooth(_LYING_ARM, n=2), "skin_near")]
+    P += [("line", q, "crease") for q in _LYING_FINGERS]
+    return _scale(P, UNIT["man"])
+
+
+def digging_stick(arms="dig1", lean=0.0, lift=18.0):
+    """A made thing, a tapered pole, in a man's own units: through his near
+    hand in side_person(arms=arms, lean=lean), so that it moves with the arm, and
+    down to `lift` units above the ground. Under nought its tip is in the ground.
+    `arms` is as side_person's. 2:15 and 3:17 are the same stick."""
+    near = (SIDE_ARMS[arms] if isinstance(arms, str) else arms)[0]
+    wx, wy = side_lean(lean)(near[-1])
+    a, b = (wx - 3.5, wy + 13), (wx + 9, lift)
+    L = math.hypot(b[0] - a[0], b[1] - a[1]) or 1.0
+    nx, ny = -(b[1] - a[1]) / L, (b[0] - a[0]) / L
+    return _scale([("fill", [(a[0] + nx * 1.3, a[1] + ny * 1.3), (b[0] + nx * .8, b[1] + ny * .8),
+                             (b[0] - nx * .8, b[1] - ny * .8), (a[0] - nx * 1.3, a[1] - ny * 1.3)],
+                    "wood")], UNIT["man"])
+
+
+# ---------------------------------------------------------------------------
+# Close to: what a camera at zoom 7 or 9 is shown of a person
+# ---------------------------------------------------------------------------
+#
+# These are drawn in their own units, a man 110 of them tall, and come out in the
+# shared unit, CLOSE_UNIT of it to one of theirs, so that each stands in register
+# with side_person at any size; the sizes their docstrings give are in their own
+# units. `s` draws one at that scale instead, as a host places a figure: px per
+# unit. Their lines are thin, because the camera magnifies them, and a figure's
+# own lines are held near constant on the screen by whoever hosts it. y is up, as
+# everywhere here.
+
+CLOSE_UNIT = 97 / 110       # one of their units in the shared unit: side_person stands 97 tall
+
+
+def _close(parts, s):
+    """A close-to drawing's parts, from its own units to the shared unit, at scale `s`."""
+    return _scale(parts, CLOSE_UNIT * s)
+
+
+def _turned_over(pts):
+    """An outline laid out on the screen's axes (y down), restated with y up."""
+    return [(x, -y) for x, y in pts]
+
+
+# Each finger: base (x, y) along the palm's top, lengths, width. Index to little.
+_HAND_FINGERS = [((5.4, 2.0), (3.3, 2.5, 2.0), 2.05),
+                 ((7.4, 2.0), (3.6, 2.7, 2.1), 2.1),
+                 ((9.2, 1.8), (3.3, 2.5, 2.0), 2.0),
+                 ((10.7, 1.2), (2.6, 2.0, 1.7), 1.75)]
+_THUMB = ((2.2, 2.0), (3.2, 2.6, 2.2), 2.7)
+
+# (index..little start angles), curl at each of three joints, thumb (start, curl, curl)
+HAND_POSES = {
+    "rest": ((30, 20, 10, 0), (8, 10, 8), (58, -8, -6)),
+    "open": ((50, 38, 26, 14), (-5, -5, -3), (88, -10, -8)),
+    "near": ((62, 50, 38, 26), (6, 8, 5), (98, -18, -14)),
+    "close": ((84, 74, 62, 50), (24, 28, 22), (108, -32, -26)),
+    "grip": ((92, 82, 70, 58), (30, 34, 26), (116, -40, -30)),
+    "cup": ((58, 48, 36, 24), (20, 22, 14), (84, -14, -8)),
+    "spill": ((26, 16, 6, -6), (4, 6, 4), (70, -6, -4)),
+    "pinch": ((70, 58, 52, 46), (40, 44, 30), (62, 6, 8)),     # a thread between thumb and finger
+    "under": ((22, 14, 6, -4), (4, 6, 4), (14, -4, -3)),   # flat, the thumb in along the palm
+}
+
+def _finger(base, lens, width, a0, curls):
+    """A finger's outline, the same number of points whatever its curl: it starts
+    at `a0` degrees (0 east, 90 up) and bends by each of `curls` at the joints."""
+    pts = [base]
+    a = a0
+    x, y = base
+    for L, c in zip(lens, curls):
+        x, y = x + L * math.cos(math.radians(a)), y + L * math.sin(math.radians(a))
+        pts.append((x, y))
+        a += c
+    return taper(pts, [width, width * .96, width * .86, width * .72], round_end=True)
+
+
+def hand(pose="rest", k=1.0, vflip=False, s=1.0):
+    """A hand, half as big again as life, because this is the shot that has to
+    say it, as {name: closed outline}: "arm", "palm", "th" and "f0" to
+    "f3", with the same point counts in every pose in HAND_POSES, so that a path
+    can morph from one to another, and "patch", the skin over the join of arm and
+    palm, since a line across the wrist reads as a robot's cuff. The wrist is at
+    the origin, the forearm comes in along -x, the palm runs on along +x and its
+    fingers rise. Drawn back to front: arm, palm, patch, f3 to f0, th. `k` narrows
+    it: hers is .88 of his; `vflip` turns it palm down."""
+    a, c, th = HAND_POSES[pose]
+    sh = {"palm": smooth([(-1.0, -2.9), (3.0, -3.5), (7.8, -3.4), (10.8, -2.2), (11.8, .1),
+                          (10.8, 2.2), (7.0, 2.8), (3.0, 3.0), (-1.0, 2.7)], n=4),
+          "arm": smooth([(1.0, 2.7), (-8, 3.6), (-24, 4.6), (-46, 5.4), (-90, 6.4), (-90, -8.6),
+                         (-46, -7.2), (-24, -5.6), (-8, -3.8), (1.0, -2.7)], n=4),
+          "patch": [(-2.8, 2.5), (2.3, 2.5), (2.3, -2.5), (-2.8, -2.5)]}
+    for i, (base, lens, w) in enumerate(_HAND_FINGERS):
+        sh[f"f{i}"] = _finger(base, lens, w, a[i], c)
+    sh["th"] = _finger(_THUMB[0], _THUMB[1], _THUMB[2], th[0], th[1:])
+    u = CLOSE_UNIT * s
+    kx, ky = k * u, (-k if vflip else k) * u
+    return {name: [(x * kx, y * ky) for x, y in pts] for name, pts in sh.items()}
+
+
+# A row of toes: (x, y, height), big toe to little.
+_FOOT_TOES = ((15.4, 1.05, 1.32), (13.4, .95, 1.12), (11.7, .85, 1.02), (10.1, .8, .92), (8.7, .75, .84))
+
+
+def foot_toes(s=1.0):
+    """`foot`'s toes as (x, y, height), big toe to little, for a host that draws them
+    as ellipses, each 1.12 times as wide as it is high."""
+    u = CLOSE_UNIT * s
+    return tuple((x * u, y * u, h * u) for x, y, h in _FOOT_TOES)
+
+
+def foot(heel_up=0.0, s=1.0):
+    """A bare foot and calf, side on, toes to +x, at life, the sole on zero, as
+    parts: the outline (skin), which has a heel pad and a calf widening from
+    6 wide at the ankle to 11.4 at the top, 120 up, where a frame's edge should cut
+    it; five toes, little to big (skin); an ankle bone, one arc (rule). `heel_up` turns
+    the heel about the ball, in degrees, swinging it under the sole's line while the
+    toes stay where they are: a foot raised by more than that as it turns, as 3:15's
+    is, is seen to come up off its heel. (Turned the other way the ankle breaks, since
+    the calf stands still.) Outline and ankle keep their point counts, so a path can
+    morph from one heel to another. 3:15, one foot with no one above it."""
+    a = math.radians(heel_up)
+    ball = (9.5, .6)
+
+    def U(p):
+        if p[0] >= ball[0] or p[1] > 14:
+            return p
+        dx, dy = p[0] - ball[0], p[1] - ball[1]
+        return (ball[0] + dx * math.cos(a) - dy * math.sin(a),
+                ball[1] + dx * math.sin(a) + dy * math.cos(a))
+    body = [(-5.4, 120), (-5.2, 60), (-4.6, 36), (-3.5, 20), (-3.1, 12.6), (-3.9, 8.0), (-5.4, 5.0),
+            (-7.0, 3.2), (-7.3, 1.5), (-5.9, .1), (-2.2, .0), (1.6, 1.1), (5.0, .5), (8.6, .0),
+            (12.2, .1), (15.0, .1), (15.6, 1.9), (13.4, 2.9), (10.0, 3.7), (6.4, 5.4), (3.6, 8.2),
+            (2.8, 12.8), (3.4, 22), (5.0, 38), (5.8, 60), (6.0, 120)]
+    ankle = [(-2.0, 7.4), (-1.1, 8.3), (.1, 8.3), (.9, 7.4)]
+    P = [("fill", smooth([U(q) for q in body], n=3), "skin")]
+    for x, y, r in _FOOT_TOES[::-1]:
+        P.append(("fill", _disc(x, y, r * 1.12, r), "skin"))
+    P.append(("line", smooth([U(q) for q in ankle], closed=False, n=4), "rule"))
+    return _close(P, s)
+
+
+def rib(s=1.0):
+    """One rib at life: a bone 24 long, a knuckle at the origin, a neck, and
+    a flat blade curving over to a blunt end, with one groove along it: material "bone",
+    and "bone_line" for the groove. 2:21-22."""
+    a = [(0, 0), (1.5, -.8), (3.4, -1.5), (7, -3.0), (12, -3.9), (17.5, -3.6), (21.5, -2.6),
+         (24.5, -1.4)]
+    w = [3.6, 2.5, 1.9, 2.1, 2.2, 2.2, 2.1, 1.9]
+    groove = smooth([(7.2, -2.7), (12, -3.5), (17.5, -3.2), (21.2, -2.3)], closed=False)
+    return _close([("fill", _turned_over(taper(a, w, round_end=True)), "bone"),
+                   ("line", _turned_over(groove), "bone_line")], s)
+
+
+def mound(s=1.0):
+    """A low heap of the ground, on zero and about 80 wide with its loose grains: an irregular base with no corners, two tones and 46 grains at its
+    foot, in materials "mound", "mound_lit" and "grain". The same drawing at 2:7, 3:19
+    and in the plate: the start of the one and the end of the other."""
+    body = [(-34, 7.6), (-27, 5.4), (-20, 2.0), (-14, -2.2), (-7, -7.0), (0, -9.4), (6, -9.8),
+            (12, -6.8), (18, -2.8), (24, 1.6), (31, 5.0), (37, 7.2), (33, 9.6), (24, 9.0),
+            (15, 10.6), (5, 9.4), (-6, 11.0), (-16, 9.2), (-26, 10.4)]
+    lit = [(-22, 3.0), (-15, -1.6), (-8, -6.2), (-1, -8.6), (1, -5.4), (-4, -1.4), (-10, 2.6), (-16, 5.2)]
+    r = random.Random(23)
+    grains = [(r.uniform(-40, 42), r.uniform(5, 13), r.uniform(.35, .95)) for _ in range(46)]
+    P = [("fill", smooth([(x, 10 - y) for x, y in body], n=4), "mound"),
+         ("fill", smooth([(x, 10 - y) for x, y in lit], n=4), "mound_lit")]
+    P += [("dot", (x, 10 - y, g), "grain") for x, y, g in grains]
+    return _close(P, s)
+
+
+def _cubic(p0, p1, p2, p3, n=6):
+    """A cubic Bezier as n + 1 points."""
+    out = []
+    for i in range(n + 1):
+        t = i / n
+        u = 1 - t
+        out.append((u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0],
+                    u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]))
+    return out
+
+
+def sprout(alive=True, s=1.0):
+    """A seedling with two leaves, its foot at the origin, about 16 tall, and
+    drawn at 2.2 times that, so that a wilt can be seen. Materials "stem" and
+    "leaf". `alive=False` is the same seedling lying over to the west, wilted."""
+    P = [("line", _cubic((0, 0), (-1, 5), (1, 9), (0, 15)), "stem"),
+         ("fill", _cubic((0, 8), (-5, 11), (-8, 11), (-11, 9))
+          + _cubic((-11, 9), (-8, 7), (-4, 6), (0, 8))[1:-1], "leaf"),
+         ("fill", _cubic((0, 13), (4, 17), (8, 17), (11, 15))
+          + _cubic((11, 15), (8, 13), (4, 12), (0, 13))[1:-1], "leaf")]
+    if alive:
+        return _close(P, s)
+    a = math.radians(62)
+    ca, sa = math.cos(a), math.sin(a)
+    return _close([(kind, [(x * ca - y * sa, x * sa + y * ca) for x, y in data], mat)
+                   for kind, data, mat in P], s)
+
+
+def small_snake(s=1.0):
+    """A small snake, its head to +x, along the ground at y zero, about 58 long: tapered, five dark bands, a head wider than its neck with a dark cap.
+    Materials "hide", "rule", "muzzle" (the head) and "hair" (its cap). 3:15."""
+    body = taper([(-30, 0), (-20, -3), (-10, 2), (0, -1), (10, 1), (18, 0)],
+                 [.8, 2.6, 3.6, 4, 4, 3.4], round_end=True)
+    head = smooth([(16, -1.8), (20, -3.2), (25, -2.2), (28.5, -.2), (25, 1.8), (20, 2.8), (16, 1.8)], n=3)
+    cap = [(18.5, -2.2), (20.25, -1.6), (21.9, -1.05), (24.5, -1.2), (22.4, -2.1), (20.4, -2.45)]
+    P = [("fill", _turned_over(body), "hide")]
+    for x, y in ((-18, -2.6), (-11, 1.6), (-4, .2), (3, -.6), (10, 1)):
+        P.append(("line", _turned_over([(x, y - 1.8), (x + 1, y + 1.8)]), "rule"))
+    P.append(("fill", _turned_over(head), "muzzle"))
+    P.append(("fill", _turned_over(cap), "hair"))
+    return _close(P, s)
+
+
+def viper_head(s=1.0):
+    """A viper's head side on, at life, its snout to +x and its nose's place on the body's line at
+    the origin, y up: 26 long, the jaw 12 deep, the
+    neck 8, the snout 6, wider than the neck behind it. No midline and no eye: a dark cap, a mouth
+    line low on the nose, and one pale chevron on the nape, behind the head, pointing to the snout.
+    Materials "muzzle" (the head), "hair" (the cap), "horn" (the chevron) and "rule" (the mouth), in
+    the order they are drawn. The serpent of Genesis 3; `serpent` is Genesis 1's."""
+    head = smooth([(-6, -4), (-1, -4.6), (4, -5.6), (10, -4.6), (15, -3.5), (18.5, -2.8), (20, -1.2),
+                   (20.3, .3), (19, 1.8), (15, 3), (10, 4.4), (5, 6.2), (0, 5.2), (-6, 4)], n=3)
+    cap = smooth([(-4.5, -3.6), (1, -4.5), (5, -5), (10, -3.9), (14.5, -2.9), (17, -2.2), (14, -.9),
+                  (9, -.5), (4, .1), (-1, .2), (-4.5, .2)], n=3)
+    chevron = [(-11.6, -2.8), (-8.6, -1.6), (-11.6, -.4), (-12.5, -.4), (-9.7, -1.6), (-12.5, -2.8)]
+    mouth = [(19.2, 1.1), (13.5, 2.1), (7.5, 2.7)]
+    return _close([("fill", _turned_over(head), "muzzle"), ("fill", _turned_over(cap), "hair"),
+                   ("fill", _turned_over(chevron), "horn"), ("line", _turned_over(mouth), "rule")], s)

@@ -107,6 +107,9 @@ explains the project, and `docs/` has the detail.
 - Take Matthew's and Luke's lines on the family tree from `gospel_lines.py`, which
   resolves them by position, and Luke's names from `generate_luke3.extract_line`,
   never `chronology.LUKE_TAIL`. Nothing on the Line to Jesus layer goes on the tree.
+- Take the garden's land, trees and river from `garden_art.py`, and its marks and
+  shots from `garden_stage.py`. Stone is what is only spoken of. Nothing begins on
+  his name.
 - Take verse numbers from `passages.verse_numbers()`. Never hard-code chapter
   lengths.
 - Animate with SMIL, and keep the motion.
@@ -125,7 +128,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.

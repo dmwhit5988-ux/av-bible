@@ -277,8 +277,9 @@ best per-chapter variety of any short book.
 
 **Habakkuk 1 (17 vv.)** · 💡 📊 — *a two-sided exchange*
 
-Use the **speaker-strip-with-arcs device already built for Genesis 3**: every line
-drawn as an arc from speaker to hearer, arcs persisting so the exchange reads whole.
+Use a **speaker strip with arcs**, the device built for Hebrews (`voice_arc` in
+`generate_hebrews_svg.py`): every line drawn as an arc from speaker to hearer, arcs
+persisting so the exchange reads whole.
 Here there are only two speakers and four moves.
 
 - **vv. 2–4** — first complaint: how long? Destruction and violence, the law
