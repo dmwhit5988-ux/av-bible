@@ -4,11 +4,11 @@ Stephen's speech as one camera tour over the lands of Israel's story, with
 a scene card of Jerusalem the camera dives into, built the way Acts 13–14 is
 ([acts-13-14.md](acts-13-14.md)).
 
-## Status: first cut built (2026-11-05), not deployed
+## Status: first cut built (2026-11-05), the bush card added (2026-11-06), not deployed
 
-All 71 verses are drawn and narrated. The bush at Sinai (7:30–34) is held
-on the map with a placeholder bush; its own card is the next step. Nothing
-has been seen on a device, and the owner has not yet reviewed the tour.
+All 71 verses are drawn and narrated, the bush at Mount Sinai (7:31–34) in
+its own card. Nothing has been seen on a device, and the owner has not yet
+reviewed the tour or the bush card.
 
 | What | Where |
 |---|---|
@@ -16,7 +16,8 @@ has been seen on a device, and the owner has not yet reviewed the tour.
 | The map beyond the Levant: the Nile, the Red Sea and Sinai, Mesopotamia's rivers, the Persian Gulf, the speech's places | `near_east.py` (tested by `test_near_east.py`) |
 | The rest of the land and sea | `mediterranean.py`, `acts_geography.py` (southern Asia Minor, Cyprus, the Anatolian lakes and rivers), `gazetteer.py` (the Levant) |
 | The Jerusalem card (6:8–7:1, 7:52–8:3) | `acts7_council.py` |
-| God's presence; Solomon's house | `svg_figures.prepared_throne`, `svg_figures.temple_house` |
+| The bush card (7:31–34) | `acts7_bush.py` |
+| God's presence; Solomon's house; the bush and its flame; sandals | `svg_figures.prepared_throne`, `svg_figures.temple_house`, `svg_figures.bush` and `bush_flames`, `svg_figures.sandals` |
 | The camera, labels, HUD and QC; the cards | `svg_map_camera.py`, `svg_scene_card.py` (which gained effects drawn under the cast, `Card.effect(under=True)`, for the throne's glow) |
 
 ## The idea
@@ -69,10 +70,21 @@ carries the argument, not only the story. Two devices run through it:
   (7:26–28); the flight to Midian and his two sons (7:29). A bar of his 120
   years in three forties (Egypt, Midian, wilderness) fills from 7:20 to 7:36,
   each forty showing "40" when full.
-- **7:30–7:34**: on to Mount Sinai under the third throne mark; the burning
-  bush (a placeholder until its card); "God of the fathers" (7:32); a line
-  back to Egypt (7:34).
-- **7:35–7:47**: sent back to Rameses (7:35); the exodus and the wilderness
+- **7:30**: on to Mount Sinai under the third throne mark, a small burning
+  bush lifting in beside it at "a flame of fire in a bush".
+- **7:31–7:34** in the bush card. At "As he came close to see" (7:31) the
+  camera dives from the map into the mountain's foot: the granite massif
+  behind, the flock, the thornbush burning in a soft light, its flame
+  swaying slowly (never a flicker). Moses walks up to it, and the voice of
+  the Lord goes out from the bush as three widening arcs, at "a voice of the
+  Lord" and again at the start of each verse he speaks (7:32–34). "God of
+  the fathers" and the three names on the plate (7:32); Moses shivers at
+  "trembled" and goes down on his knees at "dared not look". His sandals
+  come off and are set by him, and the ground about the bush lights, holy
+  ground, and stays lit (7:33). A light comes down on the bush at "I have
+  come down to deliver them", and at "Now come" he stands; the camera draws
+  back, and he is ringed at "I will send you" (7:34).
+- **7:35–7:47**: out of the card to the map, and sent back to Rameses (7:35); the exodus and the wilderness
   traced with the twelve, rings at Rameses and the crossing, "40 years"
   (7:36); the Chi-Rho at Jerusalem for a moment at "a prophet like me"
   (7:37); Sinai ringed (7:38); a line back towards Egypt (7:39); Aaron (7:40),
@@ -99,7 +111,7 @@ carries the argument, not only the story. Two devices run through it:
 ## Decisions (the owner, 2026-11-05)
 
 - **Scope: 6:8–8:3 only** (71 verses). Philip (8:4–40) is not planned here.
-- **The bush gets its own card** (7:30–34). Not built yet.
+- **The bush gets its own card** (7:31–34). Built 2026-11-06.
 - **The stoning is drawn lightly**: three stones, then three, Stephen kneels
   and lies still. Nothing more.
 - **"The God of glory" is the prepared throne** (option T1), after the early
@@ -136,6 +148,14 @@ carries the argument, not only the story. Two devices run through it:
   tent for the ark is not drawn.
 - The scattering (8:1) is eighteen dots over Judea and Samaria, the twelve
   staying at Jerusalem.
+- The bush card. The camera dives in at 7:31 ("came close to see"), not
+  7:30, so 7:30 keeps the map's arrival at Sinai and its throne mark. The
+  flame is the appearing: no angel and no figure of God is drawn, and the
+  card has no throne mark. The voice is drawn as arcs from the bush. Moses
+  is drawn facing us, so "dared not look" is a kneel, not a turned face.
+  The flock is Exodus 3:1's, set dressing. The sandals are drawn a third
+  over true size so a pair reads. The flame sways on a loop, slowly, as the
+  Tabernacle's lamps do.
 
 ## QC
 
@@ -144,8 +164,9 @@ after its narration, and a world or card edge in view. Today it reports no
 late verse and no edge. Forced placements left: Shechem beside Abraham at
 7:4, Hebron's and "twelve"'s names touching the Salt Sea at 7:8–7:15, the
 tabernacle's name on the coast at 7:44, Shiloh beside Joshua at 7:45, and
-Jerusalem's name on the coast at 7:48–51. Mount Sinai's name is dropped
-where the mark, Moses, Aaron and the bush crowd it (7:31–7:45 outside 7:38).
-Rest frames and the 6:9, 7:2, 7:43, 7:52, 8:1 flights were reviewed as
-contact sheets. The verse files are up to 300 KB, 11 MB in all; the 71
+Jerusalem's name on the coast at 7:48–51. Mount Sinai's name is pressed onto
+its dot at 7:30, and dropped where the mark, Moses, Aaron and the
+tabernacle crowd it (7:36–7:45 outside 7:38).
+Rest frames and the 6:9, 7:2, 7:31, 7:35, 7:43, 7:52, 8:1 flights were
+reviewed as contact sheets, and the bush card's beats mid-verse. The verse files are up to 300 KB, 11 MB in all; the 71
 files bring the deploy to 6,611.

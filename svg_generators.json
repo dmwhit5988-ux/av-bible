@@ -599,8 +599,12 @@
           "edit": "the Jerusalem scene card (7:52-60): the council, the prepared throne over the hall, the rush, the gate, the stoning, Saul"
         },
         {
+          "file": "acts7_bush.py",
+          "edit": "the bush at Mount Sinai scene card (7:31-34): the mountain, the burning bush, Moses, the voice, his sandals, holy ground"
+        },
+        {
           "file": "svg_figures.py",
-          "edit": "prepared_throne (God's presence) and temple_house (Solomon's house from temple.py)"
+          "edit": "prepared_throne (God's presence), temple_house (Solomon's house from temple.py), bush, bush_flames and sandals (Exodus 3)"
         },
         {
           "file": "svg_map_camera.py",

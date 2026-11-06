@@ -86,6 +86,7 @@ import near_east as NE
 import sanctuary as SN
 import temple as TP
 import acts7_council as CO
+import acts7_bush as BU
 
 BOOK = "Acts"
 REFS = ([(6, v) for v in verse_numbers(BOOK, 6) if v >= 8]
@@ -678,7 +679,8 @@ def names(*rows):
 
 CARD = CO.build(P(*JERUS))
 S_CARD = CO.S_CARD
-CARDS = [(CARD, CO)]
+BUSH = BU.build(P(*SINAI))
+CARDS = [(CARD, CO), (BUSH, BU)]
 
 T_SEIZED = "Stephen Seized — Acts 6"
 T_SPEECH = "Stephen’s Speech to the Council — Acts 7"
@@ -715,14 +717,16 @@ stage((7, 54), (7, 60), title=T_STONED)
 stage((8, 1), (8, 3), title=T_SCATTER)
 
 # the card verses: their shots and camera plans
-for _r, _xyz in CO.SHOTS.items():
-    _legs = CO.LEGS.get(_r)
-    if _legs:
-        stage(_r, _r, cam=CARD.cam(*_xyz),
-              legs=[(k, CARD.cam(*x) if x else None, d) for k, x, d in _legs])
-    else:
-        stage(_r, _r, cam=CARD.cam(*_xyz),
-              legs=[("to", CARD.cam(*_xyz), CO.DUR.get(_r, 0.0))])
+for _card, _mod in CARDS:
+    for _r, _xyz in _mod.SHOTS.items():
+        _legs = _mod.LEGS.get(_r)
+        if _legs:
+            stage(_r, _r, cam=_card.cam(*_xyz),
+                  legs=[(k, _card.cam(*x) if x else None, d)
+                        for k, x, d in _legs])
+        else:
+            stage(_r, _r, cam=_card.cam(*_xyz),
+                  legs=[("to", _card.cam(*_xyz), _mod.DUR.get(_r, 0.0))])
 
 OPEN = card_cam((6, 8))
 # 6:9 up to the eastern sea for the synagogue's men, and back down
@@ -747,11 +751,13 @@ stage((7, 17), (7, 17), legs=[("to", GOSHEN_SHOT, 1.8)])
 stage((7, 20), (7, 20), plate=names("3 months"), plate_at=5.0)
 stage((7, 29), (7, 29), cam=MIDIAN_SHOT,
       legs=[("hold", None, 0.4), ("to", MIDIAN_SHOT, 2.2)])
-stage((7, 30), (7, 34), cam=SINAI_SHOT)
+stage((7, 30), (7, 30), cam=SINAI_SHOT)
 stage((7, 30), (7, 30), legs=[("hold", None, 1.0), ("to", SINAI_SHOT, 2.6)])
 stage((7, 32), (7, 32), plate=names("God of the fathers", "Abraham", "Isaac",
                                     "Jacob"), plate_at=1.4)
-stage((7, 35), (7, 35), cam=EG_SINAI, legs=[("to", EG_SINAI, 1.8)])
+# 7:35 out of the bush's card to the map, and back to Egypt
+stage((7, 35), (7, 35), cam=EG_SINAI,
+      legs=[("hold", None, 0.2), ("to", EG_SINAI, 3.4)])
 stage((7, 36), (7, 37), cam=WILD_SHOT)
 stage((7, 36), (7, 36), legs=[("to", WILD_SHOT, 1.6)],
       plate=names("40 years"), plate_at=6.4)
@@ -1303,7 +1309,7 @@ def beats(ref, fl, cam1, t_land):
                 + fig_svg(F.child(), FIG_PX * 0.62, TEXT) + "</g>",
                 (22 + k * 18, 0))))
 
-    # -- the bush (until its card): a burning bush at Sinai ---------------
+    # -- the bush on the map (7:30, and 7:31 until the card covers it) ---
     if within(ref, (7, 30), (7, 34)):
         bush = fig_svg(F.herb(), 40, HL, unit_h=MAN_H * F.UNIT["herb"])
         bush = (f'<circle cx="0" cy="-20" r="30" fill="url(#glory)"/>'
@@ -1314,11 +1320,6 @@ def beats(ref, fl, cam1, t_land):
         b.obstacles.append(("bush", (ax + 4, ay - 46, ax + 46, ay)))
         if ref == (7, 30):
             b.ends.append(8.0)
-    if ref == (7, 34):
-        w = PS([SINAI, (28.95, 33.25), (29.60, 32.85), (29.98, 32.56),
-                RAMESES])
-        b.cls["word_trace"].append(traced_el(w, TEXT, 6.8, 1.6)[0])
-        b.ends.append(8.4)
 
     # -- pinned figures -----------------------------------------------------
     for key, (where, off, make, box, r_in, t_in, r_last, name) in PINS.items():

@@ -1814,6 +1814,105 @@ def _herb():
     return P
 
 
+def _bush_clumps():
+    """The thornbush's crown as small masses of leaf on a low dome, (x, y,
+    r, row), back rows first; row 0 is the front, lowest row."""
+    rows = ((76, (-20, 4, 24), 10), (64, (-38, -16, 6, 28, 46), 11),
+            (50, (-50, -30, -10, 10, 30, 50), 12),
+            (36, (-58, -40, -20, 0, 20, 40, 58), 11))
+    out = []
+    for row, (y, xs, r) in enumerate(rows):
+        for k, x in enumerate(xs):
+            j = row * 7 + k
+            out.append((x + 3 * math.sin(j * 2.3), y + 3 * math.cos(j * 1.7),
+                        r + 2 * math.sin(j * 3.1), 3 - row))
+    return out
+
+
+# where the flames of Exodus 3:2 stand in the crown: (x, root, height);
+# unequal, the tallest off centre, so they don't read as a crown or a row of
+# candles. Their roots sit behind the front rows of leaf.
+_BUSH_TONGUES = ((-42, 52, 30), (-20, 58, 48), (2, 62, 64), (26, 58, 44),
+                 (46, 52, 28), (-6, 56, 34), (14, 56, 32))
+
+
+def _clump(cx, cy, r, seed):
+    """One rounded mass of small leaves, its edge uneven so a crown of them
+    reads as foliage and not as a bunch of balloons."""
+    pts = []
+    for k in range(9):
+        a = 2 * math.pi * k / 9 + seed * 0.7
+        rr = r * (0.80 + 0.20 * math.sin(3 * a + seed))
+        pts.append((cx + rr * math.cos(a), cy + rr * 0.86 * math.sin(a)))
+    return smooth(pts, closed=True)
+
+
+def _bush(part=None):
+    """A desert thornbush, the seneh of Exodus 3:2 (a bramble or acacia
+    scrub): thin woody stems from one root, splaying into a low dome of
+    small leaf with thorns and bare twigs at its edge. About chest high and
+    half again as wide. `part` "back" is the stems and the crown less its
+    two front rows, "front" those rows alone, so a flame can stand in it."""
+    P = []
+    clumps = _bush_clumps()
+    if part != "front":
+        for tip, w in (((-56, 36), 2.4), ((-40, 52), 2.8), ((-18, 66), 3.2),
+                       ((4, 74), 3.4), ((26, 62), 3.0), ((46, 50), 2.6),
+                       ((60, 34), 2.2)):
+            mid = (tip[0] * 0.40, tip[1] * 0.45)
+            P.append(("fill", taper([(tip[0] * 0.06, 0), mid, tip],
+                                    [w * 1.6, w, w * 0.5]), "wood"))
+        for x0, y0, x1, y1 in ((-24, 80, -34, 96), (18, 78, 30, 94),
+                               (54, 50, 70, 60), (-58, 44, -72, 52)):
+            P.append(("line", [(x0, y0), (x1, y1)], "rule"))   # bare twigs
+    for k, (cx, cy, r, row) in enumerate(clumps):
+        if part == "front" and row > 1 or part == "back" and row <= 1:
+            continue
+        P.append(("fill", _clump(cx, cy, r, k), "fleece"))
+        for a in (0.5, 2.6):                                    # the thorns
+            x, y = cx + r * 0.86 * math.cos(a), cy + r * 0.76 * math.sin(a)
+            P.append(("line", [(x, y), (x + 4 * math.cos(a),
+                                        y + 4 * math.sin(a))], "rule"))
+    return P
+
+
+def _bush_flames(which=None):
+    """The flame of fire in the bush (Exodus 3:2, Acts 7:30): tongues
+    rounded at the root and drawn up to a leaning point, standing in the
+    crown, in `_bush`'s own units (draw them between its "back" and
+    "front"). `which` 0 or 1 takes every other tongue, so a scene can sway
+    the two halves at different rates."""
+    P = []
+    for k, (x, gy, h) in enumerate(_BUSH_TONGUES):
+        if which is not None and k % 2 != which:
+            continue
+        lean = 0.14 * math.sin(k * 1.7 + 0.4) * h
+        w = h * 0.38
+        P.append(("fill", smooth(
+            [(x, gy), (x - w * 0.50, gy + h * 0.16),
+             (x - w * 0.44, gy + h * 0.40),
+             (x - w * 0.12 + lean * 0.5, gy + h * 0.70),
+             (x + lean, gy + h),
+             (x + w * 0.16 + lean * 0.5, gy + h * 0.64),
+             (x + w * 0.50, gy + h * 0.32),
+             (x + w * 0.36, gy + h * 0.08)], k=0.8), "fire"))
+    return P
+
+
+def _sandals():
+    """A pair of sandals put off (Exodus 3:5, Acts 7:33), lying on the
+    ground side by side: flat soles with their thongs. Authored against a
+    man, a sole about a sixth of his height."""
+    P = []
+    for dx, dy, mat in ((5, 1.6, "clay"), (0, 0, "horn")):
+        P.append(("fill", smooth([(dx - 9, dy), (dx + 8, dy), (dx + 9.5, dy + 1.4),
+                                  (dx + 8, dy + 2.8), (dx - 8.5, dy + 2.6),
+                                  (dx - 9.6, dy + 1.2)], closed=True), mat))
+        P.append(("line", [(dx - 6, dy + 2.6), (dx - 3.5, dy + 6.4),
+                           (dx + 0.5, dy + 6.8), (dx + 3, dy + 2.8)], "rule"))
+    return P
+
+
 def _grass():
     """A tuft. Blades of one length read as a comb, so they vary."""
     P = []
@@ -2141,6 +2240,8 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "tree": 2.35,          # a fruit tree: a man reaches its lower boughs
         "vine": 1.12,          # staked, it comes to a man's shoulder
         "herb": 0.55,
+        "bush": 0.80,          # the thornbush of Exodus 3: ~100 drawn,
+                               # chest high on a man, half again as wide
         "grass": 0.30,
         # The lights are emblems, not bodies — they have no size against a
         # man, so they are authored at 1 and a scene sets what it wants.
@@ -2196,7 +2297,8 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         # the camp at Shiloh (Joshua 18): the Tabernacle's own pieces are
         # sized by sanctuary.py in cubits (CUBIT), so they take no unit here
         "standard": 2.00,      # a pole twice a man, its pennant over the crowd
-        "lot": 0.40}           # a pebble a hand closes on
+        "lot": 0.40,           # a pebble a hand closes on
+        "sandals": 1.00}       # authored against a man: a sole ~19 long
 
 
 def man(pose="stand", mantle=True, staff=False, arms="down"):
@@ -2436,6 +2538,21 @@ def herb():
 
 def grass():
     return _scale(_grass(), UNIT["grass"])
+
+
+def bush(part=None):
+    """The thornbush of Exodus 3. See `_bush`."""
+    return _scale(_bush(part), UNIT["bush"])
+
+
+def bush_flames(which=None):
+    """The flame in the bush, to lie over `bush()`. See `_bush_flames`."""
+    return _scale(_bush_flames(which), UNIT["bush"])
+
+
+def sandals():
+    """A pair of sandals put off. See `_sandals`."""
+    return _scale(_sandals(), UNIT["sandals"])
 
 
 def garland(swag=False):
