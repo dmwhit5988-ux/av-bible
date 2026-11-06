@@ -1063,8 +1063,7 @@
       "ipa": "/ˈfɛər.oʊ/",
       "ref": "Genesis 12:15",
       "override": false,
-      "use_ipa": true,
-      "status": "fixed"
+      "status": "ok"
     },
     "Jordan": {
       "say": "JOR-duhn",
@@ -3886,6 +3885,12 @@
       "override": false,
       "status": "ok",
       "score": 1.0
+    },
+    "Place": {
+      "say": "Place",
+      "ref": "Leviticus 6:30",
+      "override": false,
+      "status": "ok"
     },
     "Mishael": {
       "say": "mish-ael",
@@ -9600,8 +9605,7 @@
       "ipa": "/sɔːl/",
       "ref": "1 Samuel 9:2",
       "override": false,
-      "use_ipa": true,
-      "status": "fixed"
+      "status": "ok"
     },
     "Shaalim": {
       "say": "shay-ah-lim",
@@ -11883,8 +11887,7 @@
       "ipa": "/ˈbæb.ɪ.lən/",
       "ref": "2 Kings 17:24",
       "override": false,
-      "use_ipa": true,
-      "status": "fixed"
+      "status": "ok"
     },
     "Cuthah": {
       "say": "Cuthah",
@@ -16918,8 +16921,7 @@
       "ipa": "/ˌmɛs.ə.pəˈteɪ.mi.ə/",
       "ref": "1 Chronicles 19:6",
       "override": false,
-      "status": "ok",
-      "score": 0.955
+      "status": "ok"
     },
     "Medeba": {
       "say": "MEHD-uh-buhh",
@@ -23488,8 +23490,7 @@
       "ipa": "/ˈpiː.tər/",
       "ref": "Luke 5:8",
       "override": false,
-      "status": "ok",
-      "score": 0.8
+      "status": "ok"
     },
     "James": {
       "say": "JAYMZ",
@@ -24290,32 +24291,32 @@
       "ipa": "/naɪˈkeɪ.nɔːr/",
       "ref": "Acts 6:5",
       "override": false,
-      "status": "ok",
-      "score": 0.857
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Nicolaus": {
       "say": "nik-uh-LAY-uhs",
       "ipa": "/ˌnɪk.əˈleɪ.əs/",
       "ref": "Acts 6:5",
       "override": false,
-      "status": "ok",
-      "score": 0.875
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Parmenas": {
       "say": "PAR-muh-nuhs",
       "ipa": "/ˈpɑːr.mə.nəs/",
       "ref": "Acts 6:5",
       "override": false,
-      "status": "unfixed",
-      "score": 0.75
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Prochorus": {
       "say": "PROK-uh-ruhss",
       "ipa": "/ˈprɒk.ə.rəs/",
       "ref": "Acts 6:5",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Stephen": {
       "say": "STEE-vuhn",
@@ -24354,8 +24355,8 @@
       "ipa": "/saɪˈriː.ni.ənz/",
       "ref": "Acts 6:9",
       "override": false,
-      "status": "ok",
-      "score": 0.944
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Libertines": {
       "say": "LIB-er-teenz",
@@ -24386,8 +24387,7 @@
       "ipa": "/iˈdʒɪp.ʃənz/",
       "ref": "Acts 7:22",
       "override": false,
-      "status": "ok",
-      "score": 0.875
+      "status": "ok"
     },
     "Sinai": {
       "say": "SY-ny",
@@ -24396,6 +24396,12 @@
       "override": false,
       "status": "ok",
       "score": 1.0
+    },
+    "Red": {
+      "say": "Red",
+      "ref": "Acts 7:36",
+      "override": false,
+      "status": "ok"
     },
     "Moloch": {
       "say": "MOH-lok",
@@ -24410,8 +24416,8 @@
       "ipa": "/ˈriː.fæn/",
       "ref": "Acts 7:43",
       "override": true,
-      "status": "fixed",
-      "score": 1.0
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Gaza": {
       "say": "GAH-zuh",
@@ -24426,8 +24432,7 @@
       "ipa": "/ˈkæn.də.siː/",
       "ref": "Acts 8:27",
       "override": false,
-      "status": "suggested",
-      "score": 0.714
+      "status": "ok"
     },
     "Ethiopia": {
       "say": "ee-thee-OH-pee-uh",
