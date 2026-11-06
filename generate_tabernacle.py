@@ -11,8 +11,9 @@ A library, not a script; it has two jobs:
   model every Tabernacle drawing shares (courtyard 100x50 cubits, tent
   30x10, bronze altar 5x5x3, gate 20 cubits), plus detail "inset" panels — the ark
   and mercy seat, the table of showbread, the golden lampstand, the
-  curtains, the board frames, the veil, and the bronze altar — and the
-  per-verse CHAPTERS specs saying what each verse highlights.
+  curtains, the board frames, the veil, and the bronze altar, plus the altar
+  of incense and the basin of Exodus 30, which no verse picture uses yet — and
+  the per-verse CHAPTERS specs saying what each verse highlights.
 
 generate_exodus26_svg.py runs these draw functions against SvgLayer (an
 ImageDraw stand-in) to render Exodus 26, and generate_exodus2527_svg.py
@@ -1448,6 +1449,172 @@ def inset_hanging(d, od, part, alpha, frac, npillars=4, base_col=SILVER,
             "from the Most Holy")
 
 
+# --- the altar of incense (Exodus 30:1-10, 37:25-28) --------------------------
+#
+# Drawn at AS, the bronze altar's own px per cubit, and stood on the ground
+# line the ark and the table stand on, so set beside the bronze altar's panel
+# the two altars compare: this one a cubit square and two high, that one five
+# square and three high. Front elevation, its two rings on the sides facing
+# the viewer as the ark's are, the pole passing behind the body.
+
+NW, NH = AS, 2 * AS                              # 1 cubit wide, 2 high
+NX0 = ICX - NW // 2
+NY1 = IY + 296                                   # the ground line
+NY0 = NY1 - NH
+NMY = NY0 + 9                                    # the molding round the top
+NRY = NMY + 19                                   # the rings, under it
+
+
+def _incense_horns():
+    return [[NX0 - 3, NY0 - 13, NX0 + 10, NY0],
+            [NX0 + NW - 10, NY0 - 13, NX0 + NW + 3, NY0]]
+
+
+def _incense_smoke():
+    """The incense burned on it morning and evening (30:7-8): two thin wisps
+    leaving the top, so the altar says what it is for without a word."""
+    return [F.taper([(ICX - 4, NY0 - 4), (ICX - 9, NY0 - 26),
+                     (ICX + 1, NY0 - 50), (ICX - 6, NY0 - 76),
+                     (ICX + 2, NY0 - 98)], [4.2, 3.6, 3.0, 2.2, 1.4]),
+            F.taper([(ICX + 5, NY0 - 4), (ICX + 10, NY0 - 22),
+                     (ICX + 4, NY0 - 42), (ICX + 12, NY0 - 62)],
+                    [3.6, 3.0, 2.2, 1.4])]
+
+
+def inset_incense(d, od, part, alpha, frac):
+    panel(d, "THE ALTAR OF INCENSE", "acacia wood overlaid with pure gold")
+    horns = _incense_horns()
+    rings = [(NX0, NRY), (NX0 + NW, NRY)]
+
+    for wisp in _incense_smoke():
+        mass(d, wisp, LINENS, "cloud")
+    bar(d, (NX0 - 46, NRY), (NX0 + NW + 46, NRY), 6, GOLDS)   # behind the body
+    for hx0, hy0, hx1, hy1 in horns:
+        mass(d, horn_points(hx0, hy0, hx1, hy1, -1 if hx0 < NX0 else 1),
+             GOLDS)
+    box(d, NX0, NY0, NX0 + NW, NY1, GOLDS)                    # the body
+    for rx in (NX0 + 6, NX0 + NW - 6):                        # its two ribs,
+        rule(d, [(rx, NMY + 4), (rx, NY1 - 1)], GOLDS)        # the corners
+    box(d, NX0 - 4, NMY - 3, NX0 + NW + 4, NMY + 4, GOLDS,
+        "horn")                                               # the molding
+    box(d, NX0, NY0, NX0 + NW, NY0 + 3, GOLDS, "horn")        # the top
+    for rx, ry in rings:
+        ring(d, rx, ry, 6, GOLDS)
+    d.text((ICX, CAPY2), "1 cubit square, 2 cubits high", font=F_SMALL,
+           fill=TEXT_DIM, anchor="mm")
+
+    a = g(alpha)
+    if part == "body":
+        od.rectangle([NX0, NY0, NX0 + NW, NY1], outline=a, width=4)
+        cap(od, alpha, "1 long × 1 wide × 2 high")
+    elif part == "gold":
+        od.rectangle([NX0 - 3, NY0 - 3, NX0 + NW + 3, NY1 + 3], outline=a,
+                     width=4)
+        cap(od, alpha, "pure gold: its top, its sides, and its horns")
+    elif part == "top":
+        od.line([(NX0 - 2, NY0), (NX0 + NW + 2, NY0)], fill=a, width=5)
+        cap(od, alpha, "its top overlaid with pure gold")
+    elif part == "horns":
+        for hx0, hy0, hx1, hy1 in horns:
+            od.polygon(horn_points(hx0, hy0, hx1, hy1,
+                                   -1 if hx0 < NX0 else 1),
+                       fill=None, outline=a, width=3)
+        cap(od, alpha, "its horns of one piece with it")
+    elif part == "molding":
+        od.rectangle([NX0 - 7, NMY - 6, NX0 + NW + 7, NMY + 7], outline=a,
+                     width=3)
+        cap(od, alpha, "a gold molding around it")
+    elif part == "rings":
+        for rx, ry in rings:
+            od.ellipse([rx - 9, ry - 9, rx + 9, ry + 9], outline=a, width=3)
+        cap(od, alpha, "two golden rings under its molding",
+            "on its two sides")
+    elif part == "poles":
+        od.line([(NX0 - 46, NRY), (NX0 - 8, NRY)], fill=a, width=5)
+        od.line([(NX0 + NW + 8, NRY), (NX0 + NW + 46, NRY)], fill=a, width=5)
+        cap(od, alpha, "poles of acacia wood, overlaid with gold")
+    elif part == "incense":
+        for wisp in _incense_smoke():
+            od.polygon(wisp, fill=None, outline=a, width=2)
+        cap(od, alpha, "sweet incense every morning", "and at evening")
+
+
+# --- the basin and its base (Exodus 30:17-21, 38:8) ---------------------------
+#
+# The text gives the basin no size and no shape — only that it and its base
+# were brass, made from the mirrors of the women who served at the door. So
+# it is a plain bowl on a plain foot, drawn about as big as the ark beside it
+# and no bigger, and the subtitle says the size is not given.
+
+VCX = ICX
+VY1 = IY + 296                                   # the ground line
+VRY = IY + 168                                   # the rim's centre line
+VRW, VRH = 82, 13                                # the rim's half-width, -height
+VBOT = VRY + 62                                  # the bowl's underside
+VNECK = VBOT + 8
+
+
+def _basin_bowl():
+    """The bowl's outer wall, from the rim round under and back up."""
+    return F.smooth([(VCX - VRW, VRY), (VCX - VRW + 6, VRY + 26),
+                     (VCX - VRW + 24, VRY + 48), (VCX - 22, VBOT),
+                     (VCX + 22, VBOT), (VCX + VRW - 24, VRY + 48),
+                     (VCX + VRW - 6, VRY + 26), (VCX + VRW, VRY)],
+                    closed=False, n=5)
+
+
+def _basin_base():
+    """The base: a short neck under the bowl, a stem, and a spreading foot."""
+    return ([(VCX - 16, VBOT - 2), (VCX + 16, VBOT - 2)]
+            + F.smooth([(VCX + 13, VNECK), (VCX + 9, VNECK + 14),
+                        (VCX + 11, VY1 - 24), (VCX + 26, VY1 - 10),
+                        (VCX + 54, VY1 - 3)], closed=False, n=4)
+            + [(VCX + 56, VY1), (VCX - 56, VY1)]
+            + F.smooth([(VCX - 54, VY1 - 3), (VCX - 26, VY1 - 10),
+                        (VCX - 11, VY1 - 24), (VCX - 9, VNECK + 14),
+                        (VCX - 13, VNECK)], closed=False, n=4))
+
+
+def inset_basin(d, od, part, alpha, frac):
+    panel(d, "THE BASIN", "and its base, of brass · size not given")
+    bowl = _basin_bowl()
+    base = _basin_base()
+    rim = [VCX - VRW, VRY - VRH, VCX + VRW, VRY + VRH]
+    water = [VCX - VRW + 9, VRY - VRH + 4, VCX + VRW - 9, VRY + VRH - 3]
+
+    mass(d, base, BRONZES)
+    rule(d, [(VCX - 30, VY1 - 8), (VCX + 30, VY1 - 8)], BRONZES)
+    mass(d, bowl, BRONZES)
+    fill, stroke, w = BRONZES["horn"]
+    d.ellipse(rim, fill=fill, outline=stroke, width=w)        # the lip
+    fill, stroke, w = SILVERS["fleece"]
+    d.ellipse(water, fill=fill, outline=stroke, width=1)      # water in it
+    for dx, dy, hw in ((-20, -3, 16), (18, 3, 22)):           # its surface
+        rule(d, [(VCX + dx - hw, VRY + dy), (VCX + dx + hw, VRY + dy)],
+             SILVERS)
+
+    a = g(alpha)
+    if part in ("basin", "whole", "mirrors"):
+        od.polygon(bowl, fill=None, outline=a, width=4)
+        od.ellipse(rim, outline=a, width=3)
+        if part in ("whole", "mirrors"):
+            od.polygon(base, fill=None, outline=a, width=3)
+        if part == "basin":
+            cap(od, alpha, "a basin of brass, in which to wash")
+        elif part == "whole":
+            cap(od, alpha, "between the Tent of Meeting and the altar")
+        else:
+            cap(od, alpha, "made from the mirrors of the women",
+                "who served at the door of the tent")
+    elif part == "base":
+        od.polygon(base, fill=None, outline=a, width=4)
+        cap(od, alpha, "and its base of brass")
+    elif part == "water":
+        od.ellipse(water, outline=a, width=3)
+        cap(od, alpha, "water put in it, to wash",
+            "their hands and their feet")
+
+
 INSETS = {
     "altar": inset_altar,
     "materials": inset_materials,
@@ -1463,6 +1630,8 @@ INSETS = {
         d, od, p, a, f, npillars=5, base_col=BRONZE,
         title="THE SCREEN FOR THE DOOR", subtitle="the entrance of the tent",
         cherubim=False),
+    "incense": inset_incense,
+    "basin": inset_basin,
 }
 
 

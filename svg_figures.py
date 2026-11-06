@@ -902,6 +902,70 @@ def _sheep(lamb=False, lying=False):
     return P
 
 
+def _goat(female=False):
+    """Facing right, standing. A goat is the sheep's opposite in every mark
+    that carries at forty pixels, and the two stand side by side in Leviticus
+    1 and 4 and in Matthew 25, so each mark is drawn to separate them: a lean
+    body in a dark hide where the sheep is a pale fleece in bumps; the head
+    carried UP on the neck, where the sheep's is small and level; horns swept
+    back in an arc over the neck; a beard under the chin; and a short tail
+    flicked up, where the sheep's hangs.
+
+    `female` is the female goat of Leviticus 4:28 and 5:6: the same animal
+    with shorter horns and a shorter beard, for she-goats have both.
+    """
+    hr = 0.62 if female else 1.0          # horn length, from the poll
+    bd = 0.6 if female else 1.0           # beard length, from the chin
+
+    def Hn(pts):
+        return [(33.4 + (px - 33.4) * hr, 62 + (py - 62) * hr)
+                for px, py in pts]
+
+    def Bd(pts):
+        return [(px, 52 + (py - 52) * bd) for px, py in pts]
+
+    P = _quadruped([
+        ([(13, 28), (14, 16), (12.8, 3)], [6.6, 3.6, 3.2], "far"),
+        ([(-20, 30), (-16.6, 16), (-19.4, 3)], [7.8, 3.8, 3.4], "far"),
+        ([(17.6, 28), (18.6, 16), (17.4, 3)], [7.4, 4.0, 3.6], "hide"),
+        ([(-15, 30), (-11.6, 16), (-14.4, 3)], [8.8, 4.2, 3.8], "hide")])
+    P.append(("fill", taper([(-24.6, 46), (-28, 52), (-27, 56.4)],
+                            [4.8, 3.6, 1.8]), "hair"))          # tail, flicked up
+    # the off horn first, behind the neck and head; the near one goes on last
+    P.append(("fill", taper(Hn([(32.4, 61.4), (30, 69), (24.6, 73.4),
+                                (19.4, 72)]),
+                            [3.2, 2.6, 1.7, 0.9]), "far"))
+    P.append(("fill", taper([(16, 43), (23, 51), (29, 58)],
+                            [14, 10.4, 8.6], round_end=False), "hide"))  # neck
+    P.append(("fill", smooth(                                   # body
+        [(22, 38), (23, 45), (18, 50), (9, 50.4), (0, 49.2), (-10, 49.6),
+         (-19, 51), (-24.6, 48), (-27, 42), (-26, 35), (-22, 30.4),
+         (-14, 28.6), (-4, 28), (6, 28.4), (14.6, 29.6), (19.6, 33)]),
+        "hide"))
+    P.append(("line", smooth([(-14.6, 48.4), (-19.6, 40), (-21.4, 32)],
+                             closed=False), "rule"))            # haunch
+    P.append(("line", smooth([(19, 46), (21.6, 39), (20, 32.6)],
+                             closed=False), "rule"))            # shoulder
+    P.append(("fill", smooth(Bd([(42, 52.4), (41.2, 47.6), (39.6, 43.4),
+                                 (38.0, 46.4), (37.4, 51.6)])), "hair"))
+    P.append(("fill", smooth(                                   # head, raised
+        [(28.6, 61), (33, 63.6), (37.6, 62), (42.6, 58), (46.4, 54.2),
+         (45.8, 51.4), (41.8, 51.2), (36, 53.4), (30.6, 56.4), (27.8, 58.6)]),
+        "hide"))
+    P.append(("fill", smooth([(46.4, 55.0), (47.8, 53.2), (46.8, 51.0),
+                              (44.2, 50.8), (43.4, 52.8), (44.6, 54.8)]),
+              "muzzle"))
+    P.append(("fill", taper([(31, 58.6), (26.6, 56.4), (23, 53.6)],
+                            [4.2, 3.4, 1.4]), "hair"))          # ear, out back
+    P.append(("fill", taper(Hn([(34.6, 62), (32.6, 70.4), (27, 75.6),
+                                (21, 75.0)]),
+                            [4.0, 3.2, 2.1, 1.0]), "horn"))
+    P.append(("dot", (37.4, 58.4, 1.5), "sclera"))
+    P.append(("dot", (37.6, 58.4, 0.85), "eye"))
+    P.append(("dot", (46.4, 53.4, 0.9), "eye"))                 # nostril
+    return P
+
+
 def _lion():
     """Facing right. The mane is the whole creature: a dark ruff drawn wide
     enough to swallow the neck, with the face set into it — which is why it
@@ -2035,7 +2099,9 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "ox": 1.32,         # withers at a man's chest, and twice his weight
         "sheep": 0.87,      # withers at a man's knee
         "lamb": 0.52,
-        "lion": 1.10,       # withers just above a sheep's back, and long
+        "goat": 0.84,       # a sheep's size, a little lighter in the body;
+                            # the horns come up to a man's hip
+        "lion": 1.10,      # withers just above a sheep's back, and long
         "wolf": 0.86,       # a big dog: shorter than a lion and far lighter
         "dog": 0.72,        # the street dog, smaller again than the wolf
         "sow": 0.80,        # heavy, and low to the ground
@@ -2250,6 +2316,15 @@ def sheep(lamb=False, lying=False):
     head for its body, and drawn a good deal smaller. `lying` couches it."""
     return _scale(_sheep(lamb=lamb, lying=lying),
                   UNIT["lamb" if lamb else "sheep"])
+
+
+def goat(female=False):
+    """A he-goat: the sin offering of a ruler (Leviticus 4:23, "a goat, a
+    male"), the two goats of Leviticus 16, one for Yahweh and one the
+    scapegoat, and the goats on the left of Matthew 25. `female` is the
+    common people's sin offering (Leviticus 4:28, "a goat, a female"). See
+    _goat for what tells it from a sheep."""
+    return _scale(_goat(female=female), UNIT["goat"])
 
 
 def lion():

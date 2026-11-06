@@ -467,12 +467,16 @@ def turban(c, F, cloth, rule, wraps=3):
     return top
 
 
-def plate_on(c, F, gold, lace, w=None):
+def plate_on(c, F, gold, lace, w=None, y=None):
     """28:36–38 — the plate of pure gold on a lace of blue, on the forehead.
-    'It shall be always on his forehead.'"""
+    'It shall be always on his forehead.'
+
+    `y` is the plate's centre, by default the brow. A drawing that wants it
+    on the front of the turban (39:31, Lev 8:9) passes a `y` above the
+    turban's rim."""
     w = w or F.head_r * 1.86
     h = w * 0.38
-    y = F.brow_y
+    y = F.brow_y if y is None else y
     c.line((F.x - w * 0.62, y - h * 0.1), (F.x + w * 0.62, y - h * 0.1),
            lace, 2.4)
     c.rect(F.x - w / 2, y - h / 2, w, h, fill=gold, stroke=gold, width=1.2,

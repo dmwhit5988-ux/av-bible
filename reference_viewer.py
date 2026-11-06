@@ -28,7 +28,8 @@ less the way into the app.
   - a card may carry labelled rows of chips (`rows`) and of text (`tx`), and
     one that isn't a person (`pc`) is laid out as a part's;
   - a layer with a frame (`fr`) flies there as its chip comes on, and a part
-    with an `fr` of its own flies there when selected, in place of its box;
+    with an `fr` of its own flies there when selected or named by #at, in
+    place of its box;
   - a box that a tap selects is brought into view if the card covers it,
     and a tapped reference chip flies to the real box;
   - a verse chip shows the verse, read from /bibles/WEB/, and in the app
@@ -38,6 +39,22 @@ less the way into the app.
     page at #at=<Book>.<chapter>.<verse> so it starts on the names of the
     verse the reader is on (on a sheet of places, failing those, the
     chapter's);
+  - **views** (`views`, [{id, label, fr: [x, y, w, h]}] in sheet px) are a
+    sheet's sections, as chips in the bar: a tap flies there (and shows the
+    view's layer, `ly`, if one is named and hidden). A sheet with views
+    opens on the first, not the whole sheet, unless the address names a
+    part or a verse it finds; fit still fits the whole sheet;
+  - **tours** (`tours`, [{id, label, build, stops: [{i, r, rise}]}], `i`
+    an item, `r` verse rows) are chips too. A tap starts one at its first
+    stop: it selects the stop's part (showing its layer, following a copy's
+    `x`) and flies there, and the card gains a tour row at its top: the
+    tour's name, "k of n", ◂ ▸ and the stop's verses. ArrowLeft and
+    ArrowRight step it too, unless the search box has focus. On a build
+    tour every <g data-tour="<tour id>" data-rise="<n>"> is dimmed while
+    its rise is past the stop's (`rise`, by default the stop's place);
+    other tours' groups are left alone. Selecting anything else, closing the
+    card, the row's ✕, the tour's own chip or another tour's ends it, and
+    every group comes back. Tours keep nothing in the address;
 - **Text too small to read isn't drawn.** A sheet groups its text by size
   (<g data-fs="19">) and the page shows a group only while its text is at
   least 7.5 px on screen (the atlas's town names appear as you zoom in), or,
@@ -124,6 +141,28 @@ _PAGE = r"""<!doctype html>
   .line .sep{color:#5a5468;margin-right:4px}
   .lay{font-size:13px;padding:5px 10px;border-radius:14px;color:#a89f88}
   .lay.on{background:#2a2636;color:#fff4aa;border-color:#8a6d2c}
+  #chips{display:contents}
+  #views:empty,#tours:empty{display:none}
+  /* on a phone a sheet with views or tours keeps its chips to one row that
+     scrolls sideways, so the bar doesn't take a quarter of the screen */
+  @media (max-width:699px){
+    body.chipped #chips{display:flex;flex:1 1 100%;min-width:0;gap:10px;overflow-x:auto;
+         white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    body.chipped #chips::-webkit-scrollbar{display:none}
+    body.chipped #chips>span{flex:none}
+  }
+  .lay.view{color:#d8c68f}
+  .lay.tour::before{content:'\25B8\00A0';color:#8a6d2c}
+  .lay.tour.on::before{color:#fff4aa}
+  [data-rise]{transition:opacity .45s}
+  .c-tour{margin:0 0 10px;padding:6px 8px 4px;background:#1b1b24;border:1px solid #4a4658;
+       border-radius:8px;font-size:13px;line-height:1.9}
+  .c-tour-h{display:flex;flex-wrap:nowrap;gap:2px 6px;align-items:center}
+  .c-tour-h .c-lab{display:inline;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+       white-space:nowrap;color:#d8c68f}
+  .c-tour-h .k{color:#a89f88;font-style:italic;white-space:nowrap}
+  .c-tour [data-ts]{min-width:40px}
+  .c-tour button[disabled]{opacity:.35;cursor:default}
   .c-dims{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
   .c-dims th{text-align:left;color:#a89f88;font-weight:normal;padding:4px 10px 4px 0;
        vertical-align:top;white-space:nowrap}
@@ -145,7 +184,7 @@ _PAGE = r"""<!doctype html>
   <button id="prev" aria-label="Previous match">&#8593;</button><button id="next" aria-label="Next match">&#8595;</button>
   <span id="hits"></span>
   <button id="fit">fit</button><button id="in" aria-label="Zoom in">+</button><button id="out" aria-label="Zoom out">&minus;</button>
-  <span id="layers"></span>
+  <div id="chips"><span id="views"></span><span id="layers"></span><span id="tours"></span></div>
 </div>
 <div id="stage"></div>
 <div id="banner" hidden><span id="banner-text"></span><button id="banner-x" aria-label="Clear">&#x2715;</button></div>
@@ -157,6 +196,7 @@ const stage=$('stage'),q=$('q'),hits=$('hits'),results=$('results'),card=$('card
 const NS='http://www.w3.org/2000/svg';
 let k=1,tx=0,ty=0,kmin=0.01,svg,anim=0,groups=[],at=-1,matches=[];
 let data=null,items=[],state={sel:null,trace:false,at:null};
+let tour=null,touring=false,rises=[];
 const layers={};
 let framed=false;
 try{framed=parent!==window&&parent.location.origin===location.origin}catch(e){}
@@ -198,6 +238,7 @@ function init(){svg=stage.querySelector('svg');
   svg.setAttribute('width',W);svg.setAttribute('height',H);
   groups=[...svg.querySelectorAll('text')];
   lods=[...svg.querySelectorAll('[data-fs]')].map(g=>({g,fs:+g.dataset.fs,fx:+(g.dataset.fmax||0),on:null}));
+  rises=[...svg.querySelectorAll('[data-tour][data-rise]')];for(const g of rises)g._op=g.style.opacity;
   const hl=document.createElementNS(NS,'g');hl.setAttribute('pointer-events','none');
   hl.setAttribute('fill','none');svg.appendChild(hl);
   for(const[name,col,fill]of[['at','#e8e0cc','#e8e0cc14'],['trace','#d8c68f','#d8c68f10'],
@@ -207,8 +248,11 @@ function init(){svg=stage.querySelector('svg');
   if(lods.length){const g=document.createElementNS(NS,'g');g.setAttribute('fill','#fff4aa');
     g.setAttribute('stroke','#0d0d14');g.setAttribute('paint-order','stroke');
     g.setAttribute('text-anchor','middle');hl.appendChild(g);layers.names=g}
-  // the layer chips first, so fit() measures the bar as it will stand
-  if(DATA)buildLayers();fit();if(DATA)readHash()}
+  // the bar's chips first, so fit() measures the bar as it will stand
+  if(DATA){buildLayers();buildChips()}fit();if(!DATA)return;
+  // a sheet with views opens on the first, unless the address names a part
+  // or a verse that it finds
+  if(!readHash()&&(data.views||[]).length)frameBoxes([data.views[0].fr],1.2,0,true)}
 
 // -- layers ---------------------------------------------------------------
 // A sheet's <g data-layer="..."> groups, listed in the sidecar's `layers`,
@@ -232,6 +276,39 @@ $('layers').addEventListener('click',e=>{const b=e.target.closest('button[data-l
     else if(tr&&tr[1].some(onIt)){state.trace=false;outline('trace',[]);renderCard(true)}}
   if(state.at&&state.at.some(onIt))clearAt()});
 
+// -- views and tours ------------------------------------------------------
+// `views` ([{id, label, fr}]) are the sheet's sections: a chip flies there
+// (and shows the view's layer, `ly`, if it is hidden). `tours` ([{id, label,
+// build, stops: [{i, r, rise}]}]) step through parts: a chip starts one at
+// its first stop, and the card's tour row steps it (or ArrowLeft and
+// ArrowRight). On a build tour each <g data-tour="<id>" data-rise="<n>"> is
+// dimmed while its rise is past the stop's. Selecting anything else, closing
+// the card or choosing another tour leaves it, and every rise comes back.
+function buildChips(){
+  document.body.classList.toggle('chipped',!!((data.views||[]).length||(data.tours||[]).length));
+  $('views').innerHTML=(data.views||[]).map((v,n)=>`<button class="lay view" data-vw="${n}">${esc(v.label)}</button>`).join('');
+  $('tours').innerHTML=(data.tours||[]).map((t,n)=>`<button class="lay tour" data-tu="${n}" aria-pressed="false">${esc(t.label)}</button>`).join('')}
+$('views').addEventListener('click',e=>{const b=e.target.closest('button[data-vw]');if(!b)return;
+  const v=data.views[+b.dataset.vw];if(v.ly&&!layerOn(v.ly))showLayer(v.ly,true);frameBoxes([v.fr],1.2)});
+$('tours').addEventListener('click',e=>{const b=e.target.closest('button[data-tu]');if(!b)return;
+  const t=data.tours[+b.dataset.tu];if(tour&&tour.t===t){endTour(true);return}
+  if(!t.stops.length)return;endTour(false);tour={t,n:-1};step(0)});
+function step(n){const s=tour.t.stops;if(n<0||n>=s.length||n===tour.n)return;
+  tour.n=n;markTour();touring=true;try{select(s[n].i,{fly:true})}finally{touring=false}}
+function markTour(){const t=tour&&tour.t.build?tour.t:null,s=t&&t.stops[tour.n],r=s?(s.rise!=null?s.rise:tour.n):0;
+  for(const g of rises)g.style.opacity=t&&g.dataset.tour===t.id&&+g.dataset.rise>r?'0.12':g._op;
+  for(const b of $('tours').children){const on=!!tour&&data.tours[+b.dataset.tu]===tour.t;
+    b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))}}
+function endTour(again){if(!tour)return;tour=null;markTour();if(again&&state.sel!=null)renderCard(true)}
+// the card's top row while a tour runs: where it is, ◂ ▸, and the stop's verses
+function tourRow(){if(!tour)return '';const t=tour.t,s=t.stops[tour.n],n=t.stops.length;
+  return `<div class="c-tour"><div class="c-tour-h"><span class="c-lab">${esc(t.label)}</span>`+
+    `<span class="k">${tour.n+1} of ${n}</span>`+
+    `<button class="chip" data-ts="-1" aria-label="Previous stop"${tour.n?'':' disabled'}>◂</button>`+
+    `<button class="chip" data-ts="1" aria-label="Next stop"${tour.n<n-1?'':' disabled'}>▸</button>`+
+    `<button class="chip" id="tour-x" aria-label="Leave the tour">&#x2715;</button></div>`+
+    ((s.r||[]).length?`<div>${verseChips(s.r)}</div>`:'')+`</div>`}
+
 // -- moving ---------------------------------------------------------------
 function zoomAt(x,y,f){const nk=Math.min(8,Math.max(kmin,k*f));
   tx=x-(x-tx)*(nk/k);ty=y-(y-ty)*(nk/k);k=nk}
@@ -252,12 +329,14 @@ function flyTo(cx,cy,nk){halt();const me=flight;
     if(t<1)anim=requestAnimationFrame(step)};
   anim=requestAnimationFrame(step);
   setTimeout(()=>{if(me!==flight)return;k=nk;tx=fx-cx*nk;ty=fy-cy*nk;apply()},ms+150)}
-function frameBoxes(list,kmax,klo=0){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+// (`now`: there at once, as the page opens on its first view)
+function frameBoxes(list,kmax,klo=0,now=false){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(const b of list){x0=Math.min(x0,b[0]);y0=Math.min(y0,b[1]);
     x1=Math.max(x1,b[0]+b[2]);y1=Math.max(y1,b[1]+b[3])}
-  const fa=freeArea();
+  const fa=freeArea(),cx=(x0+x1)/2,cy=(y0+y1)/2;
   const nk=Math.max(kmin,klo,Math.min((fa.w-48)/(x1-x0),(fa.h-48)/(y1-y0),kmax));
-  flyTo((x0+x1)/2,(y0+y1)/2,nk)}
+  if(!now)return flyTo(cx,cy,nk);
+  halt();k=nk;tx=fa.x+fa.w/2-cx*nk;ty=fa.y+fa.h/2-cy*nk;apply()}
 // the zoom past which a part's name (a land's big faint one) is hidden
 const capOf=list=>Math.min(...list.map(i=>items[i].fx?items[i].fx/items[i].fs:Infinity));
 stage.addEventListener('wheel',e=>{e.preventDefault();halt();
@@ -397,7 +476,10 @@ function lineFrom(i){const it=items[i];
 function linesOf(i){const it=items[i],from=lineFrom(i);
   return(it.p!=null&&from!=null&&!it.ly?[[from===i?'Line to Adam':'Her line to Adam',ancestors(from)]]:[])
     .concat((it.tl||[]).map(n=>data.lines[n]))}
-function select(i,{fly=false}={}){const via=items[i].x!=null;if(via)i=items[i].x;
+// a tap on the part the tour has lit keeps the tour; anything else leaves it
+const real=j=>items[j].x!=null?items[j].x:j;
+function select(i,{fly=false}={}){if(!touring&&tour&&real(i)!==real(tour.t.stops[tour.n].i))endTour(false);
+  const via=items[i].x!=null;if(via)i=items[i].x;
   if(items[i].ly&&!layerOn(items[i].ly))showLayer(items[i].ly,true);
   // a named line stays listed and lit while the reader walks along it
   const walk=state.trace&&(items[i].tl||[]).some(n=>data.lines[n][0]===state.trace);
@@ -415,7 +497,7 @@ function select(i,{fly=false}={}){const via=items[i].x!=null;if(via)i=items[i].x
   if(fly||via)frameBoxes([items[i].fr||b],Math.min(Math.max(k,1.2),2,capOf([i])),
                          items[i].fs?READ/items[i].fs:0);
   else if(!seen)flyTo(b[0]+b[2]/2,b[1]+b[3]/2,k)}
-function deselect(){state.sel=null;state.trace=false;outline('sel',[]);outline('trace',[]);
+function deselect(){endTour(false);state.sel=null;state.trace=false;outline('sel',[]);outline('trace',[]);
   card.hidden=true;card.innerHTML='';document.body.classList.remove('carded');
   try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
 
@@ -438,7 +520,9 @@ function merged(rows){const out=[],ranges=rows.filter(r=>!single(r));
 function cardHead(it){return `<div class="c-head"><div><div class="c-name">${esc(it.n)}</div>`+
     (it.s?`<div class="c-sub">${esc(it.s)}</div>`:'')+`</div>`+
     `<button id="card-x" aria-label="Close">&#x2715;</button></div>`}
-function showCard(h,keep){card.innerHTML=h;card.hidden=false;document.body.classList.add('carded');
+function showCard(h,keep){card.innerHTML=tourRow()+h;card.hidden=false;document.body.classList.add('carded');
+  // the tour row's verse chips show their verse even on a card without verses
+  if(tour&&!$('vv'))card.insertAdjacentHTML('beforeend','<div id="vv" hidden></div>');
   if(!keep)card.scrollTop=0}
 // verse chips, the book named where it changes (and not at all for `home`,
 // the card's own book, in the short rows beside a measurement)
@@ -526,6 +610,8 @@ function row(label,list){const shown=list.slice(0,24);
     (list.length>24?`<span class="c-book">and ${list.length-24} more</span>`:'')+`</div>`}
 card.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t)return;
   if(t.id==='card-x'){deselect();return}
+  if(t.id==='tour-x'){endTour(true);return}
+  if(t.dataset.ts){step(tour.n+Number(t.dataset.ts));return}
   if(t.dataset.go!=null){select(Number(t.dataset.go),{fly:true});return}
   if(t.dataset.tr){const pick=linesOf(state.sel).find(l=>l[0]===t.dataset.tr);
     state.trace=state.trace===pick[0]?false:pick[0];
@@ -563,7 +649,7 @@ function inRange(r,C,V){const[,c1,v1,c2,v2]=r,ce=c2||c1;
   const ve=v2||(c2?Infinity:v1);return !(C===ce&&V>ve)}
 function readHash(){const h=new URLSearchParams(location.hash.slice(1));
   const id=h.get('id');
-  if(id){const i=items.findIndex(it=>it.id===id);if(i>=0){select(i,{fly:true});return}
+  if(id){const i=items.findIndex(it=>it.id===id);if(i>=0){select(i,{fly:true});return true}
     // an id this sheet no longer has: offer its namesakes instead
     q.value=id.split('.')[0].split('~')[0].split('-')[0];search();
     if(matches.length){results.hidden=false;q.focus()}return}
@@ -587,10 +673,14 @@ function readHash(){const h=new URLSearchParams(location.hash.slice(1));
   $('banner').hidden=false;
   if(hit.length===1)select(hit[0]);
   // the names too small to read at this frame are written over their outlines
-  frameBoxes(hit.map(i=>items[i].b),Math.min(1.2,capOf(hit)))}
+  frameBoxes(hit.map(i=>items[i].fr||items[i].b),Math.min(1.2,capOf(hit)));return true}
 function clearAt(){state.at=null;outline('at',[]);$('banner').hidden=true}
 $('banner-x').onclick=clearAt;
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
+document.addEventListener('keydown',e=>{
+  // ArrowLeft and ArrowRight step a running tour, unless the search has them
+  if(tour&&(e.key==='ArrowLeft'||e.key==='ArrowRight')&&document.activeElement!==q){
+    step(tour.n+(e.key==='ArrowRight'?1:-1));e.preventDefault();return}
+  if(e.key!=='Escape')return;
   if(!results.hidden){results.hidden=true;q.blur();e.preventDefault()}
   else if(!card.hidden){deselect();e.preventDefault()}});
 addEventListener('resize',()=>{if(svg)apply()});

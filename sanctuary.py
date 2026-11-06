@@ -203,8 +203,8 @@ PARTS = [
          "fine twined linen; pillars on sockets of brass, with silver hooks "
          "and fillets", "Merari, the pillars, sockets, pins and cords; "
          "Gershon, the hangings",
-         _refs(commanded="Exod 27:9-15, 17-19", made="Exod 38:9-17, 20",
-               set_up="Exod 40:8, 33",
+         _refs(commanded="Exod 27:9-15, 17-19; 40:8", made="Exod 38:9-17, 20",
+               set_up="Exod 40:33",
                named="Exod 35:17-18; 39:40; Num 3:26, 37; 4:26, 32")),
     Part("gate", "the screen for the gate of the court", ("gate", "entrance"),
          (100, GATE[0], 100, GATE[1]),
@@ -214,8 +214,8 @@ PARTS = [
          ("in the middle of the east side", STATED, "Exod 27:13-16"),
          "blue, purple, scarlet and fine twined linen, the work of the "
          "embroiderer", "Gershon",
-         _refs(commanded="Exod 27:16", made="Exod 38:18-19",
-               set_up="Exod 40:8, 33",
+         _refs(commanded="Exod 27:16; 40:8", made="Exod 38:18-19",
+               set_up="Exod 40:33",
                named="Exod 35:17; 39:40; Num 3:26; 4:26")),
     Part("tent", "the tabernacle", ("tent", "tent of meeting", "boards"),
          TENT,
@@ -235,8 +235,8 @@ PARTS = [
           "here it stands 10 cubits from the west", NOT_GIVEN, ""),
          "boards of acacia wood overlaid with gold, on sockets of silver",
          "Merari, the boards, bars, pillars and sockets",
-         _refs(commanded="Exod 26:15-30", made="Exod 36:20-34",
-               set_up="Exod 40:2, 17-19",
+         _refs(commanded="Exod 26:15-30; 40:2", made="Exod 36:20-34",
+               set_up="Exod 40:17-19",
                named="Exod 30:26; 31:7; 35:11; 39:33; 40:9; Lev 8:10; "
                      "Num 3:36; 4:31; 7:1")),
     Part("coverings", "the curtains and coverings", ("curtains", "covering",
@@ -282,8 +282,8 @@ PARTS = [
          "blue, purple, scarlet and fine twined linen, with cherubim",
          "Kohath, over the ark, after the priests had covered it with "
          "the veil",
-         _refs(commanded="Exod 26:31-33", made="Exod 36:35-36",
-               set_up="Exod 40:3, 21",
+         _refs(commanded="Exod 26:31-33; 40:3", made="Exod 36:35-36",
+               set_up="Exod 40:21",
                named="Exod 35:12; 39:34; Lev 16:2, 12, 15; Num 4:5")),
     Part("door", "the screen for the door of the tent", ("door", "screen"),
          (DOOR_X, 20, DOOR_X, 30),
@@ -294,8 +294,8 @@ PARTS = [
           "Exod 26:22; Num 3:38"),
          "blue, purple, scarlet and fine twined linen, the work of the "
          "embroiderer", "Gershon",
-         _refs(commanded="Exod 26:36-37", made="Exod 36:37-38",
-               set_up="Exod 40:5, 28",
+         _refs(commanded="Exod 26:36-37; 40:5", made="Exod 36:37-38",
+               set_up="Exod 40:28",
                named="Exod 35:15; 39:38; Num 3:25; 4:25")),
     Part("ark", "the ark of the testimony", ("ark", "ark of the covenant"),
          (13.75, 24.25, 16.25, 25.75),
@@ -306,8 +306,8 @@ PARTS = [
           "Exod 26:33; 40:21"),
          "acacia wood overlaid with pure gold, with rings and poles",
          "Kohath, covered with the veil",
-         _refs(commanded="Exod 25:10-16, 21-22", made="Exod 37:1-5",
-               set_up="Exod 40:3, 20-21",
+         _refs(commanded="Exod 25:10-16, 21-22; 40:3", made="Exod 37:1-5",
+               set_up="Exod 40:20-21",
                named="Exod 26:33-34; 30:26; 31:7; 35:12; 39:35; Lev 16:2; "
                      "Num 3:31; 4:5-6; 7:89")),
     Part("mercy_seat", "the mercy seat and the cherubim",
@@ -332,8 +332,8 @@ PARTS = [
          ("on the north side of the holy place; its spot there is not given",
           STATED, "Exod 26:35; 40:22"),
          "acacia wood overlaid with pure gold", "Kohath",
-         _refs(commanded="Exod 25:23-30", made="Exod 37:10-16",
-               set_up="Exod 40:4, 22-23",
+         _refs(commanded="Exod 25:23-30; 40:4", made="Exod 37:10-16",
+               set_up="Exod 40:22-23",
                named="Exod 26:35; 30:27; 31:8; 35:13; 39:36; "
                      "Lev 24:5-9; Num 3:31; 4:7-8")),
     Part("lamp_stand", "the lamp stand", ("lampstand", "menorah", "lamp"),
@@ -344,8 +344,8 @@ PARTS = [
          ("on the south side of the holy place, opposite the table", STATED,
           "Exod 26:35; 40:24"),
          "pure gold, of beaten work", "Kohath",
-         _refs(commanded="Exod 25:31-39", made="Exod 37:17-24",
-               set_up="Exod 40:4, 24-25",
+         _refs(commanded="Exod 25:31-39; 40:4", made="Exod 37:17-24",
+               set_up="Exod 40:24-25",
                named="Exod 26:35; 27:20-21; 30:7-8, 27; 31:8; 35:14; "
                      "39:37; Lev 24:2-4; Num 3:31; 4:9-10; 8:2-4")),
     Part("incense_altar", "the altar of incense",
@@ -357,8 +357,8 @@ PARTS = [
          ("before the veil; its spot there is not given", STATED,
           "Exod 30:6; 40:26"),
          "acacia wood overlaid with pure gold", "Kohath",
-         _refs(commanded="Exod 30:1-10", made="Exod 37:25-28",
-               set_up="Exod 40:5, 26-27",
+         _refs(commanded="Exod 30:1-10; 40:5", made="Exod 37:25-28",
+               set_up="Exod 40:26-27",
                named="Exod 30:27; 31:8; 35:15; 39:38; Num 3:31; 4:11")),
     Part("basin", "the basin of brass", ("laver", "basin", "washing"),
          (50, 25),
@@ -367,8 +367,8 @@ PARTS = [
          ("between the Tent of Meeting and the altar; the distance is not "
           "given", STATED, "Exod 30:18; 40:30"),
          "brass, with a base of brass", "not named in Numbers 4",
-         _refs(commanded="Exod 30:17-21", made="Exod 38:8",
-               set_up="Exod 40:7, 30-32",
+         _refs(commanded="Exod 30:17-21; 40:7", made="Exod 38:8",
+               set_up="Exod 40:30-32",
                named="Exod 30:28; 31:9; 35:16; 39:39; 40:11; Lev 8:11")),
     Part("altar", "the altar of burnt offering",
          ("bronze altar", "brass altar", "altar of burnt offering"),
@@ -380,8 +380,8 @@ PARTS = [
          ("before the door of the tabernacle of the Tent of Meeting; the "
           "distance is not given", STATED, "Exod 40:6, 29"),
          "acacia wood overlaid with brass", "Kohath",
-         _refs(commanded="Exod 27:1-8", made="Exod 38:1-7",
-               set_up="Exod 40:6, 29",
+         _refs(commanded="Exod 27:1-8; 40:6", made="Exod 38:1-7",
+               set_up="Exod 40:29",
                named="Exod 29:12; 30:28; 31:9; 35:16; 39:39; 40:10; "
                      "Lev 8:11, 15; 9:7-24; Num 3:31; 4:13-14; 7:1")),
 ]

@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 3, 4, 7 and 8 as first cuts.
+Proposed on 2026-10-27. Built so far: the shelf, pages 1, 3, 4, 7 and 8 as first cuts, and page 2 in its second cut.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -69,7 +69,7 @@ It still needs:
   - **Maps.** Each band's labels are placed in Python with `svg_map_camera.layout` and `clash` at the band's own scale, so they never touch. Both assume one 1024 × 576 frame today (`SAFE`, the HUD), so they are generalised to take the band's extent.
   - **The tree.** Its names sit inside boxes that `arrange` and `place` already keep apart, so its far band is the `REGIONS` titles and the heads they name.
   - **Live text.** The tree's near band holds all 1,254 boxes, far over `svg_chronicles_world.IPAD_NAMES` (268 texts) and `IPAD_BOX_RECTS` (1,050 rects and texts). So the viewer would also hide the boxes outside the view, using the sidecar's boxes. Those budgets were measured on animated camera files, so a static page is measured on the iPad before they are taken as its limit.
-- **Layer chips and tours.** Chips toggle `<g data-layer>` groups (built: the Tabernacle and the atlas use them). Still to build: the reader steps a tour with Prev/Next. Routes and genealogies draw once in SMIL (`fill="freeze"`), and a scrubber seeks with `setCurrentTime()`.
+- **Layer chips, views and tours.** Chips toggle `<g data-layer>` groups (built: the Tabernacle and the atlas use them). Views and tours are built too (the Tabernacle uses them): a view chip flies to a section, and a tour steps through parts with ◂ ▸ or the arrow keys, a build tour dimming `<g data-tour data-rise>` pieces not yet up. Still to build: routes and genealogies drawn once in SMIL (`fill="freeze"`), with a scrubber that seeks with `setCurrentTime()`.
 - **Timelines.** A pinch stretches only the time axis and JS re-places the bars, so text is never CSS-scaled. Lanes are packed once in Python, in years, so JS only rescales. Its labels get their own clash test in JS, because PIL's measurements stay in Python. On a portrait phone, time runs down the screen.
 - **Inline-SVG icons** instead of emoji glyphs.
 
@@ -166,7 +166,11 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 - **Built 2026-10-27, as a first cut** ([reference-charts.md](../reference-charts.md#the-tabernacle)): `sanctuary.py`, the one model; the Exodus 25–27 plan and the Numbers 1–4 courts redrawn onto it; and `generate_tabernacle_reference.py`'s sheet with the plan, the measurements, the camp and the Exodus drawings, and a card for each part. It differs from the plan below:
   - The court kept is `draw_plan`'s, but the Exodus 25–27 pictures still changed: the pillars are now sixty, one every five cubits, with the gate's four at 20–35, and the drawings' words are WEB's (brass, lamp stand, sea cow hides).
   - The elevations are the Exodus 25–27 insets, reused whole on the sheet, not new drawings.
-  - Not built yet: the Garments tab, the offerings of Leviticus 1–7 (the "Used" tab), the tours, and incense-altar and basin drawings.
+  - **The second cut, 2026-11-05**, built the rest of what was planned: the Garments section, the offerings of Leviticus 1–7, the tours, and the altar of incense and basin drawings, with `garments.py` and `offerings.py` as their data modules and views and tours added to `reference_viewer.py`. It differs from the plan below:
+    - The "tabs" are views: four sections of one sheet, two by two (Plan, In detail, Garments, Offerings), each a chip that flies the camera there, so the page is still three deploy files. The Used tab is the Offerings section.
+    - The cards don't gain a "used" group (Leviticus 16, Hebrews 9); the offerings' own cards carry their Leviticus verses, and the garments' cards a "put on" group.
+    - The "raising it" tour runs Exodus 40:17–33 (17 dates the raising), and a third tour, Leviticus 8:7–9 dressing Aaron, uses the same machinery on the dressed figure.
+    - The Levite clans' loads are on the camp cards, not a layer of their own.
 - **Shows:**
   - The court and tent in plan at cubit scale. Each furnishing opens its elevation, materials and counts.
   - Layers: dimensions, the Numbers 2 camp, and the Levite clans and loads of Numbers 3–4.
