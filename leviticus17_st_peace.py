@@ -2,15 +2,16 @@
 Leviticus 1-7 pictures.
 
 Each is a 1024 x 576 card on the world sheet (corner in
-leviticus17_spec.STATIONS: D at (2960, 772), right of M; S at (4080, 772),
-right of T; L at (-560, 100), far outside the camp to the west), drawn in
+leviticus17_spec.STATIONS: D at (2960, 100), above the table; S at
+(4104, 772), under T; L at (-560, 100), far outside the camp to the west),
+drawn in
 its own card px with leviticus17_stations' Station API. Facts come from
 offerings.py's boards (BREADS, DAYS, CAUSES, PENALTIES, SINAI, VESSELS),
 figures from svg_figures, the not-mark from svg_vocab.not_mark_points.
 Every word is a WEB word, four at most; nothing is drawn before its target
 is lit; everything plays once and holds.
 
-D, the peace law (7:11-21). Shots "", "breads", "days", "split".
+D, the peace law (7:11-21).
 - The bread rack (top left): D.shelf (two shelves), the four breads of
   offerings.BREADS, each a bread() with its label: D.cakes ("unleavened
   cakes"), D.wafers ("unleavened wafers"), D.oil_cakes ("cakes mixed with
@@ -38,7 +39,7 @@ D, the peace law (7:11-21). Shots "", "breads", "days", "split".
   off"), D.uncleanness_of_man and D.unclean_animal (CAUSES' words, leaders
   to that figure).
 
-S, shares and bans (7:8-10, 22-27; 3:17). Shots "", "shares", "bans".
+S, shares and bans (7:8-10, 22-27; 3:17).
 - The shares (top): S.skin (an ox, its hide traced, "the skin", an arrow
   to the priest), S.priest (priest(), "the priest"), S.oven,
   S.pan, S.griddle (cookware, each with its name), S.baked (the arrow from them to
@@ -292,13 +293,6 @@ CAUSE_X, CAUSE_Y = 338, (516, 550)
 class PeaceLaw(_Card):
     key = "D"
     NOT_AT = {"D.eat3": (EAT3, 27)}
-
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2),
-                "breads": self.clamp_shot(1.6, 320, 180),
-                "days": self.clamp_shot(1.6, 704, 180),
-                # the top edge under the bread rack and the priest
-                "split": (1.8, 507, 282 + 288 / 1.8)}
 
     # -- helpers ----------------------------------------------------------
     def _priest(self, ctx, t):
@@ -595,13 +589,6 @@ class Shares(_Card):
     NOT_AT = {"S.fat": ((ICON_X, FAT_Y - 8), 34), "S.blood": ((ICON_X, BLOOD_Y - 8), 34),
               "S.no_eat": ((444, FAT_Y - 4), 22)}
 
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2),
-                "shares": self.clamp_shot(1.3, 630, 222),
-                # the top edge between the shares' two rows: the skin and
-                # vessels row wholly out, the breads' wholly in
-                "bans": (1.3, 394, 184 + 288 / 1.3)}
-
     def _priest(self, ctx, t):
         x, gy, k = S_PRIEST
         return (appear(ctx.figure(F.priest(), x, gy, k, TEXT, PANEL), t)
@@ -632,11 +619,13 @@ class Shares(_Card):
         def skin(c, t):
             body = appear(c.figure(ox, ox_x, R1, 1.0, mix(PANEL, TEXT, .55), PANEL, flip=-1),
                           t, dur=0.6)
-            hide = body + trace(ring, TEXT, 2.4, _t(t, 0.2), 1.0, closed=True,
+            # all drawn within a second of "skin": 7:8 leaves for the table
+            # a second after the word
+            hide = body + trace(ring, TEXT, 2.4, _t(t, 0.2), 0.8, closed=True,
                                 extra=' stroke-dasharray="7 4"')
-            return (hide + c.chip("S.skin", "the skin", (ox_x, R1 + 22), CHIP, t=_t(t, 0.4))
+            return (hide + c.chip("S.skin", "the skin", (ox_x, R1 + 22), CHIP, t=_t(t, 0.3))
                     + arrow([(ox_x + 30, R1 - 90), (ox_x + 70, 62), (px - 70, 62),
-                             (px - 26, pgy - 92)], None, _t(t, 0.6), dur=1.0)
+                             (px - 26, pgy - 92)], None, _t(t, 0.3), dur=0.6)
                     + priest_once(c, _t(t, 0.9), "S.skin"))
         T["S.skin"] = Target("S.skin", box=bounds(ring), outline=[(ring, True)], draw=skin)
         # the baked
@@ -769,9 +758,6 @@ L_GROUND = [(60, 462), (220, 458), (380, 466), (540, 460), (700, 466), (860, 470
 
 class Sinai(_Card):
     key = "L"
-
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2)}
 
     def _mountain(self, ctx, t):
         x, gy, k = MT

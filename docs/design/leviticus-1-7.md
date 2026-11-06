@@ -13,6 +13,11 @@ The 163 files are in `web/visuals/Leviticus/1`–`7`, written by
 `generate_leviticus17_svg.py --web`. QC refuses none of them, a fresh run
 reproduces them byte for byte, and the deploy count is 6,774 of 20,000. The
 build departs from the plan below in the ways listed under [As built](#as-built).
+
+After the first build the owner found the camera moved too much ("it
+constantly shifts around the graphic"). The camera was rebuilt around one
+lens, described under [Camera and motion](#camera-and-motion): every rest is
+at the same scale, so a move is a slide, not a zoom.
 Where the two differ, the spec (`leviticus17_spec.py`) is right and the verse
 plan tables are the design's draft.
 
@@ -97,9 +102,13 @@ Leviticus-only "consecration" chip beside the trespass header comes in at
 ### The stations
 
 Each station is a 1024 × 576 PANEL card with no title, laid out at screen
-size, so a rest shot is s=1 and the text reads without inverse scaling. A
-station is written into a file only if one of that file's rest cameras sees
-it.
+size. The camera rests on a whole card at the lens (s 0.829), so the card
+fills most of the screen with a margin round it. A station is written into a
+file only if one of that file's rest cameras sees it.
+
+The "Where" column below is the design's. As built, the cards sit in
+`leviticus17_spec.STATIONS`: H and A under the plan, M and B under them, C,
+D, G, S, T and K in two columns beside the table, and L far to the west.
 
 | Station | Where | What it holds | Mainly for |
 |---|---|---|---|
@@ -131,10 +140,33 @@ under it fades in on the word in the nine verses that say it (4:20, 26, 31,
   in canonical order. Each file lands at least 0.35 s before its MP3 ends
   (`svg_chronicles_world._mp3_seconds`). A verse under 5 s has one stop, up to
   10 s two, and three only above 10 s.
-- **Shots**:
-  - the plan: court s 0.7, tent 1.6, door 2.2, altar 3.0, camp 0.5;
-  - the table: a column at s 1.0, a cell at 1.4, the whole at 0.45;
-  - each station at s 1.0, with close-ups at 1.3–1.8.
+- **One lens.** Every rest is at `LENS` (s 0.829), except 7:37's whole
+  table at 0.45. A move between two rests at the lens is a plain eased pan,
+  so the zoom-out-and-swoop of a van Wijk flight happens only into and out
+  of 7:37. The rests are named homes in `SHOTS`:
+  - `P`, the court plan with the whole tent, and `O`, outside the gate;
+  - the table's six homes, `TL1`–`TL3` (the row labels, burnt, meal and
+    peace) and `TR1`–`TR3` (peace, sin and trespass), each a band of rows;
+  - each station's whole card, named by its letter. Close-ups are retired:
+    `shot_cam` refuses `<St>.<name>`.
+- **Pace.** `lev_duration` times each leg from `cam_duration`, lengthened
+  until the pan's eased peak is at most `PAN_PEAK_PX_S` (1300 px/s on
+  screen), up to `PAN_MAX_D` (3.8 s). A zoom is held under `ZOOM_PEAK_PX_S`.
+  A stop rests at least `DWELL` (1.3 s), and a file's last stop rests
+  `LAST_REST` (1.5 s) counting the next file's hold. A short verse may
+  squeeze a leg to `MIN_LEG_SQUEEZE`, but never so it peaks above
+  `SQUEEZE_PEAK_PX_S`.
+- **The movement budget.** QC refuses a rest off the lens (other than
+  `LENS_EXEMPT`), a zoom between two lens rests, and a file over
+  `MAX_LEGS` (3), `MAX_FILE_PAN` (5.5 screen widths) or `MAX_FILE_ZOOM`
+  (1.2 octaves), or a leg over `MAX_LEG_PAN` (3 widths) or `MAX_PEAK_PX_S`
+  (1800 px/s). It warns above 1300 px/s. `test_camera_is_calm` holds the
+  book's totals: at most 150 legs, 200 widths of pan, 2.5 octaves of zoom
+  and 26% of the narration spent moving.
+- **As measured** (the first build in brackets): 148 legs (178), 25% of the
+  narration moving (33%), 181 screen widths of pan (327.5), 1.8 octaves of
+  zoom (87.2), 51 files that don't move (28), and 5.3 widths in the busiest
+  file (9.0).
 - **Cues**: a `lev_say`/`cue` pair copied from `garden_stage.say`/`cue`
   (which is bound to `BOOK = "Genesis"`), timed by `narration_clock` with
   the words-per-second estimate as fallback. A misspelt cue word fails the
@@ -401,32 +433,36 @@ Taken 2026-11-06.
 - **Modules.** The stations are split across four modules: `leviticus17_stations.py` (the Station API, and A, B, C and H), `leviticus17_st_meal.py` (G and K), `leviticus17_st_law.py` (M and T) and `leviticus17_st_peace.py` (D, S and L). The generator holds the sheet, the flight, the carry, the size passes and QC.
 - **Veils.** The veils are opaque, with placeholder bars where the text will be, not a 0.72 PANEL. A veil that stays for a whole file is drawn as three shapes.
 - **Cases.** `CASES` in the spec marks each new beast or bringing (1:3 herd, 1:10 flock, 1:14 birds, and so on). The altar's stack, bird bay, blood, priest and day strip, the cast's slots and K's struck marks belong to their case, so one offering's marks don't carry into the next.
-- **Board B** is scoped to its offering and beast: `offering_of`, and `pkey` is given the file's ref. A part keeps the words of the verse that first named it (`CUT_WORDS`: "fat on the inwards" for 3:9, "the fat tail" for 7:3). Its close-ups keep the head whole or leave it out.
+- **Board B** is scoped to its offering and beast: `offering_of`, and `pkey` is given the file's ref. A part keeps the words of the verse that first named it (`CUT_WORDS`: "fat on the inwards" for 3:9, "the fat tail" for 7:3).
 - **The carry.** What the previous file drew and this one doesn't (a pulse still running, a part B moved, D's meat) is drawn into the first frame and fades as the camera first moves. Parts that B moved stay where they were moved (`B.at:`, `B.up:`).
-- **The opening hold.** A file holds its opening camera until the previous file's last stop has rested 0.9 s, where the verse can afford it.
+- **The carry of drawn pieces.** A station's standing pieces (`Station.base_pieces()`, such as A's bay dove) are pieces, not the card's base, so the carry holds them across a seam.
+- **The opening hold.** A file holds its opening camera until the previous file's last stop has rested `LAST_REST` (1.5 s), where the verse can afford it.
+- **Merged stops.** 1:17 and 6:5 had two stops on the same card at the lens; each is one stop, with the beats at their old times.
 - **Table stops dropped.** Where the verse can't afford the table stop, the unit is reached off camera (`REACHED_OFFSCREEN`): 1:5, 1:15, 2:4, 3:9, 4:10, 4:25, 5:9 and 7:30. 2:3 and 2:14 are reordered instead. 1:10 goes to C first (the ram on "sheep", the goat on "goats"), then to the cell on "male".
 - **Walks dropped** because the verse is too short for them: the ox at 4:14, the goat at 4:24 and the thigh carried at 7:33.
-- **Shots moved.**
-  - `plan:door` is at x 1515, clear of the reference's "table" and "lamp stand".
-  - `H.incense` is at s 1.65.
-  - The `table` shot is 158 px right of the design's, so that 7:37's "consecration" chip fits right of the trespass header.
+- **Shots.** The `table` shot is 158 px right of the design's, so that 7:37's "consecration" chip fits right of the trespass header. The homes' bands are placed so that no table word is cut by the frame or sits under the title plate.
+- **At the lens.** The plan's tokens carry chips at world size 14 with a halo ("male", "crop", "meal offering"), so they read at the lens. "place of the ashes" sits east of the heap, clear of the altar and the north box.
+- **Table headings.** `ref_world()` leaves out the table's "THE OFFERINGS" and "Leviticus 1–7" on the verse pictures.
 - **The HUD.** The title plate changes to "burnt offering" at 1:3 and "trespass offering" at 6:6. The old title fades out before the new one fades in.
 - **Wording on the verse pictures.** `ref_world()` drops the WHEN cells' source flags. 2:13's names are one chip, "all your offerings".
 - **QC beyond the design's checks.** The generator also refuses a file if:
   - text is cut by the frame at rest, including the reference plan's own labels (`plan_labels_cut`);
   - an animation begins after the narration.
 
-  It warns when a flight goes faster than 2,400 px/s.
-- **Size.** The size passes are `compact`, `CamOut` keyframes, `cull_card` and shared figures in `<defs>`. Files run 7–129 KB, 40.6 KB on average and 6.47 MB in all. Thirteen are over 70 KB. The heaviest, 7:29, 7:37 and 7:38, are mostly the reference table's own drawings at rest.
+  It also holds the movement budget (see [Camera and motion](#camera-and-motion)).
+- **Size.** The size passes are `compact`, `CamOut` keyframes, `cull_card` and shared figures in `<defs>`. Files run 7–124 KB, 43 KB on average and 7.17 MB in all. Twenty are over 70 KB, because the wider lens shows more of the table at each rest. The heaviest, 7:37 and 7:38, are mostly the reference table's own drawings.
 - **Left as it is.**
   - 7:37 rests on the whole table at s 0.45, which is small on a phone.
+  - At the lens, the table's text is about 11.6 px on a 1024-wide screen and the plan's own labels 10.8 px; the altar on the plan is about 60 px wide.
+  - At the TR homes the row labels are off screen, so a lit sin or trespass cell has no row name in frame.
+  - Six verses end on a table cell lit on arrival and the next verse flies straight back (7:8, 7:10, 7:18, 4:7, 5:12, 5:13–14). They are the fastest legs, up to 1,750 px/s.
   - T's top band is cut by the frame at 6:1–5 (drawings only, no words).
   - Text on a moving token isn't measured by QC.
   - These targets weren't built: the 4:20 "=" bracket, plan hand-marks, the 6:14 basket, the 7:34 arrows, the 3:11 tail slab, and chips for "anointed priest" (6:22) and "peace offerings" (4:10, 4:26).
 - **Checked.**
-  - Edge rest-frame contact sheets of all 163 files, and the seams between them: 0 of 162 pairs over 100 px.
-  - Playwright WebKit, played in an `<img>`, on 28 files: 0 px over 60.
-  - `test_leviticus17`: 27 tests.
+  - Edge rest-frame contact sheets of all 163 files (211 rests), and the seams between them: 0 of 162 pairs over 100 px.
+  - Playwright WebKit, played in an `<img>`, on the squeezed, merged and P files: every rest matches its paused frame.
+  - `test_leviticus17`: 29 tests, including `test_camera_is_calm` and `test_a_pan_is_paced`.
 
 ## Verse plan
 

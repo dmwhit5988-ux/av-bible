@@ -2,16 +2,13 @@
 
 Each is a 1024 x 576 card on the world sheet (corner in
 leviticus17_spec.STATIONS: G at (2960, 2920), under the burnt and meal
-columns; K at (4080, 2920), under the peace and sin columns), drawn in its
+columns; K at (4104, 2920), under the peace and sin columns), drawn in its
 own card px with the API of leviticus17_stations (its docstring). There is
 no title on either card: only WEB names, numbers and labelled drawings,
 each brought in on its word, played once and held.
 
 G, the meal offering (2:1-3, 8-10, 14-16; 5:12-13; 6:14-18, 25, 29; 7:7)
 -------------------------------------------------------------------------
-Shots: "" (whole), "supplies" (the flour, oil and frankincense with the
-hand, s 1.4), "fruits" (the first fruits, s 1.4).
-
 - the supplies (top left): G.oil (the jar), G.flour (the basket of fine
   flour), G.frankincense (the cup); G.pour (oil traced from the jar onto
   the flour); G.handful (svg_figures.hand opening and closing to "cup" on
@@ -42,9 +39,8 @@ hand, s 1.4), "fruits" (the first fruits, s 1.4).
 
 K, the kitchen (2:4-7, 11-13; 5:11; 6:20-23, 27-28)
 ---------------------------------------------------
-Shots: "" (whole); the card's four quadrants at s 2, "cook" (top left),
-"rules" (top right), "measure" (bottom left), "vessels" (bottom right),
-which no word crosses; "griddle" (the griddle close, s 2.4).
+The card's four quadrants, cook (top left), rules (top right), measure
+(bottom left) and vessels (bottom right); no word crosses between them.
 
 - cook (top left): K.oven, K.griddle (with its flat round), K.pan
   (svg_figures.cookware, each drawn in, chip under it); K.cakes
@@ -252,11 +248,6 @@ def _name_box(key, size=16):
 
 class Meal(_Card):
     key = "G"
-
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2),
-                "supplies": self.clamp_shot(1.4, 270, 210),
-                "fruits": self.clamp_shot(1.4, 300, 470)}
 
     # -- pieces -----------------------------------------------------------
     def _priest_fig(self, c):
@@ -532,8 +523,8 @@ def _moves(ctx, key):
 # K: the kitchen
 # ---------------------------------------------------------------------------
 
-# K is four quadrants, each a s 2 close-up (cook, rules / measure,
-# vessels): no word crosses x 512 or y 288, so no close-up cuts one
+# K is four quadrants (cook, rules / measure, vessels): no word crosses
+# x 512 or y 288
 KC_GY = 244                                  # the cookware's ground
 OVEN_X, GRID_X, PAN_X, KC_S = 84, 236, 380, 2.0
 KC_CHIP_Y = KC_GY + 22
@@ -568,14 +559,6 @@ class Kitchen(_Card):
         if key.startswith("K.not:"):
             return f"{key}@{case_of(getattr(verse, 'ref', None))}"
         return key
-
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2),
-                "cook": (2.0, 256, 144),
-                "griddle": (2.4, 373.3, 190),
-                "rules": (2.0, 768, 144),
-                "measure": (2.0, 256, 432),
-                "vessels": (2.0, 768, 432)}
 
     def targets(self, ctx):
         T = {}

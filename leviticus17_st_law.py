@@ -1,14 +1,13 @@
 """Stations M (causes) and T (trespass) of the Leviticus 1-7 pictures.
 
 Each is a 1024 x 576 card on the world sheet (corner in
-leviticus17_spec.STATIONS: M at (2960, 100), above the table; T at
-(4080, 100), above it to the right), drawn through leviticus17_stations'
+leviticus17_spec.STATIONS: M at (692, 2048), under H; T at (4104, 100),
+above the table to the right), drawn through leviticus17_stations'
 Station API. Their words are offerings.py's (CAUSES, WRONGS) or the WEB's
 own, four at most; their figures are svg_figures'.
 
 M, the causes of 5:1-6: a 2 x 2 of the four things "hidden from him",
 and the confession that follows them.
-- shots: "" (the card), "c1".."c4" (one cell each, s 1.75);
 - cell 1, 5:1: M.witness (a man, "a witness"), M.seen, M.known;
 - cell 2, 5:2: M.carcass ("the carcass", the cell's word), then a dim
   figure a row with its CAUSES label: M.unclean_animal (a wolf, the wild
@@ -22,8 +21,6 @@ and the confession that follows them.
   toward the table's sin offering).
 
 T, the trespass offering of 5:14-6:7:
-- shots: "" (the card), "bar" (the restitution bar and the priest, s 1.65),
-  "wrongs" (the man, the six wrongs and his neighbor, s 1.32);
 - the top band, 5:15-18: T.estimation (the balance, "estimation") and
   T.silver (coins, "silver"), the balance coming in with the first of the
   two; T.shekel ("shekel of the sanctuary"); T.ram (svg_figures.sheep(ram=True), "ram"), T.priest (the priest, "priest"),
@@ -125,12 +122,6 @@ M_SWEAR = (560, 540, 1.7)                            # cell 4's man
 
 class Causes(Station):
     key = "M"
-
-    def shots(self):
-        out = {"": (1.0, CW / 2, CH / 2)}
-        for i, (x0, y0, x1, y1) in M_CELLS.items():
-            out[f"c{i}"] = self.clamp_shot(1.75, (x0 + x1) / 2, (y0 + y1) / 2)
-        return out
 
     def base(self, ctx):
         out = [self.card()]
@@ -260,11 +251,6 @@ def _row_plate(key):
 class Trespass(Station):
     key = "T"
     VERSE_LOCAL = ("T.didnt_know", "T.guilty")
-
-    def shots(self):
-        return {"": (1.0, CW / 2, CH / 2),
-                "bar": self.clamp_shot(1.65, 714, 175),
-                "wrongs": self.clamp_shot(1.32, 415, 363)}
 
     def base(self, ctx):
         out = [self.card()]

@@ -5,8 +5,9 @@ reference page's court plan and offerings table, drawn by
 generate_tabernacle_reference at its own coordinates) and over these
 stations round it: screen-sized cards for what a table cell can't hold.
 Each station is a 1024 x 576 card in its own px, set on the sheet at the
-corner leviticus17_spec.STATIONS gives it, so a rest shot of it is s = 1
-and its type reads at its own size.
+corner leviticus17_spec.STATIONS gives it. A rest on it is the whole card
+at leviticus17_spec.STATION_S (the one lens, 0.829: a 14 px word reads at
+11.6 px); there are no close-ups.
 
 The Station API
 ---------------
@@ -14,15 +15,14 @@ A station is a `Station` subclass, one instance in `registry()`:
 
     class Altar(Station):
         key = "A"
-        def shots(self):            # {name: (s, x, y)} in card px
         def targets(self, ctx):     # {target id: Target} in card px
         def base(self, ctx):        # the card's own drawing: svg string
         def act(self, ctx, verb, key, t, opts):   # "flare", "move", ...
 
-- `shots()`: the rest cameras a spec names "A" ("" here, the whole card at
-  s 1) and "A.fire" ("fire"). (s, x, y) puts card point (x, y) at the
-  screen's centre; the generator adds the card's corner, and `clamp_shot`
-  keeps a close-up inside the card.
+- `shots()` (the base's, kept by every card): {"": (1.0, x, y)}, the card
+  point (x, y) a rest on it puts at the screen's centre (the card's
+  middle); the generator adds the card's corner and sets the scale
+  (STATION_S; L, Sinai, at 1). A spec names it by the station's key ("A").
 - `targets(ctx)`: everything a beat can name, by its full id ("A.fire").
   A `Target` has a `box` (card px, x0 y0 x1 y1), an `outline` (a list of
   (points, closed) the pulse and the steady outline run round) and a
@@ -62,7 +62,7 @@ Target ids by station:
   A.notdivided ("not severed" in the sin offering), A.bird2 (the pair's
   second bird, each named: 5:7), A.priest, A.days, A.morning, A.continual,
   A.chip:<word> (a word of the verse by the fire, this verse only); verb
-  "flare" on A.fire. Shots "", fire, bird, days. The stack, the bird bay
+  "flare" on A.fire. The stack, the bird bay
   and the priest are each law's own (`section_of`).
 - B (parts board, the verse's `beast`): B.<part> for every
   svg_figures.beast_parts key, B.fat (the fat as one), B.water,
@@ -71,18 +71,15 @@ Target ids by station:
   later verses of its board (7:30-36). Verb
   "move" on a part: lifted and held (the breast waved, 7:30; the thigh
   heaved, 7:32; {"chip": word}), or {"to": "altar" | "priests" | "priest"}
-  a small copy carried to that share (7:31). Shots "", inner, tail,
-  breast (each keeps the head whole or out of frame). B.loins is the loins' line: its
+  a small copy carried to that share (7:31). B.loins is the loins' line: its
   word is kidney_fat's chip "fat by the loins", so it has a chip of its
   own only in a file where B.kidney_fat isn't shown.
 - C (cast): C.ox, C.bull (left), C.sheep, C.ram, C.lamb (middle), C.goat,
   C.fgoat (right); C.offerer, C.hand, C.head, C.elders (this verse only);
   C.chip:<left|mid|right>:<word> (a word under a slot, this verse only).
   The offerer's pose brings his hand down on the verse's beast's head.
-  Shots "", head (the verse's beast), elders (4:15). Each case's cast is
-  its own (`slot_of`).
-- H (holy place): H.veil, H.drops, H.incense, H.horns. Shots "", veil,
-  incense.
+  Each case's cast is its own (`slot_of`).
+- H (holy place): H.veil, H.drops, H.incense, H.horns.
 - G, K (leviticus17_st_meal), M, T (leviticus17_st_law), D, S, L
   (leviticus17_st_peace): see those modules.
 """
@@ -310,6 +307,12 @@ class Station:
     def base(self, ctx):
         return self.card()
 
+    def base_pieces(self, ctx):
+        """[(key, svg)]: the parts of the card's own drawing that belong to
+        a case or verse, drawn as pieces so the next file carries them
+        (generate_leviticus17_svg.Carry) when it doesn't draw them."""
+        return []
+
     def act(self, ctx, verb, key, t, opts):
         raise KeyError(f"{self.key}: no verb {verb!r} for {key!r}")
 
@@ -336,16 +339,6 @@ class Station:
         return (f'<rect x="0" y="0" width="{CW}" height="{CH}" rx="10" '
                 f'fill="{rgb(PANEL)}" stroke="{rgb(SAND_DIM)}" '
                 f'stroke-width="2"/>')
-
-    def clamp_shot(self, s, x, y):
-        """A close-up kept inside the card where it can be."""
-        hw, hh = 512 / s, 288 / s
-        w, h = self.size
-        if hw * 2 <= w:
-            x = min(max(x, hw), w - hw)
-        if hh * 2 <= h:
-            y = min(max(y, hh), h - hh)
-        return (s, x, y)
 
 
 class Ctx:
@@ -416,8 +409,8 @@ class Ctx:
     def pin_text(self, key, s, xy_world, size=15, anchor="mm", t=None,
                  col=TEXT, bold=False):
         """A word held at `size` screen px wherever the camera is (the
-        plan, whose shots run s 0.5-3): under the generator's inverse font
-        group, at a world point."""
+        plan's words, at the lens and in the 7:37-38 zooms): under the
+        generator's inverse font group, at a world point."""
         l, tp, r, b = ink(s, size, bold, False, anchor)
         self.texts.append(TextBox(key, (l - 3, tp - 3, r + 3, b + 3), t or 0.0,
                                   pinned=True, anchor=xy_world,
@@ -627,7 +620,7 @@ class Plan(Station):
         def priests(c, t):
             did = c.fig_def("priest_tok", F.priest(), PERSON_H / 105)
             c.pin_text("plan.priests", "Aaron's sons",
-                       (pr[0][0], pr[0][1] + 9), PIN_PX, "mt", t)
+                       (pr[1][0] + 12, pr[1][1] - 26), PIN_PX, "lm", t)
             return appear("".join(c.use(did, x, y) for x, y in pr), t)
         T["plan.priests"] = Target("plan.priests", box=(pr[0][0] - 9, pr[0][1] - 37,
                                                         pr[1][0] + 9, pr[1][1]),
@@ -656,9 +649,12 @@ class Plan(Station):
                                  draw=north)
         ax, ay = ASH_PT
 
+        # its name sits on the heap and runs east, clear of the altar's
+        # ring and the north side (at the lens the altar is 58 px wide) and
+        # over "Aaron's sons"
         def ash(c, t):
-            c.pin_text("plan.ash", "place of the ashes", (ax + 2, ay - 22), PIN_PX,
-                       "mb", t)
+            c.pin_text("plan.ash", "place of the ashes", (ax - 10, ay - 26), PIN_PX,
+                       "lb", t)
             return appear(heap(ax, ay + 8, 26, 14), t)
         T["plan.ash"] = Target("plan.ash", box=(ax - 14, ay - 8, ax + 14, ay + 8),
                                outline=[(heap_pts(ax, ay + 9, 30, 17), True)],
@@ -686,10 +682,14 @@ class Plan(Station):
             return (trace(bp, BLOOD, None, t, 1.6)
                     + appear(trace(head, BLOOD, None, None), None if t is None
                              else t + 1.4, dur=0.3))
+        # its outline's top runs between the arrowhead and the baseline of
+        # the reference's "altar of incense" just above it
         T["plan.bloodpath"] = Target("plan.bloodpath", outline=[(rect_pts(
-            VEIL_PT[0] + 4, VEIL_PT[1] - 14, DOOR_PT[0] + 4, VEIL_PT[1] + 14), True)],
+            VEIL_PT[0] + 4, VEIL_PT[1] - 11, DOOR_PT[0] + 4, VEIL_PT[1] + 14), True)],
             draw=bloodpath)
-        op = [((ALT[0] + ALT[2]) / 2, ALT[3] + 14), (GATE_X - 60, 880),
+        # from under the reference's "altar of burnt offering", as the bull
+        # is carried out (plan.bull_out)
+        op = [((ALT[0] + ALT[2]) / 2, ALT[3] + 40), (GATE_X - 60, 880),
               (GATE_X + 60, 870), (CLEAN_PT[0] - 50, CLEAN_PT[1] + 8)]
         T["plan.outpath"] = Target("plan.outpath", outline=[(op, False)],
                                    draw=lambda c, t: trace(
@@ -711,10 +711,10 @@ class Plan(Station):
                           (GATE_X + 60, 870), (CLEAN_PT[0] - 40, CLEAN_PT[1] + 6)],
         "plan.ash_out": [(ASH_PT[0], ASH_PT[1] + 6), (GATE_X - 60, 880),
                          (GATE_X + 60, 870), (CLEAN_PT[0] - 6, CLEAN_PT[1] + 6)],
-        # the meal offering brought to the priest at the door and on to the
-        # altar (2:8); the ashes from the hearth to the ash place (6:10)
-        "plan.bread": [(GATE_X + 20, 880), (1760, 905), (1700, 870),
-                       ((ALT[0] + ALT[2]) / 2 + 30, ALT[3] + 6)],
+        # the meal offering presented to the priest by the altar (2:8),
+        # set down at his feet, off the altar and its name; the ashes from
+        # the hearth to the ash place (6:10)
+        "plan.bread": [(GATE_X + 20, 880), (1800, 905), (1734, 858)],
         "plan.ashes": [((ALT[0] + ALT[2]) / 2 + 8, (ALT[1] + ALT[3]) / 2),
                        (ASH_PT[0] - 2, ASH_PT[1] + 2)],
     }
@@ -730,8 +730,13 @@ class Plan(Station):
               "plan.goat": ("goat", lambda: F.goat(), TOKEN_H * 1.05 / 64, -1),
               "plan.fgoat": ("fgoat", lambda: F.goat(female=True), TOKEN_H * 1.05 / 64, -1),
               "plan.lamb": ("lamb", lambda: F.sheep(lamb=True), TOKEN_H * .8 / 28, -1),
-              "plan.bread": ("bread", lambda: F.bread(), 1.4, 1),
+              "plan.bread": ("bread", lambda: F.bread(), 2.0, 1),
               "plan.crop": None, "plan.ash_out": None, "plan.ashes": None}
+    # a token's chip ({"chip": word}, the verse's word): its world size
+    # reads 11.6 px at the lens; above the beasts, under the small ones,
+    # where the altar's group leaves room
+    CHIP_SIZE = 14
+    CHIP_AT = {"plan.crop": ((0, 9), "mt"), "plan.bread": ((0, 6), "mt")}
 
     def act(self, ctx, verb, key, t, opts):
         if verb != "move":
@@ -749,7 +754,11 @@ class Plan(Station):
             did = ctx.fig_def(f"tok_{name}_{flip}", mk(), sc, flip=flip)
             inner = f'<use href="#{did}"/>'
         if opts.get("chip"):
-            inner += text_svg(opts["chip"], (0, -TOKEN_H - 6), 11, TEXT, "mb")
+            xy, anc = self.CHIP_AT.get(key, ((0, -TOKEN_H - 6), "mb"))
+            halo = (f' stroke="{rgb(BG)}" stroke-width="3" stroke-opacity="0.85" '
+                    f'stroke-linejoin="round"')
+            inner += (text_svg(opts["chip"], xy, self.CHIP_SIZE, BG, anc, extra=halo)
+                      + text_svg(opts["chip"], xy, self.CHIP_SIZE, TEXT, anc))
         x0, y0 = path[0]
         rel = [(x - x0, y - y0) for x, y in path]
         return (f'<g opacity="0"><set attributeName="opacity" to="1" '
@@ -831,27 +840,24 @@ class Altar(Station):
             return f"{key}@{case_of(getattr(verse, 'ref', None))}"
         return key
 
-    def shots(self):
-        return {"": (1.0, 512, 288),
-                "fire": self.clamp_shot(1.6, 300, A_TOP - 20),
-                "bird": self.clamp_shot(1.3, 640, 280),
-                "days": self.clamp_shot(1.5, 820, 440)}
-
     def base(self, ctx):
-        out = self.card() + inset_svg("altar", AK, A_AT)
-        # the bay's dove: there once any of its marks has been drawn, or
-        # coming in with the first of them
+        return self.card() + inset_svg("altar", AK, A_AT)
+
+    def base_pieces(self, ctx):
+        """The bay's dove: there once any of its marks has been drawn, or
+        coming in with the first of them. A piece, not the base, so a file
+        of the next case carries it and fades it as its camera moves."""
         marks = BIRD_MARKS
         if any(self.pkey(m, ctx) in ctx.before for m in marks):
             t = None
         else:
             ts = [ctx.lit[m] for m in marks if m in ctx.lit]
             if not ts:
-                return out
+                return []
             t = min(ts)
         dx, dy = BIRD_AT
-        return out + appear(ctx.figure(F.dove(descending=False), dx, dy, BIRD_S, SILVER,
-                                       PANEL), t)
+        return [("A.dove", appear(ctx.figure(F.dove(descending=False), dx, dy, BIRD_S,
+                                             SILVER, PANEL), t))]
 
     def targets(self, ctx):
         T = {}
@@ -1172,10 +1178,6 @@ class Board:
         b = union_box(bs)
         return (b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad)
 
-    def head_box(self):
-        return union_box([bounds(p) for p in self.polys.get("head", [])]
-                         + [bounds(p) for p in self.lines.get("head", [])])
-
     def hidden(self):
         """The base's shapes (key, index) that later fills cover wholly, so
         never seen: rasterised at 3x, a shape with its stroke against the
@@ -1221,8 +1223,6 @@ class Board:
         return hidden
 
 
-INNER_KEYS = ("kidneys", "kidney_fat", "loins", "liver", "liver_cover",
-              "fat_cover", "fat_on")
 CHIPLESS = ("loins",)          # its word is "fat by the loins", kidney_fat's chip
 
 
@@ -1294,46 +1294,6 @@ class PartsBoard(Station):
     def board(self, verse_or_ctx):
         beast = getattr(verse_or_ctx, "beast", "") or "bull"
         return Board.of(beast if beast in F.BEAST_KINDS else "bull")
-
-    def shots(self, beast="bull"):
-        b = Board.of(beast if beast in F.BEAST_KINDS else "bull")
-        out = {"": (1.0, 512, 288)}
-        for name, keys in (("inner", INNER_KEYS), ("tail", ("tail_fat", "backbone", "right_thigh")),
-                           ("breast", ("breast", "right_thigh", "fat_cover"))):
-            keys = [k_ for k_ in keys if k_ in b.chips]
-            if not keys:
-                continue
-            x0, y0, x1, y1 = b.frame(keys, chipless=CHIPLESS)
-            s = min(1.7, 1000 / (x1 - x0), 540 / (y1 - y0))
-            s, x, cy = self._frame_head(b, s, x0, x1, (y0 + y1) / 2)
-            # a head in the inner parts' frame keeps its horns: the frame
-            # drawn up (or back) to the head's top (the goat's, 3:15)
-            hx0, hy0, hx1, _hy1 = b.head_box()
-            if name == "inner" and x - 512 / s < hx1 and cy - 288 / s > hy0 - 10:
-                top = hy0 - 10
-                s = min(s, 576 / (y1 - top))
-                cy = top + 288 / s
-            out[name] = self.clamp_shot(s, x, cy)
-        return out
-
-    @staticmethod
-    def _frame_head(b, s, x0, x1, cy, gap=10):
-        """A close-up of content x0..x1 that keeps the head whole or leaves
-        it out, since a frame edge through the head reads as a crop: the
-        head brought in where the frame can hold it with the content, else
-        the frame slid right past it, else the camera drawn back to both."""
-        hx0, _hy0, hx1, _hy1 = b.head_box()
-        half = 512 / s
-        cx = (x0 + x1) / 2
-        left = cx - half
-        if left <= hx0 - gap or left >= hx1 + gap:
-            return s, cx, cy
-        if x1 - half <= hx0 - gap + half:            # bring it in
-            return s, hx0 - gap + half, cy
-        lo = hx1 + gap + half                        # slide past it
-        if lo <= min(x0 + half, CW - half):
-            return s, lo, cy
-        return (min(s, 1024 / (x1 - hx0 + 2 * gap)), (hx0 - gap + x1) / 2, cy)
 
     def pkey(self, key, verse):
         """What persists on B: each offering's board apart, and each beast's
@@ -1415,7 +1375,7 @@ class PartsBoard(Station):
         # a move's end state from an earlier verse of this board (7:30-36):
         # B.up:<part>[:<chip>] held up, B.at:<share>:<part> at its share
         suffix = "@" + self.pkey("", ctx).split("@", 1)[1]
-        held = [pk[:-len(suffix)] for pk in ctx.before
+        held = [pk[:-len(suffix)] for pk in sorted(ctx.before)
                 if pk.endswith(suffix) and pk.startswith(("B.up:", "B.at:"))]
         for key in held:
             T[key] = Target(key, box=(0, 0, 1, 1),
@@ -1584,13 +1544,6 @@ class Cast(Station):
             return f"{sl}@{case_of(getattr(verse, 'ref', None))}"
         return sl
 
-    def shots(self, beast="bull"):
-        ring, (hx, hy), _slot = _c_head(beast or "bull")
-        return {"": (1.0, 512, 288),
-                "head": self.clamp_shot(1.8, hx - 40, hy + 10),
-                # the elders at the bull's head (4:15), their word over them
-                "elders": self.clamp_shot(1.5, 341, 330)}
-
     def targets(self, ctx):
         T = {}
         for key, (slot, kind, mk) in C_ANIMALS.items():
@@ -1682,12 +1635,6 @@ DROPS_X = [VEIL_R[0] + 18 + i * (VEIL_R[2] - VEIL_R[0] - 36) / 6 for i in range(
 
 class HolyPlace(Station):
     key = "H"
-
-    def shots(self):
-        vx = (VEIL_R[0] + VEIL_R[2]) / 2
-        return {"": (1.0, 512, 288),
-                "veil": self.clamp_shot(1.3, vx + 40, 300),
-                "incense": self.clamp_shot(1.65, 800, 330)}   # past the seventh drop
 
     def base(self, ctx):
         return (self.card() + inset_svg("veil", HV_K, HV_AT)

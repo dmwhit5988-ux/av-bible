@@ -189,11 +189,14 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 - **What the table shows** comes from `offerings.py` (`OFFERINGS`, and `CUTS`, `RITES` and the small boards for the stations), and the places on the plan come from `sanctuary.PLACES`.
 - **How the table fills in.** Each unit of the table starts under a veil and unveils on the word of the verse its row cites. `coverage_gaps` checks that every cited verse reaches its unit, or is excused or reached off camera, and that the table is whole by 7:37.
 - **Cases.** A case is a new beast or a new bringing (`CASES`, `leviticus17_stations.case_of`). The altar's stack, the blood, the priest, the cast and the kitchen's struck marks belong to their case, so one offering's marks never carry over into the next.
-- **From one file to the next.** What the previous file drew and this one doesn't (a pulse still running, a part moved) is drawn into this file's first frame, then fades as the camera first moves. A file holds its opening camera until the previous file's last stop has rested.
+- **One lens.** Every rest is at `leviticus17_spec.LENS` (s 0.829): the plan home `P`, `O` outside the gate, six table homes (`TL1`–`TL3`, `TR1`–`TR3`) and each station's whole card. A move between two of them is a plain pan, never a zoom. The one exception is 7:37's whole table at 0.45. There are no close-ups.
+- **The movement budget.** `lev_duration` slows each pan until it peaks at 1300 screen px/s. QC refuses a file with more than 3 moves, 5.5 screen widths of pan or 1.2 octaves of zoom, and a move over 3 widths or 1800 px/s. `test_camera_is_calm` holds the book's totals.
+- **From one file to the next.** What the previous file drew and this one doesn't (a pulse still running, a part moved, a station's standing pieces) is drawn into this file's first frame, then fades as the camera first moves. A file holds its opening camera until the previous file's last stop has rested 1.5 s.
 - **Refusals.** The generator writes nothing for a file in any of these cases:
   - it would land less than 0.35 s before its MP3 ends;
   - an animation begins after the narration;
-  - text is cut by the frame or overlaps other text at rest.
+  - text is cut by the frame or overlaps other text at rest;
+  - its camera breaks the movement budget.
 - **Figures.** It draws with `svg_figures`' `beast_parts` (a labelled cutaway of the bull, sheep, ram or goat), `cookware`, `mountain`, `sheep(ram=True)` and `svg_vocab.not_mark`.
 
 See [design/leviticus-1-7.md](design/leviticus-1-7.md).

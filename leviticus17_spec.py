@@ -15,10 +15,10 @@ The verse format
 A verse is a list of STOPS, each a shot the camera flies to and rests on,
 with the BEATS that happen while it is there:
 
-    V(S("plan:altar",
+    V(S("P",
         ("light", "plan.priests", "Aaron's"),
         ("light", "plan.ring", "around")),
-      S("cell:burnt:blood",
+      S("TL2",
         ("light", "burnt.blood:around the altar", "@")))
 
 Each file starts where the file before it ends (the last stop of the
@@ -27,21 +27,23 @@ verse goes. A verse with no stops holds the previous shot. Every file
 1:1-7:38 has its plan here; `stub()` (a plan not written yet, which holds)
 is refused by test_leviticus17.
 
-`beast` names the animal of the parts board (B) and the cast's close-up
+`beast` names the animal of the parts board (B) and the cast's head
 (C.head): "bull", "sheep", "ram" or "goat" (and "lamb", "fgoat" on C).
 
 Shots
 -----
-- "plan:court", "plan:tent", "plan:door", "plan:altar", "plan:camp": SHOTS
-  below, world px (s, x, y): world point (x, y) at the screen's centre at
-  scale s;
-- "col:<offering>": a column of the table, its header and BROUGHT, s 1.0;
-- "cell:<offering>:<row>": one cell, s 1.4; rows are brought, burns,
-  blood, eaten, not_eaten, when;
-- "cells:<offering>:<row1>:<row2>": the cells from row1 to row2, fitted;
-- "table": the whole table, s 0.45;
-- "<St>" a station whole at s 1 ("A"), "<St>.<shot>" one of its close-ups
-  ("A.fire", "B.inner", "C.head"): each station's `shots()`.
+One lens: every rest is at s LENS (0.829), so a leg between two rests is a
+plain eased pan and never a zoom. The homes:
+- "P", the court plan; "O", outside the gate (the camp edge and the clean
+  place): SHOTS below, world px (s, x, y), world point (x, y) at the
+  screen's centre at scale s;
+- "TL1", "TL2", "TL3": the table's left three columns (labels, burnt,
+  meal, peace), top, middle and low bands; "TR1", "TR2", "TR3": its right
+  three (peace, sin, trespass). A stop rests on the home whose frame holds
+  every table unit its beats name;
+- "<St>": a station's whole card ("A", "B", "L" Sinai), at STATION_S.
+  There are no close-ups ("A.fire" is refused);
+- the one exception: "table", the whole table at s 0.45 (7:37).
 
 Beats
 -----
@@ -108,40 +110,31 @@ from typing import NamedTuple, Tuple
 BOOK = "Leviticus"
 CHAPTERS = tuple(range(1, 8))
 
-# The plan's rest cameras, world px (sanctuary.Plan(730, 440, 14)): the
-# court is x 730-2130, y 440-1140, the tent x 870-1290, the altar
-# 1605-1675 x 755-825.
-SHOTS = {
-    "plan:court": (0.7, 1430, 790),
-    "plan:tent": (1.6, 1080, 790),
-    "plan:door": (1.9, 1515, 800),           # left edge past the tent's "lamp stand"
-    "plan:altar": (2.6, 1650, 772),
-    "plan:camp": (0.5, 1600, 800),
+# The one lens: every rest is at this scale ("table" excepted), so
+# a leg between two rests is a pan. Type at s 1 is the card's own size; at
+# LENS a 14 px who-line is 11.6 px on screen.
+LENS = 0.829
+STATION_S = LENS          # a station's whole card, "<St>"
 
-    # The table two columns wide. A one-column frame ("col:", "cell:") puts
-    # its edges inside the columns either side and cuts their words once
-    # they are unveiled; at s 1.39 centred on the line between two columns
-    # the frame holds those two whole and the words either side wholly
-    # outside. Each y is one where the top and bottom edges cut no word of
-    # the table, veiled or not. mp: meal | peace (x 3830), ps: peace | sin
-    # (x 4190), st: sin | trespass (x 4550).
-    "mp:head": (1.39, 3830, 1740),           # names, by-lines, two rows of things
-    "mp:brought": (1.39, 3830, 1822),        # by-lines and the three rows of things
-    "mp:burns": (1.39, 3830, 2226),          # ON THE ALTAR, with THE BLOOD
-    "mp:eaten": (1.39, 3830, 2513),          # WHO EATS
-    "mp:low": (1.39, 3830, 2600),            # WHO EATS, NOT EATEN, WHEN
-    "ps:head": (1.39, 4190, 1740),
-    "ps:burns": (1.39, 4190, 2226),
-    "ps:blood": (1.39, 4190, 2416),
-    "st:head": (1.39, 4550, 1745),           # the names, rank groups 1-4, trespass's things
-    "st:brought": (1.39, 4550, 1847),        # sin's five rank groups
-    "st:burns": (1.39, 4550, 2140),          # ON THE ALTAR, THE BLOOD down to the horns
-    "st:altar": (1.39, 4550, 2217),          # ON THE ALTAR and THE BLOOD down to the side
-    "st:eaten": (1.39, 4550, 2620),          # WHO EATS, NOT EATEN, WHEN
-    "st:low": (1.39, 4550, 2605),
-    # the gate, the camp edge and the clean place: plan:camp puts the clean
-    # place's words past the right edge
-    "st:out": (1.0, 2350, 830),
+# The homes, world px (s, x, y). The plan (sanctuary.Plan(730, 440, 14)):
+# the court is x 730-2130, y 440-1140, the tent x 870-1290, the altar
+# 1605-1675 x 755-825. P's frame is x 882-2118, the court from the tent to
+# the gate; O's x 1557-2793, the gate, the camp edge and the clean place. The table's homes put a side edge in a gap between
+# columns (TL's right edge in the peace | sin gap, TR's left edge in the
+# meal | peace gap) and each top and bottom edge where it cuts no word of
+# the table, veiled or not: band 1 the names, the by-lines and BROUGHT;
+# band 2 ON THE ALTAR, THE BLOOD and WHO EATS; band 3 THE BLOOD down to
+# WHEN, with the top row's words below the title plate and the "forgiven"
+# chip.
+SHOTS = {
+    "P": (LENS, 1468, 790),
+    "O": (LENS, 2175, 830),
+    "TL1": (LENS, 3577.388419782871, 1812),
+    "TL2": (LENS, 3577.388419782871, 2307),
+    "TL3": (LENS, 3577.388419782871, 2500),
+    "TR1": (LENS, 4442.611580217129, 1812),
+    "TR2": (LENS, 4442.611580217129, 2303),
+    "TR3": (LENS, 4442.611580217129, 2500),
 }
 
 # A part's chip in the words of the verse that names it, where they aren't
@@ -152,16 +145,23 @@ CUT_WORDS = {
 }
 
 # The camera before 1:1.
-OPENING = "plan:court"
+OPENING = "P"
 
 # Each station's top-left corner on the world sheet; every station is 1024
-# x 576 (L, Sinai, is the far card to the west of the camp).
+# x 576 (L, Sinai, is the far card to the west of the camp). The altar's
+# cards (H, A over M, B) sit between the plan and the table, and the cast
+# (C), which the table's BROUGHT row answers most often, sits over the
+# table's left columns (D over it, T and S beside), so its flights to the
+# table are short; the gaps are wide enough that a card's frame at
+# STATION_S (1235 x 695 world px) holds no neighbour's edge: 110 px across,
+# 72 down, and A's and B's frames end 4 px short of the table's frame
+# (x 2960).
 STATIONS = {
-    "H": (330, 1400), "A": (1450, 1400),
-    "C": (330, 2072), "B": (1450, 2072),
-    "G": (2960, 2920), "K": (4080, 2920),
-    "M": (2960, 100), "T": (4080, 100),
-    "D": (2960, 772), "S": (4080, 772),
+    "H": (692, 1400), "A": (1826, 1400),
+    "M": (692, 2048), "B": (1826, 2048),
+    "D": (2960, 100), "T": (4104, 100),
+    "C": (2960, 772), "S": (4104, 772),
+    "G": (2960, 2920), "K": (4104, 2920),
     "L": (-560, 100),
 }
 
@@ -358,42 +358,42 @@ FORGIVEN = ("forgiven", None, "forgiven")
 
 VERSES = {
     # ---- Leviticus 1: the burnt offering -------------------------------
-    (1, 1): v(S("plan:tent", (
+    (1, 1): v(S("P", (
         ("light", "plan.moses", "Moses"),
         ("pulse", "plan.tent", "Tent of Meeting")))),
     (1, 2): v(
-        s("col:burnt", ("light", "burnt.by", "anyone")),
+        s("TL1", ("light", "burnt.by", "anyone")),
         s("C", ("light", "C.ox", "herd"),
           ("light", "C.sheep", "flock"),
           ("light", "C.goat", "flock+0.3"))),
     (1, 3): v(
-        s("cell:burnt:brought",
+        s("TL1",
           ("hud", "burnt offering", "burnt offering"),
           ("light", "burnt.head", "burnt offering"),
           ("light", "burnt.thing:bull", "herd")),
-        s("plan:door", ("move", "plan.ox", "door", {"chip": "male"}))),
+        s("P", ("move", "plan.ox", "door", {"chip": "male"}))),
     (1, 4): v(
-        s("C.head", ("light", "C.ox", "@"), ("light", "C.offerer", "@"),
+        s("C", ("light", "C.ox", "@"), ("light", "C.offerer", "@"),
           ("light", "C.hand", "hand"),
           ("pulse", "C.head", "head")),
         beast="bull"),
     (1, 5): v(
-        s("plan:altar", ("light", "plan.priests", "Aaron's"),
+        s("P", ("light", "plan.priests", "Aaron's"),
           ("light", "plan.ring", "around"))),
     (1, 6): v(
         s("B", ("light", "B.skin", "flay"), ("light", "B.pieces", "pieces")),
         beast="bull"),
     (1, 7): v(s("A", ("light", "A.fire", "fire"),
                 ("light", "A.wood", "wood"))),
-    (1, 8): v(s("A.fire", ("light", "A.slot.pieces", "pieces"),
+    (1, 8): v(s("A", ("light", "A.slot.pieces", "pieces"),
                 ("light", "A.slot.head", "head"),
                 ("light", "A.slot.fat", "fat"))),
     (1, 9): v(
         s("B", ("light", "B.innards", "innards"),
           ("light", "B.legs", "legs"),
           ("light", "B.water", "water")),
-        s("A.fire", ("flare", "A.fire", "burn")),
-        s("cells:burnt:burns:eaten",
+        s("A", ("flare", "A.fire", "burn")),
+        s("TL2",
           ("light", "burnt.burns:the whole", "@"),
           ("light", "burnt.eaten:no one", "@+0.4")),
         beast="bull"),
@@ -401,42 +401,42 @@ VERSES = {
     # once "a male" is said
     (1, 10): v(
         s("C", ("light", "C.ram", "sheep"), ("light", "C.goat", "goats")),
-        s("cell:burnt:brought",
+        s("TL1",
           ("light", "burnt.thing:male sheep", "male"),
           ("light", "burnt.thing:male goat", "male+0.2"))),
-    (1, 11): v(s("plan:altar", ("light", "plan.north", "north"),
+    (1, 11): v(s("P", ("light", "plan.north", "north"),
                  ("move", "plan.sheep", "north"),
                  ("light", "plan.ring", "around"))),
     (1, 12): v(
         s("B", ("light", "B.pieces", "pieces"), ("light", "B.head", "head"),
           ("light", "B.fat", "fat")),
-        s("A.fire", ("light", "A.slot.pieces", "order"),
+        s("A", ("light", "A.slot.pieces", "order"),
           ("light", "A.slot.head", "order"),
           ("light", "A.slot.fat", "order")),
         beast="ram"),
     (1, 13): v(
         s("B", ("light", "B.innards", "innards"), ("light", "B.legs", "legs"),
           ("light", "B.water", "water")),
-        s("A.fire", ("light", "A.whole", "whole"), ("flare", "A.fire", "burn")),
+        s("A", ("light", "A.whole", "whole"), ("flare", "A.fire", "burn")),
         beast="ram"),
-    (1, 14): v(s("cell:burnt:brought",
+    (1, 14): v(s("TL1",
                  ("light", "burnt.thing:turtledove", "turtledoves"),
                  ("light", "burnt.thing:pigeon", "pigeons"))),
     (1, 15): v(
-        s("A.bird", ("light", "A.neck", "head"),
+        s("A", ("light", "A.neck", "head"),
           ("light", "A.slot.bird", "burn"),
           ("light", "A.side", "drained"))),
-    (1, 16): v(s("plan:altar", ("move", "plan.crop", "east", {"show": "crop"}),
+    (1, 16): v(s("P", ("move", "plan.crop", "east", {"show": "crop", "chip": "crop"}),
                  ("light", "plan.ash", "ashes"))),
     (1, 17): v(
-        s("A.bird", ("light", "A.wings", "wings"),
-          ("light", "A.notdivided", "divide")),
-        s("A.fire", ("light", "A.slot.bird", "burn"),
+        s("A", ("light", "A.wings", "wings"),
+          ("light", "A.notdivided", "divide"),
+          ("light", "A.slot.bird", "burn"),
           ("flare", "A.fire", "burn")),
-        s("cell:burnt:burns", ("light", "burnt.burns:the whole bird", "@"))),
+        s("TL1", ("light", "burnt.burns:the whole bird", "@"))),
 
     # ---- Leviticus 2: the meal offering ---------------------------------
-    (2, 1): v(s("mp:head",
+    (2, 1): v(s("TL1",
                 ("light", "meal.by", "anyone"),
                 ("hud", "meal offering", "meal offering"),
                 ("light", "meal.head", "meal offering"),
@@ -444,103 +444,104 @@ VERSES = {
                 ("light", "meal.thing:oil", "oil"),
                 ("light", "meal.thing:frankincense", "frankincense"))),
     (2, 2): v(
-        s("G.supplies", ("light", "G.oil", "@"), ("light", "G.flour", "@+0.2"),
+        s("G", ("light", "G.oil", "@"), ("light", "G.flour", "@+0.2"),
           ("light", "G.frankincense", "@+0.4"),
           ("light", "G.handful", "handful"),
           ("move", "G.handful", "oil")),
-        s("A.fire", ("flare", "A.fire", "burn"),
+        s("A", ("flare", "A.fire", "burn"),
           ("light", "A.slot.memorial", "memorial")),
-        s("mp:burns", ("light", "meal.burns:a handful", "@"))),
+        s("TL1", ("light", "meal.burns:a handful", "@"))),
     # the table first (it is beside 2:2's last stop), then the split bar
     (2, 3): v(
-        s("mp:eaten",
+        s("TL2",
           ("light", "meal.eaten:the priests|Aaron and his sons", "Aaron's")),
         s("G", ("light", "G.memorial", "@"),
           ("light", "G.rest", "@+0.2"),
           ("light", "G.most_holy", "most holy"))),
     (2, 4): v(
-        s("K.cook", ("light", "K.oven", "oven"),
+        s("K", ("light", "K.oven", "oven"),
           ("light", "K.cakes", "unleavened cakes"),
           ("light", "K.wafers", "unleavened wafers"))),
     (2, 5): v(
-        s("K.cook", ("light", "K.griddle", "griddle"),
+        s("K", ("light", "K.griddle", "griddle"),
           ("light", "K.mixed", "mixed with oil"))),
-    (2, 6): v(s("K.griddle", ("light", "K.cut", "pieces"),
+    (2, 6): v(s("K", ("light", "K.cut", "pieces"),
                 ("light", "K.oil", "oil"))),
     (2, 7): v(
-        s("K.cook", ("light", "K.pan", "pan")),
-        s("mp:head", ("current", "meal.thing:fine flour", "@"),
+        s("K", ("light", "K.pan", "pan")),
+        s("TL1", ("current", "meal.thing:fine flour", "@"),
           ("current", "meal.thing:oil", "@+0.2"))),
-    (2, 8): v(s("plan:door", ("move", "plan.bread", "priest", {"show": "meal offering"}),
+    (2, 8): v(s("P", ("move", "plan.bread", "priest",
+                      {"show": "meal offering", "chip": "meal offering"}),
                 ("pulse", "plan.priests", "priest"))),
-    (2, 9): v(s("A.fire", ("light", "A.slot.memorial", "memorial"),
+    (2, 9): v(s("A", ("light", "A.slot.memorial", "memorial"),
                 ("flare", "A.fire", "burn"))),
     (2, 10): v(
         s("G", ("light", "G.rest", "Aaron's")),
-        s("mp:eaten",
+        s("TL2",
           ("light", "meal.eaten:the priests|Aaron and his sons", "@"))),
-    (2, 11): v(s("K.rules", ("light", "K.yeast", "yeast"),
+    (2, 11): v(s("K", ("light", "K.yeast", "yeast"),
                  ("light", "K.altar", "burn no"),
                  ("light", "K.not:yeast", "yeast#2"),
                  ("light", "K.honey", "honey"),
                  ("light", "K.not:honey", "honey+0.4"))),
-    (2, 12): v(s("K.rules", ("light", "K.first_fruits", "first fruits"),
+    (2, 12): v(s("K", ("light", "K.first_fruits", "first fruits"),
                  ("current", "K.altar", "altar"))),
     (2, 13): v(
-        s("mp:brought", ("light", "meal.thing:salt", "salt")),
-        s("K.rules", ("light", "K.salt", "@"),
+        s("TL1", ("light", "meal.thing:salt", "salt")),
+        s("K", ("light", "K.salt", "@"),
           ("light", "K.covenant", "covenant"),
           ("light", "K.names", "all your offerings"))),
     # the icon on the first "first fruits", then the ears
     (2, 14): v(
-        s("mp:head", ("light", "meal.thing:first fruits", "first fruits")),
-        s("G.fruits", ("light", "G.fruits", "first fruits#2"),
+        s("TL1", ("light", "meal.thing:first fruits", "first fruits")),
+        s("G", ("light", "G.fruits", "first fruits#2"),
           ("light", "G.parched", "parched"),
           ("light", "G.bruised", "bruised"))),
-    (2, 15): v(s("G.fruits", ("light", "G.fruit_oil", "oil"),
+    (2, 15): v(s("G", ("light", "G.fruit_oil", "oil"),
                  ("light", "G.fruit_frankincense", "frankincense"))),
     (2, 16): v(
-        s("A.fire", ("flare", "A.fire", "burn"),
+        s("A", ("flare", "A.fire", "burn"),
           ("light", "A.slot.memorial", "memorial")),
-        s("G.fruits", ("light", "G.part", "part#2"),
+        s("G", ("light", "G.part", "part#2"),
           ("light", "G.all_frankincense", "all its frankincense")),
-        s("mp:burns", ("light", "meal.burns:part of it", "@"))),
+        s("TL2", ("light", "meal.burns:part of it", "@"))),
 
     # ---- Leviticus 3: the peace offering --------------------------------
     (3, 1): v(
-        s("ps:head", ("light", "peace.by", "his offering"),
+        s("TL1", ("light", "peace.by", "his offering"),
           ("hud", "sacrifice of peace offerings", "peace offerings"),
           ("light", "peace.head", "peace offerings"),
           ("light", "peace.thing:herd", "female")),
         s("C", ("light", "C.ox", "@"),
           ("light", "C.chip:left:male or female", "@"))),
     (3, 2): v(
-        s("C.head", ("light", "C.offerer", "@"), ("light", "C.hand", "hand"),
+        s("C", ("light", "C.offerer", "@"), ("light", "C.hand", "hand"),
           ("pulse", "C.head", "head")),
-        s("plan:door", ("move", "plan.ox", "door"),
+        s("P", ("move", "plan.ox", "door"),
           ("current", "plan.ring", "around")),
         beast="bull"),
     (3, 3): v(s("B", ("light", "B.fat_cover", "covers"),
                 ("light", "B.fat_on", "all the fat")),
               beast="bull"),
-    (3, 4): v(s("B.inner", ("light", "B.kidneys", "kidneys"),
+    (3, 4): v(s("B", ("light", "B.kidneys", "kidneys"),
                 ("light", "B.kidney_fat", "loins"),
                 ("light", "B.loins", "loins"),
                 ("light", "B.liver_cover", "liver")),
               beast="bull"),
     (3, 5): v(
-        s("A.fire", ("light", "A.slot.fat", "burn"),
+        s("A", ("light", "A.slot.fat", "burn"),
           ("flare", "A.fire", "burn+0.2"),
           ("light", "A.slot.burnt", "burnt offering")),
-        s("ps:burns", ("light", "peace.burns:the fat", "@"))),
+        s("TL1", ("light", "peace.burns:the fat", "@"))),
     (3, 6): v(s("C", ("light", "C.sheep", "flock"),
                 ("light", "C.goat", "flock+0.3"),
                 ("light", "C.chip:mid:male or female", "female"))),
-    (3, 7): v(s("ps:head", ("light", "peace.thing:lamb", "lamb"))),
+    (3, 7): v(s("TL1", ("light", "peace.thing:lamb", "lamb"))),
     (3, 8): v(
-        s("C.head", ("light", "C.lamb", "@"), ("light", "C.offerer", "@"),
+        s("C", ("light", "C.lamb", "@"), ("light", "C.offerer", "@"),
           ("light", "C.hand", "hand"), ("pulse", "C.head", "head")),
-        s("ps:blood", ("light", "peace.blood:around the altar", "around")),
+        s("TL2", ("light", "peace.blood:around the altar", "around")),
         beast="lamb"),
     (3, 9): v(
         s("B", ("light", "B.tail_fat", "tail fat"),
@@ -548,212 +549,212 @@ VERSES = {
           ("light", "B.fat_cover", "covers"),
           ("light", "B.fat_on", "all the fat")),
         beast="sheep"),
-    (3, 10): v(s("B.inner", ("light", "B.kidneys", "kidneys"),
+    (3, 10): v(s("B", ("light", "B.kidneys", "kidneys"),
                  ("light", "B.kidney_fat", "loins"),
                  ("light", "B.loins", "loins"),
                  ("light", "B.liver_cover", "liver")),
                beast="sheep"),
     # beast: the file opens on 3:10's board (the lamb's)
-    (3, 11): v(s("A.fire", ("light", "A.slot.fat", "burn"),
+    (3, 11): v(s("A", ("light", "A.slot.fat", "burn"),
                  ("flare", "A.fire", "burn+0.2"),
                  ("light", "A.chip:food", "food")),
                beast="sheep"),
-    (3, 12): v(s("ps:head", ("light", "peace.thing:goat", "goat"))),
+    (3, 12): v(s("TL1", ("light", "peace.thing:goat", "goat"))),
     (3, 13): v(
-        s("C.head", ("light", "C.goat", "@"), ("light", "C.offerer", "@"),
+        s("C", ("light", "C.goat", "@"), ("light", "C.offerer", "@"),
           ("light", "C.hand", "hand"), ("pulse", "C.head", "head")),
-        s("plan:door", ("move", "plan.goat", "Tent of Meeting", {"to": "door", "dur": 1.1}),
+        s("P", ("move", "plan.goat", "Tent of Meeting", {"to": "door", "dur": 1.1}),
           ("current", "plan.ring", "around")),
         beast="goat"),
     (3, 14): v(s("B", ("light", "B.fat_cover", "covers"),
                  ("light", "B.fat_on", "all the fat")),
                beast="goat"),
-    (3, 15): v(s("B.inner", ("light", "B.kidneys", "kidneys"),
+    (3, 15): v(s("B", ("light", "B.kidneys", "kidneys"),
                  ("light", "B.kidney_fat", "loins"),
                  ("light", "B.loins", "loins"),
                  ("light", "B.liver_cover", "liver")),
                beast="goat"),
     # beast: the file opens on 3:15's board (the goat's)
     (3, 16): v(
-        s("A.fire", ("light", "A.slot.fat", "burn"),
+        s("A", ("light", "A.slot.fat", "burn"),
           ("flare", "A.fire", "burn+0.2")),
-        s("ps:burns", ("light", "peace.burns:the fat", "@")),
+        s("TL1", ("light", "peace.burns:the fat", "@")),
         beast="goat"),
-    (3, 17): v(s("S.bans", ("light", "S.dwellings", "dwellings"),
+    (3, 17): v(s("S", ("light", "S.dwellings", "dwellings"),
                  ("light", "S.fat", "fat"), ("not", "S.fat", "fat"),
                  ("light", "S.blood", "blood"), ("not", "S.blood", "blood"))),
 
     # ---- Leviticus 4: the sin offering ---------------------------------
     # 4:1's 2.2 s formula; nothing unveiled ("sin offering" is first said
     # at 4:3); the column's frame pulses.
-    (4, 1, 2): v(s("st:head", ("pulse", "sin.col", "@"))),
-    (4, 3): v(s("st:head",
+    (4, 1, 2): v(s("TR1", ("pulse", "sin.col", "@"))),
+    (4, 3): v(s("TR1",
                 ("light", "sin.who:the anointed priest", "anointed priest"),
                 ("light", "sin.rank1", "young bull"),
                 ("light", "sin.icon1:bull", "young bull"),
                 ("light", "sin.head", "sin offering"),
                 ("hud", "sin offering", "sin offering"))),
     (4, 4): v(
-        s("plan:door", ("move", "plan.ox", "door", {"dur": 2.0})),
-        s("C.head", ("light", "C.bull", "@"), ("light", "C.offerer", "@"),
+        s("P", ("move", "plan.ox", "door", {"dur": 2.0})),
+        s("C", ("light", "C.bull", "@"), ("light", "C.offerer", "@"),
           ("light", "C.hand", "hand"),
           ("pulse", "C.head", "head")),
         beast="bull"),
     # the path on "bring": "Tent of Meeting" ends the verse
-    (4, 5): v(s("plan:tent", ("light", "plan.bloodpath", "bring"))),
-    (4, 6): v(s("H.veil", ("light", "H.veil", "veil"),
+    (4, 5): v(s("P", ("light", "plan.bloodpath", "bring"))),
+    (4, 6): v(s("H", ("light", "H.veil", "veil"),
                 ("light", "H.drops", "seven times"))),
     (4, 7): v(
-        s("H.incense", ("light", "H.incense", "incense"),
+        s("H", ("light", "H.incense", "incense"),
           ("light", "H.horns", "horns")),
         s("A", ("light", "A.pool", "base")),
-        s("st:altar", ("light", "sin.blood:before the veil", "@"))),
+        s("TR2", ("light", "sin.blood:before the veil", "@"))),
     (4, 8): v(s("B", ("light", "B.fat_cover", "fat that covers"),
                 ("light", "B.fat_on", "fat that is on")),
               beast="bull"),
-    (4, 9): v(s("B.inner", ("light", "B.kidneys", "kidneys"),
+    (4, 9): v(s("B", ("light", "B.kidneys", "kidneys"),
                 ("light", "B.kidney_fat", "loins"),
                 ("light", "B.loins", "loins"),
                 ("light", "B.liver_cover", "liver")),
               beast="bull"),
     (4, 10): v(
-        s("A.fire", ("light", "A.slot.fat", "burn"),
+        s("A", ("light", "A.slot.fat", "burn"),
           ("flare", "A.fire", "burn"))),
     (4, 11): v(s("B", ("light", "B.skin", "skin"), ("light", "B.meat", "meat"),
                  ("light", "B.head", "head"), ("light", "B.legs", "legs"),
                  ("light", "B.innards", "innards"), ("light", "B.dung", "dung")),
                beast="bull"),
     (4, 12): v(
-        s("st:out", ("move", "plan.bull_out", "outside of the camp", {"dur": 2.1}),
+        s("O", ("move", "plan.bull_out", "outside of the camp", {"dur": 2.1}),
           ("light", "plan.outpath", "outside of the camp"),
           ("light", "plan.clean", "clean place")),
-        s("st:eaten",
+        s("TR2",
           ("light", "sin.not_eaten:the bull: outside the camp", "@"))),
-    (4, 13): v(s("st:head",
+    (4, 13): v(s("TR1",
                  ("light", "sin.who:the whole congregation", "whole congregation"),
                  ("current", "sin.rank1", "@+0.3"))),
     (4, 14): v(
-        s("st:head", ("light", "sin.icon1:bull", "young bull"),
+        s("TR1", ("light", "sin.icon1:bull", "young bull"),
           ("current", "sin.who:the whole congregation", "@"),
           ("current", "sin.rank1", "young bull"))),
-    (4, 15): v(s("C.elders", ("light", "C.bull", "@"), ("light", "C.elders", "elders"),
+    (4, 15): v(s("C", ("light", "C.bull", "@"), ("light", "C.elders", "elders"),
                  ("light", "C.hand", "hands")),
                beast="bull"),
-    (4, 16): v(s("plan:tent", ("light", "plan.bloodpath", "Tent of Meeting"))),
+    (4, 16): v(s("P", ("light", "plan.bloodpath", "Tent of Meeting"))),
     (4, 17): v(s("H", ("light", "H.veil", "veil"),
                  ("pulse", "H.drops", "seven"))),
     (4, 18): v(
-        s("H.incense", ("light", "H.horns", "horns")),
+        s("H", ("light", "H.horns", "horns")),
         s("A", ("light", "A.pool", "base"))),
-    (4, 19): v(s("A.fire", ("light", "A.slot.fat", "burn"),
+    (4, 19): v(s("A", ("light", "A.slot.fat", "burn"),
                  ("flare", "A.fire", "burn"),
                  ("light", "A.chip:all its fat", "All its fat"))),
-    (4, 20): v(s("st:head",
+    (4, 20): v(s("TR1",
                  ("pulse", "sin.who:the anointed priest", "as he did"),
                  ("pulse", "sin.who:the whole congregation", "with this"),
                  FORGIVEN)),
-    (4, 21): v(s("st:out", ("move", "plan.bull_out", "outside the camp"),
+    (4, 21): v(s("O", ("move", "plan.bull_out", "outside the camp"),
                  ("light", "plan.clean", "outside the camp+0.4"))),
-    (4, 22): v(s("st:head", ("light", "sin.who:a ruler", "ruler"))),
-    (4, 23): v(s("st:head",
+    (4, 22): v(s("TR1", ("light", "sin.who:a ruler", "ruler"))),
+    (4, 23): v(s("TR1",
                  ("current", "sin.who:a ruler", "@"),
                  ("light", "sin.icon2:male goat", "goat"),
                  ("light", "sin.rank2", "male"))),
     (4, 24): v(
-        s("C.head", ("light", "C.goat", "goat"),
+        s("C", ("light", "C.goat", "goat"),
           ("light", "C.offerer", "@"),
           ("light", "C.hand", "hand"),
           ("pulse", "C.head", "head")),
-        s("plan:altar", ("light", "plan.north", "burnt offering")),
+        s("P", ("light", "plan.north", "burnt offering")),
         beast="goat"),
     (4, 25): v(
         s("A", ("light", "A.horns", "horns"), ("light", "A.pool", "base"))),
     (4, 26): v(
-        s("A.fire", ("light", "A.slot.fat", "fat"),
+        s("A", ("light", "A.slot.fat", "fat"),
           ("flare", "A.fire", "burn")),
-        s("st:burns", ("light", "sin.burns:the fat|a goat or a lamb", "@"),
+        s("TR1", ("light", "sin.burns:the fat|a goat or a lamb", "@"),
           FORGIVEN)),
-    (4, 27): v(s("st:head",
+    (4, 27): v(s("TR1",
                  ("light", "sin.who:one of the common people", "common people"))),
-    (4, 28): v(s("st:head",
+    (4, 28): v(s("TR1",
                  ("current", "sin.who:one of the common people", "@"),
                  ("light", "sin.icon3:female goat", "female"))),
-    (4, 29): v(s("plan:altar", ("move", "plan.fgoat", "kill"),
+    (4, 29): v(s("P", ("move", "plan.fgoat", "kill"),
                  ("light", "plan.north", "burnt offering"))),
     (4, 30): v(s("A", ("light", "A.horns", "horns"), ("light", "A.pool", "base"))),
-    (4, 31): v(s("A.fire", ("light", "A.slot.fat", "burn"),
+    (4, 31): v(s("A", ("light", "A.slot.fat", "burn"),
                  ("flare", "A.fire", "burn"),
                  ("light", "A.chip:pleasant aroma", "pleasant aroma"), FORGIVEN)),
-    (4, 32): v(s("st:head",
+    (4, 32): v(s("TR1",
                  ("current", "sin.who:one of the common people", "@"),
                  ("light", "sin.icon3:lamb", "lamb"),
                  ("light", "sin.rank3", "lamb+0.3"))),
-    (4, 33): v(s("plan:altar", ("move", "plan.lamb", "kill"),
+    (4, 33): v(s("P", ("move", "plan.lamb", "kill"),
                  ("light", "plan.north", "burnt offering"))),
     (4, 34): v(s("A", ("light", "A.horns", "horns"), ("light", "A.pool", "base"))),
     (4, 35): v(
         s("B", ("light", "B.tail_fat", "fat"), ("light", "B.kidneys", "fat"),
           ("light", "B.liver_cover", "fat")),
-        s("A.fire", ("light", "A.slot.fat", "burn"),
+        s("A", ("light", "A.slot.fat", "burn"),
           ("flare", "A.fire", "burn"), FORGIVEN),
         beast="sheep"),
 
     # ---- Leviticus 5: the causes, the poor, the trespass offering -------
-    (5, 1): v(s("M.c1", ("light", "M.witness", "witness"),
+    (5, 1): v(s("M", ("light", "M.witness", "witness"),
                 ("light", "M.seen", "seen"), ("light", "M.known", "known"))),
     (5, 2): v(s("M", ("light", "M.carcass", "carcass"),
                 ("light", "M.unclean_animal", "unclean animal"),
                 ("light", "M.unclean_livestock", "unclean livestock"),
                 ("light", "M.creeping_things", "creeping things"))),
-    (5, 3): v(s("M.c3", ("light", "M.uncleanness_of_man", "uncleanness of man"))),
+    (5, 3): v(s("M", ("light", "M.uncleanness_of_man", "uncleanness of man"))),
     (5, 4): v(s("M", ("light", "M.evil", "evil"), ("light", "M.good", "good"),
                 ("light", "M.oath", "oath"))),
     (5, 5): v(s("M", ("pulse", "M.cells", "one of these"),
                 ("light", "M.confess", "confess"))),
-    (5, 6): v(s("st:head",
+    (5, 6): v(s("TR1",
                 ("light", "sin.who:one guilty of 5:1–4", "female"),
                 ("light", "sin.icon3:lamb", "lamb"),
                 ("light", "sin.icon3:female goat", "goat"),
                 ("current", "sin.rank3", "goat+0.3"),
                 ("hud", "sin offering", "sin offering"))),
     (5, 7): v(
-        s("st:head",
+        s("TR1",
           ("light", "sin.who:can't afford a lamb", "can't afford a lamb"),
           ("light", "sin.icon4:turtledove", "turtledoves"),
           ("light", "sin.icon4:pigeon", "pigeons"),
           ("light", "sin.rank4", "pigeons+0.3")),
-        s("A.bird", ("light", "A.bird", "one"), ("light", "A.bird2", "other"))),
-    (5, 8): v(s("A.bird", ("pulse", "A.bird", "first"),
+        s("A", ("light", "A.bird", "one"), ("light", "A.bird2", "other"))),
+    (5, 8): v(s("A", ("pulse", "A.bird", "first"),
                 ("pulse", "A.neck", "wring"),
                 ("light", "A.notdivided", "sever"))),
     (5, 9): v(
         s("A", ("light", "A.side", "side"), ("light", "A.pool", "base"))),
-    (5, 10): v(s("A.fire", ("light", "A.slot.bird", "burnt offering"),
+    (5, 10): v(s("A", ("light", "A.slot.bird", "burnt offering"),
                  ("flare", "A.fire", "burnt offering+0.3"), FORGIVEN)),
     (5, 11): v(
-        s("st:brought",
+        s("TR1",
           ("light", "sin.who:can't afford two turtledoves", "can't afford two turtledoves"),
           ("light", "sin.rank5", "tenth"),
           ("light", "sin.icon5:fine flour", "fine flour")),
-        s("K.measure", ("light", "K.measure", "@"), ("light", "K.tenth", "@+0.3"),
+        s("K", ("light", "K.measure", "@"), ("light", "K.tenth", "@+0.3"),
           ("light", "K.flour", "@+0.6"),
           ("light", "K.jar", "no oil"), ("light", "K.not:oil", "no oil+0.4"),
           ("light", "K.cup", "frankincense"),
           ("light", "K.not:frankincense", "frankincense+0.4"))),
     (5, 12): v(
-        s("G.supplies", ("not", "G.oil", "@+0.2"), ("not", "G.frankincense", "@+0.4"),
+        s("G", ("not", "G.oil", "@+0.2"), ("not", "G.frankincense", "@+0.4"),
           ("light", "G.handful", "handful"),
           ("light", "G.memorial_portion", "memorial portion")),
-        s("A.fire", ("light", "A.slot.memorial", "burn"),
+        s("A", ("light", "A.slot.memorial", "burn"),
           ("flare", "A.fire", "burn")),
-        s("st:burns", ("light", "sin.burns:a handful", "@"))),
+        s("TR2", ("light", "sin.burns:a handful", "@"))),
     (5, 13, 14): v(
-        s("G.supplies", ("not", "G.oil", "@+0.2"), ("not", "G.frankincense", "@+0.4"),
+        s("G", ("not", "G.oil", "@+0.2"), ("not", "G.frankincense", "@+0.4"),
           FORGIVEN, ("light", "G.remnant", "rest"),
           ("light", "G.the_priests", "priest's")),
-        s("st:eaten", ("light", "sin.eaten:the remaining flour", "@"))),
+        s("TR3", ("light", "sin.eaten:the remaining flour", "@"))),
     (5, 15): v(
-        s("st:head", ("light", "trespass.by", "anyone"),
+        s("TR1", ("light", "trespass.by", "anyone"),
           ("light", "trespass.head", "trespass offering"),
           ("hud", "trespass offering", "trespass offering"),
           ("light", "trespass.thing:ram", "ram")),
@@ -762,10 +763,10 @@ VERSES = {
           ("light", "T.silver", "silver"),
           ("light", "T.shekel", "shekel of the sanctuary"))),
     (5, 16): v(
-        s("T.bar", ("light", "T.bar", "restitution"),
+        s("T", ("light", "T.bar", "restitution"),
           ("light", "T.fifth", "fifth part"),
           ("light", "T.to_priest", "priest")),
-        s("st:head", ("light", "trespass.thing:silver", "@"),
+        s("TR1", ("light", "trespass.thing:silver", "@"),
           ("light", "trespass.thing:ram", "@+0.3"), FORGIVEN)),
     (5, 17): v(s("T", ("light", "T.man", "anyone"),
                  ("light", "T.didnt_know", "didn't know"),
@@ -774,10 +775,9 @@ VERSES = {
         s("T", ("light", "T.ram", "ram"),
           ("light", "T.estimation", "estimation"),
           ("light", "T.ram_to_priest", "priest")),
-        s("st:head", ("light", "trespass.thing:ram", "@"), FORGIVEN)),
+        s("TR1", ("light", "trespass.thing:ram", "@"), FORGIVEN)),
 
     # ---- Leviticus 6:1-7: the trespass offering's wrongs ------------------
-    # the whole card: T.wrongs cut the top band's drawings at its edge
     (6, 1): v(s("T")),
     (6, 2): v(s("T",
                 ("light", "T.man", "anyone"),
@@ -794,9 +794,7 @@ VERSES = {
                 ("light", "T.return:oppressed", "oppression"),
                 ("light", "T.return:deposit", "deposit"),
                 ("light", "T.return:lost", "lost thing"))),
-    # the 'sworn' arrow is in the bottom band, which T.bar doesn't see
-    (6, 5): v(s("T", ("light", "T.return:lie", "sworn")),
-              s("T.bar",
+    (6, 5): v(s("T", ("light", "T.return:lie", "sworn"),
                 ("light", "T.bar", "in full"),
                 ("light", "T.in_full", "in full+0.3"),
                 ("light", "T.fifth", "fifth"),
@@ -809,12 +807,11 @@ VERSES = {
                 ("light", "T.ram", "ram"),
                 ("light", "T.estimation", "estimation"),
                 ("light", "T.ram_to_priest", "priest"))),
-    (6, 7, 8): v(s("plan:altar",
+    (6, 7, 8): v(s("P",
                    ("light", "plan.priests", "before Yahweh"),
                    FORGIVEN)),
 
     # ---- 6:8-13: the law of the burnt offering ---------------------------
-    # one stop on the whole card: A.days cuts the fire's chip (a core shot)
     (6, 9): v(s("A",
                 ("hud", "burnt offering", "burnt offering"),
                 ("light", "A.slot.burnt", "burnt offering#2"),
@@ -825,11 +822,11 @@ VERSES = {
     (6, 10): v(s("A",
                  ("light", "A.priest", "linen garment+1.6"),
                  ("light", "A.ashes", "ashes")),
-               s("plan:altar",
+               s("P",
                  ("move", "plan.ashes", "beside the altar"),
                  ("light", "plan.ash", "beside the altar"))),
-    # st:out for plan:camp (see SHOTS)
-    (6, 11): v(s("st:out",
+    # O: outside the gate, the camp edge and the clean place (see SHOTS)
+    (6, 11): v(s("O",
                  ("move", "plan.ash_out", "outside the camp", {"dur": 2.2}),
                  ("light", "plan.clean", "clean place"))),
     (6, 12): v(s("A",
@@ -838,11 +835,10 @@ VERSES = {
                  ("light", "A.slot.burnt", "burnt offering"),
                  ("light", "A.slot.fat", "fat"),
                  ("light", "A.chip:peace offerings", "peace offerings"))),
-    # the whole altar card: A.days cuts the fire's chip (a core shot)
     (6, 13): v(s("A", ("light", "A.continual", "continually"))),
 
     # ---- 6:14-23: the law of the meal offering ---------------------------
-    (6, 14): v(s("plan:altar",
+    (6, 14): v(s("P",
                  ("hud", "meal offering", "meal offering"),
                  ("light", "plan.priests", "before the altar"))),
     (6, 15): v(s("G",
@@ -851,12 +847,11 @@ VERSES = {
                  ("light", "G.oil", "oil"),
                  ("light", "G.frankincense", "frankincense"),
                  ("move", "G.handful", "frankincense")),
-               s("A.fire",
+               s("A",
                  ("flare", "A.fire", "burn"),
                  ("light", "A.slot.memorial", "memorial"))),
-    # the table only: at plan:court (s 0.7) the priests' "Aaron's sons"
-    # touches a plan label, and no other shot shows the court
-    (6, 16): v(s("mp:eaten",
+    # the table only
+    (6, 16): v(s("TL2",
                  ("light", "meal.eaten:the priests|Aaron and his sons",
                   "Aaron and his sons"))),
     (6, 17): v(s("G",
@@ -869,34 +864,34 @@ VERSES = {
                      ("light", "G.touch", "holy"))),
     # "evening" is 0.4 s from the end: no table stop after it (and the
     # meal column has no "tenth of an ephah" unit)
-    (6, 20): v(s("K.measure",
+    (6, 20): v(s("K",
                  ("light", "K.tenth", "tenth"),
                  ("light", "K.morning", "morning"),
                  ("light", "K.evening", "evening"))),
-    (6, 21): v(s("K.cook",
+    (6, 21): v(s("K",
                  ("light", "K.griddle", "griddle"),
                  ("light", "K.oil", "oil"),
                  ("light", "K.soaked", "soaked"),
                  ("light", "K.baked_pieces", "baked pieces"))),
     # "wholly burned" is the verse's end: the table only
-    (6, 22): v(s("mp:burns",
+    (6, 22): v(s("TL2",
                  ("light", "meal.burns:all of it", "wholly burned"))),
-    (6, 23, 24): v(s("mp:low",
+    (6, 23, 24): v(s("TL2",
                      ("light", "meal.not_eaten:a priest's own", "not be eaten"))),
 
     # ---- 6:24-30: the law of the sin offering ----------------------------
-    (6, 25): v(s("plan:altar",
+    (6, 25): v(s("P",
                  ("hud", "sin offering", "sin offering"),
                  ("light", "plan.north", "burnt offering is killed")),
                s("G", ("light", "G.name_sin", "most holy"))),
-    # the table only (plan:court: see 6:16)
-    (6, 26): v(s("st:low", ("light", "sin.eaten:the priests", "eat"))),
-    (6, 27): v(s("K.vessels",
+    # the table only (see 6:16)
+    (6, 26): v(s("TR3", ("light", "sin.eaten:the priests", "eat"))),
+    (6, 27): v(s("K",
                  ("light", "K.holy", "touch"),
                  ("light", "K.coat", "garment"),
                  ("light", "K.wash", "wash"),
                  ("light", "K.holy_place", "holy place"))),
-    (6, 28): v(s("K.vessels",
+    (6, 28): v(s("K",
                  ("light", "K.earthen", "earthen vessel"),
                  ("light", "K.broken", "broken"),
                  ("light", "K.bronze", "bronze vessel"),
@@ -905,18 +900,18 @@ VERSES = {
     (6, 29): v(s("G",
                  ("light", "G.males", "Every male"),
                  ("light", "G.most_holy", "most holy"))),
-    (6, 30): v(s("plan:tent", ("light", "plan.bloodpath", "Tent of Meeting")),
-               s("st:low",
+    (6, 30): v(s("P", ("light", "plan.bloodpath", "Tent of Meeting")),
+               s("TR3",
                  ("light", "sin.not_eaten:blood in the Tent: burned", "burned"))),
 
     # ---- Leviticus 7:1-10: the trespass offering's law, the priests' shares
-    (7, 1): v(s("st:head",
+    (7, 1): v(s("TR1",
                 ("hud", "trespass offering", "trespass offering"),
                 ("light", "trespass.head", "trespass offering"),
                 ("light", "trespass.thing:ram", "trespass offering+0.3"))),
     # "around" is 1.4 s from the end: the blood entry is reached off camera
     # and seen at 7:6
-    (7, 2): v(s("plan:altar",
+    (7, 2): v(s("P",
                 ("light", "plan.north", "burnt offering"),
                 ("move", "plan.sheep", "trespass offering"),
                 ("light", "plan.ring", "around"))),
@@ -924,119 +919,119 @@ VERSES = {
                 ("light", "B.tail_fat", "fat tail"),
                 ("light", "B.fat_cover", "covers")),
               beast="ram"),
-    (7, 4): v(s("B.inner",
+    (7, 4): v(s("B",
                 ("light", "B.kidneys", "kidneys"),
                 ("light", "B.kidney_fat", "loins"),
                 ("light", "B.liver_cover", "liver")),
               beast="ram"),
     # beast: the file opens on 7:4's board (the ram)
-    (7, 5): v(s("A.fire",
+    (7, 5): v(s("A",
                 ("light", "A.slot.fat", "burn"),
                 ("flare", "A.fire", "burn")),
               beast="ram"),
-    (7, 6): v(s("st:low",
+    (7, 6): v(s("TR2",
                 ("light", "trespass.eaten:the priests", "Every male"))),
     (7, 7): v(s("G",
                 ("light", "G.one_law", "one law"),
                 ("light", "G.to_priest", "priest"))),
-    (7, 8): v(s("S.shares",
+    (7, 8): v(s("S",
                 ("hud", "burnt offering", "burnt offering"),
                 ("light", "S.priest", "priest"),
                 ("light", "S.skin", "skin")),
-              s("cells:burnt:eaten:not_eaten",
+              s("TL2",
                 ("light", "burnt.not_eaten:the skin: the priest's", "@"))),
-    (7, 9): v(s("S.shares",
+    (7, 9): v(s("S",
                 ("hud", "meal offering", "meal offering"),
                 ("light", "S.oven", "oven"),
                 ("light", "S.pan", "pan"),
                 ("light", "S.griddle", "griddle"),
                 ("light", "S.baked", "priest's"))),
-    (7, 10): v(s("S.shares",
+    (7, 10): v(s("S",
                  ("light", "S.mixed", "mixed with oil"),
                  ("light", "S.dry", "dry"),
                  ("light", "S.sons", "sons of Aaron")),
-               s("mp:eaten",
+               s("TL2",
                  ("light", "meal.eaten:the priests|all the sons of Aaron", "@"))),
 
     # ---- 7:11-21: the law of the sacrifice of peace offerings -----------
-    (7, 11): v(s("D.breads",
+    (7, 11): v(s("D",
                  ("hud", "sacrifice of peace offerings", "peace offerings"),
                  ("light", "D.shelf", "law"))),
     # the third bread is said 1.4 s from the end: the table's cakes and
     # wafers are reached off camera and seen at 7:29
-    (7, 12): v(s("D.breads",
+    (7, 12): v(s("D",
                  ("light", "D.thanksgiving", "thanksgiving"),
                  ("light", "D.cakes", "unleavened cakes"),
                  ("light", "D.wafers", "unleavened wafers"),
                  ("light", "D.oil_cakes", "cakes mixed with oil#2"))),
-    (7, 13): v(s("D.breads", ("light", "D.leavened", "leavened bread"))),
-    (7, 14): v(s("D.breads",
+    (7, 13): v(s("D", ("light", "D.leavened", "leavened bread"))),
+    (7, 14): v(s("D",
                  ("move", "D.heave", "sprinkles", {"show": "one out of each"}),
                  ("light", "D.heave", "heave"),
                  ("light", "D.priest", "priest's"),
                  ("light", "D.sprinkles", "sprinkles"))),
-    (7, 15): v(s("D.days",
+    (7, 15): v(s("D",
                  ("light", "D.day1", "day"),
                  ("light", "D.morning", "morning"))),
-    (7, 16): v(s("D.days",
+    (7, 16): v(s("D",
                  ("light", "D.vow", "vow"),
                  ("light", "D.freewill", "freewill offering"),
                  ("light", "D.day2", "next day"))),
-    (7, 17): v(s("D.days",
+    (7, 17): v(s("D",
                  ("light", "D.day3", "third day"),
                  ("light", "D.fire3", "burned with fire"))),
-    (7, 18): v(s("D.days",
+    (7, 18): v(s("D",
                  ("light", "D.eat3", "eaten"),
                  ("not", "D.eat3", "eaten+0.3"),
                  ("light", "D.not_accepted", "accepted"),
                  ("light", "D.abomination", "abomination")),
-               s("mp:low",
+               s("TL3",
                  ("light", "peace.not_eaten:third day's meat", "@"))),
     # "clean" is 1.2 s from the end: the two table units are reached off
     # camera and seen at 7:33 and 7:37
-    (7, 19): v(s("D.split",
+    (7, 19): v(s("D",
                  ("light", "D.split", "meat"),
                  ("light", "D.unclean", "unclean"),
                  ("move", "D.unclean", "burned"),
                  ("light", "D.clean", "clean"))),
-    (7, 20): v(s("D.split", ("light", "D.cut_off", "cut off"))),
-    (7, 21, 22): v(s("D.split",
+    (7, 20): v(s("D", ("light", "D.cut_off", "cut off"))),
+    (7, 21, 22): v(s("D",
                      ("light", "D.uncleanness_of_man", "uncleanness of man"),
                      ("light", "D.unclean_animal", "unclean animal"),
                      ("current", "D.cut_off", "cut off"))),
 
     # ---- 7:22-27: no fat, no blood --------------------------------------
-    (7, 23): v(s("S.bans",
+    (7, 23): v(s("S",
                  ("light", "S.ox", "bull"),
                  ("light", "S.sheep", "sheep"),
                  ("light", "S.goat", "goat"),
                  ("not", "S.fat", "fat"))),
-    (7, 24): v(s("S.bans",
+    (7, 24): v(s("S",
                  ("light", "S.no_eat", "fat"),
                  ("light", "S.died", "dies of itself"),
                  ("light", "S.torn", "torn"),
                  ("light", "S.service", "service"),
                  ("not", "S.no_eat", "eat"))),
-    (7, 25): v(s("S.bans", ("light", "S.cut_off_fat", "cut off"))),
-    (7, 26): v(s("S.bans",
+    (7, 25): v(s("S", ("light", "S.cut_off_fat", "cut off"))),
+    (7, 26): v(s("S",
                  ("light", "S.dove", "bird"),
                  ("light", "S.animal", "animal"),
                  ("not", "S.blood", "blood"),
                  ("current", "S.dwellings", "dwellings"))),
-    (7, 27, 28): v(s("S.bans", ("light", "S.cut_off_blood", "cut off"))),
+    (7, 27, 28): v(s("S", ("light", "S.cut_off_blood", "cut off"))),
 
     # ---- 7:28-36: the wave breast and the heave thigh -------------------
     (7, 29): v(s("C",
                  ("light", "C.ox", "offers"),
                  ("light", "C.offerer", "offers")),
-               s("mp:head",
+               s("TL1",
                  ("light", "peace.thing:herd", "@"),
                  ("light", "peace.thing:lamb", "@+0.2"),
                  ("light", "peace.thing:goat", "@+0.4")),
                beast="bull"),
     # "waved" is near the verse's end: the wave is the verse, and the
     # breast's cell is reached off camera at 7:31 (seen at 7:33)
-    (7, 30): v(s("B.breast",
+    (7, 30): v(s("B",
                  ("light", "B.fat", "fat"),
                  ("light", "B.breast", "breast"),
                  ("move", "B.breast", "waved", {"chip": "wave offering"})),
@@ -1053,7 +1048,7 @@ VERSES = {
     (7, 33): v(s("B",
                  ("light", "B.share_priests", "sons of Aaron"),
                  ("pulse", "B.right_thigh", "blood")),
-               s("mp:eaten",
+               s("TL2",
                  ("light", "peace.eaten:the right thigh", "right thigh")),
                beast="bull"),
     (7, 34): v(s("B",

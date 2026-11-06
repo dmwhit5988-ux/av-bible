@@ -23,6 +23,13 @@ renders as the whole run would. Beats are timed by narration_clock on the
 WEB text and the MP3 (the 1.2 s + words / 3.5 s estimate without one); a
 cue the verse doesn't say fails the build.
 
+The camera: one lens. Every rest is at s LENS (leviticus17_spec: a
+station's whole card, the plan's two homes, the table's six), so a leg
+between two rests is a plain eased pan; only 7:37 (out to the whole table,
+s 0.45) and 7:38 (back in to Sinai) zoom. A leg is timed by `lev_duration`:
+long enough that its peak stays under PAN_PEAK_PX_S on screen (a zoom's
+under ZOOM_PEAK_PX_S), PAN_MAX_D at most.
+
 The seams: a file waits on its first camera (`plans`: the opening hold)
 until the file before's last stop has rested LAST_REST, and what the file
 before drew that this file doesn't (a verse's chip or token, a case's stack,
@@ -30,8 +37,14 @@ a pulse still running) is carried into its first frame with its times
 shifted back, and fades as the camera first moves (`Carry`).
 
 QC (a file that fails is not written; the report says why):
-- no animation begins after the narration (- 0.1 s); a flight faster than
-  MAX_PX_S, or a last stop the next file can't let rest, is a warning;
+- the lens: a rest off LENS (but LENS_EXEMPT's), a leg between two LENS
+  rests that isn't a pure pan, more than MAX_LEGS legs, more than
+  MAX_FILE_PAN screen widths of pan (at the wider end) or MAX_FILE_ZOOM
+  octaves of zoom in a file, a leg over MAX_LEG_PAN widths or faster than
+  MAX_PEAK_PX_S on screen (its fastest corner, sampled 60/s) is refused; a
+  leg over PAN_PEAK_PX_S, or a seam whose rest (the file before's last
+  stop and this file's opening hold) is under LAST_REST, is a warning;
+- no animation begins after the narration (- 0.1 s);
 - it lands AUDIO_SLACK (0.35 s) before its MP3 ends, and a verse under 5 s
   has one stop, up to 10 s two, three only above;
 - no word overlaps another, runs off the frame or sits under the title
@@ -81,7 +94,7 @@ import leviticus17_stations as ST
 from generate_tabernacle import (BG, HL, PANEL, SAND_DIM, TEXT, TEXT_DIM, W,
                                  H)
 from svg_chronicles_world import AUDIO_SLACK, _mp3_seconds
-from svg_map_camera import (Flight, cam_T, cam_duration, fade, ink, title_rect,
+from svg_map_camera import (Flight, Leg, cam_T, cam_duration, fade, ink, title_rect,
                             title_svg, to_screen, visible_world)
 from svg_surface import FONT_FAMILY, SvgCanvas, _fmt
 
@@ -90,13 +103,30 @@ SAY_LEAD = 0.1
 VEIL_OP = 1.0           # a veiled unit hides its words; a faint bar marks the place
 SKELETON = (44, 44, 58)  # the bar, a step off the panel
 VEIL_FADE = 0.5
-MIN_LEG = 0.9           # a move never quicker than this
+MIN_LEG = 1.2           # a move never quicker than this
 MIN_LEG_SQUEEZE = 0.6   # unless the verse can't afford it
-DWELL = 1.0             # the least rest at a stop before moving on
+SQUEEZE_PEAK_PX_S = 1750  # nor so quick a pan peaks above this on screen
+DWELL = 1.3             # the least rest at a stop before moving on
 AFTER_WORD = 0.7        # time a beat gets before the camera leaves
 NEEDS = {"light": 1.0, "move": 2.2, "flare": 1.0, "pulse": 0.8, "not": 1.2}
 OUTLINE_PX = 2.6
-MAX_PX_S = 2400         # a flight faster than this (screen px/s) reads as a cut
+# the pan's pace (lev_duration): its eased peak under PAN_PEAK_PX_S screen
+# px/s (the ease's peak is EASE_PEAK times its mean: keySplines EASE's
+# slope at its middle, 1.5 / 0.87), PAN_MAX_D s at most
+PAN_PEAK_PX_S = 1300
+EASE_PEAK = 1.724
+PAN_MAX_D = 3.8
+# a zoom (7:38's flight back to Sinai) slower still: the whole frame
+# scales as it slides
+ZOOM_PEAK_PX_S = 1050
+# the lens's budgets (qc_file)
+LENS_EXEMPT = {"table"}        # the one rest off the lens: 7:37
+MAX_LEGS = 3            # legs in a file
+MAX_FILE_PAN = 5.5      # screen widths of pan in a file (at the wider end)
+MAX_FILE_ZOOM = 1.2     # octaves of zoom in a file
+MAX_LEG_PAN = 3.0       # screen widths in one leg
+MAX_PEAK_PX_S = 1800    # a leg's fastest on-screen speed (refused above)
+SPEED_FPS = 60          # how often the flight is sampled for it
 MAX_RECTS, MAX_TEXTS = 1050, 268
 SAFE_IN = 4             # px a stop's own words keep from the frame's edge
 TABLE_FLY_PX = 24       # a table drawing seen only in flight: kept from this size on screen
@@ -518,47 +548,44 @@ def station_of(key):
 # Shots
 # ---------------------------------------------------------------------------
 
-def _station_shots(st, beast):
-    try:
-        return st.shots(beast or "bull")
-    except TypeError:
-        return st.shots()
-
-
 def shot_cam(name, beast=""):
-    """A spec's shot name -> (s, x, y) in world px."""
+    """A spec's shot name -> (s, x, y) in world px: a home of SHOTS, the
+    whole table ("table", s 0.45) or a station's whole card ("A", "L", at
+    STATION_S). `beast` is kept for the callers; every station's rest is
+    the same card whatever its beast."""
     if name in SPEC.SHOTS:
         return SPEC.SHOTS[name]
-    cols = R.offer_columns()
-    tops = row_tops()
     if name == "table":
         return (0.45, R.OFF_X - 5 + W / 2 / 0.45, TY + R.OFF_TABLE_H / 2)
-    if name.startswith("col:"):
-        x = cols[name[4:]][0] + R.OFF_CW / 2
-        return (1.0, x, TY + (R.OFF_HEAD + tops["brought"][1]) / 2)
-    if name.startswith("cell:") or name.startswith("cells:"):
-        parts = name.split(":")
-        off, r1 = parts[1], parts[2]
-        r2 = parts[3] if len(parts) > 3 else r1
-        y0 = tops[r1][0]
-        y1 = tops[r2][0] + tops[r2][1]
-        if r1 == "brought" and name.startswith("cell:"):
-            y0 = TY + 4                         # the name over its BROUGHT
-        x = cols[off][0] + R.OFF_CW / 2
-        s = min(1.4, 540 / (y1 - y0), 980 / R.OFF_CW)
-        return (round(s, 4), x, (y0 + y1) / 2)
-    st_key, _, sub = name.partition(".")
+    st_key, dot, _sub = name.partition(".")
     st = ST.registry().get(st_key)
-    if st is None:
+    if st is None or st.world:
         raise KeyError(f"no shot {name!r}")
-    shots = _station_shots(st, beast)
-    if sub not in shots:
-        raise KeyError(f"station {st_key} has no shot {sub!r}")
-    s, x, y = shots[sub]
-    return (s, x + st.origin[0], y + st.origin[1])
+    if dot:
+        raise KeyError(f"{name!r}: close-up shots are retired: rest on the whole card")
+    _s, x, y = st.shots()[""]
+    return (SPEC.STATION_S, x + st.origin[0], y + st.origin[1])
 
 
-LAST_REST = 0.9          # a file's last stop rests this long, with the next file's hold
+def lev_duration(cam0, cam1):
+    """A leg's time: cam_duration's, and long enough that its peak stays
+    under PAN_PEAK_PX_S on screen (PAN_MAX_D at most): a pan by its ease's
+    peak; a zoom (7:37, 7:38) under ZOOM_PEAK_PX_S, by its van Wijk flight
+    sampled SPEED_FPS a second."""
+    d = cam_duration(cam0, cam1)
+    if not d:
+        return d
+    if abs(cam0[0] - cam1[0]) < 1e-9:
+        travel = math.hypot(cam1[1] - cam0[1], cam1[2] - cam0[2]) * cam0[0]
+        return min(PAN_MAX_D, max(d, travel * EASE_PEAK / PAN_PEAK_PX_S))
+    leg = Leg(cam0, cam1, d, "zoom")
+    n = max(2, math.ceil(d * SPEED_FPS))
+    cs = [leg.at(i / n) for i in range(n + 1)]
+    peak = max(screen_flow(a, b) for a, b in zip(cs, cs[1:])) / (d / n)
+    return min(PAN_MAX_D, max(d, d * peak / ZOOM_PEAK_PX_S))
+
+
+LAST_REST = 1.5          # a file's last stop rests this long, with the next file's hold
 
 _CHAIN = {}
 
@@ -724,10 +751,15 @@ class Plan_:
 
     def _schedule(self):
         n = len(self.cams)
-        prev, D = self.cam0, []
+        prev, D, floor = self.cam0, [], []
         for cam in self.cams:
-            d = cam_duration(prev, cam)
+            d = lev_duration(prev, cam)
             D.append(0.0 if d == 0 else max(MIN_LEG, d))
+            # a squeezed pan stops short of SQUEEZE_PEAK_PX_S on screen; the
+            # beats' time after their words goes next
+            travel = (math.hypot(cam[1] - prev[1], cam[2] - prev[2]) * cam[0]
+                      if abs(cam[0] - prev[0]) < 1e-9 else 0.0)
+            floor.append(max(MIN_LEG_SQUEEZE, travel * EASE_PEAK / SQUEEZE_PEAK_PX_S))
             prev = cam
         dwell, after = DWELL, AFTER_WORD
         starts, arr = self._run(D, dwell, after)
@@ -751,10 +783,10 @@ class Plan_:
             def helps(k):
                 D2 = [d - 0.1 if j == k else d for j, d in enumerate(D)]
                 return self._run(D2, dwell, after)[1][-1] < arr[-1] - 1e-6
-            moving = [k for k in range(n) if D[k] > MIN_LEG_SQUEEZE and helps(k)]
+            moving = [k for k in range(n) if D[k] > floor[k] + 1e-6 and helps(k)]
             if moving:
                 cut = min(over / len(moving) + 0.02, 0.4)
-                D = [max(MIN_LEG_SQUEEZE, d - cut) if k in moving else d
+                D = [max(floor[k], d - cut) if k in moving else d
                      for k, d in enumerate(D)]
             elif dwell > 0.3 or after > 0.3:
                 dwell, after = max(0.3, dwell - 0.2), max(0.3, after - 0.2)
@@ -1151,7 +1183,14 @@ def ref_world():
     table = [(el, box, it) for el, box, it in table
              if not (it and box and _text_of(el) in flags and 'font-style="italic"' in el
                      and wy <= box[1] <= wy + wh)]
+    # nor its heading over the frame ("THE OFFERINGS", "Leviticus 1-7"),
+    # the reference page's too
+    table = [(el, box, it) for el, box, it in table
+             if not (it and box and box[3] <= TY and _text_of(el) in TABLE_HEADING)]
     return plan, table
+
+
+TABLE_HEADING = {"THE OFFERINGS", "Leviticus 1–7"}
 
 
 def _hit(a, b):
@@ -1393,6 +1432,8 @@ def render(fk, verses, tables, hist, extra=None, carry="auto"):
         def add(pkey_, svg_):
             if svg_:
                 pieces.append((pkey_, svg_))
+        for k_, s_ in st.base_pieces(ctx):
+            add(k_, s_)
 
         def draw(key, tg, t):
             ctx.cur = key
@@ -1467,8 +1508,8 @@ def render(fk, verses, tables, hist, extra=None, carry="auto"):
         if not st.world:
             inner = cull_card(inner, st.origin, ctx.views)
         if st.key == "plan":
-            # the plan's own strokes hold their screen width through its
-            # shots (s 0.5 to 3)
+            # the plan's own strokes hold their screen width (at the lens,
+            # and through 7:37-38's zooms)
             sa, sanim = cam_out.inverse("stroke-width", 3.0)
             put(st.key, f'<g {sa}>{sanim}{inner}</g>')
         elif st.world:
@@ -1625,6 +1666,47 @@ def _cut(sb, frame):
                                                 frame[2] + 0.5, frame[3] + 0.5))
 
 
+_FLOW_AT = ((0, 0), (W, 0), (0, H), (W, H), (W / 2, H / 2))
+
+
+def screen_flow(a, b):
+    """How far (screen px) the world points under the screen's corners and
+    centre move between camera a and camera b."""
+    best = 0.0
+    for qx, qy in _FLOW_AT:
+        wx, wy = a[1] + (qx - W / 2) / a[0], a[2] + (qy - H / 2) / a[0]
+        px, py = W / 2 + b[0] * (wx - b[1]), H / 2 + b[0] * (wy - b[2])
+        best = max(best, math.hypot(px - qx, py - qy))
+    return best
+
+
+def camera_legs(P):
+    """One file's moving legs, as the browser plays them: per leg its stop
+    index k, kind ("pan" or "zoom", Flight's), time, screen widths of pan
+    at the wider end, octaves of zoom end to end, the octaves it zooms out
+    past its wider end in flight (arc), its peak on-screen speed (px/s,
+    sampled SPEED_FPS a second) and whether both ends are on the lens."""
+    kinds = [lg.kind for lg in P.fl.legs if lg.kind != "hold"]
+    out, prev = [], P.cam0
+    for k, (cam, d) in enumerate(zip(P.cams, P.D)):
+        if d <= 0 or cam == prev:
+            prev = cam
+            continue
+        t0 = P.starts[k]
+        n = max(2, math.ceil(d * SPEED_FPS))
+        cs = [P.fl.at(t0 + d * i / n) for i in range(n + 1)]
+        peak = max(screen_flow(a, b) for a, b in zip(cs, cs[1:])) / (d / n)
+        wide = min(prev[0], cam[0])
+        out.append(dict(
+            k=k, kind=kinds[len(out)] if len(out) < len(kinds) else "?", dur=d,
+            pan=math.hypot(cam[1] - prev[1], cam[2] - prev[2]) * wide / W,
+            zoom=abs(math.log2(cam[0] / prev[0])),
+            arc=max(0.0, math.log2(wide / min(c[0] for c in cs))),
+            peak=peak, lens=(abs(prev[0] - SPEC.LENS) < 1e-9 and abs(cam[0] - SPEC.LENS) < 1e-9)))
+        prev = cam
+    return out
+
+
 def qc_file(fk, P, beats, ctx, svg, hud_rects, problems):
     problems = list(problems)
     warn = []
@@ -1716,14 +1798,39 @@ def qc_file(fk, P, beats, ctx, svg, hud_rects, problems):
     if late:
         problems.append(f"{len(late)} animation(s) begin after the narration "
                         f"(latest {max(late):.2f} s, narration {P.narr:.2f} s)")
-    prev = P.cam0
-    for k, (cam, d) in enumerate(zip(P.cams, P.D)):
-        dist = math.hypot(cam[1] - prev[1], cam[2] - prev[2]) * math.sqrt(prev[0] * cam[0])
-        if d > 0 and dist / d > MAX_PX_S:
-            warn.append(f"leg {k + 1}: {dist / d:.0f} px/s ({d:.2f} s)")
-        prev = cam
-    if P.hold_wanted - P.hold > 0.05:
-        warn.append(f"the file before's last stop rests {LAST_REST - P.hold_wanted + P.hold:.2f} s")
+    # the lens
+    for k, (cam, stop) in enumerate(zip(P.cams, P.V.stops)):
+        if stop.shot not in LENS_EXEMPT and abs(cam[0] - SPEC.LENS) > 1e-9:
+            problems.append(f"stop {k + 1}: {stop.shot!r} rests at s {cam[0]:g}, off the "
+                            f"lens ({SPEC.LENS})")
+    legs = camera_legs(P)
+    if len(legs) > MAX_LEGS:
+        problems.append(f"{len(legs)} legs (> {MAX_LEGS})")
+    pan = sum(lg["pan"] for lg in legs)
+    zoom = sum(lg["zoom"] for lg in legs)
+    if pan > MAX_FILE_PAN:
+        problems.append(f"{pan:.2f} screen widths of pan (> {MAX_FILE_PAN})")
+    if zoom > MAX_FILE_ZOOM:
+        problems.append(f"{zoom:.2f} octaves of zoom (> {MAX_FILE_ZOOM})")
+    for lg in legs:
+        k = lg["k"]
+        if lg["lens"] and lg["kind"] != "pan":
+            problems.append(f"leg {k + 1}: between two lens rests, but a {lg['kind']}")
+        if lg["pan"] > MAX_LEG_PAN:
+            problems.append(f"leg {k + 1}: {lg['pan']:.2f} screen widths (> {MAX_LEG_PAN})")
+        if round(lg["peak"]) > MAX_PEAK_PX_S:
+            problems.append(f"leg {k + 1}: {lg['peak']:.0f} px/s on screen (> {MAX_PEAK_PX_S}, "
+                            f"{lg['dur']:.2f} s)")
+        elif round(lg["peak"]) > PAN_PEAK_PX_S:
+            warn.append(f"leg {k + 1}: {lg['peak']:.0f} px/s on screen ({lg['dur']:.2f} s)")
+    if P.hold_wanted > 0:
+        # the rest across the seam: the file before's last stop, then this
+        # file's opening hold up to its first move
+        first = next((P.starts[k] for k, d in enumerate(P.D) if d > 0), P.narr)
+        seam = LAST_REST - P.hold_wanted + first
+        if seam < LAST_REST - 0.05:
+            warn.append(f"the rest across the seam is {seam:.2f} s (opening hold "
+                        f"{first:.2f} s)")
     rects = svg.count("<rect")
     texts = svg.count("<text")
     if rects > MAX_RECTS:

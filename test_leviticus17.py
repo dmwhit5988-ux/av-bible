@@ -244,13 +244,26 @@ class Fixes(unittest.TestCase):
         self.assertEqual(G.shift_times('<animate begin="2.00s" dur="0.50s"/>', 5.0),
                          '<animate begin="-0.49s" dur="0.50s"/>')
 
-    def test_close_ups_keep_the_head_whole_or_out(self):
+    def test_rests_are_whole_cards_at_the_lens(self):
+        """Every stop rests on a home, a station's whole card or the whole
+        table (7:37); a station's card, Sinai's too, is at STATION_S and a
+        close-up name is refused. (This replaces the close-ups' head test:
+        there are no close-ups to cut a head.)"""
         import leviticus17_stations as ST
-        for kind in ("bull", "sheep", "ram", "goat"):
-            hx0, _y0, hx1, _y1 = ST.Board.of(kind).head_box()
-            for name, (s, x, _y) in ST.PartsBoard().shots(kind).items():
-                left = x - 512 / s
-                self.assertTrue(left <= hx0 or left >= hx1, f"B.{name} ({kind}) cuts the head")
+        homes = set(SPEC.SHOTS)
+        cards = {k for k, st in ST.registry().items() if not st.world}
+        for fk, V in SPEC.VERSES.items():
+            for stop in V.stops:
+                self.assertIn(stop.shot, homes | cards | G.LENS_EXEMPT, G.ref_str(fk))
+                s = G.shot_cam(stop.shot, V.beast)[0]
+                if stop.shot not in G.LENS_EXEMPT:
+                    self.assertEqual(s, SPEC.LENS, G.ref_str(fk))
+        for k in cards:
+            ox, oy = SPEC.STATIONS[k]
+            self.assertEqual(G.shot_cam(k), (SPEC.STATION_S, ox + 512, oy + 288))
+        for name in ("B.inner", "A.fire", "C.head"):
+            with self.assertRaises(KeyError):
+                G.shot_cam(name, "bull")
 
     def test_one_outline_round_entry_and_who_line(self):
         self.assertIn("burnt.burns:the whole/who", G.table_units())
@@ -301,6 +314,56 @@ class Fixes(unittest.TestCase):
         keep = G.keyframes(cams)
         self.assertEqual(keep[:2], [0, 50])     # the hold runs to frame 50
         self.assertEqual(keep[-1], len(cams) - 1)
+
+
+class Calm(unittest.TestCase):
+    """The owner's "less whiplash" (the one lens): the whole run's camera
+    within its budgets, and no file over the per-file ones."""
+
+    def test_camera_is_calm(self):
+        verses, _t = G.load_verses()
+        P = G.plans(verses)
+        legs = {fk: G.camera_legs(p) for fk, p in P.items()}
+        every = [lg for ls in legs.values() for lg in ls]
+        narr = sum(p.narr for p in P.values())
+        self.assertLessEqual(len(every), 150)
+        self.assertLessEqual(sum(lg["pan"] for lg in every), 200)
+        self.assertLessEqual(sum(lg["zoom"] for lg in every), 2.5)
+        self.assertLessEqual(sum(lg["arc"] for lg in every), 1.5)
+        self.assertLessEqual(sum(lg["dur"] for lg in every), 0.26 * narr)
+        # the still spans between one move's end and the next's start,
+        # across the seams
+        rests, still = [], None
+        for p in P.values():
+            t = 0.0
+            for k, d in enumerate(p.D):
+                if d <= 0:
+                    continue
+                if still is not None:
+                    rests.append(round(still + p.starts[k] - t, 2))
+                still, t = 0.0, p.starts[k] + d
+            if still is not None:
+                still += p.narr - t
+        self.assertLessEqual(sum(1 for r in rests if r < 1.5), 20)
+        for fk, ls in legs.items():
+            ref = G.ref_str(fk)
+            self.assertLessEqual(len(ls), G.MAX_LEGS, ref)
+            self.assertLessEqual(sum(lg["pan"] for lg in ls), G.MAX_FILE_PAN, ref)
+            self.assertLessEqual(sum(lg["zoom"] for lg in ls), G.MAX_FILE_ZOOM, ref)
+            for lg in ls:
+                self.assertLessEqual(lg["pan"], G.MAX_LEG_PAN, ref)
+                self.assertLessEqual(round(lg["peak"]), G.MAX_PEAK_PX_S, ref)
+                if lg["lens"]:
+                    self.assertEqual(lg["kind"], "pan", ref)
+
+    def test_a_pan_is_paced(self):
+        """lev_duration keeps a long pan's eased peak at PAN_PEAK_PX_S, and
+        caps it at PAN_MAX_D."""
+        s = SPEC.LENS
+        d = G.lev_duration((s, 0, 0), (s, 3000, 0))
+        self.assertAlmostEqual(d, 3000 * s * G.EASE_PEAK / G.PAN_PEAK_PX_S, places=6)
+        self.assertEqual(G.lev_duration((s, 0, 0), (s, 9000, 0)), G.PAN_MAX_D)
+        self.assertEqual(G.lev_duration((s, 0, 0), (s, 0, 0)), 0.0)
 
 
 class ImportSafety(unittest.TestCase):
