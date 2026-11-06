@@ -623,6 +623,11 @@ const REFERENCES = [
     href: "/visuals/reference/Tabernacle.html",
   },
   {
+    title: "Solomon's Temple",
+    blurb: "The house, its courts and its furnishings, to scale in cubits, in plan and cut through. Tap a part for its measurements in Kings and Chronicles.",
+    href: "/visuals/reference/Temple.html",
+  },
+  {
     title: "The Land of Israel",
     blurb: "An atlas of the places the Bible names, each at the site it is identified with, marked known, probable or possible.",
     href: "/visuals/reference/Land_of_Israel.html",

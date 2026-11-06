@@ -4,11 +4,11 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The six generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The seven generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the atlas's, the kings' and Paul's journeys') gets more. The family tree's cards are people (below); the Tabernacle's are parts, the atlas's places, the kings page's reigns, prophets, nations and judges, and the journeys page's places, legs, lands and letters (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [The Land of Israel](#the-land-of-israel), [Kings and prophets](#kings-and-prophets) and [Paul's journeys](#pauls-journeys)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the Temple's, the atlas's, the kings' and Paul's journeys') gets more. The family tree's cards are people (below); the Tabernacle's and the Temple's are parts, the atlas's places, the kings page's reigns, prophets, nations and judges, and the journeys page's places, legs, lands and letters (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [Solomon's Temple](#solomons-temple), [The Land of Israel](#the-land-of-israel), [Kings and prophets](#kings-and-prophets) and [Paul's journeys](#pauls-journeys)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -31,15 +31,15 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 
 ## Status
 
-- **Deployed.** All seven charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree, the Tabernacle, the Land of Israel, Kings and prophets and Paul's journeys.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Deployed.** All nine charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
+- **Linked: the OT family tree, the Tabernacle, Solomon's Temple, the Land of Israel, Kings and prophets and Paul's journeys.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 21 deploy files, the five sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 24 deploy files, the six sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -48,6 +48,7 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [The 1–2 Chronicles family tree](#the-12-chronicles-family-tree) | `1-2_Chronicles_family_tree.svg` / `.html` | 19,777 × 13,754 px, about 1 MB | none: a frozen file |
 | [The OT timeline](#the-ot-timeline) | `Old_Testament_timeline.svg` / `.html` | 65,030 × 12,230 px, about 1.4 MB, 1,269 boxes | `generate_ot_timeline_svg.py` |
 | [The Tabernacle](#the-tabernacle) | `Tabernacle.svg` / `.json` / `.html` | 2,860 × 2,906 px, about 100 KB, 34 cards | `generate_tabernacle_reference.py` |
+| [Solomon's Temple](#solomons-temple) | `Temple.svg` / `.json` / `.html` | 3,088 × 4,050 px, about 215 KB, 21 parts and 50 cards; the sidecar is about 51 KB | `generate_temple_reference.py` |
 | [The Land of Israel](#the-land-of-israel) | `Land_of_Israel.svg` / `.json` / `.html` | 6,103 × 7,680 px, about 115 KB, 224 places and 267 cards; the sidecar is about 237 KB | `generate_israel_atlas.py` |
 | [Kings and prophets](#kings-and-prophets) | `Kings_and_prophets.svg` / `.json` / `.html` | 2,370 × 6,684 px, about 80 KB, 139 cards; the sidecar is about 96 KB | `generate_kings_reference.py` |
 | [Paul's journeys](#pauls-journeys) | `Pauls_journeys.svg` / `.json` / `.html` | 7,336 × 3,978 px, about 320 KB, 64 places, 74 legs and 178 cards; the sidecar is about 145 KB | `generate_journeys_reference.py` |
@@ -203,6 +204,42 @@ Tapping a Levite or tribe card on the camp layer opens what they camped by and c
 ```
 .venv/Scripts/python.exe generate_tabernacle_reference.py   # rebuild the .svg, .json and .html
 .venv/Scripts/python.exe -m unittest test_sanctuary          # the model's counts and verses
+```
+
+## Solomon's Temple
+
+The house, its courts and its furnishings, drawn to scale (16 px a cubit) from `temple.py`, the one model of the Temple, with a card for each part. East is to the right on the plan.
+
+**The sheet.**
+- **The plan**: the house inside walls of six cubits, the side rooms round it on three sides, the porch, Jachin and Boaz, and in the house the ark under the cherubim's wings, the golden altar, and the ten lamp stands and ten tables five to a side. Around it, in the inner court, which is dashed because its size isn't given: the bronze altar, the bronze scaffold, the Sea on its oxen and the ten bases.
+- **The house cut through its middle, looking north**, drawn under the plan on the same x, so each thing in it stands under itself on the plan: the side rooms' three floors at 5, 6 and 7 cubits with the house's wall stepping in at each, the inner sanctuary's 20-cubit cube under the house's 30 (the 10 cubits over it hatched "not given"), the windows, the porch with a priest for scale, Boaz, and the altar.
+- **Across the inner sanctuary, looking west**: the two cherubim, ten cubits high, their wings wall to wall and touching in the middle, the ark under them, and the side rooms either side.
+- **The east front**: the porch, Jachin on the left (the house's right is the south), Boaz, the doors, and a man for scale.
+- **Measurements** (a layer, on): the rooms' 20, 40 and 10, the house's 30, the floors' 5s, the pillars' 18 and 5, the wings' four 5s, the altar's 20 and 10 and the Sea's 10.
+- **The Tabernacle** (a layer, off): `sanctuary.py`'s tent, Most Holy Place and court laid on the house at the same scale, in the plan and both sections. The tent's west end is on the house's west wall, so the Most Holy Place's 10-cubit cube sits in the corner of the inner sanctuary's 20.
+- **In detail** (a layer, on): a pillar with its capital, the Sea on twelve oxen, and a base with its wheels, panels and basin.
+
+**The cards** come from `temple.PARTS`. They are laid out like the Tabernacle's:
+- each measurement, marked stated, derived or not given, with its verse. Where Kings and Chronicles differ, the drawing follows Kings and the card gives Chronicles' figure on its own row: the pillars' 18 and 35 cubits, the Sea's 2,000 and 3,000 baths, and the porch's height, which only Chronicles gives (120). 2 Kings 25:17's 3-cubit capital and Jeremiah 52's pomegranates are rows too;
+- where it stands, marked the same way. The text gives a side for things in the courts and the holy place, and no distances, so their spots are one arrangement;
+- what it was made of, and what it was for where the text says;
+- its verses, grouped as planned (1 Chronicles 28), built (1 Kings 6–7), Chronicles (2 Chronicles 3–4), dedicated (1 Kings 8, 2 Chronicles 5–7), later (Ahaz, Hezekiah, the Chaldeans) and named elsewhere;
+- links: Jachin and Boaz to each other, the ark and the cherubim, the doors of the inner sanctuary and the veil (Kings' doors and Chronicles' veil share a place), and each part to its drawing.
+
+A part drawn in a section, on the east front or in detail is a copy of its card (`nos`) with "On the plan ▸". The house is tapped on its walls, and the courts on their dashed edge and name. The Tabernacle's card links to the Tabernacle page. Opened from a verse, the sheet starts on the parts that verse names: from 1 Kings 7:23, the Sea.
+
+**The model.** `temple.py` keeps the plan in cubits, x east from the inner face of the west wall and y south from the north wall's, so the house inside its walls is (0, 0)–(60, 20). `Plan` maps it onto a drawing, and `Section` maps a cut along the axis (looking north) or across it (looking west, north on the right). What the text doesn't give is set once there and marked on the cards:
+- the walls: six cubits as Ezekiel's house (Ezek 41:5), stepping in a cubit at each floor, and the side rooms' outer wall five (41:9);
+- the porch as high as the house, open at its east end between its side walls, with the pillars just before it;
+- the doors' widths read as a fifth and a fourth of the 20-cubit wall (1 Kings 6:31, 33);
+- the altar, the Sea, the bases, the scaffold, the lamp stands, the tables and the golden altar at their sides, with spots of the model's choosing;
+- the windows high in the holy place's walls, above the side rooms.
+
+The Temple's figures are in `svg_figures.py`, sized from the model at the Tabernacle's cubit (`CUBIT`): `temple_cherub("front" or "side")`, `temple_pillar()`, `molten_sea()` and `temple_base()`, so the 1 Kings 6–7 pictures can reuse them.
+
+```
+.venv/Scripts/python.exe generate_temple_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_temple          # the model's measures and verses
 ```
 
 ## The Land of Israel

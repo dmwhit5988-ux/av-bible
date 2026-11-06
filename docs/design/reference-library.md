@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 3, 4 and 7 as first cuts.
+Proposed on 2026-10-27. Built so far: the shelf, and pages 1, 2, 3, 4, 7 and 8 as first cuts.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -285,6 +285,12 @@ Effort runs from S to XL. XL means the work is mostly new, sourced data. Files a
 - **Risks:** say "lives overlapped", never "met".
 
 **8. Solomon's Temple.** L for a Kings-first cut · 3 files · all four lenses.
+- **Built 2026-11-05, as a first cut** ([reference-charts.md](../reference-charts.md#solomons-temple)): `temple.py`, the one model, and `generate_temple_reference.py`'s sheet. The owner chose the Temple and its courts without the palace, a plan with sections, the Tabernacle as a layer, and Kings drawn with Chronicles on the cards. It differs from the plan below:
+  - The model is its own module, `temple.py`, not an extension of `sanctuary.py`. It takes the Tabernacle's tent and court from `sanctuary.py` for the layer, and its `Dim` and flags.
+  - Two fixed cuts and the east front stand in for a movable cut plane: along the axis looking north, and across the inner sanctuary looking west.
+  - Chronicles' figures are a row of their own on the card ("height, in Chronicles"), not a badge on the drawing.
+  - The new figures are `svg_figures.temple_cherub`, `temple_pillar`, `molten_sea` and `temple_base`. The palm and flower symbols aren't drawn yet.
+  - What the text doesn't give (the walls, the porch's height, the courts' size, every spot in the court) is set once in the model and marked "not given" on the cards; on the sheet the courts are dashed and the space over the inner sanctuary hatched.
 - **Shows:**
   - A plan and long section in cubits: the 60×20×30 house, the 20-cubit inner room, side chambers 5, 6 and 7 wide, the cherubim wing to wall, Jachin and Boaz, the Sea, the stands and the altar.
   - A Tabernacle overlay showing that the house doubles the tent.

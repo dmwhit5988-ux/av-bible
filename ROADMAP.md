@@ -35,7 +35,7 @@
 | Later | **Matthew 21–27**, Holy Week (timeline, High) | Day by day |
 | Later | **Genesis 12–25, 25–36, 37–50** (maps, High) | Completes Genesis; reuses the Genesis 10 world map and the OT tree |
 | Later | **1 Kings 12–22 and 2 Kings 1–17**, parallel kings (High) | A per-verse camera over the OT timeline sheet, which already dates 41 reigns (Ussher's years, with a Thiele reference rail), as 1 Chronicles does over the tree ([docs/design/ot-timeline.md](docs/design/ot-timeline.md)) |
-| Later | **Leviticus 16** and **Leviticus 1–7** (High), **Exodus 29** (Med), **1 Kings 6–7** temple (High) | Reuse `svg_priest.py`, the Tabernacle model (`sanctuary.py`) and its plan (`generate_tabernacle.draw_plan`) |
+| Later | **Leviticus 16** and **Leviticus 1–7** (High), **Exodus 29** (Med), **1 Kings 6–7** temple (High) | Reuse `svg_priest.py`, the Tabernacle model (`sanctuary.py`) and its plan (`generate_tabernacle.draw_plan`); the Temple from `temple.py` and its figures in `svg_figures` |
 | Later | **Matthew 2** (map) and **Luke 1–2** (timeline), both High | Neighbours of built chapters; reuse the `svg_matthew_nativity.py` stage |
 | Later | The other short books | Habakkuk 3 and Nahum 2 first (ranked next in [short-books.md](docs/design/short-books.md)), then Obadiah, Joel, Philemon, Jude, Titus, 2 Thessalonians and the rest of Habakkuk and Nahum. That makes 405 verses with Haggai and 2–3 John, and the designs already exist. |
 | Later | Symbolic and architectural set pieces | Daniel 2, 7, 8 and 9; Ezekiel 1 and 10, and 40–43; Zechariah 1–6; Revelation 4–5 and 21–22. High priority, but nothing to reuse. |

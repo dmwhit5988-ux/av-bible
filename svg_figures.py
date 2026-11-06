@@ -44,6 +44,7 @@ import math
 import random
 
 import sanctuary as SN
+import temple as TM
 
 # ---------------------------------------------------------------------------
 # Geometry
@@ -3526,6 +3527,290 @@ def _lot():
 
 def lot():
     return _scale(_lot(), UNIT["lot"])
+
+
+# ---------------------------------------------------------------------------
+# Solomon's Temple: the cherubim, the pillars, the Sea and the bases
+# ---------------------------------------------------------------------------
+#
+# Sized by temple.py in cubits, at the Tabernacle's cubit (CUBIT), so the
+# cherubim of the inner sanctuary stand at their ten cubits over the ark and
+# a man (about three and a half cubits) at true size beside the pillars.
+# Authored in cubits and multiplied out by _cubits.
+
+
+def _cubits(parts):
+    """Restate parts authored in cubits in the shared unit."""
+    return _scale(parts, CUBIT)
+
+
+def _wing_front(sx, root, tip, top, low):
+    """One wing stretched out level, seen from in front: from the shoulder
+    at `root` to its `tip`, `top` and `low` the heights of its upper and
+    lower edges at the root. `sx` is the side."""
+    rx, tx = root * sx, tip * sx
+    span = tip - root
+    outline = smooth([(rx, top), (rx + sx * span * 0.35, top + 0.55),
+                      (rx + sx * span * 0.75, top + 0.6), (tx, top + 0.25),
+                      (tx - sx * 0.35, top - 0.35),
+                      (rx + sx * span * 0.62, low + 0.55),
+                      (rx + sx * span * 0.28, low + 0.1), (rx, low)], n=4)
+    P = [("fill", outline if sx == 1 else outline[::-1], "wing")]
+    for k in (0.3, 0.55, 0.8):                      # quills along its length
+        qx = rx + sx * span * k
+        P.append(("line", [(qx - sx * 0.5, low + 0.4 + 1.2 * k),
+                           (qx + sx * 0.4, top + 0.25)], "rule"))
+    return P
+
+
+def _temple_cherub(view="front"):
+    """One cherub of the inner sanctuary (1 Kings 6:23-27): ten cubits
+    high, of olive wood overlaid with gold, standing on its feet and facing
+    the house (2 Chr 3:13), with two wings of five cubits.
+
+    `front` is how one sees it from the holy place: both wings stretched
+    out level to their full ten, so two of them, side by side, reach wall to
+    wall and touch in the middle. `side` is the same figure from the north,
+    facing east (+x): its wings run toward and away from the eye, so they
+    show only as the band across its shoulders. Faceless, like the mercy
+    seat's (_cherub): a face is not what the text describes."""
+    P = []
+    if view == "front":
+        for sx in (-1, 1):
+            P.extend(_wing_front(sx, 0.55, 5.0, 8.15, 6.5))
+        P.append(("fill", smooth([(-0.8, 0.25), (0.8, 0.25), (0.92, 3.2),
+                                  (1.0, 6.0), (1.15, 7.6), (0.72, 8.35),
+                                  (-0.72, 8.35), (-1.15, 7.6), (-1.0, 6.0),
+                                  (-0.92, 3.2)], n=4), "metal"))
+        P.append(("line", [(0, 0.4), (0, 4.6)], "rule"))      # the fold
+        for sx in (-1, 1):                                    # the feet
+            P.append(("fill", smooth([(sx * 0.12, 0), (sx * 0.95, 0),
+                                      (sx * 0.85, 0.42), (sx * 0.2, 0.42)],
+                                     n=2), "metal"))
+        P.append(("fill", [(-0.3, 8.2), (0.3, 8.2), (0.3, 8.75),
+                           (-0.3, 8.75)], "metal"))           # the neck
+        P.append(("dot", (0, 9.25, 0.75), "metal"))           # the head
+    else:
+        P.append(("fill", smooth([(-0.75, 0.25), (0.6, 0.25), (0.7, 3.2),
+                                  (0.75, 6.0), (0.85, 7.7), (0.4, 8.35),
+                                  (-0.6, 8.35), (-0.95, 7.6), (-0.9, 6.0),
+                                  (-0.85, 3.2)], n=4), "metal"))
+        P.append(("fill", smooth([(0.0, 0), (1.0, 0), (0.95, 0.42),
+                                  (0.05, 0.42)], n=2), "metal"))   # the foot
+        P.append(("fill", smooth([(-1.55, 6.55), (0.5, 6.7), (1.25, 7.5),
+                                  (0.9, 8.4), (-1.2, 8.3), (-1.85, 7.4)],
+                                 n=4), "wing"))   # the wings, end on
+        P.append(("line", [(-1.3, 7.45), (0.95, 7.55)], "rule"))
+        P.append(("fill", [(-0.25, 8.2), (0.35, 8.2), (0.35, 8.75),
+                           (-0.25, 8.75)], "metal"))
+        P.append(("dot", (0.1, 9.25, 0.75), "metal"))
+    return P
+
+
+def temple_cherub(view="front"):
+    """A cherub of the inner sanctuary, ten cubits high. See _temple_cherub;
+    `view` is "front" (wings spread to their ten cubits) or "side"."""
+    return _cubits(_temple_cherub(view))
+
+
+def _temple_pillar():
+    """Jachin or Boaz (1 Kings 7:15-22): a shaft of brass eighteen cubits
+    high and twelve round, and a capital of five.
+
+    The capital is what the text spends its words on, so it carries the
+    drawing: a bowl ("the belly", 7:20) under a net of checker work with
+    its wreaths of chain, two rows of pomegranates round it, and lily work
+    opening at the top (7:19, 22). The text says the lily work is four
+    cubits and the capital five, and doesn't say how they sit together;
+    here the lily work rises out of the bowl."""
+    r = TM.PILLAR_D / 2
+    h, c = TM.PILLAR_HEIGHT, TM.CAPITAL_HEIGHT
+    P = [("fill", [(-r, 0), (r, 0), (r, h), (-r, h)], "metal")]
+    for k in (0.25, 0.5, 0.75):                     # the shaft's roundness
+        P.append(("line", [(r * (2 * k - 1) * 0.92, 0.3),
+                           (r * (2 * k - 1) * 0.92, h - 0.3)], "rule"))
+    # the bowl: the belly of the capital, a little wider than the shaft
+    bw = r * 1.18
+    bowl = smooth([(-r, h), (r, h), (bw, h + 0.7), (bw * 1.04, h + 1.7),
+                   (bw * 0.9, h + 2.6), (-bw * 0.9, h + 2.6),
+                   (-bw * 1.04, h + 1.7), (-bw, h + 0.7)], n=4)
+    # the lily work above it, opening into petals
+    petals = [(-bw * 0.85, h + 2.5)]
+    n = 5
+    for i in range(n):
+        x0 = -bw * 0.85 + i * (2 * bw * 0.85) / n
+        x1 = x0 + (2 * bw * 0.85) / n
+        petals += [(x0 + (x1 - x0) * 0.15, h + c - 0.35),
+                   ((x0 + x1) / 2, h + c),
+                   (x1 - (x1 - x0) * 0.15, h + c - 0.35),
+                   (x1, h + c - 1.25 if i < n - 1 else h + 2.5)]
+    petals.append((bw * 0.85, h + 2.5))
+    P.append(("fill", petals, "metal"))
+    for i in range(1, n):
+        x = -bw * 0.85 + i * (2 * bw * 0.85) / n
+        P.append(("line", [(x, h + c - 1.25), (x * 0.92, h + 2.7)], "rule"))
+    P.append(("fill", bowl, "metal"))
+    # the net of checker work over the bowl
+    for k in range(-3, 4):
+        x = k * bw / 3.4
+        P.append(("line", [(x - 0.55, h + 0.25), (x + 0.55, h + 2.45)],
+                  "rule"))
+        P.append(("line", [(x + 0.55, h + 0.25), (x - 0.55, h + 2.45)],
+                  "rule"))
+    # two rows of pomegranates round it (7:18, 20)
+    for row, y in enumerate((h + 0.55, h + 2.35)):
+        m = 7
+        for i in range(m):
+            x = -bw + (i + 0.5 + 0.5 * row) * (2 * bw) / (m + 0.5)
+            P.append(("dot", (x, y, 0.2), "fruit"))
+    return P
+
+
+def temple_pillar():
+    """Jachin or Boaz, 18 cubits and a 5-cubit capital. See _temple_pillar."""
+    return _cubits(_temple_pillar())
+
+
+def _far(parts):
+    """A figure's parts, all set back as the off-side of a pair."""
+    return [(kind, data, "far" if mat not in ("rule", "void") else mat)
+            for kind, data, mat in parts]
+
+
+def _shift(parts, dx, dy):
+    out = []
+    for kind, data, mat in parts:
+        if kind == "dot":
+            out.append((kind, (data[0] + dx, data[1] + dy, data[2]), mat))
+        else:
+            out.append((kind, [(x + dx, y + dy) for x, y in data], mat))
+    return out
+
+
+def _mirror(parts):
+    out = []
+    for kind, data, mat in parts:
+        if kind == "dot":
+            out.append((kind, (-data[0], data[1], data[2]), mat))
+        else:
+            out.append((kind, [(-x, y) for x, y in data], mat))
+    return out
+
+
+def molten_sea():
+    """The molten sea (1 Kings 7:23-26), seen from the south: a bowl of
+    brass ten cubits from brim to brim and five high, its brim turned out
+    like a lily's, two rows of buds under it, set on twelve oxen with their
+    hindquarters inward. From the side the trios facing east and west show
+    in profile, each ox with its fellows behind it; the trio facing the eye
+    is hidden under the bowl's shadow. In shared units; the origin is the
+    ground under its middle."""
+    ox_parts = ox()
+    xs = [p[0] for kind, data, _m in ox_parts if kind != "dot" for p in data]
+    rear = min(xs)                       # the ox's hindquarters, facing right
+    top = max(p[1] for kind, data, _m in ox_parts if kind != "dot"
+              for p in data)
+    P = []
+    for sx in (1, -1):                   # east (right) and west (left)
+        near = _shift(ox_parts, -rear + 0.15 * CUBIT, 0)
+        far = _far(_shift(ox_parts, -rear + 0.55 * CUBIT, 0.25 * CUBIT))
+        for parts in (far, near):
+            P.extend(parts if sx == 1 else _mirror(parts))
+    base = top - 0.35 * CUBIT            # the bowl sits on their backs
+    R = TM.SEA_D / 2 * CUBIT
+    H = TM.SEA_HEIGHT * CUBIT
+    bottom = R * 0.62
+    # its side, from the flat of the bottom out to the brim: a rounded
+    # profile that reaches exactly R, the ten cubits from brim to brim
+    side = [(bottom + (R - bottom) * math.sin(t / 16 * math.pi / 2) ** 0.55,
+             base + H * t / 16) for t in range(17)]
+    bowl = side + [(-x, y) for x, y in reversed(side)]
+    P.append(("fill", bowl, "metal"))
+    # the brim, turned out like the flower of a lily (7:26)
+    P.append(("fill", [(-R, base + H - 4), (R, base + H - 4),
+                       (R + 2, base + H + 2), (-R - 2, base + H + 2)],
+              "metal"))
+    P.append(("line", [(-R * 0.97, base + H - 6), (R * 0.97, base + H - 6)],
+              "rule"))
+    # two rows of buds under the brim (7:24)
+    for row, f in enumerate((0.78, 0.66)):
+        y = base + H * f
+        w = R * (0.94 - 0.05 * row)
+        n = 13
+        for i in range(n):
+            x = -w + (i + 0.5 * (row + 1)) * (2 * w) / (n + 0.5)
+            P.append(("dot", (x, y, 3.2), "fruit"))
+    return P
+
+
+def _temple_base():
+    """One of the ten bases with its basin (1 Kings 7:27-38), seen from a
+    side: four cubits long and three high, its panels between ledges with
+    lions, oxen and cherubim on them, four wheels a cubit and a half high
+    like a chariot's, the round band on top, and the basin set on it.
+    Authored in cubits; the figures on the panels are added in base()."""
+    w, h = TM.BASE / 2, TM.BASE_HEIGHT
+    r = TM.WHEEL / 2
+    P = []
+    for x in (-w + 0.85, w - 0.85):                   # the wheels
+        P.append(("dot", (x, r, r), "metal"))
+        P.append(("dot", (x, r, r * 0.3), "metal"))
+        for k in range(6):
+            a = k * math.pi / 3
+            P.append(("line", [(x + math.cos(a) * r * 0.3,
+                                r + math.sin(a) * r * 0.3),
+                               (x + math.cos(a) * r * 0.92,
+                                r + math.sin(a) * r * 0.92)], "rule"))
+    for x in (-w, w - 0.3):                           # the corner supports
+        P.append(("fill", [(x, 0), (x + 0.3, 0), (x + 0.3, h), (x, h)],
+                  "metal"))
+    fb = TM.WHEEL - 0.25          # the wheels are underneath the panels
+    P.append(("fill", [(-w, fb), (w, fb), (w, h), (-w, h)],
+              "metal"))                               # the panels' frame
+    for y in (fb, h - 0.25):                          # the ledges
+        P.append(("line", [(-w, y), (w, y)], "rule"))
+    for x in (-w / 3, w / 3):
+        P.append(("line", [(x, fb), (x, h - 0.25)], "rule"))
+    # the round band half a cubit high, and the mouth (7:31, 35)
+    P.append(("fill", [(-0.75, h), (0.75, h), (0.75, h + 0.5),
+                       (-0.75, h + 0.5)], "metal"))
+    # the basin: four cubits, holding forty baths (7:38)
+    b = TM.BASIN / 2
+    P.append(("fill", [(-0.7, h + 0.5), (0.7, h + 0.5), (b * 0.62, h + 0.8),
+                       (b * 0.9, h + 1.25), (b, h + 1.8), (-b, h + 1.8),
+                       (-b * 0.9, h + 1.25), (-b * 0.62, h + 0.8)], "metal"))
+    P.append(("line", [(-b * 0.96, h + 1.62), (b * 0.96, h + 1.62)], "rule"))
+    return P
+
+
+def temple_base():
+    """A base and its basin, with a lion, an ox and a cherub on its three
+    panels (7:29, 36). In shared units; the origin is the ground under its
+    middle."""
+    P = _cubits(_temple_base())
+    w = TM.BASE / 2 * CUBIT
+    y0 = (TM.WHEEL - 0.25) * CUBIT
+    ph = (TM.BASE_HEIGHT - TM.WHEEL) * CUBIT
+    third = 2 * w / 3
+
+    def panel(parts, cx):
+        x0, x1, _y0, y1 = bbox((parts, 0))
+        k = min(third * 0.78 / (x1 - x0), ph * 0.8 / y1)
+        out = []
+        for kind, data, mat in parts:
+            if kind == "dot":
+                out.append((kind, (cx + (data[0] - (x0 + x1) / 2) * k,
+                                   y0 + ph * 0.1 + data[1] * k,
+                                   data[2] * k), mat))
+            else:
+                out.append((kind, [(cx + px * k - (x0 + x1) / 2 * k,
+                                    y0 + ph * 0.1 + py * k)
+                                   for px, py in data], mat))
+        return out
+    P.extend(panel(lion(), -third))
+    P.extend(panel(ox(), 0))
+    P.extend(panel(temple_cherub("front"), third))
+    return P
 
 
 # ---------------------------------------------------------------------------

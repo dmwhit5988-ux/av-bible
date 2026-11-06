@@ -85,11 +85,15 @@ explains the project, and `docs/` has the detail.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
   `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt. All of
   them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today the
-  OT family tree, the Tabernacle, the Land of Israel atlas, Kings and prophets and Paul's journeys) are linked from the app. The 1–2 Chronicles chart
+  OT family tree, the Tabernacle, Solomon's Temple, the Land of Israel atlas, Kings and prophets and Paul's journeys) are linked from the app. The 1–2 Chronicles chart
   is a frozen file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
 - Take the Tabernacle's court, tent, pillars and furnishings from `sanctuary.py`, the
   one model in cubits that the Exodus 25–27 plan, the Numbers 1–4 courts and the
   Tabernacle reference page all draw from. Don't place them again in a drawing.
+- Take Solomon's Temple, its walls, side rooms, porch, pillars, courts and
+  furnishings from `temple.py`, in cubits, and its cherubim, pillars, Sea and bases
+  from `svg_figures`' `temple_*`, `molten_sea` and `temple_base`. Where Kings and
+  Chronicles differ, draw Kings and give Chronicles on the card.
 - Take the Land of Israel's coast, lakes, rivers and places from `gazetteer.py`, whose
   points are each a named place's Wikidata or Wikipedia coordinate (or marked `~`). Never trace a line
   from a map, and never draw `generate_tribal_maps`' or `generate_acts1518_svg`'s
@@ -128,7 +132,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_temple test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.
