@@ -129,6 +129,8 @@ class Card:
         self.events = {}          # ref -> [(kind, actor, t, dur, value)]
         self.fx = {}              # ref -> svg drawn over the cast that verse
         self.fx_after = {}        # ref -> svg drawn in every later verse
+        self.fx_under = {}        # the same two, drawn under the cast
+        self.fx_under_after = {}
         self.refs = []            # verses in reading order
         # the zooms over which the cast's names come in (a card whose names
         # stand clear of its people may show them wider)
@@ -147,12 +149,16 @@ class Card:
     def on(self, ref, *events):
         self.events.setdefault(ref, []).extend(events)
 
-    def effect(self, ref, now, after=None):
+    def effect(self, ref, now, after=None, under=False):
         """An effect drawn over the cast on `ref` (animated), and what it
-        leaves behind for the verses after (static), if anything."""
-        self.fx.setdefault(ref, []).append(now)
+        leaves behind for the verses after (static), if anything. `under`
+        draws it under the cast instead, over the scenery (a glow behind a
+        figure)."""
+        fx, fx_after = ((self.fx_under, self.fx_under_after) if under
+                        else (self.fx, self.fx_after))
+        fx.setdefault(ref, []).append(now)
         if after:
-            self.fx_after.setdefault(ref, []).append(after)
+            fx_after.setdefault(ref, []).append(after)
 
     # -- camera ----------------------------------------------------------
 
@@ -207,6 +213,11 @@ class Card:
         out.append(f'<g clip-path="url(#{cid})">')
         out.append(f'<rect {box} fill="{rgb(self.sky)}"/>')
         out += [s for s in self.scenery]
+        for r in self.refs:
+            if r == ref:
+                break
+            out += self.fx_under_after.get(r, [])
+        out += self.fx_under.get(ref, [])
         cast_at = len(out)
         ks = [f"{self.S / c[0]:.5g}" for c in fl.cams]
         self._k = (ks[0], fl._anim("transform", ks, "scale"))

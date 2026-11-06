@@ -2006,20 +2006,55 @@ def _cloud(rain=False):
     """
     lobes = [(-30, 10, 12), (-14, 18, 16), (6, 23, 18), (24, 15, 13),
              (36, 8, 9)]                     # (cx, cy, r), left to right
+    pts = _lobe_top(lobes)
+    pts += [(-24, 0), (-8, 0), (8, 0), (24, 0)]     # held level by the base
+    P = [("fill", smooth(pts, n=2), "cloud")]
+    # The seams run on from two notches, each the near lobe's own edge carried
+    # a little way across the big one behind it. Drawn as free arcs in the
+    # middle of the mass they were a pair of shut eyes, and the cloud smiled.
+    for front, back, sweep in ((1, 2, -0.95), (3, 2, 0.85)):
+        P.append(("line", _lobe_seam(lobes[front], lobes[back], sweep),
+                  "rule"))
+    if rain:
+        # Short and staggered, and slanting together: rain falls in a wind.
+        # Even lengths at one height read as a fringe hanging off the cloud.
+        for x0, y0, ln in ((-30, -4, 14), (-20, -9, 17), (-10, -3, 13),
+                           (0, -8, 18), (10, -4, 14), (20, -10, 15),
+                           (30, -4, 12)):
+            P.append(("line", [(x0, y0), (x0 - ln * 0.32, y0 - ln)], "rule"))
+    return P
 
-    def meet(p, q):                          # the upper crossing of two lobes
-        (x0, y0, r0), (x1, y1, r1) = p, q
-        d = math.hypot(x1 - x0, y1 - y0)
-        a = (r0 * r0 - r1 * r1 + d * d) / (2 * d)
-        h = math.sqrt(max(0.0, r0 * r0 - a * a))
-        mx, my = x0 + a * (x1 - x0) / d, y0 + a * (y1 - y0) / d
-        cands = [(mx + h * (y1 - y0) / d, my - h * (x1 - x0) / d),
-                 (mx - h * (y1 - y0) / d, my + h * (x1 - x0) / d)]
-        return max(cands, key=lambda p_: p_[1])
 
-    def ang(lobe, pt):
-        return math.atan2(pt[1] - lobe[1], pt[0] - lobe[0])
+def _lobe_meet(p, q):
+    """The upper crossing of two lobes (cx, cy, r)."""
+    (x0, y0, r0), (x1, y1, r1) = p, q
+    d = math.hypot(x1 - x0, y1 - y0)
+    a = (r0 * r0 - r1 * r1 + d * d) / (2 * d)
+    h = math.sqrt(max(0.0, r0 * r0 - a * a))
+    mx, my = x0 + a * (x1 - x0) / d, y0 + a * (y1 - y0) / d
+    cands = [(mx + h * (y1 - y0) / d, my - h * (x1 - x0) / d),
+             (mx - h * (y1 - y0) / d, my + h * (x1 - x0) / d)]
+    return max(cands, key=lambda p_: p_[1])
 
+
+def _lobe_ang(lobe, pt):
+    return math.atan2(pt[1] - lobe[1], pt[0] - lobe[0])
+
+
+def _lobe_seam(front, back, sweep):
+    """A seam: the near lobe's edge carried on from its notch with the lobe
+    behind it, `sweep` radians across the back one."""
+    a0 = _lobe_ang(front, _lobe_meet(front, back))
+    return [(front[0] + front[2] * math.cos(a0 + sweep * k / 5),
+             front[1] + front[2] * math.sin(a0 + sweep * k / 5))
+            for k in range(6)]
+
+
+def _lobe_top(lobes):
+    """The scalloped top of a heap of lobes (cx, cy, r), left to right, the
+    end ones reaching down to y = 0: right to left over the top, base to
+    base."""
+    meet, ang = _lobe_meet, _lobe_ang
     pts = []
     n = len(lobes)
     for i in range(n - 1, -1, -1):           # right to left, over the top
@@ -2039,25 +2074,7 @@ def _cloud(rain=False):
             t = a0 + (a1 - a0) * j / steps
             pts.append((lb[0] + lb[2] * math.cos(t),
                         lb[1] + lb[2] * math.sin(t)))
-    pts += [(-24, 0), (-8, 0), (8, 0), (24, 0)]     # held level by the base
-    P = [("fill", smooth(pts, n=2), "cloud")]
-    # The seams run on from two notches, each the near lobe's own edge carried
-    # a little way across the big one behind it. Drawn as free arcs in the
-    # middle of the mass they were a pair of shut eyes, and the cloud smiled.
-    for front, back, sweep in ((1, 2, -0.95), (3, 2, 0.85)):
-        lb = lobes[front]
-        a0 = ang(lb, meet(lb, lobes[back]))
-        P.append(("line", [(lb[0] + lb[2] * math.cos(a0 + sweep * k / 5),
-                            lb[1] + lb[2] * math.sin(a0 + sweep * k / 5))
-                           for k in range(6)], "rule"))
-    if rain:
-        # Short and staggered, and slanting together: rain falls in a wind.
-        # Even lengths at one height read as a fringe hanging off the cloud.
-        for x0, y0, ln in ((-30, -4, 14), (-20, -9, 17), (-10, -3, 13),
-                           (0, -8, 18), (10, -4, 14), (20, -10, 15),
-                           (30, -4, 12)):
-            P.append(("line", [(x0, y0), (x0 - ln * 0.32, y0 - ln)], "rule"))
-    return P
+    return pts
 
 
 def _gate():
@@ -2169,6 +2186,7 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         "stone": 0.55,         # a stone a foot finds: shin high, no more
         "shackle": 0.44,       # wrist irons — a hand's span across
         "throne": 1.07,
+        "prepared_throne": 1.00,     # an emblem in the sky, like the sun
         "tower": 2.94,         # a watchtower over a vineyard
         "net": 1.47,
         "basket": 0.48,
@@ -3265,6 +3283,87 @@ def _throne():
     return P
 
 
+# Where the Chi-Rho stands beside the prepared throne, at its right hand (the
+# viewer's left, as the throne faces out): on the bank of cloud, in units.
+PREPARED_THRONE_RIGHT = (-80.0, 29.0)
+# the sunburst's centre, behind the back, in units
+PREPARED_THRONE_GLORY = (0.0, 92.0)
+
+
+def _prepared_throne(small=False, cushion=True):
+    """The prepared throne, the early church's sign for God's presence (the
+    hetoimasia of Santa Maria Maggiore in Rome, 430s, and of the Arian
+    Baptistery in Ravenna, about 500): a throne standing empty, its cushion
+    laid ready, a sunburst behind its back, on a bank of cloud. God is never
+    drawn; the throne says where he is.
+
+    What makes it a THRONE and not a chair is the tall back with its finials,
+    the arms with their knobs, and the steps it stands on; what makes it
+    God's and not a king's is that it is empty and in the sky. The bank of
+    cloud runs out to the left (the throne's right hand) so the Chi-Rho can
+    stand on it there (PREPARED_THRONE_RIGHT). The sunburst is `fire`, the
+    throne `metal`.
+
+    `small` is the mark at map size: one silhouette for back, arms and base,
+    one step, eight thick rays and a plain heap of cloud, with no seams, no
+    cushion and no finials, which close up into a blot at 20 px.
+    `cushion=False` leaves the cushion off, for a caller that draws it in its
+    own colour (`prepared_throne_cushion`).
+
+    About 160 tall and 190 wide, the origin on the cloud's base under the
+    throne."""
+    gx, gy = PREPARED_THRONE_GLORY
+    P = []
+    n, r0, r1, w = (8, 30, 60, 0.22) if small else (16, 30, 62, 0.11)
+    for k in range(n):
+        a = k * 2 * math.pi / n
+        P.append(("fill", [(gx + r0 * math.cos(a - w), gy + r0 * math.sin(a - w)),
+                           (gx + r1 * math.cos(a), gy + r1 * math.sin(a)),
+                           (gx + r0 * math.cos(a + w), gy + r0 * math.sin(a + w))],
+                  "fire"))
+    lobes = ([(-96, 10, 12), (-72, 16, 17), (-44, 20, 20), (-14, 22, 22),
+              (16, 21, 21), (44, 18, 18), (66, 12, 13)]
+             if not small else
+             [(-90, 12, 14), (-50, 22, 24), (0, 26, 28), (48, 18, 19)])
+    pts = _lobe_top(lobes)
+    x0 = lobes[0][0] - math.sqrt(lobes[0][2] ** 2 - lobes[0][1] ** 2)
+    x1 = lobes[-1][0] + math.sqrt(lobes[-1][2] ** 2 - lobes[-1][1] ** 2)
+    pts += [(x0 + (x1 - x0) * k / 5, 0) for k in range(1, 5)]
+    P.append(("fill", smooth(pts, n=2), "cloud"))
+    if not small:
+        for front, back, sweep in ((1, 2, -0.9), (5, 4, 0.8)):
+            P.append(("line", _lobe_seam(lobes[front], lobes[back], sweep),
+                      "rule"))
+    if small:
+        sil = [(-34, 40), (-34, 76), (-22, 76), (-22, 110), (-14, 120),
+               (0, 126), (14, 120), (22, 110), (22, 76), (34, 76), (34, 40)]
+        P.append(("fill", [(-46, 30), (46, 30), (46, 40), (-46, 40)], "metal"))
+        P.append(("fill", sil, "metal"))
+        return P
+    for hw, y0, y1 in ((54, 26, 33), (44, 33, 40)):          # the steps
+        P.append(("fill", [(-hw, y0), (hw, y0), (hw, y1), (-hw, y1)], "metal"))
+    P.append(("fill", [(-22, 60), (-22, 110), (-14, 120), (0, 126), (14, 120),
+                       (22, 110), (22, 60)], "metal"))      # the back
+    P.append(("line", [(-15, 66), (-15, 106), (-9, 113), (0, 117), (9, 113),
+                       (15, 106), (15, 66)], "rule"))       # its panel
+    for sx in (-1, 1):
+        P.append(("dot", (sx * 22, 114, 4), "metal"))       # the finials
+        P.append(("fill", [(sx * 34, 56), (sx * 34, 76), (sx * 22, 76),
+                           (sx * 22, 56)], "metal"))        # the arms
+        P.append(("dot", (sx * 28, 77, 5), "metal"))
+    P.append(("fill", [(-30, 40), (30, 40), (30, 60), (-30, 60)], "metal"))
+    P.append(("line", [(-30, 54), (30, 54)], "rule"))       # the seat's edge
+    if cushion:
+        P += _prepared_throne_cushion()
+    return P
+
+
+def _prepared_throne_cushion():
+    """The cushion laid on the prepared throne's seat."""
+    return [("fill", smooth([(-22, 60), (-22, 66), (-18, 69), (18, 69),
+                             (22, 66), (22, 60)], closed=True, n=3), "cloth")]
+
+
 def _tower():
     """A tower: tall, battered inward, battlemented, with the door well up
     the wall. The batter is what tells it from a chimney, and the high door
@@ -3464,6 +3563,16 @@ def shackle(broken=False):
 
 def throne():
     return _scale(_throne(), UNIT["throne"])
+
+
+def prepared_throne(small=False, cushion=True):
+    """The prepared throne: God's presence, never God drawn. See
+    `_prepared_throne`."""
+    return _scale(_prepared_throne(small, cushion), UNIT["prepared_throne"])
+
+
+def prepared_throne_cushion():
+    return _scale(_prepared_throne_cushion(), UNIT["prepared_throne"])
 
 
 def tower():
@@ -3739,6 +3848,36 @@ def _temple_pillar():
             x = -bw + (i + 0.5 + 0.5 * row) * (2 * bw) / (m + 0.5)
             P.append(("dot", (x, y, 0.2), "fruit"))
     return P
+
+
+def temple_house():
+    """Solomon's house seen from the south (1 Kings 6-7), in cubits from
+    temple.py, for a picture too small for the reference page's elevation:
+    the house thirty cubits high, the three floors of side rooms against it,
+    the porch at the east end (to the right), and Jachin and Boaz before it.
+    The origin is on the ground under the middle of the whole; a caller
+    sizes it by TM.HOUSE_HEIGHT, the house's height."""
+    x0, x1 = TM.OUTSIDE[0], TM.PILLAR_X + TM.PILLAR_D
+    cx = (x0 + x1) / 2
+    hh, st = TM.HOUSE_HEIGHT, TM.SIDE_TOP
+    P = [("fill", [(0, 0), (TM.EAST_WALL[1], 0), (TM.EAST_WALL[1], hh),
+                   (0, hh)], "stone"),
+         ("fill", [(x0, 0), (TM.SIDE_EAST, 0), (TM.SIDE_EAST, st), (x0, st)],
+          "stone"),
+         ("fill", [(TM.PORCH[0], 0), (TM.PORCH[2], 0),
+                   (TM.PORCH[2], TM.PORCH_HEIGHT),
+                   (TM.PORCH[0], TM.PORCH_HEIGHT)], "stone")]
+    for f in range(1, len(TM.SIDE_WIDTHS)):
+        P.append(("line", [(x0, f * TM.FLOOR_HEIGHT),
+                           (TM.SIDE_EAST, f * TM.FLOOR_HEIGHT)], "rule"))
+    for wx in TM.WINDOWS_X:                  # the windows above the side rooms
+        P.append(("line", [(wx - 1, hh - 6), (wx + 1, hh - 6)], "rule"))
+    ph = TM.PILLAR_HEIGHT + TM.CAPITAL_HEIGHT
+    for dx in (0.0, TM.PILLAR_D * 0.9):      # the two, one behind the other
+        a = TM.PILLAR_X - TM.PILLAR_D / 2 + dx
+        P.append(("fill", [(a, 0), (a + TM.PILLAR_D * 0.7, 0),
+                           (a + TM.PILLAR_D * 0.7, ph), (a, ph)], "metal"))
+    return [(k, [(x - cx, y) for x, y in d], m) for k, d, m in P]
 
 
 def temple_pillar():
