@@ -828,7 +828,15 @@ def _ox():
     return P
 
 
-def _sheep(lamb=False, lying=False):
+# The ram's near horn, in the sheep's head units: its spine from the poll
+# round the ear, and its thickness along it.
+_RAM_HORN = [(28.6, 44.6), (26.6, 48.6), (22.4, 49.6), (18.8, 46.8),
+             (17.8, 41.8), (19.4, 37.2), (23.0, 34.8), (26.8, 35.8),
+             (28.4, 38.8), (27.6, 41.8)]
+_RAM_HORN_W = [5.6, 5.6, 5.2, 4.8, 4.2, 3.6, 3.0, 2.4, 1.8, 1.1]
+
+
+def _sheep(lamb=False, lying=False, ram=False):
     """Facing right. A sheep is a fleece with a face on it: the back is drawn
     as a run of low bumps rather than a smooth line, the wool stops in a hard
     edge at the throat and above the knee, and the head is small, dark and
@@ -842,6 +850,13 @@ def _sheep(lamb=False, lying=False):
     the ground and no leg is bearing anything. Scripture has more animals
     lying down than most drawing sets expect: the flocks in ruined Nineveh,
     the remnant no one makes afraid, green pastures, the wolf with the lamb.
+
+    `ram` is the male: the ram of the trespass offering (Leviticus 5:15) and
+    of the burnt offering's flock (1:10). A heavier neck carries the head,
+    and two horns curl from the poll back, down and forward round the ear,
+    which is the mark that tells a ram from a ewe at forty pixels. The horns
+    are ridged across, like the shofar's (`_trumpet`). Without `ram` the
+    part list is the ewe's, part for part.
     """
     hk = 1.16 if lamb else 1.0            # head, about its own root
     bx = 0.86 if lamb else 1.0            # body length
@@ -881,6 +896,17 @@ def _sheep(lamb=False, lying=False):
          (-4, 54), (-11, 52), (-18, 53), (-24, 49), (-28, 44), (-29, 37),
          (-27, 30), (-22, 26), (-14, 24), (-4, 23.5), (6, 24), (15, 26),
          (21, 31)])), "fleece"))
+    if ram:
+        # the heavier neck: a crest of fleece from the withers to the poll,
+        # and a deeper throat, so the head stands on something
+        P.append(("fill", smooth(B([(10, 50.5), (17, 53.4)]) +
+                                 H([(25.6, 48.2), (29.4, 44.6), (28.6, 36.4),
+                                    (24.6, 31.4)]) +
+                                 B([(19, 28.6), (13, 33.4)])), "fleece"))
+        # the off horn, behind the head: only its crown shows over the poll
+        P.append(("fill", taper(H([(30.6, 44.6), (30.8, 49.2), (27.6, 51.8),
+                                   (23.4, 51.0)]), [4.0, 3.6, 2.6, 1.4]),
+                  "far"))
     # One ear back, one forward: a sheep carries them out sideways, and that
     # is how the pair resolves once the head is turned to profile.
     P.append(("fill", taper(H([(30, 45), (32.8, 49.6), (35.8, 50.6)]),
@@ -890,6 +916,18 @@ def _sheep(lamb=False, lying=False):
          (30, 31.6), (26, 34.6), (23, 39)])), "hair"))
     P.append(("fill", taper(H([(28.4, 44.4), (24.4, 48.6), (20.6, 49.4)]),
                             [4.6, 3.8, 1.6]), "hair"))                # near ear
+    if ram:
+        # the near horn: out of the poll, back over the ear, down behind the
+        # cheek and forward under it, the tip turned up again
+        P.append(("fill", taper(H(_RAM_HORN), _RAM_HORN_W), "horn"))
+        for i in (1, 3, 5, 7):                                # the ridges
+            (ax, ay), (ex, ey) = H([_RAM_HORN[i - 1], _RAM_HORN[i + 1]])
+            mx, my = H([_RAM_HORN[i]])[0]
+            ln = math.hypot(ex - ax, ey - ay) or 1.0
+            nx, ny = -(ey - ay) / ln, (ex - ax) / ln
+            w = _RAM_HORN_W[i] * 0.42 * hk
+            P.append(("line", [(mx + nx * w, my + ny * w),
+                               (mx - nx * w, my - ny * w)], "rule"))
     P.append(("fill", smooth(H([(37.4, 37), (38.6, 34.6), (36.6, 32.4),
                                 (33.4, 32), (32.4, 34.4), (34, 36.8)])),
               "muzzle"))
@@ -2298,7 +2336,11 @@ UNIT = {"man": 1.00,        # the reference: ~97 units tall
         # sized by sanctuary.py in cubits (CUBIT), so they take no unit here
         "standard": 2.00,      # a pole twice a man, its pennant over the crowd
         "lot": 0.40,           # a pebble a hand closes on
-        "sandals": 1.00}       # authored against a man: a sole ~19 long
+        "sandals": 1.00,       # authored against a man: a sole ~19 long
+        # Leviticus 1-7
+        "cookware": 1.00,      # authored against a man: the oven waist
+                               # high, a pot to his knee
+        "mountain": 1.00}      # an emblem, like the sun: a scene sizes it
 
 
 def man(pose="stand", mantle=True, staff=False, arms="down"):
@@ -2431,10 +2473,12 @@ def sow():
     return _scale(_sow(), UNIT["sow"])
 
 
-def sheep(lamb=False, lying=False):
+def sheep(lamb=False, lying=False, ram=False):
     """A ewe, or — with `lamb` — the same animal young: more leg and more
-    head for its body, and drawn a good deal smaller. `lying` couches it."""
-    return _scale(_sheep(lamb=lamb, lying=lying),
+    head for its body, and drawn a good deal smaller. `lying` couches it.
+    `ram` is the male, horned and heavier in the neck (Leviticus 5:15); see
+    _sheep. Without it the parts are the ewe's exactly."""
+    return _scale(_sheep(lamb=lamb, lying=lying, ram=ram),
                   UNIT["lamb" if lamb else "sheep"])
 
 
@@ -4642,3 +4686,576 @@ def viper_head(s=1.0):
     mouth = [(19.2, 1.1), (13.5, 2.1), (7.5, 2.7)]
     return _close([("fill", _turned_over(head), "muzzle"), ("fill", _turned_over(cap), "hair"),
                    ("fill", _turned_over(chevron), "horn"), ("line", _turned_over(mouth), "rule")], s)
+
+
+# ---------------------------------------------------------------------------
+# Leviticus 1-7: the parts of a beast, the cookware, the mountain
+# ---------------------------------------------------------------------------
+#
+# The offerings name the parts of an animal, verse by verse: the skin, the
+# head, the legs and the innards washed in water, the fat that covers the
+# innards, the two kidneys and the fat on them by the loins, the cover on the
+# liver, the fat tail taken close to the backbone, the breast that is waved
+# and the right thigh that is heaved. `beast_parts` is the board those verses
+# point at.
+
+BEAST_KINDS = ("bull", "sheep", "ram", "goat")
+
+# Every key `beast_parts` can return, in the order a board draws them: the
+# body first, the organs over its open side, then the pieces on top. The
+# dimmed figure under it all is "silhouette", which has no anchor.
+BEAST_PART_ORDER = ("silhouette", "legs", "meat", "innards", "dung", "fat_on",
+                    "fat_cover", "liver", "liver_cover", "kidney_fat",
+                    "kidneys", "breast", "right_thigh", "tail_fat", "head",
+                    "backbone", "loins", "pieces", "skin")
+BEAST_PART_KEYS = BEAST_PART_ORDER[1:]
+
+# Which of the figure's own parts are its head and its legs, and which make
+# its trunk, by their place in the figure's part list (`n` is the list's
+# length, checked, so a change to a figure can't quietly shift them).
+_BEAST = {
+    "bull": dict(
+        fig=lambda: _ox(), unit="ox", n=22, legs=range(8),
+        head=(13, 14, 15, 16, 17, 19, 20, 21), head_main=13,
+        trunk=(11, 10, 12), centre=(-2, 40), cavity=(-13, 15, 23.5, 48.8),
+        back=[(-31, 45.5), (-22, 49.6), (-10, 49.8), (2, 51), (12, 55.5),
+              (21, 55), (27, 51.5)],
+        breast=[(12, 22), (18, 23.8), (22.4, 27.2), (25.6, 33), (26.6, 38.6),
+                (21, 40), (15.4, 36.6), (12.6, 30)],
+        thigh=[(-31.5, 43), (-25, 47.6), (-17, 46), (-12.6, 38), (-13.4, 28),
+               (-16.6, 21), (-22, 18.6), (-27.4, 20.8), (-31.6, 27),
+               (-33.4, 35)],
+        neck_cut=[(37.6, 56.4), (35.2, 37.6)],
+        knees=((24, 14, 8.0), (-16, 14, 8.5)), shin=(23.4, 8)),
+    "sheep": dict(
+        fig=lambda: _sheep(), unit="sheep", n=17, legs=range(8),
+        head=(10, 11, 12, 13, 15, 16), head_main=11,
+        trunk=(9,), centre=(-2, 39), cavity=(-11, 12, 27.4, 46.6),
+        back=[(-26, 42), (-20, 47), (-10, 48.6), (0, 48.6), (10, 49.4),
+              (18, 47.6), (22, 44.6)],
+        breast=[(10, 25), (15, 26.4), (19.2, 30), (21.6, 35), (22, 40),
+                (17.6, 41.4), (13, 37.6), (10.4, 31)],
+        thigh=[(-27.6, 44), (-21, 47.4), (-14, 44.6), (-10.4, 37), (-11, 29),
+               (-13.4, 22), (-18, 19.6), (-22.4, 21.6), (-26.6, 27),
+               (-28.6, 35)],
+        tail=[(-25, 47.6), (-30.4, 47.4), (-34.4, 43), (-36, 35),
+              (-34.6, 27), (-30.6, 23.6), (-27, 25.4), (-25.6, 32),
+              (-24.6, 40)],
+        neck_cut=[(24.2, 47.4), (21.8, 32.6)],
+        knees=((19.5, 16, 4.4), (-14, 16, 4.6)), shin=(19.0, 9)),
+    "goat": dict(
+        fig=lambda: _goat(), unit="goat", n=22, legs=range(8),
+        head=(9, 14, 15, 16, 17, 18, 19, 20, 21), head_main=15,
+        trunk=(11, 10), centre=(-2, 39), cavity=(-10, 12.4, 31.2, 45.0),
+        back=[(-24, 43.6), (-18, 47), (-8, 46.4), (4, 46), (14, 46.6),
+              (20, 44)],
+        breast=[(11.4, 28.8), (16, 29.8), (19.4, 33), (21.6, 37.6),
+                (21.8, 42), (17.6, 43), (13.4, 39.4), (11.6, 33.6)],
+        thigh=[(-25.6, 45), (-19.4, 48.4), (-12, 46), (-9.4, 38.6),
+               (-10.2, 31), (-12.4, 24), (-16.6, 21.4), (-20.6, 23.6),
+               (-24.4, 30), (-26.4, 38)],
+        neck_cut=[(31.4, 64.2), (26.2, 55.6)],
+        knees=((18.6, 16, 4.0), (-11.6, 16, 4.2)), shin=(18.2, 9)),
+}
+_BEAST["ram"] = dict(
+    _BEAST["sheep"], fig=lambda: _sheep(ram=True), n=24,
+    head=(11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23), head_main=13,
+    trunk=(9, 10), neck_cut=[(23.0, 48.6), (21.0, 31.8)])
+
+# The organs, in the open body's own frame: fx runs 0 at the rear of the
+# opening to 1 at its front, fy 0 at its floor to 1 under the backbone.
+_CAVITY = [(0.02, 0.30), (0.04, 0.70), (0.16, 0.94), (0.42, 1.0),
+           (0.72, 0.98), (0.92, 0.86), (1.0, 0.55), (0.96, 0.20),
+           (0.78, 0.04), (0.45, 0.0), (0.15, 0.06)]
+_INNARDS = [(0.05, 0.16), (0.06, 0.50), (0.18, 0.62), (0.40, 0.64),
+            (0.58, 0.58), (0.64, 0.34), (0.58, 0.10), (0.36, 0.04),
+            (0.14, 0.06)]
+_COILS = ([(0.13, 0.30), (0.20, 0.44), (0.31, 0.40), (0.29, 0.28),
+           (0.21, 0.30)],
+          [(0.38, 0.26), (0.43, 0.42), (0.53, 0.42), (0.56, 0.28),
+           (0.47, 0.22)],
+          [(0.10, 0.14), (0.22, 0.10), (0.34, 0.17), (0.46, 0.10),
+           (0.58, 0.16)])
+# The caul is a sheet with a lace in it, drawn as wavy rules running along
+# it. Crossed rules under the kidneys made a face of the board.
+_FAT_COVER = [(0.06, 0.56), (0.20, 0.64), (0.40, 0.66), (0.56, 0.60),
+              (0.62, 0.48), (0.56, 0.38), (0.48, 0.42), (0.40, 0.36),
+              (0.32, 0.41), (0.24, 0.35), (0.16, 0.40), (0.08, 0.38),
+              (0.05, 0.46)]
+_FAT_LACE = ([(0.10, 0.53), (0.20, 0.57), (0.30, 0.54), (0.40, 0.58),
+              (0.50, 0.54), (0.56, 0.55)],
+             [(0.10, 0.44), (0.20, 0.47), (0.30, 0.45), (0.40, 0.49),
+              (0.50, 0.46), (0.57, 0.47)])
+_FAT_ON = ((0.24, 0.18, 0.045), (0.38, 0.10, 0.04), (0.50, 0.24, 0.045),
+           (0.58, 0.16, 0.035), (0.32, 0.29, 0.035))
+_LIVER = [(0.66, 0.26), (0.67, 0.58), (0.74, 0.76), (0.86, 0.84),
+          (0.96, 0.68), (0.97, 0.42), (0.90, 0.20), (0.78, 0.14)]
+_LIVER_COVER = [(0.665, 0.56), (0.69, 0.70), (0.77, 0.83), (0.87, 0.89),
+                (0.955, 0.80), (0.88, 0.80), (0.78, 0.75), (0.72, 0.64)]
+_KIDNEY_FAT = [(0.05, 0.74), (0.08, 0.92), (0.22, 0.98), (0.40, 0.95),
+               (0.47, 0.82), (0.38, 0.70), (0.20, 0.68)]
+# the far kidney first, half behind the near one and tilted the other way:
+# two beans side by side in a round of fat read as a pair of eyes
+_KIDNEYS = ((0.15, 0.85, 0.085, 0.105, -0.35, "kidney_far"),
+            (0.30, 0.81, 0.10, 0.125, 0.40, "kidney"))
+_DUNG = (0.12, 0.24, 0.06, 0.085)
+
+
+def _ray_hull(polys, c, n=120):
+    """The outline of overlapping masses, seen from a point inside them: the
+    farthest crossing of each of `n` rays. The trunk and neck of a figure
+    are drawn as overlapping parts; as a cut of meat or a hide they are one
+    piece, and this is that one piece's edge."""
+    out = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        dx, dy = math.cos(a), math.sin(a)
+        best = 0.0
+        for poly in polys:
+            for i in range(len(poly)):
+                (px, py), (qx, qy) = poly[i], poly[(i + 1) % len(poly)]
+                ex, ey = qx - px, qy - py
+                den = dx * ey - dy * ex
+                if abs(den) < 1e-12:
+                    continue
+                wx, wy = px - c[0], py - c[1]
+                t = (wx * ey - wy * ex) / den
+                s = (wx * dy - wy * dx) / den
+                if t > 0 and 0 <= s <= 1:
+                    best = max(best, t)
+        out.append((c[0] + dx * best, c[1] + dy * best))
+    return out
+
+
+def _offset(pts, d):
+    """A closed outline moved `d` outward along its normals."""
+    area = sum(pts[i][0] * pts[i - 1][1] - pts[i - 1][0] * pts[i][1]
+               for i in range(len(pts)))
+    sgn = -1.0 if area > 0 else 1.0
+    out = []
+    for i in range(len(pts)):
+        (ax, ay), (bx, by) = pts[i - 1], pts[(i + 1) % len(pts)]
+        tx, ty = bx - ax, by - ay
+        L = math.hypot(tx, ty) or 1.0
+        out.append((pts[i][0] + sgn * ty / L * d,
+                    pts[i][1] - sgn * tx / L * d))
+    return out
+
+
+def _span(poly, x):
+    """Where the vertical line at `x` crosses a closed outline: (low, high)."""
+    ys = []
+    for i in range(len(poly)):
+        (px, py), (qx, qy) = poly[i], poly[(i + 1) % len(poly)]
+        if (px <= x < qx) or (qx <= x < px):
+            ys.append(py + (x - px) / (qx - px) * (qy - py))
+    return min(ys), max(ys)
+
+
+def _bean(cx, cy, rx, ry, rot=0.0):
+    """A kidney: an oval with its notch on the lower side, turned `rot`."""
+    ca, sa = math.cos(rot), math.sin(rot)
+    pts = []
+    for k in range(14):
+        a = 2 * math.pi * k / 14
+        r = 1.0 - 0.30 * max(0.0, -math.sin(a)) ** 6
+        px, py = rx * r * math.cos(a), ry * r * math.sin(a)
+        pts.append((cx + px * ca - py * sa, cy + px * sa + py * ca))
+    return smooth(pts, n=3)
+
+
+def _centre(pts):
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    return ((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2)
+
+
+def beast_parts(kind):
+    """The parts of an offered beast as a board: a DIAGRAM, not anatomy.
+
+    `kind` is "bull", "sheep", "ram" or "goat". Returns (parts, anchors):
+    `parts` maps each key of BEAST_PART_ORDER to a part list in the shared
+    unit, in the figure's own frame (feet on zero, facing right), so it goes
+    through `place` and `draw` like any figure; `anchors` maps each key but
+    "silhouette" to one (x, y) in the same frame, the point a label chip's
+    leader runs to. "tail_fat" is the sheep's and the ram's only, "dung"
+    the bull's only.
+
+    It is drawn for Leviticus 1-7, whose verses name the parts one by one,
+    and it is drawn to be read and not to be looked away from: no blood, no
+    wound, nothing hanging. The figure (`ox`, `sheep`, `sheep(ram=True)` or
+    `goat`) stands dimmed underneath; over it are flat, outlined regions,
+    each a plain fill in `parts_palette`'s colours (pale for fat, red-brown
+    for meat, dark for the liver), laid out where a reader expects them, not
+    where a butcher finds them: the innards low in an opened side, the liver
+    forward under the ribs, the kidneys high under the backbone in their
+    fat, the breast low in front, the thigh over the near hind leg. The
+    proportions are the board's, the same for all four beasts.
+
+      skin         the hide: the trunk's outline, stood a little off it (a
+                   closed outline with no fill, to pulse or trace)
+      head, legs   the figure's own head (horns and all) and four legs
+      meat         the body: the trunk and neck as one piece, its side open
+                   on the cavity the organs lie in
+      pieces       cut lines (lines): the head off, the forequarter and the
+                   hindquarter, and the legs at the knee
+      innards      a coiled mass low in the cavity; dung (bull only) a dark
+                   lump in it (4:11)
+      fat_cover    the fat that covers the innards, a netted sheet over them
+      fat_on       the fat on the innards, pale knobs on the coils
+      kidneys      the two kidneys, high under the backbone
+      kidney_fat   the fat on them, by the loins
+      loins        a bracket over the back above the kidneys (lines)
+      liver        forward in the cavity; liver_cover the pale cover on it
+      backbone     the spine under the back (lines, with its joints)
+      tail_fat     the broad fat tail (3:9, 7:3)
+      breast       the brisket, low in front (7:30)
+      right_thigh  the near hind thigh. The board means to be placed with
+                   flip=-1, facing left, so that the near side is the
+                   beast's right; facing right it is still the hind thigh.
+
+    Draw it with `parts_palette(ink, page, flesh)`: the house materials plus
+    the ones the board uses ("ghost", "meat", "meat_cut", "cavity",
+    "innards", "fat", "kidney", "kidney_far", "liver", "dung", "bone", "cut", "hide_line", "loin" and the
+    fine lines "organ_rule" and "fat_rule").
+    """
+    spec = _BEAST[kind]
+    raw = spec["fig"]()
+    if len(raw) != spec["n"]:
+        raise AssertionError(f"beast_parts: the {kind}'s figure has "
+                             f"{len(raw)} parts, expected {spec['n']}")
+    x0, x1, y0, y1 = spec["cavity"]
+    sx, sy = x1 - x0, y1 - y0
+
+    def M(pts):
+        return [(x0 + fx * sx, y0 + fy * sy) for fx, fy in pts]
+
+    P = {k: [] for k in BEAST_PART_ORDER}
+    A = {}
+
+    P["silhouette"] = [(k, d, "ghost") for k, d, _m in raw if k != "line"]
+    P["legs"] = [raw[i] for i in spec["legs"]]
+    P["head"] = [raw[i] for i in spec["head"]]
+
+    trunk = _ray_hull([raw[i][1] for i in spec["trunk"]], spec["centre"])
+    P["meat"] = [("fill", trunk, "meat"),
+                 ("fill", smooth(M(_CAVITY), n=4), "cavity")]
+    skin = _offset(trunk, 1.8)
+    P["skin"] = [("fill", skin, "hide_line")]
+
+    P["innards"] = [("fill", smooth(M(_INNARDS), n=4), "innards")]
+    P["innards"] += [("line", smooth(M(c), closed=False, n=4), "organ_rule")
+                     for c in _COILS]
+    if kind == "bull":
+        fx, fy, rx, ry = _DUNG
+        (dx, dy), = M([(fx, fy)])
+        P["dung"] = [("fill", _disc(dx, dy, rx * sx, ry * sy, n=16), "dung"),
+                     ("line", [(dx - rx * sx * 0.5, dy + ry * sy * 0.15),
+                               (dx + rx * sx * 0.45, dy - ry * sy * 0.2)],
+                      "organ_rule")]
+        A["dung"] = (dx, dy)
+    for fx, fy, r in _FAT_ON:
+        (cx, cy), = M([(fx, fy)])
+        P["fat_on"].append(("fill", _disc(cx, cy, r * sx, r * sx * 0.8,
+                                          n=14), "fat"))
+    P["fat_cover"] = [("fill", smooth(M(_FAT_COVER), n=4), "fat")]
+    P["fat_cover"] += [("line", smooth(M(c), closed=False, n=3), "fat_rule")
+                       for c in _FAT_LACE]                      # its lace
+    P["liver"] = [("fill", smooth(M(_LIVER), n=4), "liver"),
+                  ("line", smooth(M([(0.75, 0.24), (0.83, 0.42),
+                                     (0.95, 0.46)]), closed=False, n=3),
+                   "organ_rule")]                               # its lobes
+    P["liver_cover"] = [("fill", smooth(M(_LIVER_COVER), n=4), "fat")]
+    P["kidney_fat"] = [("fill", smooth(M(_KIDNEY_FAT), n=4), "fat")]
+    for fx, fy, rx, ry, rot, mat in _KIDNEYS:
+        (cx, cy), = M([(fx, fy)])
+        P["kidneys"].append(("fill", _bean(cx, cy, rx * sx, ry * sy, rot),
+                             mat))
+    P["breast"] = [("fill", smooth(spec["breast"], n=4), "meat_cut")]
+    P["right_thigh"] = [("fill", smooth(spec["thigh"], n=4), "meat_cut")]
+    if "tail" in spec:
+        P["tail_fat"] = [("fill", smooth(spec["tail"], n=4), "fat")]
+        tx, ty = _centre(spec["tail"])
+        A["tail_fat"] = (tx - 1.5, ty)
+
+    back = smooth(spec["back"], closed=False, n=4)
+    P["backbone"] = [("line", back, "bone")]
+    for i in range(3, len(back) - 2, 3):                        # its joints
+        (ax, ay), (bx, by) = back[i - 1], back[i + 1]
+        L = math.hypot(bx - ax, by - ay) or 1.0
+        nx, ny = -(by - ay) / L * 1.3, (bx - ax) / L * 1.3
+        px, py = back[i]
+        P["backbone"].append(("line", [(px - nx, py - ny),
+                                       (px + nx, py + ny)], "bone"))
+
+    # the loins: the stretch of the back over the kidneys, bracketed
+    lx0, lx1 = x0 + 0.10 * sx, x0 + 0.56 * sx
+    arc = [(x, _span(skin, x)[1] + 2.6)
+           for x in (lx0 + (lx1 - lx0) * k / 8 for k in range(9))]
+    P["loins"] = [("line", arc, "loin"),
+                  ("line", [arc[0], (arc[0][0], arc[0][1] - 2.2)], "loin"),
+                  ("line", [arc[-1], (arc[-1][0], arc[-1][1] - 2.2)], "loin")]
+
+    # the pieces: the head off, the quarters off the middle, the legs off
+    for x, lean in ((x0 + 0.5, -2.2), (x1 + 0.8, 2.0)):
+        lo, hi = _span(trunk, x)
+        P["pieces"].append(("line", [(x - lean, lo - 1.4),
+                                     (x + lean, hi + 1.4)], "cut"))
+    P["pieces"].append(("line", spec["neck_cut"], "cut"))
+    for kx, ky, w in spec["knees"]:
+        P["pieces"].append(("line", [(kx - w * 0.85, ky + 0.8),
+                                     (kx + w * 0.85, ky - 0.8)], "cut"))
+
+    A["head"] = _centre(raw[spec["head_main"]][1])
+    A["legs"] = spec["shin"]
+    mx, my = M([(1.0, 0.86)])[0]
+    A["meat"] = (mx + 3.0, my)
+    A["skin"] = (x0 + 0.30 * sx, _span(skin, x0 + 0.30 * sx)[0])
+    top = P["pieces"][1][1][1]
+    A["pieces"] = (top[0] - 0.4, top[1] - 1.0)
+    A["innards"] = M([(0.20, 0.12)])[0]
+    A["fat_cover"] = M([(0.34, 0.60)])[0]
+    A["fat_on"] = M([_FAT_ON[2][:2]])[0]
+    A["kidneys"] = M([_KIDNEYS[1][:2]])[0]
+    A["kidney_fat"] = M([(0.41, 0.86)])[0]
+    A["loins"] = arc[4]
+    A["liver"] = M([(0.84, 0.40)])[0]
+    A["liver_cover"] = M([(0.84, 0.84)])[0]
+    A["backbone"] = back[len(back) * 3 // 4]
+    A["breast"] = _centre(spec["breast"])
+    A["right_thigh"] = _centre(spec["thigh"])
+
+    u = UNIT[spec["unit"]]
+    parts = {k: _scale(v, u) for k, v in P.items() if v}
+    anchors = {k: (p[0] * u, p[1] * u) for k, p in A.items()}
+    return parts, anchors
+
+
+def parts_palette(ink, page, flesh):
+    """`palette(ink, page)` with the materials `beast_parts` uses. `flesh` is
+    the book's red (generate_tabernacle.RED on the Tabernacle's sheets): the
+    meat, the liver and the kidneys are steps of it, the fat is the palest
+    step of the ink, and the figure under the board a faint ghost of it."""
+    def t(v):
+        return _mix(page[:3], ink[:3], v)
+
+    def f(v):
+        return _mix(page[:3], flesh[:3], v)
+
+    sheet = dict(palette(ink, page))
+    sheet.update({
+        "ghost": (t(0.10), _dim(ink, 0.38), 1.1),
+        "meat": (f(0.66), ink, 1.4),
+        "meat_cut": (f(0.82), ink, 1.5),      # the breast and the thigh
+        "cavity": (f(0.24), _dim(ink, 0.55), 1.2),
+        "innards": (_mix(flesh[:3], ink[:3], 0.50), ink, 1.3),
+        "fat": (t(0.92), ink, 1.3),
+        "kidney": (_mix(flesh[:3], ink[:3], 0.22), ink, 1.4),
+        "kidney_far": (_mix(flesh[:3], page[:3], 0.30), _dim(ink, 0.7), 1.2),
+        "liver": (f(0.42), ink, 1.4),
+        "dung": (t(0.18), _dim(ink, 0.8), 1.2),
+        "organ_rule": (None, f(0.30), 1.2),
+        "fat_rule": (None, t(0.55), 1.0),
+        "bone": (None, t(0.92), 2.0),
+        "cut": (None, ink, 1.9),
+        "hide_line": (None, ink, 1.8),
+        "loin": (None, ink, 1.8),
+    })
+    return sheet
+
+
+# --- the cookware ----------------------------------------------------------
+#
+# Leviticus 2:4-7 names three ways a meal offering is baked, and each is its
+# own vessel: the oven, the griddle and the pan. 6:28 names two pots, the
+# earthen one broken and the bronze one scoured. All four are authored
+# against a man (unit 1) and stand on zero.
+
+COOKWARE_KINDS = ("oven", "griddle", "pan", "pot")
+
+
+def _cake(P, cx, y, w, h, state):
+    """A flat round cake lying at `y`: "dough" pale, "bread" baked and
+    pricked."""
+    P.append(("fill", smooth([(cx - w / 2, y), (cx + w / 2, y),
+                              (cx + w * 0.44, y + h * 0.7),
+                              (cx, y + h), (cx - w * 0.44, y + h * 0.7)],
+                             n=4), "fruit" if state == "dough" else "horn"))
+    if state == "bread":
+        for k in (-0.26, 0.0, 0.26):
+            P.append(("dot", (cx + k * w, y + h * 0.5, 0.75), "eye"))
+
+
+def _hearth_stones(P, xs, h=12.0):
+    """The stones a griddle or pan is set on, with the fire between them:
+    the one at the back first, set back."""
+    P.append(("fill", _stone(0, h * 0.55, 11, h, 3), "far"))
+    for i, x in enumerate(xs):
+        if i < len(xs) - 1:
+            _fire(P, (x + xs[i + 1]) / 2, 0.4, 10, h * 0.95)
+    for i, x in enumerate(xs):
+        P.append(("fill", _stone(x, h * 0.5, 12, h, i), "stone"))
+
+
+def _pot_profile():
+    """The pot's right side, rim to foot: a flared lip, a short neck, a
+    round belly on a round base."""
+    return smooth([(11.8, 42.4), (14.0, 41.4), (12.6, 38.8), (11.4, 36.6),
+                   (15.4, 33.4), (20.2, 27), (21.8, 18.2), (19.4, 9.2),
+                   (12.6, 2.8), (5.4, 0.4), (0, 0)], closed=False, n=4)
+
+
+def _pot_handles(P, sides, mat):
+    for sx in sides:
+        P.append(("fill", taper([(sx * 14.6, 34.4), (sx * 20.4, 34.6),
+                                 (sx * 22.0, 30.0)], [3.4, 2.8, 3.2]), mat))
+
+
+def _pot_rules(P, mat):
+    P.append(("line", smooth([(-15.6, 31.4), (0, 29.6), (15.6, 31.4)],
+                             closed=False), "rule"))
+    if mat == "metal":                       # the sheen on a scoured bronze
+        P.append(("line", smooth([(-15.4, 24), (-17.2, 16), (-14.4, 8.6)],
+                                 closed=False), "rule"))
+
+
+def _cookware(kind, state=None, bronze=False):
+    P = []
+    if kind == "oven":
+        # The tannur: a beehive of clay, waist high, open at the top, with a
+        # draught hole at its foot where the fire is fed. The cakes are
+        # baked on its inside wall; one is shown lying across its mouth.
+        body = [(-24, 0), (-24.6, 12), (-22.4, 25), (-17.6, 36), (-12, 43.2),
+                (-10.6, 45.4), (10.6, 45.4), (12, 43.2), (17.6, 36),
+                (22.4, 25), (24.6, 12), (24, 0), (12, 0), (0, 0), (-12, 0)]
+        P.append(("fill", smooth(body, n=4), "clay"))
+        for y, hw in ((15, 24.6), (29, 21.0)):             # its coils of clay
+            P.append(("line", smooth([(-hw, y + 0.6), (0, y - 1.2),
+                                      (hw, y + 0.6)], closed=False), "rule"))
+        P.append(("fill", _disc(0, 45.4, 12.4, 3.0), "clay"))     # the lip
+        P.append(("fill", _disc(0, 45.6, 9.4, 1.8), "void"))      # the mouth
+        P.append(("fill", [(-6.4, 0), (-6.4, 6.4), (-4.6, 9.6), (0, 11),
+                           (4.6, 9.6), (6.4, 6.4), (6.4, 0)], "void"))
+        _fire(P, 0, 0.4, 10, 9.6)
+        if state:
+            _cake(P, 0, 46.6, 22, 3.6, state)
+    elif kind == "griddle":
+        # The machabat: a flat plate over the fire, on three stones.
+        _hearth_stones(P, (-19, 19))
+        P.append(("fill", [(-28, 12.6), (28, 12.6), (29.6, 14.4), (27, 16.4),
+                           (0, 17.4), (-27, 16.4), (-29.6, 14.4)], "metal"))
+        if state:
+            _cake(P, 0, 17.0, 34, 3.8, state)
+    elif kind == "pan":
+        # The marchesheth: a deep pan with a long handle, over the fire. A
+        # cake shows over its rim when it holds one.
+        _hearth_stones(P, (-15, 15))
+        if state:
+            _cake(P, -2, 26.4, 26, 6.4, state)
+        P.append(("fill", [(-19, 12.4), (19, 12.4), (21.4, 14.6),
+                           (23.4, 28.6), (24.6, 30.4), (-24.6, 30.4),
+                           (-23.4, 28.6), (-21.4, 14.6)], "metal"))
+        P.append(("fill", [(23, 26.4), (45.6, 31.4), (46.4, 34.2),
+                           (44.6, 35), (22.6, 30.4)], "metal"))  # the handle
+        P.append(("dot", (43.4, 32.6, 1.1), "void"))
+        P.append(("line", [(-23.2, 27.8), (23.2, 27.8)], "rule"))
+    elif kind == "pot":
+        # The pot of 6:28, the same vessel whichever it is made of: clay
+        # for the earthen one, bronze (`bronze`) for the other. Draw the
+        # earthen one in a clay ink and the bronze one in a bronze ink.
+        mat = "metal" if bronze else "clay"
+        right = _pot_profile()
+        left = [(-x, y) for x, y in right[::-1]]
+        _pot_handles(P, (-1, 1), mat)            # the lugs, behind the body
+        P.append(("fill", right + left[1:], mat))
+        P.append(("fill", _disc(0, 42.2, 11.2, 1.7), "void"))
+        _pot_rules(P, mat)
+    else:
+        raise ValueError(f"cookware: no kind {kind!r}")
+    return P
+
+
+# where the earthen pot breaks (6:28): rim to foot, in the pot's units
+_POT_CRACK = [(1.2, 42.4), (-1.6, 36.2), (2.4, 29.4), (-2.2, 21.6),
+              (1.8, 13.4), (-1.0, 5.6), (0.6, 0)]
+
+
+def _pot_halves(bronze=False):
+    mat = "metal" if bronze else "clay"
+    right = _pot_profile()
+    left = [(-x, y) for x, y in right]
+    crack = _POT_CRACK
+    L, R = [], []
+    _pot_handles(L, (-1,), mat)                  # behind the body, as whole
+    _pot_handles(R, (1,), mat)
+    L.append(("fill", left + crack[::-1], mat))
+    R.append(("fill", crack + right[::-1], mat))
+    L.append(("line", smooth([(-15.6, 31.4), (-7, 30.0), (2.4, 29.6)],
+                             closed=False), "rule"))
+    R.append(("line", smooth([(2.4, 29.6), (8, 30.1), (15.6, 31.4)],
+                             closed=False), "rule"))
+    return L, R, crack
+
+
+# --- the mountain ----------------------------------------------------------
+
+_MOUNTAIN = [(-122, 0), (-108, 12), (-96, 18), (-84, 32), (-72, 38),
+             (-62, 54), (-52, 66), (-42, 76), (-34, 74), (-26, 82),
+             (-16, 92), (-8, 102), (2, 108), (8, 116), (14, 122), (19, 117),
+             (24, 112), (30, 104), (35, 98), (42, 88), (50, 76), (58, 66),
+             (68, 58), (78, 50), (88, 38), (100, 26), (112, 12), (124, 0)]
+_MOUNTAIN_SHADE = [(14, 122), (19, 117), (24, 112), (30, 104), (35, 98),
+                   (42, 88), (50, 76), (58, 66), (68, 58), (78, 50), (88, 38),
+                   (100, 26), (112, 12), (124, 0), (62, 0), (48, 26),
+                   (36, 56), (26, 86)]
+_MOUNTAIN_FAR = [(-152, 0), (-146, 12), (-134, 24), (-122, 28), (-110, 42),
+                 (-98, 38), (-86, 46), (-60, 36), (0, 40), (70, 40), (92, 50),
+                 (106, 40), (120, 44), (134, 30), (146, 16), (154, 0)]
+
+
+def _mountain():
+    """A mountain alone in the wilderness: one high, craggy peak a little
+    off its centre, a lower shoulder and a long spur, and a far range behind
+    it. Sinai's granite is broken rock, so the outline is left in facets and
+    not smoothed into a hill; the shaded flank is hatched, as the module
+    shades everything. No cloud, fire or smoke: a scene that wants them lays
+    `cloud()` or `_fire` over it (Exodus 19)."""
+    P = [("fill", _MOUNTAIN_FAR, "far"),
+         ("fill", _MOUNTAIN, "stone")]
+    for seg in hatch_poly(_MOUNTAIN_SHADE, 58, 6.0):
+        P.append(("line", seg, "rule"))
+    for ridge in ([(14, 122), (6, 96), (-4, 74), (-12, 50), (-14, 26)],
+                  [(-42, 76), (-48, 56), (-60, 34), (-66, 14)],
+                  [(-26, 82), (-30, 64), (-36, 50)],
+                  [(58, 66), (52, 46), (50, 26)],
+                  [(-84, 32), (-86, 16)]):
+        P.append(("line", ridge, "rule"))
+    return P
+
+
+def cookware(kind, state=None, bronze=False):
+    """A vessel of Leviticus 2 and 6: "oven", "griddle", "pan" or "pot"
+    (COOKWARE_KINDS). `state` "dough" or "bread" lays a cake on the oven's
+    mouth, the griddle's plate or in the pan. `bronze` makes the pot metal;
+    draw it in a bronze ink, and the earthen pot in a clay ink. See
+    `_cookware`; `pot_halves` breaks the earthen pot."""
+    return _scale(_cookware(kind, state=state, bronze=bronze),
+                  UNIT["cookware"])
+
+
+def pot_halves(bronze=False):
+    """The pot in two halves along its crack, for "it shall be broken"
+    (Leviticus 6:28): (left parts, right parts, crack points), all in the
+    pot's own frame, so a scene can trace the crack and then part the
+    halves. Laid together the halves are `cookware("pot")` with the crack
+    for a seam."""
+    left, right, crack = _pot_halves(bronze)
+    u = UNIT["cookware"]
+    return (_scale(left, u), _scale(right, u),
+            [(x * u, y * u) for x, y in crack])
+
+
+def mountain():
+    """A plain mountain, Sinai's in Leviticus 7:38 and Exodus 19. See
+    `_mountain`. It is an emblem like the sun: ~306 wide and ~122 high at
+    unit 1, and a scene sets the size it wants."""
+    return _scale(_mountain(), UNIT["mountain"])

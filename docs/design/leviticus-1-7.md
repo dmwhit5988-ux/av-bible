@@ -7,7 +7,14 @@ drawn by the reference's own functions, and eleven screen-sized stations
 around them for what a table cell can't hold: the altar, the parts of the
 animal, the veil, the kitchen and the rest.
 
-## Status: design draft (2026-11-05), not built
+## Status: built (2026-11-06), the owner's review to come
+
+The 163 files are in `web/visuals/Leviticus/1`–`7`, written by
+`generate_leviticus17_svg.py --web`. QC refuses none of them, a fresh run
+reproduces them byte for byte, and the deploy count is 6,774 of 20,000. The
+build departs from the plan below in the ways listed under [As built](#as-built).
+Where the two differ, the spec (`leviticus17_spec.py`) is right and the verse
+plan tables are the design's draft.
 
 A design panel drafted this: three verse inventories (1–3, 4–5, 6–7) and a
 map of the code to reuse, then three independent designs (chart-first,
@@ -18,7 +25,10 @@ were checked by hand: the sin column's five rank groups (`ranks()`), the
 insets' Exodus captions (`panel()`), the begin-at-0 pulses
 (`svg_surface._pulse_anim`), and every helper named below.
 
-Nothing here is built. The open questions at the end are the owner's.
+The owner answered the design's twelve questions on
+2026-11-06 (see [Owner's decisions](#owners-decisions)). They chose one pass
+for all seven chapters, a mountain for Sinai, no "without defect" chip, and
+the `offerings.py` wording fixes in this build. The rest took the defaults.
 
 ## What it shows
 
@@ -95,7 +105,7 @@ it.
 |---|---|---|---|
 | **A** altar | under the plan's altar | `inset_altar` ×1.4 with overlays: fire, wood in two courses, a stack (pieces, head, fat, memorial, bird), blood on the two visible horns, a run down the side, a pool at the base, the ash heap. A bird bay (neck wrung, crop, wing tear), a day strip, the priest in linen (`svg_priest`) | 1:5–17; 4:7, 18, 25, 30, 34; 6:9–13 |
 | **B** parts board | under A | one `beast_parts(kind)` cutaway (bull, sheep, ram or goat), chips on leaders in the margins; a sidebar with the altar and two priests for the shares | 1:6–13; 3:3–4, 9–10, 14–15; 4:8–11; 7:3–4, 30–34 |
-| **C** cast | left of B | the verse's animal (`draw_thing`), the offerer with his hand on its head, `priest()` for Aaron's sons, the elders, the chips "male", "female", "without defect", "young bull" | 1:2–4; 3:1–2; 4:3–4, 13–15, 22–24, 27–29 |
+| **C** cast | left of B | the verse's animal (`draw_thing`), the offerer with his hand on its head, `priest()` for Aaron's sons, the elders, the chips "male", "female", "young bull" | 1:2–4; 3:1–2; 4:3–4, 13–15, 22–24, 27–29 |
 | **H** holy place | under the tent | the veil inset and `inset_incense` ×1.3: seven numbered drops before the veil, blood on the incense altar's horns | 4:5–7, 16–18 |
 | **G** meal | under the burnt and meal columns | flour, oil poured, frankincense, the handful; a split bar ("memorial" / "Aaron and his sons"); first fruits parched and bruised; the "most holy" bracket; "every male" | 2:1–3, 8–10, 14–16; 6:14–18 |
 | **K** kitchen | under the peace and sin columns | `cookware` oven, griddle and pan with cakes and wafers; a rules strip (yeast and honey with `not_mark`, salt with "covenant" lighting all five names at 2:13); a ten-part measure bar with the tenth split "morning" / "evening"; the earthen and bronze pots | 2:4–7, 11–13; 5:11; 6:20–23, 28 |
@@ -103,7 +113,7 @@ it.
 | **T** trespass | above the table, right | the horned ram; coins and scales with "shekel of the sanctuary"; the fifth bar; the six wrongs of 6:2–3 with return arrows | 5:14–19; 6:1–7 |
 | **D** peace law | right of M | a bread shelf (four kinds) heaved to the priest; day 1, 2, 3; clean / unclean, "cut off" | 7:11–21 |
 | **S** shares and bans | right of T | the priest's shares (the skin, the baked, "mixed with oil" / "dry"); the bans on fat and blood, "died of itself", "torn", "dwellings", "cut off" | 7:8–10, 22–27 |
-| **L** Sinai | far outside the camp | "Mount Sinai", "wilderness of Sinai", and Moses | 7:38 |
+| **L** Sinai | far outside the camp | a `mountain()` drawn in, "Mount Sinai", "wilderness of Sinai", and Moses | 7:38 |
 
 The grid keeps the busiest chains next to each other: the plan's altar above
 A, A above B, the tent above H, and the meal column above G and K.
@@ -173,6 +183,10 @@ under it fades in on the word in the nine verses that say it (4:20, 26, 31,
   anchor for its chip's leader. This is the largest new drawing.
 - `cookware(kind)`: oven, griddle, pan and pot. The pot is drawn in clay for
   "earthen" and in bronze for "bronze" (6:28).
+- `mountain()`: a plain labelled mountain for Sinai at 7:38, drawn in the
+  house material style. There's no shared mountain yet (the garden's and
+  Shiloh's hills are their own), and Exodus 19 on the backlog will want the
+  same figure.
 - `svg_vocab.not_mark()`: the one mark for what is forbidden or not eaten (a
   ring with one bar).
 
@@ -181,7 +195,10 @@ frankincense and salt, `bread()` for cakes, wafers and leavened bread,
 `grass()` for first fruits, one `dove` for turtledove and pigeon, and `mound()`
 for the ash heaps.
 
-### Data (additive; `OFFERINGS`, `THINGS`, `THING_KEYS` and `PARTS` untouched)
+### Data
+
+`PARTS`, `THINGS` and `THING_KEYS` are untouched, and the new tables are
+additive. `OFFERINGS` changes only where its wording is corrected (below).
 
 - **`sanctuary.PLACES`**, a table kept outside `PARTS` (the reference sidecar
   loops over `PARTS`):
@@ -201,12 +218,49 @@ for the ash heaps.
   `MOST_HOLY`, `ONE_LAW` (7:7), `PENALTIES` ("cut off", 7:20–27),
   `LAW_ORDER` (7:37) and `SINAI` (7:38).
 
-### The one reference change
+### Wording fixes in `offerings.py`
+
+The verse inventories checked every row against the WEB. These fixes go in
+first, because the table shows them on both the verse pictures and the
+reference page (the owner's decision 8):
+
+- **The sin offering's ranks**: "the poor" and "the poorest" become "can't
+  afford a lamb" (5:7) and "can't afford two birds" (5:11), the text's own
+  terms.
+- **The burnt offering's WHO EATS**: "no one" is flagged DERIVED. The text
+  says the priest burns "all of it" (1:9, 13), not that no one eats it.
+- **The meal offering's ON THE ALTAR**: the handful with all its frankincense
+  cites 2:2 and 6:15. 2:9 is cited only for the baked kinds' "memorial",
+  since it names no handful and no frankincense.
+- **The sin offering's blood at 4:18**: "the altar which is before Yahweh,
+  that is in the Tent of Meeting" gets its own entry, flagged DERIVED. Only
+  4:7 names the altar of sweet incense.
+- **"which is by the loins"**: the fat by the loins is added where the text
+  says it, in the peace offering (3:4, 10, 15), the sin offering's bull (4:9)
+  and the trespass offering (7:4). So is 3:9's "close to the backbone".
+- **The same pass** also fixes these:
+  - the sin offering's WHEN: "made known to him" cites 4:14, 23 and 28, not
+    4:2;
+  - the burnt bird's crop goes "in the place of the ashes" (1:16);
+  - 2:11's yeast and honey are worded as the text has them: no meal offering
+    is made with yeast, and no yeast or honey is burned;
+  - the priests' own meal offering is "in a griddle" and "in the day when he
+    is anointed" (6:20–21);
+  - the trespass offering's silver is flagged DERIVED;
+  - the module docstring's peace offering range agrees with `law_ref`.
+
+`test_sanctuary`'s pins on `OFFERINGS` are updated to match. Omissions the
+inventories found (the parts, the places of killing, the vessels, 5:1–4's
+causes, 6:2–3's wrongs, 6:27–28, 7:12's third bread, the "cut off"
+penalties) go in the new tables, not in the rows.
+
+### The reference changes
 
 `generate_tabernacle_reference.thing_parts` maps "ram" and "male sheep" to
-the horned sheep, so the table and the trespass station agree. That
-regenerates `reference/Tabernacle.svg`, `.json` and `.html` deliberately, and
-the diff must touch only those icons (owner question 1).
+the horned sheep, so the table and the trespass station agree (decision 1).
+With the wording fixes, that regenerates `reference/Tabernacle.svg`,
+`.json` and `.html` deliberately. The diff must touch only the ram icons and
+the corrected offering text and cards.
 
 ## Files
 
@@ -214,6 +268,7 @@ the diff must touch only those icons (owner question 1).
 |---|---|
 | New | `generate_leviticus17_svg.py` (the sheet, the stations, the flight, QC; import-safe), `leviticus17_spec.py` (shots, stations, all 172 verses, ranges, reach overrides, `EXCUSED`, `REACHED_OFFSCREEN`; data only), `test_leviticus17.py` (added to the CLAUDE.md test list) |
 | Edited | `svg_figures.py`, `svg_vocab.py`, `offerings.py`, `sanctuary.py`, `test_sanctuary.py`, `generate_tabernacle_reference.py` (`thing_parts` only), `svg_generators.json` (one Leviticus 1–7 family) |
+| Regenerated | `web/visuals/reference/Tabernacle.svg`, `.json`, `.html` (the ram icons and the corrected wording) |
 | Output | `web/visuals/Leviticus/1`–`7/`: 154 verse files and 9 range files, 163 in all |
 
 The nine ranges pair a verse with a speech formula ("Yahweh spoke to Moses,
@@ -273,7 +328,12 @@ dots show all four.
   `em_tick`.
 - **Byte-identity.** `sheep()`, `dove()` and the `generate_tabernacle` insets
   must not change. Check Exodus 25–27 against `render_verse_svg`, and check
-  the reference `build_svg()` differs only in the ram icons.
+  the reference `build_svg()` differs only in the ram icons and the corrected
+  wording.
+- **The reference table's layout.** The corrected wording changes some cell
+  heights (the rank labels, the "by the loins" lines), and so the table's
+  row heights. The veils are computed from the same constants, so they follow.
+  The reference page's own layout needs a look once it's regenerated.
 - **Weight.** The heaviest frames are B with A, and the sin BROUGHT cell
   (five groups, seven figures). Culling with `visible_world`, `<use>` and the
   caps are required. The target is 30–70 KB a file.
@@ -283,52 +343,44 @@ dots show all four.
 - **WebKit in `<img>`.** Em offsets under an animated font size need
   `em_tick`, and tspans need explicit baselines. Test the way the app plays
   them, in Playwright WebKit outside the repo.
-- **offerings.py's known wording** shows on the table until it's fixed (owner
-  question 8).
+- **Scale.** The owner chose one pass for all seven chapters, eleven stations
+  and all the tables. `beast_parts` is the piece most likely to need a second
+  look, so it is rendered for the owner in step 2, before the generator
+  depends on it.
 - **`svg_figures.py` has uncommitted edits** from the Acts 6–8 work in this
   checkout. The figure step waits until that lands.
 
-## Owner questions
+## Owner's decisions
 
-1. Switch the reference page's ram and male sheep to the horned sheep and
-   regenerate `Tabernacle.svg` in the same change? Default: yes.
-2. Allow WEB phrases of up to four words on the cutaway ("fat that covers",
-   "by the loins", "cover on the liver", "right thigh")? The house habit is
-   one or two.
-3. Outside the camp (4:12, 21; 6:11) gives no direction. Default: east past
-   the gate, beyond a dashed camp edge that isn't to scale.
-4. 1:1: Moses outside the gate and "Tent of Meeting" on the tent, with no mark
-   for Yahweh speaking?
-5. "forgiven" as a one-word chip on the nine verses that say it, or no end
-   mark?
-6. 4:15 gives no count of elders: two figures with an "elders" chip, or one
-   hand with the chip?
-7. Keep the stand-ins (basket, cup, bread, grass, one dove), or draw about six
-   more icons (flour heap, frankincense, salt, wafer, ear, turtledove)?
-8. Fix the flagged `offerings.py` wording in this build, which changes the
-   reference page's text, or in a later data pass? These are: "the poor" and
-   "the poorest" (the text says "can't afford"), the burnt offering's "no
-   one" flagged STATED (DERIVED), the meal offering's handful citing 2:9, the
-   4:18 incense altar identity, and "by the loins".
-9. Nine range files (163 files), or a file for every verse (172)?
-10. 7:37's "consecration": a name chip only, since Leviticus 8 is its own
-    family? 7:38: chips and Moses, with no mountain drawn?
-11. "without defect" as a chip on the cast and the tokens wherever a verse
-    says it?
-12. Scale: eleven stations and about a dozen small data tables is a large
-    build. Build all of it in one pass, or chapters 1–5 first (stations A, B,
-    C, H, G, K, M, T) and 6–7 after?
+Taken 2026-11-06.
+
+| # | Question | Decision |
+|---|---|---|
+| 1 | Horned ram on the reference page too? | **Yes, both.** The table and the verse pictures match. |
+| 2 | Cutaway labels up to four WEB words ("fat that covers", "by the loins", "cover on the liver", "right thigh")? | **Yes, up to four words.** |
+| 3 | Where is "outside the camp" (4:12, 21; 6:11)? | **East, past the gate**, beyond a dashed camp edge that isn't to scale. |
+| 4 | A mark for Yahweh speaking at 1:1? | **No mark.** Moses and the labelled tent only. |
+| 5 | A "forgiven" chip on the nine verses that say it? | **Yes, the chip.** |
+| 6 | 4:15's elders, whose number isn't given? | **Two figures and an "elders" chip.** |
+| 7 | Stand-in icons or about six new ones? | **Keep the stand-ins.** |
+| 8 | Fix the `offerings.py` wording now or later? | **In this build** (see [Wording fixes](#wording-fixes-in-offeringspy)). |
+| 9 | Nine range files, or one file for every verse? | **Nine ranges, 163 files.** |
+| 10 | 7:37–38: chips only, or a mountain too? | **A mountain too.** The consecration stays a name chip. Sinai gets `mountain()` with its chips and Moses. |
+| 11 | A "without defect" chip wherever a verse says it? | **No chip.** The narration carries it, and the verse plan has none. |
+| 12 | One pass, chapters 1–5 first, or trimmed? | **All of 1–7 in one pass.** |
 
 ## Build order
 
-1. **Data.** `sanctuary.PLACES`; `offerings.CUTS`, `RITES` and the boards;
-   the `test_sanctuary` checks. Run the CLAUDE.md test list and confirm
-   `OFFERINGS`, `THINGS` and `PARTS` are untouched.
-2. **Figures.** `sheep(ram=)`, `beast_parts`, `cookware`, `not_mark`. In the
-   scratchpad, assert `sheep()` and `sheep(lamb=True)` match HEAD, and render
-   the new drawings for the owner to see.
-3. **The reference ram mapping**, if the owner agrees. Diff `build_svg()` in
-   memory against the published sheet before regenerating.
+1. **Data.** The `offerings.py` wording fixes, with `test_sanctuary`'s pins
+   updated; `sanctuary.PLACES`; `offerings.CUTS`, `RITES` and the boards; the
+   new `test_sanctuary` checks. Run the CLAUDE.md test list and confirm
+   `THINGS` and `PARTS` are untouched.
+2. **Figures.** `sheep(ram=)`, `beast_parts`, `cookware`, `mountain`,
+   `not_mark`. In the scratchpad, assert `sheep()` and `sheep(lamb=True)`
+   match HEAD, and render the new drawings for the owner to see.
+3. **The reference page.** Map the ram, then diff `build_svg()` in memory
+   against the published sheet. Only the ram icons and the corrected wording
+   may differ. Check the table's layout, then regenerate.
 4. **The generator skeleton**, writing to the scratchpad only: the sheet, the
    places layer, the stations and filtered insets, the veils, the shots,
    cues, `pulse_at`, the flight, culling, the HUD and QC. Render four probes:
@@ -344,7 +396,41 @@ dots show all four.
    `docs/visuals.md`, and the content-catalog entry marked Built. Run the
    tests, commit locally, and ask before pushing.
 
+## As built
+
+- **Modules.** The stations are split across four modules: `leviticus17_stations.py` (the Station API, and A, B, C and H), `leviticus17_st_meal.py` (G and K), `leviticus17_st_law.py` (M and T) and `leviticus17_st_peace.py` (D, S and L). The generator holds the sheet, the flight, the carry, the size passes and QC.
+- **Veils.** The veils are opaque, with placeholder bars where the text will be, not a 0.72 PANEL. A veil that stays for a whole file is drawn as three shapes.
+- **Cases.** `CASES` in the spec marks each new beast or bringing (1:3 herd, 1:10 flock, 1:14 birds, and so on). The altar's stack, bird bay, blood, priest and day strip, the cast's slots and K's struck marks belong to their case, so one offering's marks don't carry into the next.
+- **Board B** is scoped to its offering and beast: `offering_of`, and `pkey` is given the file's ref. A part keeps the words of the verse that first named it (`CUT_WORDS`: "fat on the inwards" for 3:9, "the fat tail" for 7:3). Its close-ups keep the head whole or leave it out.
+- **The carry.** What the previous file drew and this one doesn't (a pulse still running, a part B moved, D's meat) is drawn into the first frame and fades as the camera first moves. Parts that B moved stay where they were moved (`B.at:`, `B.up:`).
+- **The opening hold.** A file holds its opening camera until the previous file's last stop has rested 0.9 s, where the verse can afford it.
+- **Table stops dropped.** Where the verse can't afford the table stop, the unit is reached off camera (`REACHED_OFFSCREEN`): 1:5, 1:15, 2:4, 3:9, 4:10, 4:25, 5:9 and 7:30. 2:3 and 2:14 are reordered instead. 1:10 goes to C first (the ram on "sheep", the goat on "goats"), then to the cell on "male".
+- **Walks dropped** because the verse is too short for them: the ox at 4:14, the goat at 4:24 and the thigh carried at 7:33.
+- **Shots moved.**
+  - `plan:door` is at x 1515, clear of the reference's "table" and "lamp stand".
+  - `H.incense` is at s 1.65.
+  - The `table` shot is 158 px right of the design's, so that 7:37's "consecration" chip fits right of the trespass header.
+- **The HUD.** The title plate changes to "burnt offering" at 1:3 and "trespass offering" at 6:6. The old title fades out before the new one fades in.
+- **Wording on the verse pictures.** `ref_world()` drops the WHEN cells' source flags. 2:13's names are one chip, "all your offerings".
+- **QC beyond the design's checks.** The generator also refuses a file if:
+  - text is cut by the frame at rest, including the reference plan's own labels (`plan_labels_cut`);
+  - an animation begins after the narration.
+
+  It warns when a flight goes faster than 2,400 px/s.
+- **Size.** The size passes are `compact`, `CamOut` keyframes, `cull_card` and shared figures in `<defs>`. Files run 7–129 KB, 40.6 KB on average and 6.47 MB in all. Thirteen are over 70 KB. The heaviest, 7:29, 7:37 and 7:38, are mostly the reference table's own drawings at rest.
+- **Left as it is.**
+  - 7:37 rests on the whole table at s 0.45, which is small on a phone.
+  - T's top band is cut by the frame at 6:1–5 (drawings only, no words).
+  - Text on a moving token isn't measured by QC.
+  - These targets weren't built: the 4:20 "=" bracket, plan hand-marks, the 6:14 basket, the 7:34 arrows, the 3:11 tail slab, and chips for "anointed priest" (6:22) and "peace offerings" (4:10, 4:26).
+- **Checked.**
+  - Edge rest-frame contact sheets of all 163 files, and the seams between them: 0 of 162 pairs over 100 px.
+  - Playwright WebKit, played in an `<img>`, on 28 files: 0 px over 60.
+  - `test_leviticus17`: 27 tests.
+
 ## Verse plan
+
+The design's plan. The spec is the build; see [As built](#as-built).
 
 Each row is one file. "Shot" is where the camera rests (→ marks a flight
 between stops). "Lights" is what comes in, and on which word.
@@ -355,14 +441,14 @@ between stops). "Lights" is what comes in, and on which word.
 |---|---|---|---|
 | 1:1 | plan:court → plan:tent | The tent outline pulses on 'Tent of Meeting'. The 'Moses' token fades in by the gate on 'Moses'. HUD 'Leviticus 1'. | The opening zoom from the whole court into the tent, landing 0.35 s before the end of a 4.5 s verse. |
 | 1:2 | col(burnt) → C | burnt by-line 'anyone' unveiled on 'anyone'. On C, ox fades in on 'herd'; male sheep and goat on 'flock'. The burnt header stays veiled: not yet named. | Down to the table, then across to the cast station. |
-| 1:3 | cell(burnt,brought) → plan:door | Header 'burnt offering' unveiled on 'burnt offering'. 'herd, a male' and the bull icon unveiled on 'herd'/'male'. On the plan, the ox token walks gate→door on 'door', with token chips 'male' and 'without defect'. | Two stops; the token translates along a traced path. |
+| 1:3 | cell(burnt,brought) → plan:door | Header 'burnt offering' unveiled on 'burnt offering'. 'herd, a male' and the bull icon unveiled on 'herd'/'male'. On the plan, the ox token walks gate→door on 'door', with the token chip 'male'. | Two stops; the token translates along a traced path. |
 | 1:4 | C.head | The offerer fades in. hand('rest') settles on the ox's head on 'hand', and the head outline pulses once. | Close-up at s 1.8. |
 | 1:5 | plan:altar → cell(burnt,blood) | 'Aaron's sons' priest tokens fade in on their name. The blood ring is traced side by side round the altar on 'around'. 'around the altar' unveiled on landing. | Two stops. |
 | 1:6 | B (bull) | The skin outline pulses with the chip 'skin' on 'flay'. Cut lines are traced and the chip 'pieces' appears on 'pieces'. | One quick leg (3.7 s verse). |
 | 1:7 | A | Flames grow on the hearth on 'fire'. Wood bars lift in course by course on 'wood'. Chips 'fire' and 'wood'. | One stop. |
 | 1:8 | A.fire | Slabs 'pieces', 'head' and 'fat' are laid on the wood, each on its word. | Push in to the hearth. |
 | 1:9 | B (bull) → A.fire → col(burnt) lower rows | Innards and legs pulse on their words, and water lines are traced on 'water'. The fire flares on 'burn'. On landing, 'the whole' (burns) and 'no one' (eaten) are unveiled. | Three stops (11.5 s). |
-| 1:10 | C → cell(burnt,brought) | Horned male sheep on 'sheep' and male goat on 'goats'. Chips 'male' and 'without defect'. 'flock, a male' and the two icons are unveiled on landing. | Two stops. |
+| 1:10 | C → cell(burnt,brought) | Horned male sheep on 'sheep' and male goat on 'goats'. Chip 'male'. 'flock, a male' and the two icons are unveiled on landing. | Two stops. |
 | 1:11 | plan:altar | The north strip pulses with the chip 'north' on 'north'. The sheep token moves to it. The blood ring is current (steady) on 'around'. | One stop. |
 | 1:12 | B (sheep) → A.fire | Cut lines are traced on 'pieces'; head and fat pulse. Slabs are laid on the wood on 'in order'. | Two stops. |
 | 1:13 | B (sheep) → A.fire | Innards and legs, with water traced on 'water'. The chip 'the whole' appears on 'whole' and the fire flares on 'burn'. | Two stops. |
@@ -396,12 +482,12 @@ between stops). "Lights" is what comes in, and on which word.
 
 | Verse | Shot | Lights | Motion |
 |---|---|---|---|
-| 3:1 | col(peace) → C | Header 'sacrifice of peace offerings' on 'peace offerings'. 'anyone', the herd icon and 'male or female' unveiled on 'herd'/'male'. On C, the ox with the chips 'male', 'female' and 'without defect' on 'without defect'. HUD title changes. | Two stops. |
+| 3:1 | col(peace) → C | Header 'sacrifice of peace offerings' on 'peace offerings'. 'anyone', the herd icon and 'male or female' unveiled on 'herd'/'male'. On C, the ox with the chips 'male' and 'female' on their words. HUD title changes. | Two stops. |
 | 3:2 | C.head → plan:door | Hand on the ox's head on 'hand'. The ox token at the door on 'door'. The blood ring is current on 'around'. | Two stops. peace.blood is unveiled at 3:8. |
 | 3:3 | B (bull) | fat_cover pulses with its chip on 'covers', then fat_on on 'all the fat'. | One stop. |
 | 3:4 | B.inner | 'two kidneys' with the numeral 2 on 'kidneys'. 'by the loins' on 'loins'. 'cover on the liver' on 'liver'. | Push in to s 1.7. |
 | 3:5 | A.fire → cell(peace,burns) | The 'burnt offering' slab is current on 'burnt offering'. Fat slabs are laid on top on 'burn', over wood and fire. 'the fat' unveiled on landing. | Two stops. |
-| 3:6 | C | Lamb and goat on 'flock'; chips 'male', 'female' and 'without defect'. | One stop. |
+| 3:6 | C | Lamb and goat on 'flock'; chips 'male' and 'female'. | One stop. |
 | 3:7 | cell(peace,brought) | The lamb icon and 'a lamb' unveiled on 'lamb'. | One stop (4.5 s). |
 | 3:8 | C.head → cell(peace,blood) | Hand on the lamb's head on 'hand'. peace 'around the altar' unveiled on 'around'. | Two stops. |
 | 3:9 | B.tail (sheep) → cell(peace,burns) | tail_fat pulses on 'tail fat'. The cut line is traced at 'backbone'. fat_cover and fat_on light on 'inwards'. 'the fat, the tail' unveiled on landing. | Two stops (14.4 s). |
@@ -470,7 +556,7 @@ between stops). "Lights" is what comes in, and on which word.
 | 5:11 | cell(sin,brought) group 5 → K.measure | 'the poorest', 'a tenth of an ephah' and the flour icon unveiled on 'tenth'. On K, the 1/10 segment lights; a basket. not_mark on the jar on 'no oil' and on the cup on 'frankincense'. | Two stops (16.7 s). |
 | 5:12 | G → A.fire → cell(sin,burns) | hand('cup') 'handful' on 'handful'; the chip 'memorial portion'. It lands on the fire on 'burn'. 'a handful' (sin) unveiled on landing. | Three stops (10.7 s). |
 | 5:13–14 | G → cell(sin,eaten) | HUD 'forgiven' on 'forgiven'. The rest of the flour slides to priest() with the chip "the priest's" on "priest's". 'the remaining flour' unveiled on landing. | Plays within 5:13, then holds through the formula 5:14. |
-| 5:15 | col(trespass) → T | Header 'trespass offering', 'anyone' and the ram icon unveiled on their words. On T, the horned ram with 'without defect'; coins and scales on 'silver'; the chip 'shekel of the sanctuary' on 'shekel'. HUD 'trespass offering'. | Two stops (18.3 s). |
+| 5:15 | col(trespass) → T | Header 'trespass offering', 'anyone' and the ram icon unveiled on their words. On T, the horned ram on 'ram'; coins and scales on 'silver'; the chip 'shekel of the sanctuary' on 'shekel'. HUD 'trespass offering'. | Two stops (18.3 s). |
 | 5:16 | T.bar → cell(trespass,brought) | The bar grows as 'restitution' on 'restitution'; the sixth part '1/5' grows on 'fifth part'; an arrow to the priest on 'priest'. HUD 'forgiven'. 'a ram, a fifth' and the silver icon unveiled on landing. | Two stops. |
 | 5:17 | T | man() with chips "didn't know" on 'know' and 'guilty' on 'guilty'. | One stop. |
 | 5:18–19 | T → cell(trespass,brought) | The ram is current on 'ram'; the chip 'estimation'; an arrow to the priest on 'priest'. HUD 'forgiven'. 'a ram' (a sin he didn't know) unveiled on landing. | Plays within 5:18, then holds through 5:19, which only restates. |
@@ -545,4 +631,4 @@ between stops). "Lights" is what comes in, and on which word.
 | 7:34 | B | A sideways arrow (breast) on 'waved breast' and an up arrow (thigh) on 'heaved thigh', from the chip 'children of Israel' to 'Aaron and his sons'; the chip 'forever'. | One stop. |
 | 7:35–36 | B | An 'anointing portion' bracket traced round the breast and thigh chips on 'anointing portion'. | Plays within 7:35, then holds through 7:36, which only restates. |
 | 7:37 | table:all | HUD 'the law'. Column frames pulse in the verse's order on their words: burnt, meal, sin, trespass, then the 'consecration' chip fades in on 'consecration', then peace. The WHEN row's five veils lift on landing (EXCUSED until now). | Pull back to the whole table at s 0.45. |
-| 7:38 | table:all → L | Moses on 'Moses'. The chip 'Mount Sinai' on 'Mount Sinai'. 'wilderness of Sinai' on its words. | A van Wijk flight out and over to the Sinai card. It lands 0.35 s before the end and holds: the last frame. |
+| 7:38 | table:all → L | Moses on 'Moses'. The mountain drawn in, with the chip 'Mount Sinai', on 'Mount Sinai'. 'wilderness of Sinai' on its words. | A van Wijk flight out and over to the Sinai card. It lands 0.35 s before the end and holds: the last frame. |

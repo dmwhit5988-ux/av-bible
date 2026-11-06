@@ -12,7 +12,7 @@ Not every chapter is a candidate. Long stretches of law, poetry, and personal co
 ## Legend
 
 **Status**
-- `✅ Built` — the chapter has entries in `web/visuals/manifest.json` (its SVGs are in `web/visuals/<Book>/<chapter>/`, spaces in the book name as underscores). 73 chapters in 11 books, every verse covered.
+- `✅ Built` — the chapter has entries in `web/visuals/manifest.json` (its SVGs are in `web/visuals/<Book>/<chapter>/`, spaces in the book name as underscores). 90 chapters in 13 books, every verse covered except Acts 6:1–7 and 8:4–40.
 - `🆕 Candidate` — not yet built
 
 **Priority** (for candidates)
@@ -47,7 +47,7 @@ Every unbuilt High entry, grouped by the types it carries (an entry with two typ
 - **🌳 Genealogy:** already-built — Genesis 4, Genesis 5, Genesis 10, Genesis 11:10–32, 1 Chronicles 1–9, Matthew 1, Luke 3, Hebrews 7 (the negative genealogy of Melchizedek)
 - **🏛️ Architectural:** [Joshua 6](#joshua), [1 Kings 6–7](#1-kings), [Nehemiah 3](#nehemiah), [Ezekiel 40–43](#ezekiel), [Haggai 1](#haggai), [Ephesians 6:10–18](#ephesians), [Revelation 21–22](#revelation) — plus already-built Genesis 6–9, Exodus 25–27, Exodus 28, Numbers 1–2, Hebrews 1–13, Hebrews 9
 - **🔄 Process/Cycle:** [Exodus 12](#exodus), [Leviticus 16](#leviticus), [Joshua 6](#joshua), [Judges 2–16](#judges), [Ezekiel 4](#ezekiel), [Haggai 2](#haggai), [Revelation 6–16](#revelation) — plus already-built Acts 15
-- **📊 Comparison Chart:** [Leviticus 1–7](#leviticus), [Judges 3–16](#judges), [1 Kings 12–22 and 2 Kings 1–17](#1-kings), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Haggai 1](#haggai), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John 2–11](#john), [John 6–15](#john), [1 Corinthians 12](#1-corinthians), [Galatians 5](#galatians), [3 John 1](#3-john), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Numbers 3–4, Zephaniah 1–3, Romans 1–16, Hebrews 10:11–12, Hebrews 12:18–24, 2 Peter 1–3
+- **📊 Comparison Chart:** [Judges 3–16](#judges), [1 Kings 12–22 and 2 Kings 1–17](#1-kings), [1 Chronicles 22–27](#1-chronicles), [Amos 1–2](#amos), [Haggai 1](#haggai), [Matthew 5–7](#matthew), [Matthew 13](#matthew), [John 2–11](#john), [John 6–15](#john), [1 Corinthians 12](#1-corinthians), [Galatians 5](#galatians), [3 John 1](#3-john), [Revelation 2–3](#revelation) — plus already-built Genesis 1, Leviticus 1–7, Numbers 3–4, Zephaniah 1–3, Romans 1–16, Hebrews 10:11–12, Hebrews 12:18–24, 2 Peter 1–3
 - **🔢 Numeric/Statistical:** [Exodus 5–11](#exodus), [Joshua 9–12](#joshua), [1 Chronicles 22–27](#1-chronicles), [Ezra 1–2](#ezra) — plus already-built Numbers 1–2
 - **💡 Symbolic/Conceptual:** [Exodus 19–20](#exodus), [1 Samuel 17](#1-samuel), [Ecclesiastes 3:1–8](#ecclesiastes), [Ezekiel 1 & 10](#ezekiel), [Ezekiel 4](#ezekiel), [Daniel 2](#daniel), [Daniel 7](#daniel), [Daniel 8](#daniel), [Haggai 2](#haggai), [Zechariah 1–6](#zechariah), [1 Corinthians 12](#1-corinthians), [Ephesians 6:10–18](#ephesians), [2 John 1](#2-john), [3 John 1](#3-john), [Revelation 4–5](#revelation) — plus already-built Genesis 11:1–9, Zephaniah 1–3, Hebrews 1–13, 2 Peter 1–3
 
@@ -91,7 +91,7 @@ Every unbuilt High entry, grouped by the types it carries (an entry with two typ
 ### Leviticus
 *27 chapters. Ritual law translates unusually well into charts and cycle diagrams.*
 
-- **Leviticus 1–7** — 🆕 High · 📊 Comparison chart. The five offerings (burnt, grain, peace, sin, trespass) — what's offered, by whom, and why, side by side.
+- **Leviticus 1–7** — ✅ Built · 📊 Comparison chart. The five offerings (burnt, meal, peace, sin, trespass) as the Tabernacle reference page's offerings table filling in as the law is read: every verse is a camera over the court plan, the table and eleven stations (the altar, a labelled cutaway of the animal, the cast, the holy place, the meal, the kitchen, the causes, the trespass, the peace law, the shares and bans, and Sinai), and each cell unveils on the word of the verse it cites. *(`generate_leviticus17_svg.py` + `leviticus17_spec.py`, over `offerings.py` and `sanctuary.py`; design: `docs/design/leviticus-1-7.md`)*
 - **Leviticus 8–9** — 🆕 Med · 🔄 Process diagram. The ordination of Aaron and his sons, step by step.
 - **Leviticus 11** — 🆕 Med · 📊 Chart. Clean vs. unclean animals — a natural two-column chart.
 - **Leviticus 16** — 🆕 High · 🔄 Process diagram. The Day of Atonement's precise ritual sequence — the two goats, the entry behind the veil.

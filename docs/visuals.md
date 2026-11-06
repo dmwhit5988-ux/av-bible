@@ -184,6 +184,20 @@ People, creatures, growing things and made things are drawn once, in `svg_figure
 
 **The Tabernacle** is drawn from one model, `sanctuary.py`, in cubits: the Exodus 25–27 plan (`generate_tabernacle.draw_plan` and its `hl_*` highlights), the courts at the heart of the camp in Numbers 1–2 and 3–4, and the reference page. A new Tabernacle drawing maps the model onto its canvas with `sanctuary.Plan` (east to the right, or up as in Numbers) and places nothing of its own.
 
+**Leviticus 1–7** (the offerings) is one camera flight, `svg_map_camera.Flight`, over one world sheet. The sheet holds the reference page's court plan and its offerings table, both drawn by `generate_tabernacle_reference`'s own functions at its own coordinates, and eleven screen-sized station cards. The cards are the altar, the parts board, the cast, the holy place, the meal, the kitchen, the causes, the trespass, the peace law, the shares and bans, and Sinai.
+- **Where things are drawn.** The generator is `generate_leviticus17_svg.py`, which holds the sheet, the flight, the carry, the size passes and QC. The stations are in `leviticus17_stations.py` (A, B, C and H), `leviticus17_st_meal.py` (G and K), `leviticus17_st_law.py` (M and T) and `leviticus17_st_peace.py` (D, S and L). `leviticus17_spec.py` is data only: the shots, every verse's beats on cue words, the nine ranges, `CASES`, `REACH`, `EXCUSED` and `REACHED_OFFSCREEN`.
+- **What the table shows** comes from `offerings.py` (`OFFERINGS`, and `CUTS`, `RITES` and the small boards for the stations), and the places on the plan come from `sanctuary.PLACES`.
+- **How the table fills in.** Each unit of the table starts under a veil and unveils on the word of the verse its row cites. `coverage_gaps` checks that every cited verse reaches its unit, or is excused or reached off camera, and that the table is whole by 7:37.
+- **Cases.** A case is a new beast or a new bringing (`CASES`, `leviticus17_stations.case_of`). The altar's stack, the blood, the priest, the cast and the kitchen's struck marks belong to their case, so one offering's marks never carry over into the next.
+- **From one file to the next.** What the previous file drew and this one doesn't (a pulse still running, a part moved) is drawn into this file's first frame, then fades as the camera first moves. A file holds its opening camera until the previous file's last stop has rested.
+- **Refusals.** The generator writes nothing for a file in any of these cases:
+  - it would land less than 0.35 s before its MP3 ends;
+  - an animation begins after the narration;
+  - text is cut by the frame or overlaps other text at rest.
+- **Figures.** It draws with `svg_figures`' `beast_parts` (a labelled cutaway of the bull, sheep, ram or goat), `cookware`, `mountain`, `sheep(ram=True)` and `svg_vocab.not_mark`.
+
+See [design/leviticus-1-7.md](design/leviticus-1-7.md).
+
 **Solomon's Temple** is drawn from one model too, `temple.py`, in cubits: the house, its walls and side rooms, the porch, the pillars, the courts and the furnishings, mapped by `temple.Plan` and `temple.Section` (along the axis looking north, or across it looking west). Its cherubim, pillars, Sea and bases are `svg_figures`' `temple_cherub`, `temple_pillar`, `molten_sea` and `temple_base`, sized from the model at the Tabernacle's cubit. Where Kings and Chronicles give different figures, a drawing follows Kings and the card or note gives Chronicles'. Today only the reference page draws it; a 1 Kings 6–7 picture would take the same model.
 
 **The Land of Israel** is drawn from `gazetteer.py`: its coast, lakes and rivers, every point a named place's coordinate (or marked `~` as interpolated), and its places, each at the site it is identified with, flagged known, probable or possible, with every verse that names it (`generate_israel_atlas.place_verses`). A verse map of the land takes its lines and places from there, not from `generate_tribal_maps`, whose lines are atlas traces.

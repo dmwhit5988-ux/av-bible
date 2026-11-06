@@ -263,6 +263,52 @@
       "kind": "diagram"
     },
     {
+      "_comment": "One family for the seven chapters: one camera over one sheet (the Tabernacle reference page's court plan and offerings table, and the stations round them); each file starts where the one before it ends, and its state is worked out from the spec in canonical order. See docs/design/leviticus-1-7.md.",
+      "label": "Leviticus 1-7: the offerings",
+      "book": "Leviticus",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "generator": "generate_leviticus17_svg.py",
+      "spec": [
+        {
+          "file": "leviticus17_spec.py",
+          "edit": "VERSES (each file's stops, shots and beats on their cue words), SHOTS, RANGES, REACH, EXCUSED, REACHED_OFFSCREEN - data only"
+        },
+        {
+          "file": "leviticus17_stations.py",
+          "edit": "the Station API and the plan, altar (A), parts board (B), cast (C) and holy place (H): their targets and shots"
+        },
+        {
+          "file": "leviticus17_st_meal.py",
+          "edit": "stations G (the meal offering) and K (its kinds, rules, measure and vessels)"
+        },
+        {
+          "file": "leviticus17_st_law.py",
+          "edit": "stations M (the causes of 5:1-4) and T (the trespass offering's restitution and wrongs)"
+        },
+        {
+          "file": "leviticus17_st_peace.py",
+          "edit": "stations D (the peace offering's breads and days), S (the priests' shares, no fat, no blood) and L (Sinai)"
+        },
+        {
+          "file": "offerings.py",
+          "edit": "the offerings' facts and refs: what the table unveils, and which verse cites each unit"
+        },
+        {
+          "file": "sanctuary.py",
+          "edit": "the Tabernacle's court, tent and furnishings in cubits, and the plan's places (north side, ash place)"
+        }
+      ],
+      "kind": "chart"
+    },
+    {
       "label": "The census and the camp (Numbers 1-2)",
       "book": "Numbers",
       "chapters": [

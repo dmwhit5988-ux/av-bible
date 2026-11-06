@@ -937,7 +937,8 @@ def thing_parts(key):
     beast, bird, made = TEXT, SILVER, WHITE_LINEN
     return {
         "bull": (F.ox(), beast), "herd": (F.ox(), beast),
-        "male sheep": (F.sheep(), beast), "ram": (F.sheep(), beast),
+        "male sheep": (F.sheep(ram=True), beast),
+        "ram": (F.sheep(ram=True), beast),
         "lamb": (F.sheep(lamb=True), beast),
         "male goat": (F.goat(), beast), "goat": (F.goat(), beast),
         "female goat": (F.goat(female=True), beast),

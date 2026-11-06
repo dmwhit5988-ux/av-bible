@@ -45,6 +45,10 @@ stand's and basin's marks) belong to each drawing, not to the model.
 
 Names follow the WEB ("lamp stand", "basin", "brass", "mercy seat");
 `aka` holds the common names a reader may search for.
+
+**Places.** `PLACES` holds the spots the law of the offerings sends things
+to (the place of the ashes, the north side of the altar, the clean place
+outside the camp), flagged like the rest and kept apart from PARTS.
 """
 
 from typing import NamedTuple, Optional, Tuple
@@ -401,6 +405,47 @@ def plan_point(key):
     if len(p) == 2:
         return p
     return (p[0] + p[2]) / 2, (p[1] + p[3]) / 2
+
+
+# ---------------------------------------------------------------------------
+# Places the law of the offerings names                    (Leviticus 1-7)
+# ---------------------------------------------------------------------------
+
+class Place(NamedTuple):
+    """A spot Leviticus 1-7 sends something to, in plan cubits. Kept out of
+    PARTS (it is not a thing made, and PARTS feeds the reference page's
+    cards). `pt` is its point, `box` its strip (x0, y0, x1, y1), either None
+    where it has none on the plan; `flag` and `ref` are where the text puts
+    it, and `derived` the verses that put something there only by
+    inference."""
+    key: str
+    label: str                     # WEB's wording
+    pt: Optional[tuple]
+    box: Optional[tuple]
+    flag: str
+    ref: str
+    derived: str = ""
+
+
+PLACES = [
+    # "beside the altar on the east part, in the place of the ashes" (1:16):
+    # east of the altar (62.5-67.5) is stated, the distance isn't, so the
+    # spot, 2 cubits off its east side, is DERIVED. 6:10's "beside the altar"
+    # names no side.
+    Place("ash_place", "place of the ashes", (69.5, 25), None, DERIVED,
+          "Lev 1:16", derived="Lev 6:10"),
+    # "on the north side of the altar" (1:11), the flock's; the altar's own
+    # 5 cubits, north of it. "Where they kill the burnt offering" (4:24, 29,
+    # 33; 6:25; 7:2) is here only by 1:11.
+    Place("north_side", "north side", (65, 20), (62.5, 17.5, 67.5, 22.5),
+          STATED, "Lev 1:11", derived="Lev 4:24, 29, 33; 6:25; 7:2"),
+    # "outside of the camp to a clean place, where the ashes are poured out"
+    # (4:12; 6:11): off the plan, its direction not given. 4:21 says only
+    # "outside the camp", as with the first bull.
+    Place("clean_place", "a clean place", None, None, NOT_GIVEN,
+          "Lev 4:12; 6:11", derived="Lev 4:21"),
+]
+PLACE = {p.key: p for p in PLACES}
 
 
 # ---------------------------------------------------------------------------

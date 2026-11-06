@@ -221,6 +221,38 @@ def cross(c, x, y, r, col, width=2.6):
     c.line((x - r, y + r), (x + r, y - r), col, width)
 
 
+NOT_RED = (170, 70, 60)       # generate_tabernacle.RED, the house red
+
+
+def not_mark_points(xy, r, n=48):
+    """The not-mark as the two strokes a caller draws in: (ring, bar).
+
+    The ring starts and ends at its upper left, where the bar begins, and
+    runs clockwise on the page; the bar crosses it to the lower right. Both
+    are open point lists, so each goes straight to
+    `svg_map_camera.traced_el(pts, col, begin, dur)`, the ring first and the
+    bar after it, and the mark draws itself in one movement."""
+    x, y = xy
+    a0 = math.radians(225)
+    ring = [(x + r * math.cos(a0 + 2 * math.pi * k / n),
+             y + r * math.sin(a0 + 2 * math.pi * k / n)) for k in range(n + 1)]
+    d = r * math.sqrt(0.5)
+    return ring, [(x - d, y - d), (x + d, y + d)]
+
+
+def not_mark(c, xy, r, col=NOT_RED, width=None):
+    """The one mark for what is forbidden or not eaten: a ring with one bar
+    across it, upper left to lower right, laid over the thing it forbids
+    (the yeast and honey of Leviticus 2:11, the fat and the blood of 3:17
+    and 7:23-27). Drawn whole here; `not_mark_points` gives the strokes to
+    draw it in. Returns (ring, bar) as that does."""
+    w = width if width is not None else max(2.4, r * 0.16)
+    ring, bar = not_mark_points(xy, r)
+    c.circle(xy[0], xy[1], r, stroke=col, width=w)
+    c.line(bar[0], bar[1], col, w)
+    return ring, bar
+
+
 def struck(c, xy, s, size, col, rule, bold=False):
     """A label with a rule through it, measured off the text so the strike
     neither overshoots nor stops short."""
