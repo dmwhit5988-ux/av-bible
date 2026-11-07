@@ -85,7 +85,7 @@ explains the project, and `docs/` has the detail.
   Change the spec and regenerate instead. Every published verse SVG needs an owner in
   `svg_generators.json`. The wall charts in `web/visuals/reference/` are exempt. All of
   them stay deployed, but only those in `REFERENCES` in `web/js/app.js` (today the
-  OT family tree, the Tabernacle, Solomon's Temple, the Land of Israel atlas, Kings and prophets and Paul's journeys) are linked from the app. The 1–2 Chronicles chart
+  OT family tree, the Tabernacle, Solomon's Temple, the sacred year, the Land of Israel atlas, the wilderness journey, Kings and prophets and Paul's journeys) are linked from the app. The 1–2 Chronicles chart
   is a frozen file with no generator ([docs/reference-charts.md](docs/reference-charts.md)).
 - Take the Tabernacle's court, tent, pillars and furnishings from `sanctuary.py`, the
   one model in cubits that the Exodus 25–27 plan, the Numbers 1–4 courts and the
@@ -106,6 +106,12 @@ explains the project, and `docs/` has the detail.
 - Take what each verse of Joshua 13–19 names, and the border it walks, from
   `allotment.py`; every place it points at is a `gazetteer.py` place (`SITES`,
   `JERUSALEM`, or `BEYOND` for the land north of the atlas's sheet).
+- Take the wilderness camps, their sites, events, dates and the line between them from
+  `wilderness.py`, and the gulfs, lakes and Nile of Egypt and the Sinai from `sinai.py`.
+  A camp with no site is drawn as a bead in its order on the route, never at a point.
+- Take months, feasts, the farming year and the days the text dates from
+  `sacred_calendar.py`. A month the verse itself doesn't give is marked `month_from`,
+  never shown as stated.
 - Take a reign's years from `kings.py`: Ussher's, which are `chronology.BIND`'s, and
   Thiele's beside them. Never mix the two counts in one drawing.
 - Take Matthew's and Luke's lines on the family tree from `gospel_lines.py`, which
@@ -132,7 +138,7 @@ explains the project, and `docs/` has the detail.
 - Take content paths from `config.py` (`WEB_DIR`, `VISUALS_DIR`, `BIBLES_DIR`,
   `WEB_AUDIO_DIR`, `SOURCES_DIR`). Don't re-derive them from `__file__` or the cwd.
 - Before committing, run
-  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_temple test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden test_leviticus17`.
+  `.venv\Scripts\python.exe -m unittest test_imports test_registry test_svg_freeze test_shared_visuals test_azure_tts test_verse_refs test_sanctuary test_temple test_gazetteer test_kings test_journeys test_allotment test_narration_clock test_joshua14_caleb test_gospel_lines test_garden test_leviticus17 test_wilderness test_sacred_calendar`.
 - In living docs, describe what is, and cite file and function names, not line
   numbers. History belongs in git and `docs/archive/`, and the archive is not
   updated.

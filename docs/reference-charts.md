@@ -4,11 +4,11 @@
 
 Each chart is an SVG plus an `.html` viewer page. You can also open an `.svg` directly in a browser.
 
-**The viewer.** The seven generators write their viewer pages with `reference_viewer.page()`. Every page offers:
+**The viewer.** The nine generators write their viewer pages with `reference_viewer.page()`. Every page offers:
 - one finger or the mouse to pan, two fingers to pinch, the wheel to zoom, and fit / + / − buttons that zoom about the middle of the screen;
 - a name search. The search box is 16 px, because iOS zooms the whole page when a smaller field takes focus.
 
-A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the Temple's, the atlas's, the kings' and Paul's journeys') gets more. The family tree's cards are people (below); the Tabernacle's and the Temple's are parts, the atlas's places, the kings page's reigns, prophets, nations and judges, and the journeys page's places, legs, lands and letters (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [Solomon's Temple](#solomons-temple), [The Land of Israel](#the-land-of-israel), [Kings and prophets](#kings-and-prophets) and [Paul's journeys](#pauls-journeys)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
+A chart whose generator also writes a **sidecar** (`<stem>.json`: the family tree's, the Tabernacle's, the Temple's, the atlas's, the kings', Paul's journeys', the wilderness journey's and the sacred year's) gets more. The family tree's cards are people (below); the Tabernacle's and the Temple's are parts, the atlas's places, the kings page's reigns, prophets, nations and judges, the journeys page's places, legs, lands and letters, the wilderness page's camps, legs, events and dates, and the sacred year's months, feasts, farming and dated days (`"card": "parts"`, see [The Tabernacle](#the-tabernacle), [Solomon's Temple](#solomons-temple), [The Land of Israel](#the-land-of-israel), [Kings and prophets](#kings-and-prophets), [Paul's journeys](#pauls-journeys), [The wilderness journey](#the-wilderness-journey) and [The sacred year](#the-sacred-year)). A card can also link to another reference page (`ln`: a king's box on the family tree), opened in the same frame, whose name the app's bar then shows:
 - **A tap on a box** opens its card. On a phone the card is a bottom sheet; from 700 px wide it is a side panel.
 - **Search** lists the matches, each with its relation, so the nine Azariahs can be told apart. Whole names come first, then the start of a name, then anywhere in one, then a name found only in a box's note. A box's other names count as its names: "Jacob" finds Israel. ↑ ↓ step through the matches.
 - **The card** gives the relation, the generation, the Ussher years where the chronology dates the person, the box's note and cross-references, the family, "Line to Adam", and the verses. The family is:
@@ -34,15 +34,15 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 
 ## Status
 
-- **Deployed.** All nine charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
-- **Linked: the OT family tree, the Tabernacle, Solomon's Temple, the Land of Israel, Kings and prophets and Paul's journeys.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
+- **Deployed.** All eleven charts deploy with the site at `https://theoria-bible.net/visuals/reference/<file>`. `web/` is served as it is, and Publish commits `web/visuals/`, so a change to a chart ships like any other visuals change.
+- **Linked: the OT family tree, the Tabernacle, Solomon's Temple, the sacred year, the Land of Israel, the wilderness journey, Kings and prophets and Paul's journeys.** The app's **Reference** button, in the header beside ✦ Illustrated, lists the charts in `REFERENCES` in `web/js/app.js`. A chart opens full screen over the app, in a frame under a bar with ← Back and ↗:
   - the frame keeps the passage, and any narration playing, as they were underneath;
   - the installed home-screen app has no Back button of its own, so the bar provides one;
   - ↗ opens the chart's page on its own, at the address you can share.
   The V6 heir-spine variant and the 1–2 Chronicles tree were experiments, and the OT timeline isn't in the list either. All three are unlinked, but anyone with the exact URL can open them.
 - **Adding a chart to the list** is one entry in `REFERENCES` (title, one-line blurb, root-absolute `href`). It is web-app code, so it is committed by hand, and the chart's own files ship through Publish.
 - **Not indexed.** `build_manifest.py` only indexes `web/visuals/<Book>/<chapter>/` and the flat `web/visuals/` root, so the charts never become manifest keys.
-- **Cost.** The charts are 24 deploy files, the six sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
+- **Cost.** The charts are 30 deploy files, the eight sidecars among them. The Reference list itself costs none, because it is part of `app.js`.
 
 | Chart | Files | Size | Built by |
 |---|---|---|---|
@@ -55,6 +55,8 @@ Without a sidecar (the OT timeline), the search steps through the sheet's own te
 | [The Land of Israel](#the-land-of-israel) | `Land_of_Israel.svg` / `.json` / `.html` | 6,103 × 7,680 px, about 115 KB, 224 places and 267 cards; the sidecar is about 237 KB | `generate_israel_atlas.py` |
 | [Kings and prophets](#kings-and-prophets) | `Kings_and_prophets.svg` / `.json` / `.html` | 2,370 × 6,684 px, about 80 KB, 139 cards; the sidecar is about 96 KB | `generate_kings_reference.py` |
 | [Paul's journeys](#pauls-journeys) | `Pauls_journeys.svg` / `.json` / `.html` | 7,336 × 3,978 px, about 320 KB, 64 places, 74 legs and 178 cards; the sidecar is about 145 KB | `generate_journeys_reference.py` |
+| [The wilderness journey](#the-wilderness-journey) | `Wilderness_journey.svg` / `.json` / `.html` | 6,584 × 4,700 px, about 145 KB, 42 camps, 41 legs and 215 cards; the sidecar is about 150 KB | `generate_wilderness_reference.py` |
+| [The sacred year](#the-sacred-year) | `Sacred_year.svg` / `.json` / `.html` | 3,940 × 3,040 px, about 140 KB, 146 cards and 7 tours; the sidecar is about 140 KB | `generate_sacred_year_reference.py` |
 
 ## The Old Testament family tree
 
@@ -339,3 +341,73 @@ Opened from a verse, the sheet starts on the places and legs the verse names (Ac
 .venv/Scripts/python.exe -m unittest test_journeys          # the places, the legs, the coasts
 ```
 
+## The wilderness journey
+
+The forty-two camps of Numbers 33, from Rameses to the plains of Moab, on a map of Egypt's east, the Sinai and the land east of the Jordan, with a strip of the forty years beside it.
+
+**Point facts, no traces.** `sinai.py` holds the Gulf of Suez, the Gulf of Aqaba, the head of the Red Sea, the lakes of the Suez isthmus, Lake Bardawil and the Nile. Each point is a named place's own Wikidata coordinate (or is marked `~`), gathered and checked on 2026-11-06. The Mediterranean is `gazetteer.COAST` and `mediterranean.AFRICA`. The Salt Sea, the Jordan, the Arnon, the Zered and the brook of Egypt come from `gazetteer`. The camps, events, dates and the line between camps come from `wilderness.py`. The lines are coarse: many capes are arc-minute imports, and many shore points stand a little inland. The sheet's scale hides this.
+
+**The route** is the traditional southern one, as the owner chose. It is a dashed line through the camps in Numbers 33's order, and the key says the line is ours.
+- A camp with a site is a dot in its certainty's style. It is filled where known, a thick ring where probable and a thin ring where possible. A dashed ring marks a site held by tradition (`wilderness.TRADITIONAL`: Jebel Musa for Sinai, Jebel Harun for Mount Hor).
+- A camp with no site (27 of the 42) is a small bead on the line, spaced evenly between its neighbours, and claims no place. Its card says it is not identified and where it is drawn. A Wikidata point that only repeats a Wikipedia infobox doesn't count as a site.
+- Every camp is numbered in Numbers 33's order, and the names come in as you zoom.
+- The sea crossing is a dashed span where tradition puts it (by Clysma, at Suez), with no dot. Its card lists the other proposals.
+- `ROUTE_VIA` holds our own `~` points. They go where a straight line would cross water, or where the way back north from Ezion Geber would cross the way down at a camp. `test_wilderness` checks that the drawn line crosses no sea except at the crossing.
+
+**The sheet.**
+- **Events** (a layer, on): what happened at each camp, as a short list beside it. The bronze serpent stands between Mount Hor and Oboth, because the text names no camp for it.
+- **Other itineraries** (a layer, off): Numbers 21, Deuteronomy 10, Deuteronomy 2 and Judges 11, as lists only. A name that only these lists give gets no point.
+- **The forty years**: the text's dates on a broken time line.
+  - Years 1 and 2 are drawn by month, years 3 to 39 are closed up, and year 40 and the first month of year 41 are drawn by month.
+  - A diamond is a date the verse gives in full, a hollow diamond a date partly inferred, and a bracket a month only.
+  - Lengths of time are bars where they can be dated, and a list where they can't. A bar is gold where the text gives the length, including the `placed` ones where only the start is inferred, and grey where the length is `derived` from two dates.
+  - Its two columns are two views, "Years 1–2" and "Years 3–41", so a phone opens on a column it can read.
+- **Views**: Map, Years 1–2 and Years 3–41.
+- **Tours**: Egypt to Sinai, Sinai to Kadesh, and Kadesh to the Jordan.
+- **Legs**: each leg steps to the one before and after (`st`), and glows along its line (`pth`).
+
+**The cards.**
+- A camp's card gives its Numbers 33 verses and its site and how sure that is, or says it is unidentified and where it is drawn. It also gives its other names, where Numbers 33 and the narrative differ, what happened there, its dates and its verses.
+- A leg's card gives its two camps and its length as drawn.
+- A date's card gives its verse, the year counted from the exodus as year 1, and how anything not stated was inferred.
+
+Opened from a verse, the sheet starts on the camps that verse names. Failing those, it starts on the camp or event whose passage the verse falls in. Numbers 20:22, for example, opens on Kadesh, Mount Hor and the leg between.
+
+```
+.venv/Scripts/python.exe generate_wilderness_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_wilderness          # the camps, dates, coasts and route
+```
+
+## The sacred year
+
+A dial of the year: WEB's months, the farming year, the set feasts of Leviticus 23 and Numbers 28–29, and every day the text dates to a month. The Sabbath years and the Jubilee stand beside it. The data is `sacred_calendar.py`. It is kept as data only, so that per-verse pictures of Leviticus 23, Numbers 28–29, Esther or Haggai can draw from it.
+
+**The dial.** Month 1 (Abib · Nisan) is at the top, and the year runs clockwise as twelve equal months of thirty days. That is a schematic, because the months are lunar, and the "about the dial" card says so. From the rim in:
+- **Dated days** (a layer, on): a dot for each day the text dates, in its story's colour.
+  - The dot is filled where the text gives the day. Where it gives only the month, the dot is hollow and sits near the month's middle.
+  - Labels sit on spokes and come in as you zoom.
+  - Where Kings and Jeremiah differ, the label gives both days ("7 or 10").
+  - A month that the verse itself doesn't give is marked `month_from`, and its card says "derived".
+- **The months**: the number, WEB's names and "about Mar–Apr". Months 4 and 5 have no name in WEB, and Elul is never numbered there.
+- **Feasts** (a layer, on).
+  - The three pilgrim feasts are gold.
+  - The counted feast of weeks and the sheaf are dashed.
+  - The second Passover and Purim are subdued, as later additions.
+  - The new moon is a ring on the 1st of every month.
+  - WEB's names are kept: "feast of tents" and "day of blowing of trumpets".
+- **John's feasts** (a layer, off). A few days stand apart in "Not on the dial", beside the key: John 5:1's unnamed feast, Ezekiel 26:1 and 32:17 (a day but no month), and Ezekiel 40:1 ("the beginning of the year").
+- **Farming** (a layer, on): solid where the text ties it to a month or a feast, and dashed where it names only the season.
+- **The centre**: the Sabbath, the three times a year, and the daily lambs.
+
+**The Jubilee**, to the right of the dial: seven rows of seven years, each seventh year a Sabbath for the land. The fiftieth year is proclaimed on the Day of Atonement.
+
+- **Views**: Year and Jubilee.
+- **Tours**: the flood year, Egypt to the Jordan, Leviticus 23, Jerusalem falls, the return, Ezra and Nehemiah, and Esther.
+- **Cards**: every mark has one, giving its date and verses, the Numbers 28–29 offerings day by day, the rest, the farming, WEB's own words, and what the text leaves open.
+
+Opened from a verse, the sheet starts on what that verse names: Leviticus 23:27 opens on the Day of Atonement.
+
+```
+.venv/Scripts/python.exe generate_sacred_year_reference.py   # rebuild the .svg, .json and .html
+.venv/Scripts/python.exe -m unittest test_sacred_calendar      # months, feasts, dated days
+```

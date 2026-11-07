@@ -628,9 +628,19 @@ const REFERENCES = [
     href: "/visuals/reference/Temple.html",
   },
   {
+    title: "The sacred year",
+    blurb: "The months, the feasts of Leviticus 23 and the farming year on one dial, with every day the text dates, and the Sabbath years and the Jubilee beside it. Tap anything for its verses.",
+    href: "/visuals/reference/Sacred_year.html",
+  },
+  {
     title: "The Land of Israel",
     blurb: "An atlas of the places the Bible names, each at the site it is identified with, marked known, probable or possible.",
     href: "/visuals/reference/Land_of_Israel.html",
+  },
+  {
+    title: "The wilderness journey",
+    blurb: "The forty-two camps of Numbers 33 from Rameses to the plains of Moab, what happened at each, and the text's own dates across the forty years.",
+    href: "/visuals/reference/Wilderness_journey.html",
   },
   {
     title: "Kings and prophets",

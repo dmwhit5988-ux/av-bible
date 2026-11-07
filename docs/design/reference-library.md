@@ -4,7 +4,7 @@ The Reference shelf holds pages that aren't tied to a verse: maps, timelines, pl
 
 ## Status
 
-Proposed on 2026-10-27. Built so far: the shelf, pages 1, 3, 4, 7 and 8 as first cuts, and page 2 in its second cut.
+Proposed on 2026-10-27. Built so far: the shelf, pages 1, 3, 4, 7, 8, 10 and 12 as first cuts, and page 2 in its second cut.
 
 **The shelf.** The header's **Reference** button lists `REFERENCES` in `web/js/app.js`. An entry opens full screen over the app, framed under a bar with ← Back and ↗:
 - the passage and narration carry on underneath;
@@ -12,7 +12,7 @@ Proposed on 2026-10-27. Built so far: the shelf, pages 1, 3, 4, 7 and 8 as first
 - turning a phone to landscape doesn't put the stage in fullscreen while a panel is open (`onOrientationChange`), because API fullscreen shows only `#stage-wrap`;
 - an Escape the page handles itself (`e.defaultPrevented`) doesn't also close the frame.
 
-Its entries are the OT family tree, the Tabernacle, the Land of Israel, Kings and prophets and Paul's journeys. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
+Its entries are the OT family tree, the Tabernacle, Solomon's Temple, the sacred year, the Land of Israel, the wilderness journey, Kings and prophets and Paul's journeys. The V6 heir spine, the 1–2 Chronicles tree and the OT timeline stay deployed and unlinked ([reference-charts.md](../reference-charts.md)).
 
 **Generated pages.** A Python generator writes each page into the flat `web/visuals/reference/` folder, as `generate_ot_family_tree_svg.main` writes the tree's `.svg`, `.json` and `.html`. Publish commits the pages with the rest of `web/visuals`.
 
@@ -401,7 +401,7 @@ These wait on the gazetteer, `sanctuary.py` or the AD axis.
 
 ## Open questions
 
-Answered on 2026-10-27: which map comes first (the Israel atlas), whether to regenerate Numbers 1–4 onto one Tabernacle model (yes), and whether to link the OT timeline now (no). On 2026-10-28: the kings' chronology (Ussher, with Thiele's years beside it). See Status.
+Answered on 2026-10-27: which map comes first (the Israel atlas), whether to regenerate Numbers 1–4 onto one Tabernacle model (yes), and whether to link the OT timeline now (no). On 2026-10-28: the kings' chronology (Ussher, with Thiele's years beside it). On 2026-11-06, question 2 for the wilderness: one reading, the traditional southern route, labelled traditional, with unidentified camps as beads on it; and the sacred year as a dial. See Status.
 
 1. Is this the right split: short labels and numbers on the drawing, sentences in the card?
 2. For traditional sites (Sinai, the Exodus route, Golgotha), show one reading labelled "traditional", or only what is known?

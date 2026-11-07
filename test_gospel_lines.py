@@ -121,7 +121,8 @@ class TheTreeStaysAsItWas(unittest.TestCase):
         whole = re.compile(".*?".join(map(re.escape, fixed)), re.S)
         for stem in ("Old_Testament_family_tree", "Old_Testament_timeline",
                      "Tabernacle", "Land_of_Israel", "Kings_and_prophets",
-                     "Pauls_journeys"):
+                     "Pauls_journeys", "Temple", "Wilderness_journey",
+                     "Sacred_year"):
             with open(os.path.join(G.OUT_DIR, stem + ".html"), encoding="utf-8") as f:
                 self.assertTrue(whole.fullmatch(f.read()), stem)
 
