@@ -23,6 +23,12 @@ What is drawn, and from where:
   is never drawn (docs/visuals.md, "God's presence"): the likeness on the
   throne (1:26-27) is a flame, glowing metal above and fire below, with no
   figure in it (the owner's pick, 2026-11-09).
+* 1:13 says two things, and both are drawn: the creatures' own appearance
+  is like burning coals, so from that verse they are redrawn hot (HOT)
+  in a glow of their own; and a fire goes up and down among them
+  (`fire_svg`), rising and sinking between them once before it comes to
+  rest at their middle. It stands on nothing: it is not a fire on the
+  ground.
 * Lightning (1:4, 1:13, 1:14) draws itself once and goes; nothing flashes.
   The one loop is the fire's slow sway, like the bush's in Acts 7.
 * The creatures and wheels rise at 1:19 and stand again at 1:21; the wings
@@ -51,6 +57,9 @@ BOOK, CHAPTER = "Ezekiel", 1
 
 CREATURE = (226, 188, 122)      # burnished, like the feet (1:7)
 FAR = (150, 128, 92)            # the two behind
+HOT = (255, 208, 124)           # the same, like burning coals (1:13)
+HOT_FAR = (212, 154, 92)
+FIRE_Y = 424                    # where the fire among them comes to rest
 BERYL = (118, 204, 172)         # the wheels (1:16)
 BERYL_FAR = (84, 140, 122)
 CRYSTAL = (196, 228, 242)       # the expanse (1:22)
@@ -215,6 +224,38 @@ def arrow(p0, p1):
             f'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>')
 
 
+def _tongue(cx, w, h, lean):
+    """One tongue of flame, its foot at (cx, 0), rising h and leaning."""
+    tx = cx + lean
+    return (f'M{cx - w / 2:.1f} 0 C{cx - w * 0.72:.1f} {-h * 0.42:.1f} '
+            f'{tx - w * 0.12:.1f} {-h * 0.66:.1f} {tx:.1f} {-h:.1f} '
+            f'C{tx + w * 0.16:.1f} {-h * 0.62:.1f} {cx + w * 0.78:.1f} '
+            f'{-h * 0.4:.1f} {cx + w / 2:.1f} 0 Q{cx:.1f} {w * 0.34:.1f} '
+            f'{cx - w / 2:.1f} 0 Z')
+
+
+def fire_svg():
+    """The fire that goes up and down among the creatures (1:13), about
+    its own foot: three flat layers, deep orange outside to pale at the
+    heart, the outer and inner swaying out of step, slowly, in a soft
+    light of its own."""
+    layers = (("rgb(232,104,48)", ((-17, 26, 58, -6), (0, 34, 92, 5),
+                                   (18, 26, 66, 9)), 3.4,
+               "1 1;1.05 1.07;0.96 0.95;1 1"),
+              ("rgb(255,170,70)", ((-11, 18, 38, -3), (1, 24, 64, 3),
+                                   (13, 17, 42, 5)), 2.7,
+               "1 1;0.95 1.08;1.05 0.96;1 1"),
+              ("rgb(255,238,176)", ((-3, 11, 22, -1), (5, 12, 34, 2)), 2.2,
+               "1 1;1.06 1.1;0.96 0.94;1 1"))
+    out = ['<circle cx="0" cy="-34" r="78" fill="url(#ember)"/>']
+    for fill, tongues, dur, vals in layers:
+        d = " ".join(_tongue(*t) for t in tongues)
+        out.append(f'<g><animateTransform attributeName="transform" '
+                   f'type="scale" values="{vals}" dur="{dur}s" '
+                   f'repeatCount="indefinite"/><path d="{d}" fill="{fill}"/></g>')
+    return "".join(out)
+
+
 def throne_parts():
     """The prepared throne's own throne, without its cloud and sunburst."""
     out = []
@@ -248,6 +289,10 @@ DEFS = (
     '<stop offset="0.5" stop-color="rgb(255,206,110)"/>'
     '<stop offset="1" stop-color="rgb(255,170,80)" stop-opacity="0"/>'
     '</radialGradient>'
+    '<radialGradient id="ember"><stop offset="0" stop-color="rgb(255,150,60)" '
+    'stop-opacity="0.5"/><stop offset="0.6" stop-color="rgb(255,120,50)" '
+    'stop-opacity="0.16"/><stop offset="1" stop-color="rgb(255,120,50)" '
+    'stop-opacity="0"/></radialGradient>'
     '<linearGradient id="him" x1="0" y1="0" x2="0" y2="1">'
     '<stop offset="0" stop-color="rgb(255,250,214)"/>'
     '<stop offset="0.45" stop-color="rgb(255,222,128)"/>'
@@ -533,15 +578,31 @@ def frame(v, text):
                   f'keyTimes="0;0.4;1" keySplines="0.3 0 0.2 1;0.4 0 0.6 1"/>')
         return f'<g transform="translate(0 {dy})">{mv}{inner}</g>'
 
-    def row(tag, xs, g, wxs, wg):
-        out = []
+    def row(tag, xs, g, wxs, wg, s):
+        # the glow each of them gives off, like a coal
+        out = [show(13, "".join(
+            f'<ellipse cx="{CX + sx * xs}" cy="{g - 62 * s:.0f}" '
+            f'rx="{58 * s:.0f}" ry="{84 * s:.0f}" fill="url(#ember)"/>'
+            for sx in (-1, 1)), "burning coals", d=1.6)]
         for k in F.WHEEL_IN_WHEEL_LAYERS:
             v_in, phrase = WHEEL_IN[k]
             out.append(show(v_in, "".join(use(f"{tag}w_{k}", CX + sx * wxs, wg)
                                           for sx in (-1, 1)), phrase))
         for k in F.LIVING_CREATURE_LAYERS:
             v_in, phrase = CREATURE_IN[k]
-            both = "".join(use(f"{tag}_{k}", CX + sx * xs, g) for sx in (-1, 1))
+
+            def uses(t, k=k):
+                return "".join(use(f"{t}_{k}", CX + sx * xs, g)
+                               for sx in (-1, 1))
+            if v > 13:                          # like burning coals of fire
+                both = uses(tag + "h")
+            elif v == 13:                       # the heat comes up over them
+                tc = cue("burning coals")
+                ends.append(tc + 1.6)
+                both = (uses(tag) + f'<g opacity="0">{fade(tc, 1.6)}'
+                        f'{uses(tag + "h")}</g>')
+            else:
+                both = uses(tag)
             if k == "wings_up":                 # let down at 1:24
                 if v == 24:
                     t = cue("let down")
@@ -553,27 +614,28 @@ def frame(v, text):
                 out.append(show(v_in, both, phrase))
         return "".join(out)
 
-    o.append(host(row("b", X_BACK, G_BACK, WX_BACK, G_BACK + 4)))
+    o.append(host(row("b", X_BACK, G_BACK, WX_BACK, G_BACK + 4, S_BACK)))
 
-    # the fire going up and down among them (1:13)
-    fp = []
-    F._fire(fp, 0, 0, 46, 64)
-    flames = (f'<g transform="translate({CX} {G_FRONT - 6})"><g>'
-              f'<animateTransform attributeName="transform" type="scale" '
-              f'values="1 1;1.04 1.08;0.97 0.95;1 1" dur="3.2s" '
-              f'repeatCount="indefinite"/>{fig(fp, 1.5, FIRE)}</g></g>')
-    coals = "".join(f'<circle cx="{CX + dx}" cy="{G_FRONT - 2}" r="{r}" '
-                    f'fill="{rgb(FIRE)}"/>'
-                    for dx, r in ((-58, 4), (-40, 5), (40, 5), (60, 4),
-                                  (-22, 3.5), (24, 3.5)))
-    o.append(show(13, coals, "burning coals"))
-    o.append(show(13, flames, "torches"))
+    # the fire that went up and down among them (1:13): it comes in low,
+    # goes up between them, down, and comes to rest at their middle
+    if v == 13:
+        t = cue("The fire went up and down")
+        ends.append(t + 3.0)
+        o.append(f'<g transform="translate({CX} {G_FRONT - 8})" opacity="0">'
+                 f'{fade(t, 0.5)}<animateTransform attributeName="transform" '
+                 f'type="translate" values="{CX} {G_FRONT - 8};{CX} 372;'
+                 f'{CX} {G_FRONT - 14};{CX} {FIRE_Y}" keyTimes="0;0.36;0.74;1" '
+                 f'begin="{t:.2f}s" dur="3.0s" fill="freeze" calcMode="spline" '
+                 f'keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>'
+                 f'{fire_svg()}</g>')
+    elif v > 13:
+        o.append(f'<g transform="translate({CX} {FIRE_Y})">{fire_svg()}</g>')
 
-    o.append(host(row("f", X_FRONT, G_FRONT, WX_FRONT, G_FRONT + 6)))
+    o.append(host(row("f", X_FRONT, G_FRONT, WX_FRONT, G_FRONT + 6, S_FRONT)))
 
     # -- lightning: once, and gone -------------------------------------------
-    b1 = [(CX - 8, 398), (CX - 30, 372), (CX - 14, 366), (CX - 44, 334)]
-    b2 = [(CX + 12, 404), (CX + 34, 380), (CX + 20, 372), (CX + 46, 344)]
+    b1 = [(CX - 14, 372), (CX - 40, 352), (CX - 24, 346), (CX - 62, 322)]
+    b2 = [(CX + 16, 376), (CX + 42, 356), (CX + 28, 350), (CX + 64, 326)]
     if v == 4:
         t = cue("flashing lightning")
         o.append(bolt([(CX - 150, 300), (CX - 170, 336), (CX - 150, 342),
@@ -714,8 +776,8 @@ def frame(v, text):
         o.append(top(1, "the spirit", "spirit"))
         o.append(top(2, "straight forward", "straight forward", dim=True))
     elif v == 13:
-        o.append(top(1, "coals of fire", "burning coals"))
-        o.append(top(2, "torches", "torches", size=18))
+        o.append(top(1, "like burning coals", "burning coals"))
+        o.append(top(2, "like torches", "torches", size=18))
     elif v == 14:
         o.append(top(1, "as a flash of lightning", "flash of lightning"))
     elif v == 15:
@@ -808,10 +870,14 @@ def _symbols_used(body):
     LC, WH = F.living_creature_layers(), F.wheel_in_wheel_layers()
     out = []
     for row, s, ink, wink in (("b", S_BACK, FAR, BERYL_FAR),
-                              ("f", S_FRONT, CREATURE, BERYL)):
+                              ("f", S_FRONT, CREATURE, BERYL),
+                              ("bh", S_BACK, HOT_FAR, None),
+                              ("fh", S_FRONT, HOT, None)):
         for k, parts in LC.items():
             if f'href="#{row}_{k}"' in body:
                 out.append(f'<g id="{row}_{k}">{fig(parts, s, ink)}</g>')
+        if wink is None:
+            continue
         for k, parts in WH.items():
             if f'href="#{row}w_{k}"' in body:
                 out.append(f'<g id="{row}w_{k}">{fig(parts, s, wink)}</g>')
