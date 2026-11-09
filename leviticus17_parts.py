@@ -417,12 +417,13 @@ def _a(p):
 
 A_BODY = _a((GT.AX, GT.AY)) + _a((GT.AX + GT.AW, GT.AY + GT.AH))
 A_TOP = A_BODY[1]
-WOOD_X = (A_BODY[0] + 16, A_BODY[2] - 66)       # the wood: the hearth's left part
+A_MID = (A_BODY[0] + A_BODY[2]) / 2
+WOOD_X = (A_MID - 82.5, A_MID + 82.5)           # the wood, centred on the hearth
 FIRE_XS = [WOOD_X[0] + 14 + i * (WOOD_X[1] - WOOD_X[0] - 28) / 4 for i in range(5)]
 FIRE_HS = [34, 46, 52, 44, 34]
 SLOT_W, SLOT_GAP = 42, 6
 SLOT_Y = (A_TOP - 50, A_TOP - 28)               # on the wood
-BAY = (A_BODY[2] - 36, A_TOP)                   # the bird bay: the hearth's right end
+BAY = (A_BODY[2] - 2, A_TOP)                    # the bird bay: on the altar's right rim, clear of the wood
 FIRE_C = ((FIRE_XS[0] + FIRE_XS[-1]) / 2, A_TOP)
 MEAT = mix(PANEL, RED, .75)
 FAT = mix(PANEL, WHITE_LINEN, .85)
@@ -431,7 +432,7 @@ INN = mix(PANEL, RED, .55)
 
 def slot_box(i):
     """The i-th slab's place on the wood (0-2)."""
-    x0 = WOOD_X[0] + 6 + i * (SLOT_W + SLOT_GAP)
+    x0 = A_MID - (3 * SLOT_W + 2 * SLOT_GAP) / 2 + i * (SLOT_W + SLOT_GAP)
     return (x0, SLOT_Y[0], x0 + SLOT_W, SLOT_Y[1])
 
 
