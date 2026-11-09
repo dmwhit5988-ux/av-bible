@@ -15,9 +15,10 @@ What is drawn, and from where:
   `wheel_in_wheel_layers`. The four stand in a square seen from the front:
   two near, two smaller behind, their raised wings touching (1:9, 1:11).
   A creature shows the three faces one sees from in front, plainly; at
-  1:10 a card comes up over them (`faces_card`): one head turning, each
-  face coming to the front as it is said, and the head from above with
-  each face named on its side.
+  1:10 a card comes up over them (`faces_card`): one head turning as a
+  solid block, each face coming to the front as it is said, narrowed and
+  shaded by where its side stands, and the head from above with each face
+  named on its side.
 * The throne is svg_figures.prepared_throne's own throne, in sapphire. God
   is never drawn (docs/visuals.md, "God's presence"): the likeness on the
   throne (1:26-27) is a flame, glowing metal above and fire below, with no
@@ -264,55 +265,129 @@ FACE_SAID = (("man", "face of a man"), ("lion", "face of a lion"),
              ("ox", "face of an ox"), ("eagle", "face of an eagle"))
 
 
+# The head of 1:10 as a turning block: each face's bearing round it when the
+# man's is in front (degrees, clockwise from above), and the turns that
+# bring each to the front as it is said, by the short way that passes no
+# face not yet named: (face, the head's angle then, seconds the turn takes).
+FACE_BEARING = {"man": 0, "lion": -90, "ox": 90, "eagle": 180}
+FACE_TURNS = (("lion", 90, 0.9), ("ox", -90, 1.5), ("eagle", -180, 0.9))
+HEAD_R = 11.5                   # the head's half width, in figure units
+FACE_S = 4.4                    # px a unit on the card
+
+
+def _clip_shapes(parts, s):
+    """A figure's masses as bare shapes, for a clip."""
+    out = []
+    for kind, data, _m in parts:
+        if kind == "fill":
+            out.append('<polygon points="' + " ".join(
+                f"{x:.1f},{y:.1f}" for x, y in F.place(data, 0, 0, s)) + '"/>')
+        elif kind == "dot":
+            out.append(f'<circle cx="{data[0] * s:.1f}" cy="{-data[1] * s:.1f}" '
+                       f'r="{data[2] * s:.1f}"/>')
+    return "".join(out)
+
+
+def _head_keys(times):
+    """The head's angle through the verse: [(t, degrees)], held between the
+    turns and eased within each, a key every 1/25 s of a turn."""
+    keys, phi = [(0.0, 0.0)], 0.0
+    for (_face, to, dur), t1 in zip(FACE_TURNS, times[1:]):
+        t0 = t1 - dur * 0.75             # most of the way round on its word
+        keys.append((t0, phi))
+        n = max(2, int(dur * 25))
+        for i in range(1, n + 1):
+            u = i / n
+            e = u * u * (3 - 2 * u)
+            keys.append((t0 + dur * u, phi + (to - phi) * e))
+        phi = to
+    return keys
+
+
 def faces_card(cue):
-    """1:10 close up: one creature's head turning, each face coming round
-    to the front as it is said, and beside it the head seen from above
-    with each face named on the side it looks out from: the man's in
-    front, the lion's at its right hand, the ox's at its left, the
-    eagle's behind. -> (svg, when its last motion ends)."""
+    """1:10 close up: one creature's head turning as a solid thing, each
+    face coming round to the front as it is said, and beside it the head
+    seen from above with each face named on the side it looks out from: the
+    man's in front, the lion's at its right hand, the ox's at its left, the
+    eagle's behind.
+
+    The turn is drawn, not faked by a fade: the four faces are the four
+    sides of one block, each placed and narrowed by where its side stands
+    (x = R sin a, width cos a), a little smaller as it goes back, and
+    shaded in two flat steps as it turns from the light. Each face carries
+    a flat shadow down its off side, and a dark core fills the gap behind. -> (svg, when its last motion ends)."""
     x0, y0, w, h = CARD
     t0 = cue("likeness of their faces")
     times = []
     for _kind, phrase in FACE_SAID:
         t = cue(phrase)
-        times.append(max(t, times[-1] + 0.9) if times else max(t, t0 + 0.3))
-    bx, by, s = x0 + 118, y0 + 106, 4.4
-    out = [f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" rx="14" '
+        times.append(max(t, times[-1] + 1.7) if times else max(t, t0 + 0.3))
+    bx, by, s = x0 + 118, y0 + 106, FACE_S
+    R = HEAD_R * s
+    keys = _head_keys(times)
+    end = keys[-1][0]
+    kt = ";".join(f"{t / end:.4f}" for t, _p in keys)
+    out = [f'<defs><clipPath id="fcard"><rect x="{x0}" y="{y0}" width="{w}" '
+           f'height="{h}" rx="14"/></clipPath></defs>'
+           f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" rx="14" '
            f'fill="{rgb(PANEL)}" stroke="{rgb(SAND_DIM)}" stroke-width="1.5"/>']
     bust = [("fill", F.smooth([(-23, -29.2), (-18, -17), (-6, -13), (6, -13),
                                (18, -17), (23, -29.2)]), "robe"),
             ("fill", F.taper([(0, -15), (0, -7)], [8.5, 8], round_end=False),
              "skin")]
     out.append(fig(bust, s, CREATURE, bx, by, page=PANEL))
-    for i, (kind, _phrase) in enumerate(FACE_SAID):
-        an = ""
-        if i:                                   # it comes round to the front
-            an += (f'<animateTransform attributeName="transform" type="scale" '
-                   f'values="0 1;1 1" begin="{times[i]:.2f}s" dur="0.3s" '
-                   f'fill="freeze"/>')
-        if i < len(FACE_SAID) - 1:              # and turns away for the next
-            an += (f'<animateTransform attributeName="transform" type="scale" '
-                   f'values="1 1;0 1" begin="{times[i + 1] - 0.3:.2f}s" '
-                   f'dur="0.3s" fill="freeze"/>')
-        out.append(f'<g transform="translate({bx} {by})">'
-                   f'<g transform="scale({0 if i else 1} 1)">{an}'
-                   f'{fig(F.creature_face(kind), s, CREATURE, page=PANEL)}'
-                   f'</g></g>')
+    # the shadow the head throws on the neck, and the block the faces are on
+    out.append(f'<ellipse cx="{bx}" cy="{by + 10.6 * s:.1f}" rx="{4.4 * s:.1f}" '
+               f'ry="{1.3 * s:.1f}" fill="rgb(0,0,0)" fill-opacity="0.3"/>')
+    core = F._mix(PANEL, CREATURE, 0.1)
+    out.append(f'<ellipse cx="{bx}" cy="{by}" rx="{8.4 * s:.1f}" '
+               f'ry="{9.2 * s:.1f}" fill="{rgb(core)}"/>')
+    for kind, _phrase in FACE_SAID:
+        xs, sc, sh = [], [], []
+        for _t, phi in keys:
+            a = math.radians(FACE_BEARING[kind] + phi)
+            c = max(0.0, math.cos(a))
+            depth = 0.9 + 0.1 * c                # smaller as it goes back
+            xs.append(f"{R * math.sin(a) * (1 if c else 0):.1f} 0")
+            sc.append(f"{c * depth:.3f} {depth:.3f}")
+            sh.append("0" if c > 0.86 else "0.2" if c > 0.5 else "0.4")
+        parts = F.creature_face(kind)
+        clip = f"fc_{kind}"
+        out.append(
+            f'<defs><clipPath id="{clip}">{_clip_shapes(parts, s)}</clipPath>'
+            f'</defs><g transform="translate({bx} {by})">'
+            f'<g transform="translate({xs[0]})"><animateTransform '
+            f'attributeName="transform" type="translate" values="{";".join(xs)}" '
+            f'keyTimes="{kt}" dur="{end:.2f}s" fill="freeze"/>'
+            f'<g transform="scale({sc[0]})"><animateTransform '
+            f'attributeName="transform" type="scale" values="{";".join(sc)}" '
+            f'keyTimes="{kt}" dur="{end:.2f}s" fill="freeze"/>'
+            f'{fig(parts, s, CREATURE, page=PANEL)}'
+            f'<g clip-path="url(#{clip})">'
+            # the flat shadow down its off side
+            f'<ellipse cx="{R * 1.5:.1f}" cy="{-2 * s:.1f}" rx="{R * 1.06:.1f}" '
+            f'ry="{R * 1.7:.1f}" fill="rgb(0,0,0)" fill-opacity="0.24"/>'
+            # and the shade it takes as it turns from the light
+            f'<rect x="{-R * 1.6:.1f}" y="{-R * 1.6:.1f}" width="{R * 3.2:.1f}" '
+            f'height="{R * 3.2:.1f}" fill="rgb(0,0,0)" opacity="{sh[0]}">'
+            f'<animate attributeName="opacity" values="{";".join(sh)}" '
+            f'keyTimes="{kt}" dur="{end:.2f}s" fill="freeze"/></rect>'
+            f'</g></g></g></g>')
     # the head from above: where each face looks out
-    px, py, R = x0 + 300, y0 + 122, 46
-    out.append(f'<circle cx="{px}" cy="{py}" r="{R}" fill="none" '
+    px, py, PR = x0 + 300, y0 + 122, 46
+    out.append(f'<circle cx="{px}" cy="{py}" r="{PR}" fill="none" '
                f'stroke="{rgb(SAND_DIM)}" stroke-width="1.5"/>'
                f'<circle cx="{px}" cy="{py}" r="9" fill="{rgb(FAR)}"/>')
     spots = {"man": (0, 1, "middle", 0, 20), "lion": (-1, 0, "end", -12, 0),
              "ox": (1, 0, "start", 12, 0), "eagle": (0, -1, "middle", 0, -20)}
     for (kind, _phrase), t in zip(FACE_SAID, times):
         dx, dy, anc, lx, ly = spots[kind]
-        cx, cy = px + dx * R, py + dy * R
+        cx, cy = px + dx * PR, py + dy * PR
         out.append(f'<g opacity="0">{fade(t, 0.5)}<circle cx="{cx}" cy="{cy}" '
                    f'r="6" fill="{rgb(HL)}"/>'
                    + label(cx + lx, cy + ly, kind, 18, anchor=anc) + '</g>')
     return (f'<g opacity="0">{fade(t0, 0.6)}' + "".join(out) + '</g>',
-            times[-1] + 0.6)
+            max(end, times[-1] + 0.5))
 
 
 # when each layer of a creature first shows: (verse, phrase)

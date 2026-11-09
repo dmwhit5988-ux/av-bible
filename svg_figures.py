@@ -5323,10 +5323,34 @@ def _ox_side():
     return P
 
 
+def _gaze(P, sx, cx, cy, half, high, ang, iris="fire"):
+    """An eye worth meeting, on the side `sx` of a face: the almond of the
+    lids filled with the iris, the pupil in it, and a heavy upper lid laid
+    over the top. No white shows: a ring of white round a dot is a startled
+    eye, and these are a lion's, an ox's and an eagle's. `ang` lifts the
+    outer corner (radians)."""
+    ca, sa = math.cos(ang), math.sin(ang)
+
+    def at(x, y):
+        return (sx * (cx + x * ca - y * sa), cy + x * sa + y * ca)
+    lens = [(-half, 0), (-half * 0.5, high * 0.82), (0, high),
+            (half * 0.5, high * 0.82), (half, 0), (half * 0.5, -high * 0.8),
+            (0, -high * 0.9), (-half * 0.5, -high * 0.7)]
+    P.append(("fill", smooth([at(x, y) for x, y in lens], n=3, k=0.7), iris))
+    if iris != "eye":
+        P.append(("dot", (sx * cx, cy, high * 0.6), "eye"))
+    else:                                    # a dark eye: one light in it
+        hx, hy = at(-half * 0.25, high * 0.3)
+        P.append(("dot", (hx, hy, high * 0.3), "fire"))
+    P.append(("fill", taper([at(-half - 0.5, -0.1), at(-half * 0.3, high + 0.3),
+                             at(half * 0.5, high + 0.2), at(half + 0.8, 0.5)],
+                            [0.9, 1.9, 1.7, 0.7]), "hair"))
+
+
 def _creature_face(kind):
     """One of the four faces of Ezekiel 1:10 seen from in front, about its
     own middle, some 26 units across: the scale at which a face is worth
-    drawing. The man's alone has no features but its eyes."""
+    drawing. The beasts' eyes are `_gaze`: lidded, the iris filling them."""
     P = []
     if kind == "man":
         P.append(("dot", (0, 0, 9), "skin"))
@@ -5337,7 +5361,10 @@ def _creature_face(kind):
                                   (0, -12.5), (3.4, -11.5), (6.8, -7),
                                   (6.5, -1.5), (0, -3.5)]), "hair"))
         for sx in (-1, 1):
-            P.append(("dot", (sx * 3.2, 1.6, 0.9), "eye"))
+            P.append(("fill", taper([(sx * 1.8, 2.9), (sx * 3.4, 3.4),
+                                     (sx * 5.2, 2.8)], [0.7, 1.0, 0.6]),
+                      "hair"))               # the brow
+            P.append(("dot", (sx * 3.4, 1.4, 0.95), "eye"))
     elif kind == "lion":
         ring = [((13.6 if i % 2 else 11.2) * math.cos(i * math.pi / 8 + 0.2),
                  (13.6 if i % 2 else 11.2) * math.sin(i * math.pi / 8 + 0.2))
@@ -5350,10 +5377,11 @@ def _creature_face(kind):
                   "hide"))
         P.append(("fill", smooth([(-4, -1.5), (0, 0), (4, -1.5), (4, -5.5),
                                   (0, -7.5), (-4, -5.5)]), "muzzle"))
-        P.append(("fill", [(-1.9, -0.6), (1.9, -0.6), (0, -2.9)], "eye"))
-        for sx in (-1, 1):
-            P.append(("dot", (sx * 3.6, 3, 1.6), "sclera"))
-            P.append(("dot", (sx * 3.6, 3, 0.8), "eye"))
+        for sx in (-1, 1):                   # the long bridge of the nose
+            P.append(("line", [(sx * 1.5, 4.4), (sx * 1.9, 0.4)], "rule"))
+            _gaze(P, sx, 4.1, 3.0, 2.7, 1.35, 0.32)
+        P.append(("fill", [(-2.1, -0.4), (2.1, -0.4), (0, -2.9)], "eye"))
+        P.append(("line", [(0, -2.9), (0, -5.0)], "rule"))
     elif kind == "ox":
         for sx in (-1, 1):
             P.append(("fill", taper([(sx * 6, 7), (sx * 12, 9), (sx * 15, 14)],
@@ -5367,20 +5395,24 @@ def _creature_face(kind):
         P.append(("fill", smooth([(-4.6, -4), (0, -3), (4.6, -4),
                                   (4.4, -8.5), (0, -10), (-4.4, -8.5)]),
                   "muzzle"))
+        P.append(("fill", smooth([(-2.4, 9), (0, 6.6), (2.4, 9), (0, 10.4)]),
+                  "hair"))                   # the forelock
         for sx in (-1, 1):
             P.append(("dot", (sx * 2, -7.2, 0.9), "eye"))
-            P.append(("dot", (sx * 4.6, 3, 1.5), "sclera"))
-            P.append(("dot", (sx * 4.6, 3, 0.8), "eye"))
-    else:                                    # the eagle: the hooked beak
+            _gaze(P, sx, 4.7, 2.6, 2.8, 1.9, -0.1, iris="eye")
+    else:                                    # the eagle: beak and brow
         P.append(("fill", smooth([(-8, 2), (-6, 8), (0, 10.5), (6, 8),
                                   (8, 2), (6, -6), (0, -10), (-6, -6)]),
                   "hide"))
-        P.append(("fill", smooth([(-2.8, 2), (0, 3.2), (2.8, 2), (2.6, -3),
-                                  (0, -8.4), (-2.6, -3)]), "horn"))
         for sx in (-1, 1):
-            P.append(("line", [(sx * 7.4, 5.6), (sx * 2.4, 3.4)], "rule"))
-            P.append(("dot", (sx * 4.6, 2.4, 1.5), "sclera"))
-            P.append(("dot", (sx * 4.6, 2.4, 0.8), "eye"))
+            _gaze(P, sx, 4.5, 1.9, 2.5, 1.7, 0.2)
+            # the brow ridge, low over the eye: it is what makes the look
+            P.append(("fill", [(sx * 1.4, 2.6), (sx * 3.6, 4.6),
+                               (sx * 8.4, 6.2), (sx * 8.0, 4.0),
+                               (sx * 4.0, 2.9), (sx * 1.8, 1.2)], "hair"))
+        P.append(("fill", smooth([(-2.8, 2.6), (0, 3.8), (2.8, 2.6),
+                                  (2.6, -3), (0, -8.4), (-2.6, -3)]), "horn"))
+        P.append(("line", [(0, 3.4), (0, -5.6)], "rule"))
     return P
 
 
