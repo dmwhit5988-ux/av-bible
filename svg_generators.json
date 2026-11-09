@@ -811,6 +811,26 @@
         }
       ],
       "kind": "diagram"
+    },
+    {
+      "_comment": "One still frame for the chapter: each verse brings in the part it names, on its word. See docs/visuals.md, \"Ezekiel 1\".",
+      "label": "The vision by the river Chebar (Ezekiel 1)",
+      "book": "Ezekiel",
+      "chapters": [
+        1
+      ],
+      "generator": "generate_ezekiel1_svg.py",
+      "spec": [
+        {
+          "file": "generate_ezekiel1_svg.py",
+          "edit": "the layout constants, CREATURE_IN and WHEEL_IN (the verse and phrase each layer comes in on), and frame() (each verse's names, numbers and marks)"
+        },
+        {
+          "file": "svg_figures.py",
+          "edit": "living_creature_layers and wheel_in_wheel_layers (the creatures and wheels), and the shared figure vocabulary - editing a figure changes every book that draws it"
+        }
+      ],
+      "kind": "diagram"
     }
   ]
 }

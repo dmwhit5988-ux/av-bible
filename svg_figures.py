@@ -5259,3 +5259,283 @@ def mountain():
     `_mountain`. It is an emblem like the sun: ~306 wide and ~122 high at
     unit 1, and a scene sets the size it wants."""
     return _scale(_mountain(), UNIT["mountain"])
+
+
+# ---------------------------------------------------------------------------
+# Ezekiel 1 and 10: the living creatures and their wheels
+# ---------------------------------------------------------------------------
+
+UNIT["living_creature"] = 1.00   # authored against a man: the text gives the
+                                 # likeness of a man and no measure
+UNIT["wheel_in_wheel"] = 1.00    # rims "high and dreadful": a man's height
+
+LIVING_CREATURE_LAYERS = ("wings_up", "wings_down", "hands", "body",
+                          "hooves", "cover", "lion", "ox", "man")
+
+# The three faces a creature shows from in front, in its units: (x, y,
+# radius) of each head, for a scene that rings or names one.
+LIVING_CREATURE_FACES = {"man": (0.0, 82.0, 9.5), "lion": (-17.0, 81.0, 9.5),
+                         "ox": (18.0, 82.0, 10.0)}
+CREATURE_FACE_KINDS = ("man", "lion", "ox", "eagle")
+
+_LC_WING_UP = [(9, 66), (20, 80), (34, 96), (48, 110), (60, 122), (57, 106),
+               (50, 90), (42, 76), (34, 64), (27, 56), (20, 54), (14, 58)]
+_LC_WING_DOWN = [(9, 67), (22, 71), (36, 67), (48, 55), (57, 37), (50, 45),
+                 (40, 52), (30, 54), (21, 52), (14, 57)]
+_LC_WING_COVER = [(1.8, 53.8), (6.9, 62), (12, 69.4), (16.2, 73.8),
+                  (17.9, 67.9), (17.1, 56), (15.4, 42.7), (12.9, 29.4),
+                  (9.4, 22), (6, 30.9), (3.5, 44.2)]
+
+
+def _move(parts, dx, dy, k=1.0, flip=1):
+    """Parts scaled by k, turned by flip, and moved to (dx, dy)."""
+    out = []
+    for kind, data, mat in parts:
+        if kind == "dot":
+            out.append((kind, (data[0] * k * flip + dx, data[1] * k + dy,
+                               data[2] * k), mat))
+        else:
+            out.append((kind, [(x * k * flip + dx, y * k + dy)
+                               for x, y in data], mat))
+    return out
+
+
+def _lion_side():
+    """A lion's head as a side face, in profile facing +x: the mane and the
+    muzzle coming out of it, and nothing else. Most of it stands behind the
+    man's head, so the mane and the blunt muzzle are all that must read."""
+    P = [("fill", smooth([(-8, -9), (-10, 0), (-8, 9), (-1, 12), (6, 9),
+                          (8, 2), (7, -8), (0, -11)]), "hair")]
+    P.append(("fill", smooth([(2, 6), (9, 5), (14, 1), (14.5, -3), (11, -6),
+                              (4, -6), (1, 0)]), "hide"))
+    P.append(("dot", (8, 1.6, 1.0), "eye"))
+    return P
+
+
+def _ox_side():
+    """An ox's head as a side face, in profile facing +x: the long head and
+    the one horn, which is what makes it an ox."""
+    P = [("fill", taper([(1, 7.5), (6, 12.5), (11, 12)], [3.6, 2.4, 1.0]),
+          "horn")]
+    P.append(("fill", smooth([(-4, 7), (4, 8), (11, 4), (15, -2), (14, -6),
+                              (9, -7), (2, -4), (-4, 0)]), "hide"))
+    P.append(("dot", (6, 2.6, 1.0), "eye"))
+    return P
+
+
+def _creature_face(kind):
+    """One of the four faces of Ezekiel 1:10 seen from in front, about its
+    own middle, some 26 units across: the scale at which a face is worth
+    drawing. The man's alone has no features but its eyes."""
+    P = []
+    if kind == "man":
+        P.append(("dot", (0, 0, 9), "skin"))
+        P.append(("fill", smooth([(-9.3, 0.8), (-8, 7.5), (0, 11), (8, 7.5),
+                                  (9.3, 0.8), (5, 5), (0, 6), (-5, 5)]),
+                  "hair"))
+        P.append(("fill", smooth([(-6.5, -1.5), (-6.8, -7), (-3.4, -11.5),
+                                  (0, -12.5), (3.4, -11.5), (6.8, -7),
+                                  (6.5, -1.5), (0, -3.5)]), "hair"))
+        for sx in (-1, 1):
+            P.append(("dot", (sx * 3.2, 1.6, 0.9), "eye"))
+    elif kind == "lion":
+        ring = [((13.6 if i % 2 else 11.2) * math.cos(i * math.pi / 8 + 0.2),
+                 (13.6 if i % 2 else 11.2) * math.sin(i * math.pi / 8 + 0.2))
+                for i in range(16)]
+        P.append(("fill", smooth(ring, n=4), "hair"))       # the ragged mane
+        for sx in (-1, 1):
+            P.append(("dot", (sx * 6.6, 8.2, 2.8), "hide"))
+        P.append(("fill", smooth([(-7.5, 2), (-6.5, 7), (0, 8.5), (6.5, 7),
+                                  (7.5, 2), (5.5, -5), (0, -8), (-5.5, -5)]),
+                  "hide"))
+        P.append(("fill", smooth([(-4, -1.5), (0, 0), (4, -1.5), (4, -5.5),
+                                  (0, -7.5), (-4, -5.5)]), "muzzle"))
+        P.append(("fill", [(-1.9, -0.6), (1.9, -0.6), (0, -2.9)], "eye"))
+        for sx in (-1, 1):
+            P.append(("dot", (sx * 3.6, 3, 1.6), "sclera"))
+            P.append(("dot", (sx * 3.6, 3, 0.8), "eye"))
+    elif kind == "ox":
+        for sx in (-1, 1):
+            P.append(("fill", taper([(sx * 6, 7), (sx * 12, 9), (sx * 15, 14)],
+                                    [3.8, 2.8, 1.0]), "horn"))
+            P.append(("fill", taper([(sx * 7, 4), (sx * 12.5, 3),
+                                     (sx * 15.4, 1)], [3.4, 3.8, 1.6]),
+                      "hide"))
+        P.append(("fill", smooth([(-7.5, 8), (0, 9.5), (7.5, 8), (7, 1),
+                                  (5, -7), (0, -10), (-5, -7), (-7, 1)]),
+                  "hide"))
+        P.append(("fill", smooth([(-4.6, -4), (0, -3), (4.6, -4),
+                                  (4.4, -8.5), (0, -10), (-4.4, -8.5)]),
+                  "muzzle"))
+        for sx in (-1, 1):
+            P.append(("dot", (sx * 2, -7.2, 0.9), "eye"))
+            P.append(("dot", (sx * 4.6, 3, 1.5), "sclera"))
+            P.append(("dot", (sx * 4.6, 3, 0.8), "eye"))
+    else:                                    # the eagle: the hooked beak
+        P.append(("fill", smooth([(-8, 2), (-6, 8), (0, 10.5), (6, 8),
+                                  (8, 2), (6, -6), (0, -10), (-6, -6)]),
+                  "hide"))
+        P.append(("fill", smooth([(-2.8, 2), (0, 3.2), (2.8, 2), (2.6, -3),
+                                  (0, -8.4), (-2.6, -3)]), "horn"))
+        for sx in (-1, 1):
+            P.append(("line", [(sx * 7.4, 5.6), (sx * 2.4, 3.4)], "rule"))
+            P.append(("dot", (sx * 4.6, 2.4, 1.5), "sclera"))
+            P.append(("dot", (sx * 4.6, 2.4, 0.8), "eye"))
+    return P
+
+
+def creature_face(kind):
+    """A face of the living creature from in front: "man", "lion", "ox" or
+    "eagle" (CREATURE_FACE_KINDS). See `_creature_face`."""
+    return _scale(_creature_face(kind), UNIT["living_creature"])
+
+
+def _lc_wings(span, quills):
+    P = []
+    for sx in (-1, 1):
+        P.append(("fill", smooth([(sx * x, y) for x, y in span], n=4),
+                  "wing"))
+        for x, y in quills:
+            P.append(("line", [(sx * (12 + (x - 12) * 0.22),
+                                62 + (y - 62) * 0.22),
+                               (sx * x * 0.95, 62 + (y - 62) * 0.95)],
+                      "rule"))
+    return P
+
+
+def _living_creature_layers():
+    """A living creature of Ezekiel 1:5-11, facing us, as named layers in
+    drawing order, so a scene can bring each in on the verse that says it.
+
+    The likeness of a man (1:5). Of its four faces (1:10) it shows the
+    three one would see from in front, and plainly: the man's, with the
+    lion's in profile at its right hand (our left) and the ox's at its
+    left. The eagle's is behind and is not drawn; `creature_face` draws any
+    of the four from in front, for a scene that turns the head. Four
+    wings: two spread upward to touch its neighbours' (`wings_up`;
+    `wings_down` is the same pair let down, 1:24) and two covering the
+    body (1:11). A man's hands under the wings (1:8). Straight legs on a
+    calf's hooves, in `metal`, bright as burnished bronze (1:7)."""
+    L = {}
+    L["wings_up"] = _lc_wings(_LC_WING_UP, _LC_WING_UP[2:5])
+    L["wings_down"] = _lc_wings(_LC_WING_DOWN, _LC_WING_DOWN[2:5])
+    P = []
+    for sx in (-1, 1):
+        P.append(("fill", taper([(sx * 13, 63), (sx * 23, 54),
+                                 (sx * 30, 46)], [5.4, 4.4, 3.6]), "skin"))
+        P.append(("dot", (sx * 31.4, 44.6, 2.7), "skin"))
+    L["hands"] = P
+    P = [("fill", smooth([(-12, 70), (12, 70), (13, 50), (10, 33),
+                          (-10, 33), (-13, 50)]), "robe")]
+    P.append(("line", [(0, 36), (0, 62)], "rule"))
+    for sx in (-1, 1):                                  # straight legs
+        P.append(("fill", taper([(sx * 5.6, 35), (sx * 5.6, 0.6)],
+                                [7.4, 5.6], round_end=False), "skin"))
+    L["body"] = P
+    P = []
+    for sx in (-1, 1):                                  # a calf's hooves
+        P.append(("fill", [(sx * 5.6 - 4.6, 0), (sx * 5.6 + 4.6, 0),
+                           (sx * 5.6 + 3.5, 6.8), (sx * 5.6 - 3.5, 6.8)],
+                  "metal"))
+        P.append(("line", [(sx * 5.6, 0.4), (sx * 5.6, 4.6)], "rule"))
+    L["hooves"] = P
+    P = []
+    for sx in (-1, 1):                                  # the wings that cover
+        P.append(("fill", smooth([(sx * x, y) for x, y in _LC_WING_COVER],
+                                 n=4), "wing"))
+        for k in (0.3, 0.55, 0.8):
+            P.append(("line", [(sx * (4 + 11 * k), 66 - 4 * k),
+                               (sx * (7 + 6 * k), 30 + 8 * (1 - k))],
+                      "rule"))
+    L["cover"] = P
+    L["lion"] = _move(_lion_side(), -9, 81, 1.0, flip=-1)
+    L["ox"] = _move(_ox_side(), 9, 81, 1.0)
+    P = []
+    _head(P, 82, 7.4, "bare", False, 0)
+    P.append(("fill", smooth([(-7.7, 82.6), (-6.6, 88), (0, 90.8),
+                              (6.6, 88), (7.7, 82.6), (4, 86.2), (0, 87),
+                              (-4, 86.2)]), "hair"))
+    L["man"] = P
+    return L
+
+
+def living_creature_layers():
+    """The living creature's layers by name (LIVING_CREATURE_LAYERS, in
+    drawing order). See `_living_creature_layers`."""
+    u = UNIT["living_creature"]
+    return {k: _scale(v, u) for k, v in _living_creature_layers().items()}
+
+
+def living_creature(wings="up"):
+    """A living creature of Ezekiel 1, whole: `wings` "up" (spread above,
+    touching its neighbours') or "down" (let down as it stands, 1:24).
+    About 122 high to the wing tips and 120 across."""
+    L = living_creature_layers()
+    skip = "wings_down" if wings == "up" else "wings_up"
+    return [p for k in LIVING_CREATURE_LAYERS if k != skip for p in L[k]]
+
+
+def _rim(cx, cy, rx, ry, w, n=56):
+    """A rim as one outline: round the outside, in across a seam at the
+    foot, back round the inside, so what is behind shows through it."""
+    a0 = -math.pi / 2
+    out = [(cx + rx * math.cos(a0 + 2 * math.pi * i / n),
+            cy + ry * math.sin(a0 + 2 * math.pi * i / n)) for i in range(n + 1)]
+    inn = [(cx + (rx - w) * math.cos(a0 - 2 * math.pi * i / n),
+            cy + (ry - w) * math.sin(a0 - 2 * math.pi * i / n))
+           for i in range(n + 1)]
+    return out + inn
+
+
+def _eye(P, cx, cy, ang, half, high):
+    """An open eye lying along `ang`: the almond of its lids and the iris
+    in it. A dot on a rim is a rivet; the two lids meeting in a point at
+    each end are what make it an eye."""
+    lens = [(-half, 0), (-half * 0.5, high * 0.82), (0, high),
+            (half * 0.5, high * 0.82), (half, 0), (half * 0.5, -high * 0.82),
+            (0, -high), (-half * 0.5, -high * 0.82)]
+    ca, sa = math.cos(ang), math.sin(ang)
+    P.append(("fill", smooth([(cx + x * ca - y * sa, cy + x * sa + y * ca)
+                              for x, y in lens], n=3, k=0.7), "sclera"))
+    P.append(("dot", (cx, cy, high * 0.66), "eye"))
+
+
+WHEEL_IN_WHEEL_LAYERS = ("inner", "outer", "eyes")
+
+
+def _wheel_in_wheel_layers(r=48.0, w=10.0):
+    """A wheel within a wheel (Ezekiel 1:16): two rims at right angles, so
+    it goes any of four ways without turning (1:17), the one face on
+    (`outer`), the other seen nearly edge on inside it (`inner`). High, broad
+    rims set with open eyes all round (`eyes`, 1:18), each lying along its
+    rim. No spokes and no hub: the text gives none. Its foot on the ground
+    at the origin."""
+    cy = r
+    irx, iw = r * 0.40, w * 0.8
+    L = {"inner": [("fill", _rim(0, cy, irx, r - 0.6, iw), "metal")],
+         "outer": [("fill", _rim(0, cy, r, r, w), "metal")]}
+    P = []
+    for k in range(12):
+        a = math.radians(15 + 30 * k)
+        _eye(P, (r - w / 2) * math.cos(a), cy + (r - w / 2) * math.sin(a),
+             a + math.pi / 2, 5.6, 3.0)
+    mx, my = irx - iw / 2, r - 0.6 - iw / 2
+    for a in (-34, 0, 34, 146, 180, 214):
+        a = math.radians(a)
+        _eye(P, mx * math.cos(a), cy + my * math.sin(a),
+             math.atan2(my * math.cos(a), -mx * math.sin(a)), 4.6, 2.5)
+    L["eyes"] = P
+    return L
+
+
+def wheel_in_wheel_layers():
+    """The wheel's layers by name (WHEEL_IN_WHEEL_LAYERS, in drawing
+    order). See `_wheel_in_wheel_layers`."""
+    u = UNIT["wheel_in_wheel"]
+    return {k: _scale(v, u) for k, v in _wheel_in_wheel_layers().items()}
+
+
+def wheel_in_wheel():
+    """A wheel of Ezekiel 1, whole: 96 high, its foot at the origin."""
+    L = wheel_in_wheel_layers()
+    return [p for k in WHEEL_IN_WHEEL_LAYERS for p in L[k]]

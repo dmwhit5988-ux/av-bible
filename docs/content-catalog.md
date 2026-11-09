@@ -274,7 +274,8 @@ Every unbuilt High entry, grouped by the types it carries (an entry with two typ
 ### Ezekiel
 *48 chapters. One of the richest books in the whole Bible for this project — rivals Exodus and Daniel.*
 
-- **Ezekiel 1 & 10** — 🆕 High · 💡 Symbolic diagram. The wheel/throne vision — four living creatures and "a wheel within a wheel."
+- **Ezekiel 1** — ✅ Built · 💡 Symbolic diagram. The vision by the river Chebar as one still drawing that assembles: each verse brings in the part it names, on its word (the storm cloud, the four living creatures, their faces, wings, hooves and hands, the fire, the wheels within wheels and their eyes, the expanse, the sapphire throne, the fire on it and the rainbow). No figure on the throne. *(`generate_ezekiel1_svg.py`, over `svg_figures.living_creature_layers` and `wheel_in_wheel_layers`)*
+- **Ezekiel 10** — 🆕 High · 💡 Symbolic diagram. The same creatures and wheels at the Temple, now named cherubim: the man in linen takes coals from between the wheels, and the glory moves to the threshold and the east gate. Reuses Ezekiel 1's figures.
 - **Ezekiel 4** — 🆕 High · 🔄 + 💡 Diagram. Siege sign-acts: lying on his side for a set number of days (each day representing a year) and building a model siege of Jerusalem on a clay tile — a genuinely literal diagram Ezekiel himself constructs.
 - **Ezekiel 8–11** — 🆕 Med · 🏛️ Diagram. Vision of temple abominations and Yahweh's glory departing.
 - **Ezekiel 37** — 🆕 Med · 💡 Sequence diagram. The valley of dry bones — bones, then sinews, then flesh, then breath.

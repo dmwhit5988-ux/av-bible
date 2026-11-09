@@ -38,7 +38,7 @@
 | Later | **Leviticus 16** and **Leviticus 1–7** (High), **Exodus 29** (Med), **1 Kings 6–7** temple (High) | Reuse `svg_priest.py`, the Tabernacle model (`sanctuary.py`) and its plan (`generate_tabernacle.draw_plan`); the Temple from `temple.py` and its figures in `svg_figures` |
 | Later | **Matthew 2** (map) and **Luke 1–2** (timeline), both High | Neighbours of built chapters; reuse the `svg_matthew_nativity.py` stage |
 | Later | The other short books | Habakkuk 3 and Nahum 2 first (ranked next in [short-books.md](docs/design/short-books.md)), then Obadiah, Joel, Philemon, Jude, Titus, 2 Thessalonians and the rest of Habakkuk and Nahum. That makes 405 verses with Haggai and 2–3 John, and the designs already exist. |
-| Later | Symbolic and architectural set pieces | Daniel 2, 7, 8 and 9; Ezekiel 1 and 10, and 40–43; Zechariah 1–6; Revelation 4–5 and 21–22. High priority, but nothing to reuse. |
+| Later | Symbolic and architectural set pieces | Daniel 2, 7, 8 and 9; Ezekiel 10 (Ezekiel 1 is built, and its creatures and wheels are in `svg_figures`), and 40–43; Zechariah 1–6; Revelation 4–5 and 21–22. High priority, but nothing to reuse. |
 | Later | Revisits | The Hebrews 5 ledger density and one shared mark for the five warnings ([design/hebrews.md](docs/design/hebrews.md), "Known soft spots"); keeping the Matthew 1 count of 41 names and 42 generations consistent on screen ([design/matthew-1.md](docs/design/matthew-1.md)); the Luke 3 time-depth counter (`docs/archive/LUKE3_IDEAS.md`, cross-cutting tricks) |
 
 ## Web
