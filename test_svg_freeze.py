@@ -31,6 +31,22 @@ def base_group(root):
     return gs[0]
 
 
+class PublishedVisuals(unittest.TestCase):
+    def test_every_published_svg_is_well_formed(self):
+        """The app shows a verse in an <img>, which parses it as XML: a file
+        that isn't well-formed (a doubled attribute, say) shows nothing, though
+        an inline render forgives it."""
+        bad = []
+        for root, _dirs, names in os.walk(VISUALS_DIR):
+            for n in names:
+                if n.endswith(".svg"):
+                    try:
+                        ET.parse(os.path.join(root, n))
+                    except ET.ParseError as e:
+                        bad.append(f"{n}: {e}")
+        self.assertEqual(bad, [])
+
+
 class FreezeCases(unittest.TestCase):
     def test_traced_polyline_dash_attrs_removed(self):
         # SvgCanvas.traced(): dash-reveal that freezes at offset 0 becomes a

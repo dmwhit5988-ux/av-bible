@@ -263,7 +263,7 @@
       "kind": "diagram"
     },
     {
-      "_comment": "One family for the seven chapters: one camera over one sheet (the Tabernacle reference page's court plan and offerings table, and the stations round them); each file starts where the one before it ends, and its state is worked out from the spec in canonical order. See docs/design/leviticus-1-7.md.",
+      "_comment": "One family for the seven chapters: a still workbench that files (no camera). Three fixed regions: the court plan strip, the bench where each thing is built on its word, and the dock column of the offerings table, filed into the reference table at each offering's end. One global timeline of elements: each file renders every element's state at its start, so it begins on the frame the file before ends on. Seven section modules build the verses. See docs/design/leviticus-1-7.md.",
       "label": "Leviticus 1-7: the offerings",
       "book": "Leviticus",
       "chapters": [
@@ -279,23 +279,51 @@
       "spec": [
         {
           "file": "leviticus17_spec.py",
-          "edit": "VERSES (each file's stops, shots and beats on their cue words), SHOTS, RANGES, REACH, EXCUSED, REACHED_OFFSCREEN - data only"
+          "edit": "RANGES, CASES, REACH, EXCUSED - data only"
         },
         {
-          "file": "leviticus17_stations.py",
-          "edit": "the Station API and the plan, altar (A), parts board (B), cast (C) and holy place (H): their targets and shots"
+          "file": "leviticus17_wb_s1.py",
+          "edit": "Leviticus 1, the burnt offering (the reference section): each verse's pieces on their cue words"
         },
         {
-          "file": "leviticus17_st_meal.py",
-          "edit": "stations G (the meal offering) and K (its kinds, rules, measure and vessels)"
+          "file": "leviticus17_wb_s2.py",
+          "edit": "Leviticus 2, the meal offering, and its file view"
         },
         {
-          "file": "leviticus17_st_law.py",
-          "edit": "stations M (the causes of 5:1-4) and T (the trespass offering's restitution and wrongs)"
+          "file": "leviticus17_wb_s3.py",
+          "edit": "Leviticus 3 and 4:1-2, the peace offering, and its file view"
         },
         {
-          "file": "leviticus17_st_peace.py",
-          "edit": "stations D (the peace offering's breads and days), S (the priests' shares, no fat, no blood) and L (Sinai)"
+          "file": "leviticus17_wb_s4.py",
+          "edit": "Leviticus 4:3-35, the sin offering's five cases"
+        },
+        {
+          "file": "leviticus17_wb_s5.py",
+          "edit": "Leviticus 5:1-6:8, the sin offering's causes, birds and flour, and the trespass offering, with their file views"
+        },
+        {
+          "file": "leviticus17_wb_s6.py",
+          "edit": "Leviticus 6:9-7:10, the laws of the burnt, meal, sin and trespass offerings and the priests' shares"
+        },
+        {
+          "file": "leviticus17_wb_s7.py",
+          "edit": "Leviticus 7:11-38, the peace offering's law, the bans, the breast and the thigh, 7:37's whole table and 7:38 Sinai"
+        },
+        {
+          "file": "leviticus17_bench.py",
+          "edit": "the engine: the timeline, the clock, the section contract, rendering and QC (the motion budget)"
+        },
+        {
+          "file": "leviticus17_parts.py",
+          "edit": "the plan strip, its places, and the bench's shared parts (the altar set, beasts and cutaways, chips, arrows, not-marks, clears)"
+        },
+        {
+          "file": "leviticus17_dock.py",
+          "edit": "the dock's five columns (every slot a table unit), the tabs, lighting, chip flights and the file view"
+        },
+        {
+          "file": "leviticus17_art.py",
+          "edit": "the drawings the sections share: the meal supplies, cookware, breads, the insets, heaps, flames, hands"
         },
         {
           "file": "offerings.py",

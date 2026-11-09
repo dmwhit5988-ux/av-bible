@@ -1,10 +1,14 @@
-"""The Leviticus 1-7 offerings pictures: the spec covers every verse, its
-cues are words the verses say, only the nine ranges exist, the table's veils
-sit on their words, and the modules import without writing anything.
+"""The Leviticus 1-7 offerings pictures (the workbench that files): every
+verse is built, its cues are words the verses say, every table unit is lit in
+a verse that cites it, only the nine ranges exist, the dock's slots are the
+table's units, the motion budget holds over the whole book with no camera,
+the seams hold by construction, and the modules import without writing
+anything.
 
     .venv\\Scripts\\python.exe -m unittest test_leviticus17
 """
 
+import importlib
 import os
 import re
 import subprocess
@@ -20,79 +24,85 @@ import generate_tabernacle_reference as R
 ROOT = os.path.dirname(os.path.abspath(__file__))
 NINE = [(4, 1, 2), (5, 13, 14), (5, 18, 19), (6, 7, 8), (6, 18, 19),
         (6, 23, 24), (7, 21, 22), (7, 27, 28), (7, 35, 36)]
+MODULES = ["generate_leviticus17_svg", "leviticus17_spec", "leviticus17_bench",
+           "leviticus17_parts", "leviticus17_dock", "leviticus17_art"] + \
+          [f"leviticus17_wb_s{i}" for i in range(1, 8)]
+# a file a section, the busiest of each, and the boundaries' first files
+PROBES = [(1, 12), (2, 4), (3, 1), (3, 9), (4, 3), (4, 7), (5, 1), (5, 6), (6, 9), (6, 28),
+          (7, 11), (7, 15), (7, 31)]
 
 
-class Coverage(unittest.TestCase):
-    def test_every_verse_has_a_plan(self):
-        """Every verse 1:1-7:38 is in exactly one file, the spec has every
-        file in canonical order, and no plan is a stub."""
+def setUpModule():
+    global B, D, P
+    import leviticus17_bench as B
+    import leviticus17_dock as D
+    import leviticus17_parts as P
+    B.build_timeline()
+
+
+class Files(unittest.TestCase):
+    def test_every_verse_is_built(self):
+        """Every verse 1:1-7:38 is in exactly one file, in canonical order;
+        each file belongs to one section, no section is a stub, and every
+        file has a word cued in it."""
         files = G.all_files()
         covered = [cv for fk in files for cv in G.file_verses(fk)]
         want = [(c, v) for c in SPEC.CHAPTERS for v in passages.verse_numbers(SPEC.BOOK, c)]
         self.assertEqual(covered, want)
-        self.assertEqual(list(SPEC.VERSES), files)
-        stubs = [G.ref_str(fk) for fk in files if SPEC.VERSES[fk].stub]
-        self.assertEqual(stubs, [])
-        for fk in files:
-            self.assertTrue(SPEC.VERSES[fk].stops, G.ref_str(fk))
-
-    def test_every_cited_verse_lights_its_unit(self):
-        """Every offerings.py row and thing ref in Lev 1-7 lights its unit,
-        or is in EXCUSED (with a reason) or REACHED_OFFSCREEN; every unit is
-        reached, in a verse that cites it, by 7:37."""
-        verses, tables = G.load_verses()
-        self.assertEqual(G.coverage_gaps(verses, tables), [])
-        hist = G.History(verses, tables)
-        bad, pending = G.qc_run(verses, tables, hist)
-        self.assertEqual((bad, pending), ([], []))
-        for key in G.table_units():
-            self.assertIn(key, hist.first_lit, key)
-
-    def test_the_coverage_rule_bites(self):
-        verses, tables = G.load_verses()
-        pair = ("trespass.by", (6, 2))
-        self.assertIn(pair, tables["EXCUSED"])
-        del tables["EXCUSED"][pair]
-        gaps = G.coverage_gaps(verses, tables)
-        self.assertEqual(len(gaps), 1)
-        self.assertIn("trespass.by: its row cites 6:2", gaps[0])
+        self.assertEqual(len(files), 163)
+        sections = [B.section_of_file(fk) for fk in files]
+        self.assertEqual(sections, sorted(sections))           # contiguous, in order
+        self.assertEqual(sorted(set(sections)), [s[0] for s in B.SECTIONS])
+        for sid, mod, _a, _b in B.SECTIONS:
+            self.assertFalse(getattr(importlib.import_module(mod), "STUB", True), sid)
+        # (a file of the formula "Yahweh spoke to Moses, saying" alone
+        # only clears the bench)
+        cued = {B.VERSE_FILE[cv] for _T, cv, *_r in B.CUES}
+        formula = {fk for fk in files if all(G.verse_text(*cv).startswith("Yahweh spoke to Moses")
+                                             for cv in G.file_verses(fk))}
+        self.assertEqual([G.ref_str(fk) for fk in files if fk not in cued | formula], [])
+        self.assertLessEqual(len(formula - cued), 2)
 
     def test_only_the_nine_ranges(self):
         self.assertEqual(sorted(SPEC.RANGES), NINE)
-        ranges = [k for k in SPEC.VERSES if len(k) == 3]
-        self.assertEqual(sorted(ranges), NINE)
-        singles_in_range = [k for k in SPEC.VERSES if len(k) == 2 and G.range_of(*k)]
-        self.assertEqual(singles_in_range, [])
-        self.assertEqual(len(G.all_files()), 163)
+        self.assertEqual(sorted(fk for fk in G.all_files() if len(fk) == 3), NINE)
 
     def test_range_file_names(self):
         names = [G.file_name(fk) for fk in G.all_files() if len(fk) == 3]
         self.assertEqual(names, [f"Leviticus_{c}_{a}-{b}.svg" for c, a, b in NINE])
         self.assertEqual(G.file_name((1, 5)), "Leviticus_1_5.svg")
 
+    def test_a_range_file_spans_its_verses(self):
+        fk = (4, 1, 2)
+        self.assertAlmostEqual(B.FILE_DUR[fk], G.narration(4, 1) + G.narration(4, 2), places=6)
+        self.assertAlmostEqual(B.VERSE_T0[(4, 2)], B.FILE_T0[fk] + G.narration(4, 1), places=6)
+        # a cue in a range's later verse waits RANGE_LAG more
+        self.assertAlmostEqual(B.said_T(4, 2, "sins"),
+                               B.VERSE_T0[(4, 2)] + G.said(4, 2, "sins") + B.RANGE_LAG, places=6)
+
 
 class Cues(unittest.TestCase):
     def test_cue_words_are_said(self):
-        for fk, V in SPEC.VERSES.items():
-            c, v = fk[0], fk[1]
-            for stop in V.stops:
-                G.shot_cam(stop.shot, V.beast)          # every shot resolves
-                for beat in stop.beats:
-                    cues = [beat[2]]
-                    if len(beat) > 3 and "show" in beat[3]:
-                        cues.append(beat[3]["show"])
-                    for cue in cues:
-                        cw = G.cue_word(cue)
-                        if cw is None:
-                            continue
-                        w, n, _d = cw
-                        hits = G.occurrences(c, v, w)
-                        self.assertGreater(len(hits), n,
-                                           f"Lev {c}:{v} doesn't say {w!r} ({beat})")
+        self.assertGreater(len(B.CUES), 500)
+        for T, (c, v), phrase, n, owner in B.CUES:
+            self.assertGreater(len(G.occurrences(c, v, phrase)), n,
+                               f"{owner}: Lev {c}:{v} doesn't say {phrase!r}")
 
     def test_a_misspelt_cue_fails(self):
         with self.assertRaises(KeyError):
             G.said(1, 5, "aroundd")
+        n = len(B.CUES)
+        with self.assertRaises(KeyError):
+            B.cue(1, 5, "aroundd")
+        with self.assertRaises(KeyError):
+            B.cue(1, 5, "around", 5)                  # said once, not six times
+        self.assertEqual(len(B.CUES), n)
+
+    def test_a_cue_leads_its_word(self):
+        T = B.cue(1, 5, "around")
+        del B.CUES[-1]
+        self.assertAlmostEqual(T, B.VERSE_T0[(1, 5)] + G.said(1, 5, "around") - B.SAY_LEAD,
+                               places=6)
 
     def test_whole_words_only(self):
         text = G.verse_text(1, 3)
@@ -104,29 +114,81 @@ class Cues(unittest.TestCase):
         self.assertTrue(G.occurrences(1, 5, "Aaron's"))
 
 
-class Veils(unittest.TestCase):
+class Coverage(unittest.TestCase):
+    def test_every_cited_unit_is_lit(self):
+        """Every table unit is lit by 7:37, first in a verse that cites it
+        (or its REACH), and every section leaves its boundary as the
+        contract says."""
+        probs, pending, _w, stubs = B.coverage()
+        self.assertEqual((probs, pending, stubs), ([], [], []))
+        self.assertEqual(sorted(G.table_units()), sorted(B.LIT))
+        self.assertEqual(B.boundary_problems(), [])
+
+    def test_the_coverage_rule_bites(self):
+        saved = dict(B.LIT)
+        try:
+            B.LIT["trespass.by"] = B.at(6, 9, 1.0)          # a verse that doesn't cite it
+            probs = B.coverage()[0]
+            self.assertEqual(len(probs), 1)
+            self.assertIn("trespass.by first lit at 6:9", probs[0])
+            del B.LIT["meal.by"]
+            self.assertIn("meal.by is never lit", B.coverage()[0])
+        finally:
+            B.LIT.clear()
+            B.LIT.update(saved)
+
+    def test_tables_name_real_units(self):
+        units = G.table_units()
+        reach, excused = B.reach_tables()
+        for k in list(reach) + list(excused):
+            self.assertIn(k[0] if isinstance(k, tuple) else k, units)
+
+
+class Dock(unittest.TestCase):
+    def test_every_dock_unit_is_a_table_unit(self):
+        """The five columns' slots map 1:1 to the table's units (the WHEN
+        cells excepted: they lift in 7:37's file view), and every slot sits
+        inside the dock's column panel."""
+        D._check_units()
+        have = set()
+        x0, y0, x1, y1 = D.D_X0, D.COL_Y, D.D_X0 + D.D_W, D.COL_BOT
+        for off, (slots, _sk, bottom, _m) in D.LAYOUT.items():
+            self.assertLessEqual(bottom, D.COL_BOT - 6, off)
+            for k, s_ in slots.items():
+                have.add(k.split("#")[0])
+                b = s_.text_box() or s_.box
+                self.assertTrue(x0 <= b[0] and b[2] <= x1 and y0 <= b[1] and b[3] <= y1,
+                                f"{k} {tuple(round(q) for q in b)}")
+        self.assertEqual(have, {k for k in G.table_units() if not k.endswith(".when")})
+
+    def test_icons_clear_the_names_above(self):
+        """BROUGHT's icon rows are far enough apart that no icon is drawn
+        over the name of the thing above it."""
+        for off, (slots, *_r) in D.LAYOUT.items():
+            things = [s_ for s_ in slots.values() if s_.kind == "thing"]
+            for a in things:
+                top = a.icon[1] - a.icon[3]
+                for b in things:
+                    nb = b.text_box()
+                    if b.y < a.y - 1 and abs(b.x - a.x) < 1:
+                        self.assertGreaterEqual(top, nb[3] + D.ICON_GAP - 0.5, (off, a.key, b.key))
+
     def test_each_veil_holds_its_words(self):
-        """Every unit's veil covers the table text it hides, so a change to
-        draw_offerings can't leave the veils adrift."""
-        _plan, table = G.ref_world()
-        texts = []
-        for el, box, is_text in table:
-            if is_text:
-                x, y = float(G._attr(el, "x")), float(G._attr(el, "y"))
-                s = re.sub(r"<[^>]+>", "", el[el.find(">") + 1:])
-                from html import unescape
-                texts.append((unescape(s), x, y))
+        """The file view's table splits draw_offerings by unit: every unit's
+        words are drawn inside its veil's box, so a change to draw_offerings
+        can't leave the veils adrift."""
+        _base, per_unit = D._table_parts()
         units = G.table_units()
         self.assertGreater(len(units), 60)
         for u in units.values():
             x0, y0, x1, y1 = u.box
             ax, ay = u.anchor
             self.assertTrue(x0 <= ax <= x1 and y0 <= ay <= y1, u.key)
-            if ".icon" in u.key:
+            if ".icon" in u.key or u.key.endswith(".when"):
                 continue
-            hit = [t for t in texts if t[0] == u.text
-                   and x0 <= t[1] <= x1 and y0 <= t[2] <= y1]
-            self.assertTrue(hit, f"{u.key}: no {u.text!r} inside its veil {u.box}")
+            words = [re.sub(r"<[^>]+>", "", t) for t in per_unit.get(u.key, ([], []))[1]]
+            from html import unescape
+            self.assertIn(u.text, [unescape(w) for w in words], u.key)
 
     def test_units_by_kind(self):
         units = G.table_units()
@@ -137,150 +199,165 @@ class Veils(unittest.TestCase):
             self.assertIn(key, units)
         self.assertEqual(sum(1 for k in units if k.startswith("sin.who:")), 7)
         self.assertEqual(sum(1 for k in units if re.match(r"sin\.rank\d$", k)), 5)
-        # the table is the reference's, where the design says
         self.assertEqual((R.OFF_X, R.OFF_Y), (2960, 1468))
 
 
+class Motion(unittest.TestCase):
+    """The owner's rules over the whole book (no rendering needed)."""
+
+    def test_no_camera(self):
+        """The frame never moves: the panels and the strip's plan have no
+        events, and only chips, tokens, bench pieces and the file view's
+        column ever travel."""
+        for key in ("panels", "strip.art", "dock.panel"):
+            self.assertEqual(B.ELS[key].events, [], key)
+        for el in B.ELS.values():
+            if el.region in ("base",):
+                self.assertEqual(el.events, [], el.key)
+            for e in el.events:
+                if e["kind"] == "glide":
+                    self.assertTrue(re.match(r"fv\d+\.glide$", el.key), el.key)
+        self.assertEqual({t["kind"] for t in B.TRAVELS} - set(B.TRAVEL_KINDS), set())
+
+    def test_motion_budget(self):
+        """At most 3 chip flights and 1 file view a file, every travel at
+        most 560 px (the filing glide aside) and 800 px/s at its peak, one
+        thing travelling at a time and nothing lighting up during it."""
+        bad = {}
+        for fk in G.all_files():
+            p = B.budget_problems(fk)
+            if p:
+                bad[G.ref_str(fk)] = p
+        self.assertEqual(bad, {})
+        for t in B.TRAVELS:
+            if t["kind"] != "filing glide":
+                self.assertLessEqual(t["px"], B.MAX_FLIGHT_PX + 0.5, t["what"])
+            self.assertLessEqual(t["peak"], B.MAX_PEAK + 0.5, t["what"])
+        per = {}
+        for t in B.TRAVELS:
+            if t["kind"] == "chip flight":
+                per[t["file"]] = per.get(t["file"], 0) + 1
+        self.assertLessEqual(max(per.values()), B.MAX_FLIGHTS)
+        views = [B.file_of(T) for T, _o, _s in B.FILE_VIEWS]
+        self.assertEqual(len(views), len(set(views)))
+        self.assertEqual([o for _T, o, _s in B.FILE_VIEWS],
+                         ["burnt", "meal", "peace", "sin", "trespass", "peace"])
+
+    def test_timing_and_regions(self):
+        """Nothing begins after the narration - 0.1 s, the last animation
+        ends 0.35 s before the MP3 does, and at most one region begins an
+        animation in any 0.3 s (one gesture's events share a group)."""
+        bad = {}
+        for fk in G.all_files():
+            p = B.timing_problems(fk) + B.region_problems(fk)
+            if p:
+                bad[G.ref_str(fk)] = p
+        self.assertEqual(bad, {})
+
+    def test_seams_by_construction(self):
+        """A file renders every element's state at its start, so it begins
+        on the frame the file before ends on; what could break that is an
+        animation still running at a file's end."""
+        bad = {G.ref_str(fk): B.seam_problems(fk) for fk in G.all_files() if B.seam_problems(fk)}
+        self.assertEqual(bad, {})
+        # the state a file starts on is the state the file before ends on
+        files = G.all_files()
+        a, b = files[16], files[17]                          # 1:17 | 2:1
+        self.assertEqual(B.file_end(a), B.FILE_T0[b])
+        for el in B.ELS.values():
+            self.assertEqual(el.state(B.file_end(a)), el.state(B.FILE_T0[b]), el.key)
+
+    def test_section_boundaries_and_the_books_end(self):
+        """Every section ends on the contract (bench.boundary_problems), and
+        at the book's end nothing of the last section's workshop is on under
+        the file view (no case outline, no chip)."""
+        self.assertEqual(B.boundary_problems(), [])
+
+    def test_glides_keep_their_words_clear(self):
+        """A filing glide's words never touch the file view's keys at its
+        quarter, half, three-quarter and nine-tenths points, and the filed
+        column's own key waits for it to land."""
+        for T, off, _o in B.FILE_VIEWS:
+            fk = B.file_of(T)
+            self.assertEqual(B.glide_text_problems(fk), [], G.ref_str(fk))
+        for el in B.ELS.values():
+            if el.key.endswith(".ownkey"):
+                n = el.key.split(".")[0]
+                land = next(e["T"] + e["dur"] for e in B.ELS[f"{n}.glide"].events
+                            if e["kind"] == "glide")
+                ins = [e["T"] for e in el.events if e["kind"] == "in"]
+                self.assertEqual(len(ins), 1, el.key)
+                self.assertAlmostEqual(ins[0], land, places=6)
+
+    def test_a_trace_can_share_a_group(self):
+        """3:17's not-mark over the blood is one gesture with the drop and
+        NOT EATEN's unveil (one group: the region rule counts it once)."""
+        fk = (3, 17)
+        starts = B.region_starts(B.FILE_T0[fk], B.file_end(fk))
+        groups = {g for _T, _reg, g, what in starts if what.startswith("s3.ban.blood.not")}
+        self.assertEqual(groups, {"s3ban.blood"})
+
+
 class Render(unittest.TestCase):
-    def test_probes_pass_qc(self):
-        verses, tables = G.load_verses()
-        hist = G.History(verses, tables)
-        for fk in ((1, 5), (4, 7)):
-            svg, rep = G.render(fk, verses, tables, hist)
-            self.assertEqual(rep["problems"], [], G.ref_str(fk))
-            self.assertNotIn("clip-path", svg)
-            self.assertNotIn('repeatCount="indefinite"', svg)
-
-    def test_state_is_derived(self):
-        verses, tables = G.load_verses()
-        hist = G.History(verses, tables)
-        self.assertIn("burnt.head", hist.before[(1, 4)])
-        self.assertNotIn("burnt.head", hist.before[(1, 3)])
-        self.assertIn("A.fire", hist.before[(1, 8)])
-
-
-class Fixes(unittest.TestCase):
-    """The core's chapter 1 fixes: B scoped to the offering, one outline
-    round an entry and its who-line, no label cut by the frame, size."""
-
     @classmethod
     def setUpClass(cls):
-        cls.verses, cls.tables = G.load_verses()
-        cls.hist = G.History(cls.verses, cls.tables)
-        cls.out = {fk: G.render(fk, cls.verses, cls.tables, cls.hist)
-                   for fk in ((1, 3), (1, 5), (1, 9), (3, 4), (4, 7))}
+        cls.out = {}
+        for fk in PROBES:
+            svg = B.render_file(fk)
+            cls.out[fk] = (svg, B.qc_file(fk, svg))
 
-    def test_offering_of(self):
-        import leviticus17_stations as ST
-        self.assertEqual(ST.offering_of((1, 9)), "burnt")
-        self.assertEqual(ST.offering_of((3, 4)), "peace")
-        self.assertEqual(ST.offering_of((4, 9)), "sin")
-        self.assertEqual(ST.offering_of((7, 4)), "trespass")
-        self.assertEqual(ST.offering_of((7, 31)), "peace")
-        self.assertEqual(ST.offering_of((7, 24)), "")
+    def test_probes_are_well_formed_xml(self):
+        """An <img> parses a verse strictly: a doubled attribute (7:15-19's
+        dashed divider once had two stroke-dasharrays) shows nothing."""
+        import xml.etree.ElementTree as ET
+        for fk, (svg, _rep) in self.out.items():
+            ET.fromstring(svg)
+        self.assertNotEqual(B.xml_problems('<svg a="1" a="2"/>'), [])
+        self.assertEqual(B.xml_problems('<svg a="1"/>'), [])
 
-    def test_parts_board_is_the_offerings_own(self):
-        """3:4 shows the peace law's parts only, none of the burnt
-        offering's chips, and one word for the fat by the loins."""
-        before = {k for k in self.hist.before[(3, 4)] if k.startswith("B.")}
-        self.assertTrue(before and all("@burnt:" in k or "@peace:" in k for k in before), before)
-        _svg, rep = self.out[(3, 4)]
-        words = {k for k in rep["words"] if k.startswith("B.")}
-        self.assertEqual(words, {"B.kidneys", "B.kidney_fat", "B.liver_cover",
-                                 "B.fat_cover", "B.fat_on"})     # 3:3's and 3:4's
-        self.assertIn("B.loins", rep["outlined"])          # its line still lights
+    def test_a_traced_line_cannot_be_dashed(self):
+        with self.assertRaises(ValueError):
+            B.traced_svg([(0, 0), (10, 0)], (1, 2, 3), 2, extra=' stroke-dasharray="4 5"')
 
-    def test_each_law_keeps_its_own_altar_and_cast(self):
-        """The burnt offering's stack isn't on the altar at the meal
-        offering, nor its ram and goat beside the peace offering's ox."""
-        import leviticus17_stations as ST
-        self.assertEqual(ST.section_of((2, 2)), "meal:For the people")
-        self.assertEqual(ST.section_of((6, 9)), "burnt:For the priests")
-        self.assertEqual(ST.section_of((7, 23)), "")
-        A = ST.registry()["A"]
-        before = self.hist.before[(2, 2)]
-        self.assertIn(A.pkey("A.slot.pieces", G.FileV(self.verses[(1, 8)], (1, 8))), before)
-        self.assertNotIn(A.pkey("A.slot.pieces", G.FileV(self.verses[(2, 2)], (2, 2))), before)
-        slots = self.hist.slots[(3, 1)]
-        self.assertEqual(slots.get(("C", "mid@1:10")), "C.ram")
-        self.assertFalse([k for k in slots if k[0] == "C" and k[1].endswith("@3:1")])
-        self.assertEqual(self.hist.slots[(3, 2)].get(("C", "left@3:1")), "C.ox")
+    def test_every_published_verse_parses(self):
+        """Every Leviticus 1-7 file under web/visuals is well-formed XML."""
+        import glob
+        import xml.etree.ElementTree as ET
+        from config import VISUALS_DIR
+        files = []
+        for c in range(1, 8):
+            files += glob.glob(os.path.join(VISUALS_DIR, "Leviticus", str(c), "*.svg"))
+        self.assertEqual(len(files), len(G.all_files()))
+        for f in files:
+            with self.subTest(os.path.basename(f)):
+                ET.parse(f)
 
-    def test_each_case_keeps_its_own_marks(self):
-        """The bird's blood isn't on the altar's side at the meal offering,
-        5:11's struck oil isn't struck at 6:20, the lamb of 3:6-11 isn't
-        beside the goat of 3:12-16, and the ram's fat isn't on the wood when
-        the bird is burned."""
-        import leviticus17_stations as ST
-        self.assertEqual(ST.case_of((1, 15)), "1:14")
-        self.assertEqual(ST.case_of((6, 18, 19)), "6:14")
-        reg = ST.registry()
-        A, K = reg["A"], reg["K"]
-        fv = lambda fk: G.FileV(self.verses[fk], fk)
-        self.assertNotIn(A.pkey("A.side", fv((2, 9))), self.hist.before[(2, 9)])
-        self.assertIn(A.pkey("A.side", fv((1, 16))), self.hist.before[(1, 16)])
-        self.assertNotIn(A.pkey("A.slot.fat", fv((1, 15))), self.hist.before[(1, 15)])
-        self.assertNotIn(K.pkey("K.not:oil", fv((6, 20))), self.hist.before[(6, 20)])
-        cast = {v for k, v in self.hist.slots[(3, 13)].items() if k[0] == "C" and k[1].endswith("@3:12")}
-        self.assertEqual(cast, set())          # 3:13 brings its goat in itself
-        self.assertIn(("light", "C.goat", "@"), SPEC.VERSES[(3, 13)].stops[0].beats)
-
-    def test_a_move_leaves_its_end_state(self):
-        """7:31's fat at the altar and breast with the priests are still
-        there at 7:32."""
-        B = __import__("leviticus17_stations").registry()["B"]
-        fv = G.FileV(self.verses[(7, 32)], (7, 32))
-        before = self.hist.before[(7, 32)]
-        self.assertIn(B.pkey("B.at:altar:fat", fv), before)
-        self.assertIn(B.pkey("B.at:priests:breast", fv), before)
-
-    def test_the_file_before_is_carried_in(self):
-        """What 1:4 drew and 1:5 doesn't (the offerer's hand on the head)
-        is in 1:5's first frame, its animations already played (begin < 0),
-        and fades as the camera moves."""
-        svg, rep = G.render((1, 5), self.verses, self.tables, self.hist)
-        self.assertIn("C.hand", rep["carried"])
-        self.assertIn('begin="-', svg)
-        self.assertEqual(G.shift_times('<animate begin="2.00s" dur="0.50s"/>', 5.0),
-                         '<animate begin="-0.49s" dur="0.50s"/>')
-
-    def test_rests_are_whole_cards_at_the_lens(self):
-        """Every stop rests on a home, a station's whole card or the whole
-        table (7:37); a station's card, Sinai's too, is at STATION_S and a
-        close-up name is refused. (This replaces the close-ups' head test:
-        there are no close-ups to cut a head.)"""
-        import leviticus17_stations as ST
-        homes = set(SPEC.SHOTS)
-        cards = {k for k, st in ST.registry().items() if not st.world}
-        for fk, V in SPEC.VERSES.items():
-            for stop in V.stops:
-                self.assertIn(stop.shot, homes | cards | G.LENS_EXEMPT, G.ref_str(fk))
-                s = G.shot_cam(stop.shot, V.beast)[0]
-                if stop.shot not in G.LENS_EXEMPT:
-                    self.assertEqual(s, SPEC.LENS, G.ref_str(fk))
-        for k in cards:
-            ox, oy = SPEC.STATIONS[k]
-            self.assertEqual(G.shot_cam(k), (SPEC.STATION_S, ox + 512, oy + 288))
-        for name in ("B.inner", "A.fire", "C.head"):
-            with self.assertRaises(KeyError):
-                G.shot_cam(name, "bull")
-
-    def test_one_outline_round_entry_and_who_line(self):
-        self.assertIn("burnt.burns:the whole/who", G.table_units())
-        _svg, rep = self.out[(1, 9)]
-        self.assertIn("burnt.burns:the whole", rep["outlined"])
-        self.assertFalse([k for k in rep["outlined"] if k.endswith("/who")])
-
-    def test_no_plan_label_cut_at_a_plan_shot(self):
-        for name, cam in SPEC.SHOTS.items():
-            self.assertEqual(G.plan_labels_cut(cam), [], name)
-        # the rule bites: the core's old plan:door frame cut "lamp stand"
-        self.assertIn("lamp stand", G.plan_labels_cut((1.9, 1470, 800)))
-
-    def test_probes_under_70_kb(self):
+    def test_probes_pass_qc(self):
         for fk, (svg, rep) in self.out.items():
             self.assertEqual(rep["problems"], [], G.ref_str(fk))
+            for bad in ("clip-path", "<mask", "<filter", "repeatCount"):
+                self.assertNotIn(bad, svg, G.ref_str(fk))
+
+    def test_text_floor(self):
+        for fk, (_svg, rep) in self.out.items():
+            self.assertGreaterEqual(rep["min_text"], B.MIN_TEXT, G.ref_str(fk))
+
+    def test_probes_under_70_kb(self):
+        for fk, (svg, _rep) in self.out.items():
             self.assertLess(len(svg.encode()), 70 * 1024, G.ref_str(fk))
+
+    def test_file_views_under_the_cap(self):
+        for fk in ((5, 13, 14), (6, 7, 8), (7, 37)):
+            self.assertLess(len(B.render_file(fk).encode()), B.KB_MAX * 1024, G.ref_str(fk))
+
+    def test_the_files_after_a_view_are_light(self):
+        """5:15 opens in the workshop (5:13-14's view returns inside it), and
+        7:38 leaves out what 7:37's table hides: both under the 70 KB aim."""
+        for fk in ((5, 15), (7, 38)):
+            self.assertLess(len(B.render_file(fk).encode()), B.KB_AIM * 1024, G.ref_str(fk))
+        fk = (5, 13, 14)
+        n = next(i for i, (T, _o, _s) in enumerate(B.FILE_VIEWS, 1) if B.file_of(T) == fk)
+        self.assertFalse(B.ELS[f"fv{n}.table"].state(B.file_end(fk))[0])
 
     def test_compaction_keeps_the_geometry(self):
         d = G.path_d("10.04,20 10.56,20.5 9.95,19.42", True)
@@ -296,82 +373,22 @@ class Fixes(unittest.TestCase):
         self.assertIn('stroke-dasharray="7 28"', c)
         self.assertEqual(c.count("<polyline"), c.count("</polyline>"))
         self.assertEqual(c.count("<path"), 2)
-
-    def test_a_figure_drawn_twice_is_shared(self):
-        import leviticus17_stations as ST
-        import svg_figures as F
-        ctx = ST.Ctx(None, (7, 31), None)
-        once = ctx.resolve_figures(ctx.figure(F.priest(), 10, 20, 1.0))
-        self.assertNotIn("<use", once)
-        self.assertEqual(ctx.defs, {})
-        two = ctx.resolve_figures(ctx.figure(F.priest(), 10, 20, 1.0)
-                                  + ctx.figure(F.priest(), 60, 20, 1.0))
-        self.assertEqual(two.count("<use"), 2)
-        self.assertEqual(len(ctx.defs), 1)
-
-    def test_a_hold_is_two_keyframes(self):
-        cams = [(1.0, 100.0, 100.0)] * 50 + [(1.0 + i / 40, 100.0 + i, 100.0) for i in range(41)]
-        keep = G.keyframes(cams)
-        self.assertEqual(keep[:2], [0, 50])     # the hold runs to frame 50
-        self.assertEqual(keep[-1], len(cams) - 1)
-
-
-class Calm(unittest.TestCase):
-    """The owner's "less whiplash" (the one lens): the whole run's camera
-    within its budgets, and no file over the per-file ones."""
-
-    def test_camera_is_calm(self):
-        verses, _t = G.load_verses()
-        P = G.plans(verses)
-        legs = {fk: G.camera_legs(p) for fk, p in P.items()}
-        every = [lg for ls in legs.values() for lg in ls]
-        narr = sum(p.narr for p in P.values())
-        self.assertLessEqual(len(every), 150)
-        self.assertLessEqual(sum(lg["pan"] for lg in every), 200)
-        self.assertLessEqual(sum(lg["zoom"] for lg in every), 2.5)
-        self.assertLessEqual(sum(lg["arc"] for lg in every), 1.5)
-        self.assertLessEqual(sum(lg["dur"] for lg in every), 0.26 * narr)
-        # the still spans between one move's end and the next's start,
-        # across the seams
-        rests, still = [], None
-        for p in P.values():
-            t = 0.0
-            for k, d in enumerate(p.D):
-                if d <= 0:
-                    continue
-                if still is not None:
-                    rests.append(round(still + p.starts[k] - t, 2))
-                still, t = 0.0, p.starts[k] + d
-            if still is not None:
-                still += p.narr - t
-        self.assertLessEqual(sum(1 for r in rests if r < 1.5), 20)
-        for fk, ls in legs.items():
-            ref = G.ref_str(fk)
-            self.assertLessEqual(len(ls), G.MAX_LEGS, ref)
-            self.assertLessEqual(sum(lg["pan"] for lg in ls), G.MAX_FILE_PAN, ref)
-            self.assertLessEqual(sum(lg["zoom"] for lg in ls), G.MAX_FILE_ZOOM, ref)
-            for lg in ls:
-                self.assertLessEqual(lg["pan"], G.MAX_LEG_PAN, ref)
-                self.assertLessEqual(round(lg["peak"]), G.MAX_PEAK_PX_S, ref)
-                if lg["lens"]:
-                    self.assertEqual(lg["kind"], "pan", ref)
-
-    def test_a_pan_is_paced(self):
-        """lev_duration keeps a long pan's eased peak at PAN_PEAK_PX_S, and
-        caps it at PAN_MAX_D."""
-        s = SPEC.LENS
-        d = G.lev_duration((s, 0, 0), (s, 3000, 0))
-        self.assertAlmostEqual(d, 3000 * s * G.EASE_PEAK / G.PAN_PEAK_PX_S, places=6)
-        self.assertEqual(G.lev_duration((s, 0, 0), (s, 9000, 0)), G.PAN_MAX_D)
-        self.assertEqual(G.lev_duration((s, 0, 0), (s, 0, 0)), 0.0)
+        # a text's inherited font and default anchor are dropped, the root's kept
+        from svg_surface import FONT_FAMILY
+        root = f'<svg font-family="{FONT_FAMILY}"><text x="1" font-family="{FONT_FAMILY}" ' \
+               f'text-anchor="start">a</text><text text-anchor="middle">b</text></svg>'
+        c = G.compact(root)
+        self.assertEqual(c.count("font-family"), 1)
+        self.assertNotIn('text-anchor="start"', c)
+        self.assertIn('text-anchor="middle"', c)
 
 
 class ImportSafety(unittest.TestCase):
     def test_import_writes_nothing(self):
         with tempfile.TemporaryDirectory() as d:
-            code = ("import sys; sys.path.insert(0, %r); import generate_leviticus17_svg, "
-                    "leviticus17_spec, leviticus17_stations; "
-                    "leviticus17_stations.registry()" % ROOT)
+            code = ("import sys; sys.path.insert(0, %r); " % ROOT
+                    + "; ".join(f"import {m}" for m in MODULES)
+                    + "; import leviticus17_bench as B; B.build_timeline()")
             r = subprocess.run([sys.executable, "-c", code], cwd=d, capture_output=True,
                                text=True, timeout=300)
             self.assertEqual(r.returncode, 0, r.stderr)

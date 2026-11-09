@@ -91,7 +91,7 @@ Every unbuilt High entry, grouped by the types it carries (an entry with two typ
 ### Leviticus
 *27 chapters. Ritual law translates unusually well into charts and cycle diagrams.*
 
-- **Leviticus 1–7** — ✅ Built · 📊 Comparison chart. The five offerings (burnt, meal, peace, sin, trespass) as the Tabernacle reference page's offerings table filling in as the law is read: every verse is a camera over the court plan, the table and eleven stations (the altar, a labelled cutaway of the animal, the cast, the holy place, the meal, the kitchen, the causes, the trespass, the peace law, the shares and bans, and Sinai), and each cell unveils on the word of the verse it cites. *(`generate_leviticus17_svg.py` + `leviticus17_spec.py`, over `offerings.py` and `sanctuary.py`; design: `docs/design/leviticus-1-7.md`)*
+- **Leviticus 1–7** — ✅ Built · 📊 Comparison chart. The five offerings (burnt, meal, peace, sin, trespass) on a still workbench that files: each verse's thing is built on its word under the court plan, a chip glides from it into the offerings table's column, and at each offering's end the column is filed into the Tabernacle reference page's table. No camera. *(`generate_leviticus17_svg.py`, the engine `leviticus17_bench.py` and seven section modules `leviticus17_wb_s1.py`–`_s7.py`, over `offerings.py` and `sanctuary.py`; design: `docs/design/leviticus-1-7.md`)*
 - **Leviticus 8–9** — 🆕 Med · 🔄 Process diagram. The ordination of Aaron and his sons, step by step.
 - **Leviticus 11** — 🆕 Med · 📊 Chart. Clean vs. unclean animals — a natural two-column chart.
 - **Leviticus 16** — 🆕 High · 🔄 Process diagram. The Day of Atonement's precise ritual sequence — the two goats, the entry behind the veil.
