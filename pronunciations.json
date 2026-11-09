@@ -1497,8 +1497,7 @@
       "ipa": "/ɔlmˈaɪtiː/",
       "ref": "Genesis 17:1",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667,
+      "status": "ok",
       "ipa_src": "cmudict"
     },
     "Abraham": {
@@ -18666,16 +18665,16 @@
       "ipa": "/dʒəˈhɔɪ.ə.kɪn/",
       "ref": "2 Chronicles 36:8",
       "override": false,
-      "status": "unfixed",
-      "score": 0.667
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Chaldeans": {
       "say": "kal-DEE-uhnz",
       "ipa": "/kælˈdiː.ənz/",
       "ref": "2 Chronicles 36:17",
       "override": false,
-      "status": "ok",
-      "score": 0.938
+      "use_ipa": true,
+      "status": "fixed"
     },
     "Persia": {
       "say": "PUR-zhuh",
@@ -22100,8 +22099,8 @@
       "ipa": "/ˈkiː.bər/",
       "ref": "Ezekiel 1:1",
       "override": true,
+      "use_ipa": true,
       "status": "fixed",
-      "score": 0.5,
       "ipa_src": "generated"
     },
     "Buzi": {
@@ -22109,8 +22108,8 @@
       "ipa": "/ˈbjuː.zaɪ/",
       "ref": "Ezekiel 1:3",
       "override": false,
-      "status": "ok",
-      "score": 0.8,
+      "use_ipa": true,
+      "status": "fixed",
       "ipa_src": "isbe"
     },
     "Ezekiel": {
@@ -22118,8 +22117,7 @@
       "ipa": "/ˈɛzɪkiːl/",
       "ref": "Ezekiel 1:3",
       "override": false,
-      "status": "unfixed",
-      "score": 0.5,
+      "status": "ok",
       "ipa_src": "cmudict"
     },
     "Aviv": {
