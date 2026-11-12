@@ -5278,15 +5278,6 @@ LIVING_CREATURE_FACES = {"man": (0.0, 82.0, 9.5), "lion": (-17.0, 81.0, 9.5),
                          "ox": (18.0, 82.0, 10.0)}
 CREATURE_FACE_KINDS = ("man", "lion", "ox", "eagle")
 
-_LC_WING_UP = [(9, 66), (20, 80), (34, 96), (48, 110), (60, 122), (57, 106),
-               (50, 90), (42, 76), (34, 64), (27, 56), (20, 54), (14, 58)]
-_LC_WING_DOWN = [(9, 67), (22, 71), (36, 67), (48, 55), (57, 37), (50, 45),
-                 (40, 52), (30, 54), (21, 52), (14, 57)]
-_LC_WING_COVER = [(1.8, 53.8), (6.9, 62), (12, 69.4), (16.2, 73.8),
-                  (17.9, 67.9), (17.1, 56), (15.4, 42.7), (12.9, 29.4),
-                  (9.4, 22), (6, 30.9), (3.5, 44.2)]
-
-
 def _move(parts, dx, dy, k=1.0, flip=1):
     """Parts scaled by k, turned by flip, and moved to (dx, dy)."""
     out = []
@@ -5422,17 +5413,122 @@ def creature_face(kind):
     return _scale(_creature_face(kind), UNIT["living_creature"])
 
 
-def _lc_wings(span, quills):
+def feathered_wing(root, wrist, tip, sx=1, n=13, a0=-98.0, a1=-12.0,
+                   l0=16.0, l1=32.0, w=None, eyes=(), eye=(5.2, 3.0)):
+    """A feathered wing: an arm from `root` through `wrist` to `tip`, the
+    flight feathers off it close enough to close into one surface with a
+    scalloped edge, longest at the tip, and a row of coverts over their
+    roots. Angles are in degrees (0 = outward, 90 = up): `a0` is how the
+    feathers hang at the root and `a1` at the tip. `sx` = -1 mirrors it.
+
+    `eyes` are places along the arm (0 root to 1 tip) where an open eye
+    lies on the feather there, laid over every feather so none is cut by
+    its neighbour: Ezekiel 10:12 and Revelation 4:8 put eyes on the wings.
+    `eye` is their half length and half height.
+
+    A wing drawn as one leaf with a few quill lines is a blade; the
+    separate feathers are what make it a wing at any size."""
+    cx = 2 * wrist[0] - (root[0] + tip[0]) / 2
+    cy = 2 * wrist[1] - (root[1] + tip[1]) / 2
+
+    def bez(t):
+        u = 1 - t
+        return (u * u * root[0] + 2 * u * t * cx + t * t * tip[0],
+                u * u * root[1] + 2 * u * t * cy + t * t * tip[1])
+
+    def feather(t):
+        a = math.radians(a0 + (a1 - a0) * t ** 1.25)
+        return bez(t), (math.cos(a), math.sin(a)), l0 + (l1 - l0) * t ** 0.8
+    span = (math.hypot(wrist[0] - root[0], wrist[1] - root[1])
+            + math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]))
+    w = w or span / n * 2.1
     P = []
-    for sx in (-1, 1):
-        P.append(("fill", smooth([(sx * x, y) for x, y in span], n=4),
-                  "wing"))
-        for x, y in quills:
-            P.append(("line", [(sx * (12 + (x - 12) * 0.22),
-                                62 + (y - 62) * 0.22),
-                               (sx * x * 0.95, 62 + (y - 62) * 0.95)],
-                      "rule"))
+    for scale, mat, m in ((1.0, "wing", n), (0.5, "mantle", n - 1)):
+        for i in range(m):
+            (px, py), (dx, dy), L = feather(1 - i / (m - 1) * 0.9)
+            L *= scale
+            P.append(("fill", taper(
+                [(sx * px, py), (sx * (px + dx * L * 0.55), py + dy * L * 0.55),
+                 (sx * (px + dx * L), py + dy * L)],
+                [w * 0.78, w, w * 0.4]), mat))
+    P.append(("fill", taper([(sx * x, y) for x, y in
+                             (bez(t) for t in (0, 0.25, 0.5, 0.75, 1))],
+                            [8, 7, 5.6, 4, 2.0]), "mantle"))
+    for t in eyes:
+        (px, py), (dx, dy), L = feather(t)
+        _eye(P, sx * (px + dx * L * 0.68), py + dy * L * 0.68,
+             math.atan2(dy, sx * dx), eye[0], eye[1])
     return P
+
+
+def feathered_wings(**kw):
+    """A pair of `feathered_wing`s, mirrored about the figure's middle."""
+    return feathered_wing(sx=-1, **kw) + feathered_wing(sx=1, **kw)
+
+
+def folded_wing(L, W, rows=5, eyes=0, eye=(5.0, 2.9)):
+    """A folded wing pointing +x from the origin, `L` long and `W` across,
+    laid in rows of feathers like shingles, the rows nearer the shoulder
+    over those nearer the tip. `eyes` (1 or 2) sets open eyes down its
+    middle, over the feathers. For a wing that covers a body, a face or
+    the feet: turn it with `_turn` and place it with `_move`."""
+    P, E = [], []
+    fw = W / 3.0
+    for r in range(rows - 1, -1, -1):
+        u = r / (rows - 1)
+        x = L * (0.08 + 0.60 * u)
+        h = (W / 2) * math.sin(math.pi * (0.20 + 0.70 * u))
+        n = max(1, int(round(2 * h / fw)))
+        fl = L * 0.36
+        for j in range(n):
+            y = 0.0 if n == 1 else -h + fw / 2 + (2 * h - fw) * j / (n - 1)
+            P.append(("fill", taper(
+                [(x, y), (x + fl * 0.55, y * 0.94), (x + fl, y * 0.72)],
+                [fw * 0.86, fw, fw * 0.42]), "wing"))
+        if eyes and r in ((1, 3) if eyes > 1 else (2,)):
+            E.append(x + fl * 0.5)
+    for ex in E:
+        _eye(P, ex, 0, 0, eye[0], eye[1])
+    return P
+
+
+def _turn(parts, deg):
+    """Parts turned about the origin (degrees, anticlockwise)."""
+    a = math.radians(deg)
+    ca, sa = math.cos(a), math.sin(a)
+    out = []
+    for kind, d, m in parts:
+        if kind == "dot":
+            out.append((kind, (d[0] * ca - d[1] * sa, d[0] * sa + d[1] * ca,
+                               d[2]), m))
+        else:
+            out.append((kind, [(x * ca - y * sa, x * sa + y * ca)
+                               for x, y in d], m))
+    return out
+
+
+def _calm_face():
+    """A man's face from in front, beardless and still: the creature's own
+    face, where `_creature_face("man")` is the card's bearded one."""
+    P = [("dot", (0, 0, 9), "skin")]
+    P.append(("fill", smooth([(-9.4, -1), (-9, 7), (-4, 11.4), (0, 10.4),
+                              (4, 11.4), (9, 7), (9.4, -1), (6.4, 4.4),
+                              (0, 5.6), (-6.4, 4.4)]), "hair"))
+    for sx in (-1, 1):
+        P.append(("fill", taper([(sx * 1.8, 1.6), (sx * 3.5, 2.2),
+                                 (sx * 5.4, 1.5)], [0.7, 1.0, 0.6]), "hair"))
+        P.append(("dot", (sx * 3.5, 0.2, 0.9), "eye"))
+    P.append(("line", [(-1.6, -4.6), (1.6, -4.6)], "rule"))
+    return P
+
+
+# The creature's two great wings, lifted to touch its neighbours' and let
+# down (1:24), and where along each the eyes lie.
+_LC_UP = dict(root=(8, 70), wrist=(26, 90), tip=(38, 104), a0=-80, a1=62,
+              l0=11, l1=23)
+_LC_DOWN = dict(root=(8, 68), wrist=(29, 72), tip=(46, 54), a0=-104, a1=-56,
+                l0=10, l1=21)
+_LC_EYES = (0.96, 0.78, 0.6, 0.42, 0.24)
 
 
 def _living_creature_layers():
@@ -5440,22 +5536,27 @@ def _living_creature_layers():
     drawing order, so a scene can bring each in on the verse that says it.
 
     The likeness of a man (1:5). Of its four faces (1:10) it shows the
-    three one would see from in front, and plainly: the man's, with the
-    lion's in profile at its right hand (our left) and the ox's at its
-    left. The eagle's is behind and is not drawn; `creature_face` draws any
-    of the four from in front, for a scene that turns the head. Four
-    wings: two spread upward to touch its neighbours' (`wings_up`;
-    `wings_down` is the same pair let down, 1:24) and two covering the
-    body (1:11). A man's hands under the wings (1:8). Straight legs on a
-    calf's hooves, in `metal`, bright as burnished bronze (1:7)."""
+    three one would see from in front: the man's, with the lion's in
+    profile at its right hand (our left) and the ox's at its left. The
+    eagle's is behind and is not drawn; `creature_face` draws any of the
+    four from in front, for a scene that turns the head. Four wings, all
+    feathered: two spread upward to touch its neighbours' (`wings_up`;
+    `wings_down` is the same pair let down, 1:24) and two folded over the
+    body (`cover`, 1:11). A man's hands under the wings (1:8). Straight
+    legs on a calf's hooves, in `metal`, bright as burnished bronze (1:7).
+
+    It is full of eyes, on the wings, the folded wings and the hands: the
+    owner's choice of one merged cast (2026-11-11), from Ezekiel 10:12 and
+    Revelation 4:8. Ezekiel 1 itself puts eyes only on the wheels."""
     L = {}
-    L["wings_up"] = _lc_wings(_LC_WING_UP, _LC_WING_UP[2:5])
-    L["wings_down"] = _lc_wings(_LC_WING_DOWN, _LC_WING_DOWN[2:5])
+    L["wings_up"] = feathered_wings(eyes=_LC_EYES, **_LC_UP)
+    L["wings_down"] = feathered_wings(eyes=_LC_EYES, **_LC_DOWN)
     P = []
     for sx in (-1, 1):
         P.append(("fill", taper([(sx * 13, 63), (sx * 23, 54),
                                  (sx * 30, 46)], [5.4, 4.4, 3.6]), "skin"))
         P.append(("dot", (sx * 31.4, 44.6, 2.7), "skin"))
+        _eye(P, sx * 31.4, 44.6, 0, 3.6, 2.1)
     L["hands"] = P
     P = [("fill", smooth([(-12, 70), (12, 70), (13, 50), (10, 33),
                           (-10, 33), (-13, 50)]), "robe")]
@@ -5473,20 +5574,14 @@ def _living_creature_layers():
     L["hooves"] = P
     P = []
     for sx in (-1, 1):                                  # the wings that cover
-        P.append(("fill", smooth([(sx * x, y) for x, y in _LC_WING_COVER],
-                                 n=4), "wing"))
-        for k in (0.3, 0.55, 0.8):
-            P.append(("line", [(sx * (4 + 11 * k), 66 - 4 * k),
-                               (sx * (7 + 6 * k), 30 + 8 * (1 - k))],
-                      "rule"))
+        P += _move(_turn(folded_wing(46, 17, eyes=2), -84 if sx == 1 else -96),
+                   sx * 8.5, 71)
     L["cover"] = P
     L["lion"] = _move(_lion_side(), -9, 81, 1.0, flip=-1)
     L["ox"] = _move(_ox_side(), 9, 81, 1.0)
-    P = []
-    _head(P, 82, 7.4, "bare", False, 0)
-    P.append(("fill", smooth([(-7.7, 82.6), (-6.6, 88), (0, 90.8),
-                              (6.6, 88), (7.7, 82.6), (4, 86.2), (0, 87),
-                              (-4, 86.2)]), "hair"))
+    P = [("fill", taper([(0, 69.4), (0, 77.4)], [6.6, 6.0], round_end=False),
+          "skin")]                                      # the neck
+    P += _move(_calm_face(), 0, 82.4, 0.8)
     L["man"] = P
     return L
 
@@ -5501,7 +5596,7 @@ def living_creature_layers():
 def living_creature(wings="up"):
     """A living creature of Ezekiel 1, whole: `wings` "up" (spread above,
     touching its neighbours') or "down" (let down as it stands, 1:24).
-    About 122 high to the wing tips and 120 across."""
+    About 125 high to the wing tips and 110 across."""
     L = living_creature_layers()
     skip = "wings_down" if wings == "up" else "wings_up"
     return [p for k in LIVING_CREATURE_LAYERS if k != skip for p in L[k]]
@@ -5532,7 +5627,7 @@ def _eye(P, cx, cy, ang, half, high):
     P.append(("dot", (cx, cy, high * 0.66), "eye"))
 
 
-WHEEL_IN_WHEEL_LAYERS = ("inner", "outer", "eyes")
+WHEEL_IN_WHEEL_LAYERS = ("wings", "inner", "outer", "eyes")
 
 
 def _wheel_in_wheel_layers(r=48.0, w=10.0):
@@ -5540,11 +5635,15 @@ def _wheel_in_wheel_layers(r=48.0, w=10.0):
     it goes any of four ways without turning (1:17), the one face on
     (`outer`), the other seen nearly edge on inside it (`inner`). High, broad
     rims set with open eyes all round (`eyes`, 1:18), each lying along its
-    rim. No spokes and no hub: the text gives none. Its foot on the ground
-    at the origin."""
+    rim. No spokes and no hub: the text gives none. A pair of feathered
+    wings rises from its sides (`wings`): the text gives the wheels none,
+    and they are the owner's addition (2026-11-11), as the painters of the
+    Thrones added them. Its foot on the ground at the origin."""
     cy = r
     irx, iw = r * 0.40, w * 0.8
-    L = {"inner": [("fill", _rim(0, cy, irx, r - 0.6, iw), "metal")],
+    L = {"wings": feathered_wings(root=(38, 56), wrist=(51, 72), tip=(56, 88),
+                                  a0=-74, a1=64, l0=8, l1=17, n=9),
+         "inner": [("fill", _rim(0, cy, irx, r - 0.6, iw), "metal")],
          "outer": [("fill", _rim(0, cy, r, r, w), "metal")]}
     P = []
     for k in range(12):
@@ -5568,6 +5667,7 @@ def wheel_in_wheel_layers():
 
 
 def wheel_in_wheel():
-    """A wheel of Ezekiel 1, whole: 96 high, its foot at the origin."""
+    """A wheel of Ezekiel 1, whole and winged: the rims 96 high, its foot
+    at the origin."""
     L = wheel_in_wheel_layers()
     return [p for k in WHEEL_IN_WHEEL_LAYERS for p in L[k]]

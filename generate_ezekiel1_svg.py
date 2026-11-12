@@ -11,6 +11,10 @@ stands only on the verse that says it.
 
 What is drawn, and from where:
 
+* The beings are the owner's merged cast (2026-11-11): the creatures'
+  wings are feathered and, with the folded wings and the hands, full of
+  eyes; the wheels are gold and winged. Ezekiel 1 itself puts eyes only on
+  the wheels and gives the wheels no wings.
 * The creatures and wheels are svg_figures' `living_creature_layers` and
   `wheel_in_wheel_layers`. The four stand in a square seen from the front:
   two near, two smaller behind, their raised wings touching (1:9, 1:11).
@@ -60,8 +64,10 @@ FAR = (150, 128, 92)            # the two behind
 HOT = (255, 208, 124)           # the same, like burning coals (1:13)
 HOT_FAR = (212, 154, 92)
 FIRE_Y = 424                    # where the fire among them comes to rest
-BERYL = (118, 204, 172)         # the wheels (1:16)
+BERYL = (118, 204, 172)         # sea-green, one reading of the wheels' stone
 BERYL_FAR = (84, 140, 122)
+WHEEL = (236, 196, 92)          # the wheels (1:16): tarshish as a golden stone
+WHEEL_FAR = (164, 138, 72)
 CRYSTAL = (196, 228, 242)       # the expanse (1:22)
 SAPPHIRE = (92, 132, 236)       # the throne (1:26)
 FIRE = (255, 176, 84)
@@ -441,7 +447,8 @@ CREATURE_IN = {"wings_up": (6, "four wings"), "wings_down": (24, "let down"),
                "body": (5, "four living creatures"), "hooves": (7, "calf"),
                "cover": (6, "four wings"), "lion": (6, "four faces"),
                "ox": (6, "four faces"), "man": (5, "four living creatures")}
-WHEEL_IN = {"outer": (15, "one wheel"), "inner": (16, "a wheel within a wheel"),
+WHEEL_IN = {"wings": (15, "one wheel"),
+            "outer": (15, "one wheel"), "inner": (16, "a wheel within a wheel"),
             "eyes": (18, "full of eyes")}
 
 
@@ -869,8 +876,8 @@ def _symbols_used(body):
     """The creature and wheel layers this verse draws."""
     LC, WH = F.living_creature_layers(), F.wheel_in_wheel_layers()
     out = []
-    for row, s, ink, wink in (("b", S_BACK, FAR, BERYL_FAR),
-                              ("f", S_FRONT, CREATURE, BERYL),
+    for row, s, ink, wink in (("b", S_BACK, FAR, WHEEL_FAR),
+                              ("f", S_FRONT, CREATURE, WHEEL),
                               ("bh", S_BACK, HOT_FAR, None),
                               ("fh", S_FRONT, HOT, None)):
         for k, parts in LC.items():
